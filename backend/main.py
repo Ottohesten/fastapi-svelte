@@ -43,9 +43,9 @@ class HeroUpdate(SQLModel):
     age: int | None = None
 
 
-hero_1 = Hero(name="Deadpond", secret_name="Dive Wilson")
-hero_2 = Hero(name="Spider-Boy", secret_name="Pedro Parqueador")
-hero_3 = Hero(name="Rusty-Man", secret_name="Tommy Sharp", age=48)
+# hero_1 = Hero(name="Deadpond", secret_name="Dive Wilson")
+# hero_2 = Hero(name="Spider-Boy", secret_name="Pedro Parqueador")
+# hero_3 = Hero(name="Rusty-Man", secret_name="Tommy Sharp", age=48)
 
 engine = create_engine("sqlite:///database.db")
 

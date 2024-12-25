@@ -67,8 +67,9 @@ def on_startup():
     #     session.add(hero_3)
     #     session.commit()
 
-
-
+@app.get("/")
+def read_root():
+    return {"Hello": "World"}
 
 
 

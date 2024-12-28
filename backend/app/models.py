@@ -1,7 +1,8 @@
 import uuid
 from pydantic import EmailStr
 from sqlmodel import Field, SQLModel, Relationship
-from permissions.roles import Role
+from typing import List
+# from permissions.roles import Role
 
 
 
@@ -26,6 +27,17 @@ class HeroUpdate(SQLModel):
     age: int | None = None
 
 
+class UserRoleLink(SQLModel, table=True):
+    user_id: uuid.UUID | None = Field(default=None, foreign_key="user.id", primary_key=True)
+    role_id: uuid.UUID | None = Field(default=None, foreign_key="role.id", primary_key=True)
+
+
+
+class Role(SQLModel, table=True):
+    id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
+    name: str
+    description: str | None = None
+    users: List["User"] = Relationship(back_populates="roles", link_model=UserRoleLink)
 
 
 
@@ -34,8 +46,13 @@ class UserBase(SQLModel):
     email: EmailStr = Field(unique=True, index=True, max_length=255)
     is_active: bool = True
     is_superuser: bool = False
-    role: Role = Role.USER
     full_name: str | None = Field(default=None, max_length=255)
+
+class User(UserBase, table=True):
+    id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
+    hashed_password: str
+    items: list["Item"] = Relationship(back_populates="owner", cascade_delete=True)
+    roles: list["Role"] = Relationship(back_populates="users", link_model=UserRoleLink)
 
 
 # Properties to receive via API on creation
@@ -66,10 +83,6 @@ class UpdatePassword(SQLModel):
 
 
 # Database model, database table inferred from class name
-class User(UserBase, table=True):
-    id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
-    hashed_password: str
-    items: list["Item"] = Relationship(back_populates="owner", cascade_delete=True)
 
 
 # Properties to return via API, id is always required

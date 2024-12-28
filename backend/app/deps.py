@@ -11,11 +11,11 @@ from fastapi.security import (
 
 )
 from jwt.exceptions import InvalidTokenError
-from models import User, TokenData
-from config import settings
-import security
-from db import engine
-from db_crud import get_user_by_email
+from app.models import User, TokenData
+from app.config import settings
+import app.security as security
+from app.db import engine
+from app.db_crud import get_user_by_email
 
 
 

@@ -6,10 +6,10 @@ from sqlmodel import Field, SQLModel, create_engine, Session, select
 
 from fastapi import FastAPI, Depends, HTTPException
 
-from models import Hero, HeroCreate, HeroPublic, HeroUpdate
-from deps import SessionDep, TokenDep, create_db_and_tables
-from config import get_settings
-from routers import (
+from app.models import Hero, HeroCreate, HeroPublic, HeroUpdate
+from app.deps import SessionDep, TokenDep, create_db_and_tables
+from app.config import get_settings
+from app.routers import (
     heroes,
     users,
     login

@@ -1,8 +1,8 @@
 from fastapi import APIRouter
 from fastapi import FastAPI, Depends, HTTPException, status, Query
 from sqlmodel import select
-from deps import SessionDep
-from models import Hero, HeroCreate, HeroPublic, HeroUpdate
+from app.deps import SessionDep
+from app.models import Hero, HeroCreate, HeroPublic, HeroUpdate
 
 
 router = APIRouter(prefix="/heroes", tags=["heroes"])

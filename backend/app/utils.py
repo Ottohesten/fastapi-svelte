@@ -9,8 +9,8 @@ import jwt
 from jinja2 import Template
 from jwt.exceptions import InvalidTokenError
 
-import security
-from config import settings
+import app.security as security
+from app.config import settings
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)

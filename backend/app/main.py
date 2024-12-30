@@ -3,6 +3,7 @@ from typing import Optional, Union, Annotated
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
 from sqlmodel import Field, SQLModel, create_engine, Session, select
+from contextlib import contextmanager, asynccontextmanager
 
 from fastapi import FastAPI, Depends, HTTPException
 
@@ -14,6 +15,10 @@ from app.routers import (
     users,
     login
 )
+
+# @asynccontextmanager
+# async def lifespan(app: FastAPI):
+
 
 
 
@@ -43,32 +48,9 @@ app.add_middleware(
 # hero_3 = Hero(name="Rusty-Man", secret_name="Tommy Sharp", age=48)
 
 
-
-
-
-
-
-# def get_session():
-#     with Session(engine) as session:
-#         yield session
-
-# sessionDep: Session = Depends(get_session)
-
-# @app.on_event("startup")
-# def on_startup():
-#     create_db_and_tables()
-
-    # with Session(engine) as session:
-    #     session.add(hero_1)
-    #     session.add(hero_2)
-    #     session.add(hero_3)
-    #     session.commit()
-
-
-
 settings = get_settings()
 
-# print(settings)
+print(settings.SQLALCHEMY_DATABASE_URI)
 
 
 app.include_router(heroes.router)

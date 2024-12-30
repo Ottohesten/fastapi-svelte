@@ -3,6 +3,7 @@ from sqlmodel import Session, create_engine, select
 import app.db_crud as db_crud
 from app.config import settings
 from app.models import User, UserCreate
+from app.models import Hero
 
 
 # engine = create_engine("sqlite:///database.db")
@@ -42,3 +43,14 @@ def init_db(session: Session) -> None:
         print("Superuser created")
     else:
         print("Superuser already exists")
+    
+
+    # create heroes initial data
+    hero_1 = Hero(name="Deadpond", secret_name="Dive Wilson")
+    hero_2 = Hero(name="Spider-Boy", secret_name="Pedro Parqueador")
+    hero_3 = Hero(name="Rusty-Man", secret_name="Tommy Sharp", age=48)
+
+    session.add(hero_1)
+    session.add(hero_2)
+    session.add(hero_3)
+    session.commit()

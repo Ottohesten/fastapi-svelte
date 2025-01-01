@@ -1,6 +1,6 @@
 <script lang="ts">
 	import '../app.css';
-	let { children } = $props();
+	let { children, data } = $props();
 
 	// when a new a tag is clicked we need to add some new classes to it and remove some from the last one that was the clicked one
 
@@ -68,16 +68,29 @@
 				>
 			</div>
 			<!-- make some icons that are all the way to the right -->
-			<div class="flex space-x-4 text-white">
-				<a href="/">asasad</a>
+			<div class="flex space-x-4">
+				<div class="rounded-md px-3 py-2 text-gray-300 hover:bg-gray-700 hover:text-white">
+					<a href="/admin">admin</a>
+				</div>
+				{#if !data.user}
+					<div class="rounded-md px-3 py-2 text-gray-300 hover:bg-gray-700 hover:text-white">
+						<a href="/auth/login">Login</a>
+					</div>
+				{:else}
+					<div class="rounded-md px-3 py-2 text-gray-300 hover:bg-gray-700 hover:text-white">
+						<a href="/auth/logout">Logout</a>
+					</div>
+				{/if}
 			</div>
 		</div>
 	</div>
 </nav>
 
-<!-- {#each routes as route_name}
-	{route_name}
-{/each} -->
+{#if data.user}
+	<div class="bg-green-500 py-2 text-center text-white">
+		Welcome {data.user.email}
+	</div>
+{/if}
 
 <div class="container mx-auto px-2">
 	{@render children()}

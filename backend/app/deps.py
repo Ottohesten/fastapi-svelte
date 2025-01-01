@@ -36,7 +36,11 @@ def create_db_and_tables():
     SQLModel.metadata.create_all(engine)
 
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/login/access-token", scopes={"me": "Read information about the current user.", "items": "Read items."},)
+oauth2_scheme = OAuth2PasswordBearer(
+    tokenUrl="/login/access-token",
+    scopes={"me": "Read information about the current user.", "items": "Read items."},
+    # auto_error=False,
+    )
 
 # SessionDep: Session = Depends(get_db)
 # TokenDep: str =  Depends(oauth2_scheme)
@@ -66,7 +70,8 @@ async def get_current_user(security_scopes: SecurityScopes, session: SessionDep,
             raise credentials_exception
         token_scopes = payload.get("scopes", [])
         token_data = TokenData(email=email, scopes=token_scopes)
-    except (InvalidTokenError, ValidationError):
+    except (InvalidTokenError, ValidationError) as e:
+        print(f"Error: {e}")
         raise credentials_exception
     
     user = get_user_by_email(session=session, email=email)
@@ -91,12 +96,13 @@ async def get_current_user(security_scopes: SecurityScopes, session: SessionDep,
 
 CurrentUser = Annotated[User, Depends(get_current_user)]
 # CurrentUser = Annotated[User, Security(get_current_user, scopes=["me"])]
+# CurrentUser = Annotated[User, Security(get_current_user)]
 
 
 
 async def get_current_active_user(
-    # current_user: Annotated[User, Security(get_current_user)],
-    current_user: Annotated[User, Security(get_current_user, scopes=["me"])],
+    current_user: Annotated[User, Security(get_current_user)],
+    # current_user: Annotated[User, Security(get_current_user, scopes=["me"])],
 ):
     if not current_user.is_active:
         raise HTTPException(status_code=400, detail="Inactive user")

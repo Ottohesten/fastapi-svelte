@@ -8,12 +8,14 @@ from app.models import Hero, HeroCreate, HeroPublic, HeroUpdate
 router = APIRouter(prefix="/heroes", tags=["heroes"])
 
 
-@router.get("/heroes", response_model=list[HeroPublic])
+@router.get("/", response_model=list[HeroPublic])
 async def read_heroes(session: SessionDep):
     heroes = session.exec(select(Hero)).all()
+    if not heroes:
+        raise HTTPException(status_code=404, detail="No heroes found")
     return heroes
 
-@router.get("/heroes/{hero_id}", response_model=HeroPublic)
+@router.get("/{hero_id}", response_model=HeroPublic)
 async def read_hero(hero_id: int, session: SessionDep):
     hero = session.get(Hero, hero_id)
     if not hero:
@@ -21,7 +23,7 @@ async def read_hero(hero_id: int, session: SessionDep):
     return hero
     
 
-@router.post("/heroes", response_model=HeroPublic)
+@router.post("/", response_model=HeroPublic)
 async def create_hero(hero: HeroCreate, session: SessionDep):
     db_hero = Hero.model_validate(hero)
     session.add(db_hero)
@@ -39,7 +41,7 @@ async def create_hero(hero: HeroCreate, session: SessionDep):
 #         # update the hero
 #         hero_data = hero.model_dump(exclude_unset=True)
 
-@router.patch("/heroes/{hero_id}", response_model=HeroPublic)
+@router.patch("/{hero_id}", response_model=HeroPublic)
 async def patch_hero(hero_id: int, hero: HeroUpdate, session: SessionDep):
     db_hero = session.get(Hero, hero_id)
     if not db_hero:
@@ -52,7 +54,7 @@ async def patch_hero(hero_id: int, hero: HeroUpdate, session: SessionDep):
     session.refresh(db_hero)
     return db_hero
 
-@router.delete("/heroes/{hero_id}")
+@router.delete("/{hero_id}")
 async def delete_hero(hero_id: int, session: SessionDep):
     hero = session.get(Hero, hero_id)
     if not hero:

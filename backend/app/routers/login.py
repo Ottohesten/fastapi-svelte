@@ -28,6 +28,15 @@ def login_access_token(
     """
     OAuth2 compatible token login, get an access token for future requests
     """
+    # # print all form data
+    # print(form_data)
+    # # print(dir(form_data))
+    # print(form_data.username)
+    # print(form_data.password)
+    # print(form_data.grant_type)
+    # print(form_data.scopes)
+    # print(form_data.client_id)
+    # print(form_data.client_secret)
     user = db_crud.authenticate_user(
         session=session, email=form_data.username, password=form_data.password
     )

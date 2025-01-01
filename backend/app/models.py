@@ -1,5 +1,5 @@
 import uuid
-from pydantic import EmailStr
+from pydantic import BaseModel, EmailStr
 from sqlmodel import Field, SQLModel, Relationship
 from typing import List
 # from permissions.roles import Role
@@ -82,7 +82,6 @@ class UpdatePassword(SQLModel):
     new_password: str = Field(min_length=8, max_length=40)
 
 
-# Database model, database table inferred from class name
 
 
 # Properties to return via API, id is always required
@@ -154,3 +153,7 @@ class ItemsPublic(SQLModel):
 # Generic message
 class Message(SQLModel):
     message: str
+
+
+class HTTPExceptionDetail(BaseModel):
+    detail: str

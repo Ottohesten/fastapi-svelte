@@ -15,7 +15,8 @@ from app.config import get_settings
 from app.routers import (
     heroes,
     users,
-    login
+    login,
+    recipes
 )
 
 # @asynccontextmanager
@@ -55,8 +56,9 @@ settings = get_settings()
 # print(settings.SQLALCHEMY_DATABASE_URI)
 
 
-app.include_router(heroes.router)
+app.include_router(recipes.router)
 app.include_router(users.router)
+app.include_router(heroes.router)
 app.include_router(login.router)
 
 

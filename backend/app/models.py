@@ -53,6 +53,7 @@ class User(UserBase, table=True):
     hashed_password: str
     items: list["Item"] = Relationship(back_populates="owner", cascade_delete=True)
     roles: list["Role"] = Relationship(back_populates="users", link_model=UserRoleLink)
+    recipes: list["Recipe"] = Relationship(back_populates="owner")
 
 
 # Properties to receive via API on creation
@@ -150,10 +151,85 @@ class ItemsPublic(SQLModel):
     count: int
 
 
+
+#####################################################################################
+# link model
+
+class RecipeIngredientLink(SQLModel, table=True):
+    recipe_id: uuid.UUID | None = Field(default=None, foreign_key="recipe.id", primary_key=True)
+    ingredient_id: uuid.UUID | None = Field(default=None, foreign_key="ingredient.id", primary_key=True)
+    amount: float
+    unit: str
+
+
+
+#####################################################################################
+# Recipes
+
+class RecipeBase(SQLModel):
+    title: str = Field(max_length=255, min_length=1)
+    description: str | None = Field(default=None, max_length=255)
+
+
+class RecipeCreate(RecipeBase):
+    ingredients: list["Ingredient"] = []
+
+
+
+class Recipe(RecipeBase, table=True):
+    """
+    Recipe model
+
+    Should have an owner and a list of ingredients. However a recipe for every ingredints, the ingredient should also have an amount of that ingredient and the unit of the amount
+    """
+    id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
+    title: str = Field(max_length=255)
+    description: str | None = Field(default=None, max_length=255)
+
+    owner_id: uuid.UUID = Field(foreign_key="user.id", nullable=False)
+    owner: User = Relationship(back_populates="recipes")
+
+    ingredients: List["Ingredient"] = Relationship(back_populates="recipes", link_model=RecipeIngredientLink)
+
+
+#####################################################################################
+# Ingredients
+
+class IngredientBase(SQLModel):
+    pass
+
+
+class Ingredient(IngredientBase, table=True):
+    """
+    Ingredient model
+
+    Should have a name, a unit and a list of recipes that use that ingredient. The recipe should also have an amount of that ingredient and the unit of the amount
+    """
+    id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
+    title: str = Field(max_length=255)
+    recipes: List["Recipe"] = Relationship(back_populates="ingredients", link_model=RecipeIngredientLink)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#####################################################################################
+# 
+
+
 # Generic message
 class Message(SQLModel):
     message: str
 
-
+# HTTPException detail
 class HTTPExceptionDetail(BaseModel):
     detail: str

@@ -94,9 +94,9 @@ async def get_current_user(security_scopes: SecurityScopes, session: SessionDep,
     return user
 
 
-CurrentUser = Annotated[User, Depends(get_current_user)]
+# CurrentUser = Annotated[User, Depends(get_current_user)]
 # CurrentUser = Annotated[User, Security(get_current_user, scopes=["me"])]
-# CurrentUser = Annotated[User, Security(get_current_user)]
+CurrentUser = Annotated[User, Security(get_current_user)]
 
 
 

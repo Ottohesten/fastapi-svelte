@@ -243,21 +243,21 @@ class HTTPExceptionDetail(BaseModel):
 
 
 # Team and Person models
-class TeamPersonLink(SQLModel, table=True):
-    team_name: str = Field(foreign_key="team.name", primary_key=True)
-    person_name: str = Field(foreign_key="person.name", primary_key=True)
+# class TeamPersonLink(SQLModel, table=True):
+#     team_name: str = Field(foreign_key="team.name", primary_key=True)
+#     person_name: str = Field(foreign_key="person.name", primary_key=True)
 
 
-class Person(SQLModel, table=True):
-    name: str = Field(max_length=255, min_length=1, primary_key=True)
-    age: int
-    height: int # cm
+# class Person(SQLModel, table=True):
+#     name: str = Field(max_length=255, min_length=1, primary_key=True)
+#     age: int
+#     height: int # cm
 
-    team: "Team" = Relationship(back_populates="people", link_model=TeamPersonLink)
+#     team: "Team" = Relationship(back_populates="people", link_model=TeamPersonLink)
 
 
-class Team(SQLModel, table=True):
-    name: str = Field(max_length=255, min_length=1, primary_key=True)
-    location: str
+# class Team(SQLModel, table=True):
+#     name: str = Field(max_length=255, min_length=1, primary_key=True)
+#     location: str
 
-    people: List["Person"] = Relationship(back_populates="team", link_model=TeamPersonLink)
+#     people: List["Person"] = Relationship(back_populates="team", link_model=TeamPersonLink)

@@ -3,9 +3,9 @@ import { createApiClient, createFormApiClient } from "$lib/api/api";
 import { error, redirect } from "@sveltejs/kit";
 
 export const actions = {
-    login: async ({ fetch, cookies, request, params, url }) => {
+    default: async ({ fetch, cookies, request, params, url }) => {
         const client = createApiClient(fetch);
-        // const client = createFormApiClient(fetch);
+        // console.log(url)
         const formData = await request.formData();
         // console.log(formData.get("username"));
         // post request to login
@@ -37,6 +37,7 @@ export const actions = {
                 "Content-Type": "application/x-www-form-urlencoded"
             },
 
+            // required as the api expects the body to be in x-www-form-urlencoded format (not json)
             bodySerializer(body) {
                 return body ? new URLSearchParams(body as Record<string, string>) : new URLSearchParams();
             }
@@ -53,6 +54,7 @@ export const actions = {
             secure: true,
             // set to 1 day
             maxAge: 60 * 60 * 24
+            // maxAge: 60 * 5 // 5 minutes
         })
 
         // get user info
@@ -61,17 +63,7 @@ export const actions = {
                 Authorization: `Bearer ${cookies.get("auth_token")}`
             }
         })
-
-        // const { data: user, error: userError, response: userResponse } = await client.GET("/users/me", {
-        //     params: {
-        //         header: {
-        //             Authorization: `Bearer ${cookies.get("auth_token")}`
-        //         }
-        //     }
-        // })
         if (userError) {
-            // console.log(userError);
-            // console.log(userResponse.status);
             error(404, userError.detail?.toString());
         }
         // console.log(user)
@@ -79,34 +71,13 @@ export const actions = {
 
 
         // redirect to home
-        // console.log(formData)
-        // console.log(url)
-        const redirectTo = formData.get("redirectTo") as string || "/";
+        // const redirectTo = formData.get("redirectTo") as string || "/";
+        const redirectTo = url.searchParams.get("redirectTo") || "/";
         // console.log(redirectTo);
         return redirect(303, redirectTo);
 
 
 
-
-
-
-
-
-        // set as normal cookie for testing
-        // cookies.set("access_token", data.access_token, { path: '/' })
-
-
-
-
-        // do form urlencoded using URLSearchParams in client
-        // const temp = await client.POST("/login/access-token", {
-        //     body: {
-        //         username: formData.get("username") as string,
-        //         password: formData.get("password") as string,
-        //         scope: "",
-        //         grant_type: "password"
-        //     }
-        // })
 
 
     }

@@ -3,6 +3,7 @@
 	let { data } = $props();
 </script>
 
-<h1 class="text-4xl font-bold">Hero</h1>
-
-<Hero {...data.hero} age={data.hero.age ?? 0} />
+<div class="container">
+	<h1 class="text-4xl font-bold">Hero</h1>
+	<Hero {...data.hero} age={data.hero.age ?? 0} />
+</div>

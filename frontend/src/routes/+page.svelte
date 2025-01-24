@@ -11,17 +11,19 @@
 	// }
 </script>
 
-<h1 class="text-3xl font-bold underline">Home</h1>
+<div class="container">
+	<h1 class="text-3xl font-bold underline">Home</h1>
 
-<!-- {JSON.stringify(data)} -->
-<!-- {#each data.items as item}
-	<Hero {...item} age={item.age ?? 0} />
-{/each} -->
+	<!-- {JSON.stringify(data)} -->
+	<!-- {#each data.items as item}
+		<Hero {...item} age={item.age ?? 0} />
+	{/each} -->
 
-<!-- {#if data.user}
-	<div class="bg-green-500">
-		<h1>Welcome {data.user.email}</h1>
-	</div>
-{/if} -->
+	<!-- {#if data.user}
+		<div class="bg-green-500">
+			<h1>Welcome {data.user.email}</h1>
+		</div>
+	{/if} -->
 
-{JSON.stringify(data.user)}
+	{JSON.stringify(data.user)}
+</div>

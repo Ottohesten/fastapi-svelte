@@ -1,4 +1,4 @@
-import type { Handle } from '@sveltejs/kit';
+import { redirect, type Handle } from '@sveltejs/kit';
 import { createApiClient } from '$lib/api/api';
 
 // define function to make api request to get user info
@@ -7,6 +7,14 @@ import { createApiClient } from '$lib/api/api';
 
 export const handle: Handle = async ({ event, resolve }) => {
     const auth_token = event.cookies.get("auth_token");
+    // console.log(auth_token);
+    // console.log(event.locals.user);
+
+
+    if (!auth_token) {
+        event.locals.user = null;
+        return await resolve(event);
+    }
     if (auth_token) {
         const client = createApiClient(event.fetch);
         const { data, error: apierror, response } = await client.GET("/users/me", {
@@ -14,16 +22,38 @@ export const handle: Handle = async ({ event, resolve }) => {
                 Authorization: `Bearer ${auth_token}`
             }
         })
+        if (data) {
+            event.locals.user = data;
+
+        }
         if (apierror) {
             console.log(apierror);
-            return new Response(JSON.stringify(apierror), {
-                status: response.status,
+            // console.log("setting cookie to empty");
+            // remove cookie
+            event.cookies.set("auth_token", "", {
+                httpOnly: true,
+                path: '/',
+                secure: true,
+                // delete cookie
+                maxAge: 0
+            })
+            // return new Response(JSON.stringify(apierror), {
+            //     status: response.status,
+            //     headers: {
+            //         "content-type": "application/json"
+            //     }
+            // });
+            return new Response(null, {
+                status: 302,
                 headers: {
-                    "content-type": "application/json"
+                    'Location': event.url.pathname,
+                    'Clear-Site-Data': '"*"'  // Forces a clean reload
                 }
             });
+            // return redirect(302, "/");
         }
-        event.locals.user = data;
+        // console.log(event.locals.user);
+
     }
 
 

@@ -25,7 +25,7 @@
 <nav class="bg-gray-800">
 	<div class="px-2 sm:px-6 lg:px-12">
 		<div class="relative flex h-16 items-center justify-between">
-			<div class="flex space-x-4">
+			<div class="flex items-center space-x-0 sm:space-x-4">
 				<a
 					class="rounded-md px-3 py-2 text-sm font-medium {activeButton === 'home'
 						? 'bg-gray-900 text-white'
@@ -42,22 +42,14 @@
 					aria-current={activeButton === 'about'}
 					onclick={() => (activeButton = 'about')}>About</a
 				>
-				<a
+				<!-- <a
 					class="rounded-md px-3 py-2 text-sm font-medium {activeButton === 'blog'
 						? 'bg-gray-900 text-white'
 						: 'text-gray-300 hover:bg-gray-700 hover:text-white'}"
 					href="/blog"
 					aria-current={activeButton === 'blog'}
 					onclick={() => (activeButton = 'blog')}>Blog</a
-				>
-				<a
-					class="rounded-md px-3 py-2 text-sm font-medium {activeButton === 'temp'
-						? 'bg-gray-900 text-white'
-						: 'text-gray-300 hover:bg-gray-700 hover:text-white'}"
-					href="/temp"
-					aria-current={activeButton === 'temp'}
-					onclick={() => (activeButton = 'temp')}>Temp</a
-				>
+				> -->
 				<a
 					class="rounded-md px-3 py-2 text-sm font-medium {activeButton === 'hero'
 						? 'bg-gray-900 text-white'
@@ -66,9 +58,18 @@
 					aria-current={activeButton === 'hero'}
 					onclick={() => (activeButton = 'hero')}>Hero</a
 				>
+				<a
+					class="rounded-md px-3 py-2 text-sm font-medium {activeButton === 'recipes'
+						? 'bg-gray-900 text-white'
+						: 'text-gray-300 hover:bg-gray-700 hover:text-white'}"
+					href="/recipes"
+					aria-current={activeButton === 'recipes'}
+					onclick={() => (activeButton = 'recipes')}>Recipes</a
+				>
 			</div>
+
 			<!-- make some icons that are all the way to the right -->
-			<div class="flex space-x-4">
+			<div class="flex space-x-2">
 				<div class="rounded-md px-3 py-2 text-gray-300 hover:bg-gray-700 hover:text-white">
 					<a href="/admin">admin</a>
 				</div>
@@ -86,12 +87,14 @@
 	</div>
 </nav>
 
-{#if data.user}
+<!-- {JSON.stringify(data.user)} -->
+
+<!-- {#if data.user}
 	<div class="bg-green-500 py-2 text-center text-white">
 		Welcome {data.user.email}
 	</div>
-{/if}
+{/if} -->
 
-<div class="container mx-auto px-2">
-	{@render children()}
-</div>
+<!-- <div class="container mx-auto px-2"> -->
+{@render children()}
+<!-- </div> -->

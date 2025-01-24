@@ -24,24 +24,34 @@
 
 		alert(`answered question ${selected.id} (${selected.text}) with "${answer}"`);
 	}
+
+	$inspect(answer);
 </script>
 
-<h2>Insecurity questions</h2>
+<div class="container">
+	<h2>Insecurity questions</h2>
 
-<form onsubmit={handleSubmit}>
-	<select bind:value={selected} onchange={() => (answer = '')}>
-		{#each questions as question}
-			<option value={question}>
-				{question.text}
-			</option>
-		{/each}
-	</select>
+	<form class="" onsubmit={handleSubmit}>
+		<select bind:value={selected} onchange={() => (answer = '')}>
+			{#each questions as question}
+				<option value={question}>
+					{question.text}
+				</option>
+			{/each}
+		</select>
 
-	<input bind:value={answer} />
+		<input class="block border bg-gray-50 shadow" bind:value={answer} />
 
-	<button disabled={!answer} type="submit"> Submit </button>
-</form>
+		<button
+			class="bg-primary my-2 rounded-md p-2 font-medium text-white"
+			disabled={!answer}
+			type="submit"
+		>
+			Submit
+		</button>
+	</form>
 
-<p>
-	selected question {selected ? selected.id : '[waiting...]'}
-</p>
+	<p>
+		selected question {selected ? selected.id : '[waiting...]'}
+	</p>
+</div>

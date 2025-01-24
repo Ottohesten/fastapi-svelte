@@ -121,7 +121,7 @@ def update_password_me(
     # "content": {"application/json": {"example": {"detail": "Not authenticated"}}},
     "model": HTTPExceptionDetail
 }})
-def read_user_me(*,current_user: Annotated[User, Security(get_current_active_user)], response: Response):
+def read_user_me(*,current_user: Annotated[User, Security(get_current_active_user)]):
 # def read_user_me(current_user: Annotated[User, Security(get_current_active_user, scopes=["me"])],) -> Any:
 # def read_user_me(current_user: CurrentUser) -> Any:
     
@@ -191,7 +191,7 @@ def update_user(
     session: SessionDep,
     user_id: uuid.UUID,
     user_in: UserUpdate,
-) -> Any:
+):
     """
     Update a user.
     """
@@ -202,6 +202,8 @@ def update_user(
             status_code=404,
             detail="The user with this id does not exist in the system",
         )
+    
+    
     if user_in.email:
         existing_user = db_crud.get_user_by_email(session=session, email=user_in.email)
         if existing_user and existing_user.id != user_id:

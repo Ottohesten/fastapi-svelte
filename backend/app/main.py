@@ -16,7 +16,8 @@ from app.routers import (
     heroes,
     users,
     login,
-    recipes
+    recipes,
+    ingredients
 )
 
 # @asynccontextmanager
@@ -27,7 +28,8 @@ from app.routers import (
 
 
 # app = FastAPI(dependencies=[Depends(oauth2_scheme)])
-app = FastAPI(swagger_ui_parameters={"persistAuthorization": True})
+# app = FastAPI(swagger_ui_parameters={"persistAuthorization": True})
+app = FastAPI()
 
 origins = [
     "http://localhost:5173",
@@ -55,8 +57,8 @@ settings = get_settings()
 
 # print(settings.SQLALCHEMY_DATABASE_URI)
 
-
 app.include_router(recipes.router)
+app.include_router(ingredients.router)
 app.include_router(users.router)
 app.include_router(heroes.router)
 app.include_router(login.router)

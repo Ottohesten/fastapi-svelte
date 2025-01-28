@@ -2,7 +2,7 @@ from fastapi import APIRouter
 from fastapi import FastAPI, Depends, HTTPException, status, Query
 from sqlmodel import select
 from app.deps import SessionDep, CurrentUser, get_current_active_superuser
-from app.models import Recipe, RecipeCreate, RecipePublic
+from app.models import Recipe, RecipeCreate, RecipePublic, Ingredient
 
 
 
@@ -44,15 +44,43 @@ def read_recipe(session: SessionDep, recipe_id: str):
     return recipe
 
 
-@router.post("/", response_model=Recipe)
+@router.post("/", response_model=RecipePublic)
 def create_recipe(session: SessionDep, current_user: CurrentUser, recipe_in: RecipeCreate):
     """
     Create a new recipe.
     """
-    recipe = Recipe.model_validate(recipe_in, update={"owner_id": current_user.id})
+
+    # create recipe without ingredients
+    recipe = Recipe(
+        title=recipe_in.title,
+        description=recipe_in.description,
+        owner_id=current_user.id
+    )
+
+
+
+
+
+    # get ingredients
+    for ingredient in recipe_in.ingredients:
+        ingredient = session.get(Ingredient, ingredient.id)
+        if not ingredient:
+            raise HTTPException(status_code=404, detail="Ingredient not found")
+        recipe.ingredients.append(ingredient)
+    
     session.add(recipe)
     session.commit()
     session.refresh(recipe)
+    # print(recipe)
+    
+    
+    # check if ingredients exist
+
+
+    # recipe = Recipe.model_validate(recipe_in, update={"owner_id": current_user.id})
+    # session.add(recipe)
+    # session.commit()
+    # session.refresh(recipe)
 
 
     return recipe

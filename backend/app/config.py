@@ -34,6 +34,7 @@ class Settings(BaseSettings):
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 10
     FRONTEND_HOST: str = ""
     ENVIRONMENT: Literal["local", "staging", "production"] = "local"
+    # print(f"{SECRET_KEY=}")
 
     # BACKEND_CORS_ORIGINS: Annotated[
     #     list[AnyUrl] | str, BeforeValidator(parse_cors)

@@ -158,8 +158,8 @@ class ItemsPublic(SQLModel):
 class RecipeIngredientLink(SQLModel, table=True):
     recipe_id: uuid.UUID | None = Field(default=None, foreign_key="recipe.id", primary_key=True)
     ingredient_id: uuid.UUID | None = Field(default=None, foreign_key="ingredient.id", primary_key=True)
-    amount: float
-    unit: str
+    # amount: float
+    # unit: str
 
     # recipe: "Recipe" = Relationship(back_populates="ingredient_links")
 
@@ -197,28 +197,34 @@ class Recipe(RecipeBase, table=True):
 class RecipePublic(RecipeBase):
     id: uuid.UUID 
     owner: UserPublic
+    ingredients: List["Ingredient"]
 
 
 #####################################################################################
 # Ingredients
 
 class IngredientBase(SQLModel):
-    pass
-    # title: str = Field(max_length=255, min_length=1)
+    title: str = Field(max_length=255, min_length=1)
+    # pass
 
 class IngredientCreate(IngredientBase):
     pass
+
+class IngredientPublic(IngredientBase):
+    id: uuid.UUID
+    # recipes: list[RecipePublic]
 
 
 class Ingredient(IngredientBase, table=True):
     """
     Ingredient model
 
-    Should have a name, a unit and a list of recipes that use that ingredient. The recipe should also have an amount of that ingredient and the unit of the amount
+    Should have a title (will later be the primary key) and a list of recipes that use this ingredient. Amount and unit of the amount will be handled in the RecipeIngredientLink model
     """
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
-    title: str = Field(max_length=255)
+    title: str = Field(max_length=255, min_length=1)
     recipes: List["Recipe"] = Relationship(back_populates="ingredients", link_model=RecipeIngredientLink)
+    
 
 
 

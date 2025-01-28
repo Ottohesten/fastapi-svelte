@@ -3,12 +3,12 @@ from fastapi import FastAPI, Depends, HTTPException, status, Query
 from sqlmodel import select
 from app.deps import SessionDep, CurrentUser, get_current_active_superuser
 # from app.models import Recipe, RecipeCreate, RecipePublic
-from app.models import Ingredient, IngredientBase, IngredientCreate
+from app.models import Ingredient, IngredientBase, IngredientCreate, IngredientPublic
 
 
 router = APIRouter(prefix="/ingredients", tags=["ingredients"])
 
-@router.get("/", response_model=list[Ingredient])
+@router.get("/", response_model=list[IngredientPublic])
 def read_ingredients(session: SessionDep, skip: int = 0, limit: int = 100):
     """
     Retrieve ingredients.
@@ -20,7 +20,7 @@ def read_ingredients(session: SessionDep, skip: int = 0, limit: int = 100):
     return ingredients
 
 
-@router.get("/{ingredient_id}", response_model=Ingredient)
+@router.get("/{ingredient_id}", response_model=IngredientPublic)
 def read_ingredient(session: SessionDep, ingredient_id: str):
     """
     Retrieve a ingredient.
@@ -39,7 +39,7 @@ def read_ingredient(session: SessionDep, ingredient_id: str):
     return ingredient
 
 
-@router.post("/", response_model=Ingredient)
+@router.post("/", response_model=IngredientPublic)
 def create_ingredient(session: SessionDep, current_user: CurrentUser, ingredient_in: IngredientCreate):
     """
     Create a new ingredient.
@@ -49,5 +49,19 @@ def create_ingredient(session: SessionDep, current_user: CurrentUser, ingredient
     session.commit()
     session.refresh(ingredient)
 
+
+    return ingredient
+
+
+@router.delete("/{ingredient_id}", response_model=IngredientPublic)
+def delete_ingredient(session: SessionDep, ingredient_id: str):
+    """
+    Delete a ingredient.
+    """
+    ingredient = session.get(Ingredient, ingredient_id)
+    if not ingredient:
+        raise HTTPException(status_code=404, detail="Ingredient not found")
+    session.delete(ingredient)
+    session.commit()
 
     return ingredient

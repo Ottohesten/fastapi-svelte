@@ -4,6 +4,7 @@ import app.db_crud as db_crud
 from app.config import settings
 from app.models import User, UserCreate
 from app.models import Hero
+from app.models import IngredientCreate, RecipeCreate, Ingredient, Recipe
 
 
 # engine = create_engine("sqlite:///database.db")
@@ -43,14 +44,41 @@ def init_db(session: Session) -> None:
         print("Superuser created")
     else:
         print("Superuser already exists")
+
+
+
     
 
     # create heroes initial data
-    hero_1 = Hero(name="Deadpond", secret_name="Dive Wilson")
-    hero_2 = Hero(name="Spider-Boy", secret_name="Pedro Parqueador")
-    hero_3 = Hero(name="Rusty-Man", secret_name="Tommy Sharp", age=48)
+    # hero_1 = Hero(name="Deadpond", secret_name="Dive Wilson")
+    # hero_2 = Hero(name="Spider-Boy", secret_name="Pedro Parqueador")
+    # hero_3 = Hero(name="Rusty-Man", secret_name="Tommy Sharp", age=48)
+ 
+    # session.add(hero_1)
+    # session.add(hero_2)
+    # session.add(hero_3)
+    # session.commit()
 
-    session.add(hero_1)
-    session.add(hero_2)
-    session.add(hero_3)
+def create_ingredients_and_recipes(session: Session):
+    ingredient_1 = Ingredient(title="Tomato")
+    ingredient_2 = Ingredient(title="Onion")
+    session.add(ingredient_1)
+    session.add(ingredient_2) 
     session.commit()
+    session.refresh(ingredient_1)
+    session.refresh(ingredient_2)
+
+    print("Ingredient created")
+
+    # recipe_1 = Recipe(title="Tomato Soup", owner_id=user.id)
+    recipe_1 = Recipe(title="Tomato Soup", owner_id="9d4b9156-f5a7-4181-ac0f-4628de0cd551", ingredients=[ingredient_1, ingredient_2])
+    recipe_2 = Recipe(title="Onion Soup", owner_id="9d4b9156-f5a7-4181-ac0f-4628de0cd551", ingredients=[ingredient_2])
+
+    session.add(recipe_1)
+    session.add(recipe_2)
+    session.commit()
+    session.refresh(recipe_1)
+    session.refresh(recipe_2)
+    
+    print("Recipe created")
+    

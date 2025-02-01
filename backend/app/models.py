@@ -174,7 +174,7 @@ class RecipeBase(SQLModel):
 
 
 class RecipeCreate(RecipeBase):
-    ingredients: list["Ingredient"] = []
+    ingredients: list["IngredientPublic"] = []
 
 
 
@@ -191,13 +191,16 @@ class Recipe(RecipeBase, table=True):
     owner_id: uuid.UUID = Field(foreign_key="user.id", nullable=False)
     owner: User = Relationship(back_populates="recipes")
 
+    # image
+    # image: str | None = Field(default=None, max_length=255)
+
     ingredients: List["Ingredient"] = Relationship(back_populates="recipes", link_model=RecipeIngredientLink)
 
 
 class RecipePublic(RecipeBase):
     id: uuid.UUID 
     owner: UserPublic
-    ingredients: List["Ingredient"]
+    ingredients: List["IngredientPublic"]
 
 
 #####################################################################################

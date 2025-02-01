@@ -5,10 +5,11 @@
 	let { children } = $props();
 </script>
 
-<div class="flex h-screen">
+<!-- <div class="flex h-screen"> -->
+<div class="flex">
 	<Sidebar.Provider>
 		<AppSidebar />
-		<main>
+		<main class="w-full">
 			<!-- <Sidebar.Trigger /> -->
 			<div class="m-4">
 				{@render children?.()}

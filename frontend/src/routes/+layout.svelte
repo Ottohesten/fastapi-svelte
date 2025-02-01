@@ -15,13 +15,6 @@
 	let routes = ['home', 'about', 'blog', 'temp'];
 </script>
 
-<!-- <nav>
-    <a href="/">home</a>
-    <a href="/about">about</a>
-    <a href="/blog">blog</a>
-    <a href="/temp">temp</a>
-</nav> -->
-
 <nav class="bg-gray-800">
 	<div class="px-2 sm:px-6 lg:px-12">
 		<div class="relative flex h-16 items-center justify-between">
@@ -42,14 +35,6 @@
 					aria-current={activeButton === 'about'}
 					onclick={() => (activeButton = 'about')}>About</a
 				>
-				<!-- <a
-					class="rounded-md px-3 py-2 text-sm font-medium {activeButton === 'blog'
-						? 'bg-gray-900 text-white'
-						: 'text-gray-300 hover:bg-gray-700 hover:text-white'}"
-					href="/blog"
-					aria-current={activeButton === 'blog'}
-					onclick={() => (activeButton = 'blog')}>Blog</a
-				> -->
 				<a
 					class="rounded-md px-3 py-2 text-sm font-medium {activeButton === 'hero'
 						? 'bg-gray-900 text-white'
@@ -66,21 +51,32 @@
 					aria-current={activeButton === 'recipes'}
 					onclick={() => (activeButton = 'recipes')}>Recipes</a
 				>
+				<a
+					class="rounded-md px-3 py-2 text-sm font-medium {activeButton === 'ingredients'
+						? 'bg-gray-900 text-white'
+						: 'text-gray-300 hover:bg-gray-700 hover:text-white'}"
+					href="/ingredients"
+					aria-current={activeButton === 'ingredients'}
+					onclick={() => (activeButton = 'ingredients')}>Ingredients</a
+				>
 			</div>
 
 			<!-- make some icons that are all the way to the right -->
 			<div class="flex space-x-2">
-				<div class="rounded-md px-3 py-2 text-gray-300 hover:bg-gray-700 hover:text-white">
-					<a href="/admin">admin</a>
-				</div>
+				<a
+					class="rounded-md px-3 py-2 text-gray-300 hover:bg-gray-700 hover:text-white"
+					href="/admin">admin</a
+				>
 				{#if !data.user}
-					<div class="rounded-md px-3 py-2 text-gray-300 hover:bg-gray-700 hover:text-white">
-						<a href="/auth/login">Login</a>
-					</div>
+					<a
+						class="rounded-md px-3 py-2 text-gray-300 hover:bg-gray-700 hover:text-white"
+						href="/auth/login">Login</a
+					>
 				{:else}
-					<div class="rounded-md px-3 py-2 text-gray-300 hover:bg-gray-700 hover:text-white">
-						<a href="/auth/logout">Logout</a>
-					</div>
+					<a
+						class="rounded-md px-3 py-2 text-gray-300 hover:bg-gray-700 hover:text-white"
+						href="/auth/logout">Logout</a
+					>
 				{/if}
 			</div>
 		</div>

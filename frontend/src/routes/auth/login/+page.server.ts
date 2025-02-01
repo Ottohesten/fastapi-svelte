@@ -52,6 +52,7 @@ export const actions = {
             httpOnly: true,
             path: '/',
             secure: true,
+            sameSite: "strict",
             // set to 1 day
             maxAge: 60 * 60 * 24
             // maxAge: 60 * 5 // 5 minutes

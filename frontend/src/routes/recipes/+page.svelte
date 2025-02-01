@@ -1,16 +1,21 @@
 <script lang="ts">
 	import Recipe from '$lib/components/Recipe.svelte';
-	let { data, form } = $props();
+	let { data } = $props();
 </script>
 
 <!-- {console.log(form)} -->
+<!-- {console.log(data)} -->
 
 <div class="container">
 	<h1 class="text-4xl font-bold">Recipes:</h1>
 
 	{#each data.recipes as recipe}
 		<!-- <a href="/recipes/{recipe.id}"><Recipe {recipe} user={data.user} /></a> -->
-		<Recipe {recipe} user={data.user} />
+		{#if data.user}
+			<Recipe {recipe} user={data.user} />
+		{:else}
+			<Recipe {recipe} />
+		{/if}
 	{/each}
 	{#if data.user}
 		<div class="mt-4">

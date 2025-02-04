@@ -91,7 +91,7 @@ def update_recipe(session: SessionDep, recipe_id: str, recipe_in: RecipeCreate):
     """
     Update a recipe.
     """
-    # print(f"recipe_in 1: {recipe_in}")
+    print(f"recipe_in 1: {recipe_in}")
 
     db_recipe = session.get(Recipe, recipe_id)
     if not db_recipe:

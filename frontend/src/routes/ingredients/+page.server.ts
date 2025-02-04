@@ -23,6 +23,7 @@ export const actions = {
         const client = createApiClient(fetch);
         const auth_token = cookies.get("auth_token");
 
+
         const formData = await request.formData();
         const ingredient_id = formData.get("ingredient_id") as string;
         // console.log(ingredient_id);

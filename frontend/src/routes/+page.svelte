@@ -1,18 +1,22 @@
 <script lang="ts">
 	// import Hero from '$lib/components/Hero.svelte';
+	import Tiptap from '$lib/components/Tiptap.svelte';
 	let { data } = $props();
 
 	// async function fetchData() {
 	//     console.log("fetching data");
 	//     const response = await fetch("http://localhost:8000/");
 	//     const data = await response.json();
-	//     console.log(data);
+	//     console.log(data);''
 	//     return data;
 	// }
 </script>
 
-<!-- {JSON.stringify(data.user)} -->
-
+<!-- {JSON.stringify(data.user)} -->'
+<!-- {console.timeStamp()} -->
+<div class="prose">
+	<Tiptap />
+</div>
 <div class="container">
 	<!-- <h1 class="mb-4 text-center text-3xl font-bold underline">Internationale Border Fanger Regler</h1>
 	<div>

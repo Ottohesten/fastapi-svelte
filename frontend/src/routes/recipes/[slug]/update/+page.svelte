@@ -39,16 +39,16 @@
 					{#if $errors.title}<span class="invalid">{$errors.title}</span>{/if}
 				</div>
 				<div class="mt-5">
-					<label class="" for="description">Description</label>
+					<label class="" for="instructions">Description</label>
 					<input
 						class="w-full appearance-none rounded-md border bg-gray-50 p-2 text-gray-700 shadow"
 						type="text"
-						name="description"
-						aria-invalid={$errors.description ? 'true' : undefined}
-						{...$constraints.description}
-						bind:value={$form.description}
+						name="instructions"
+						aria-invalid={$errors.instructions ? 'true' : undefined}
+						{...$constraints.instructions}
+						bind:value={$form.instructions}
 					/>
-					{#if $errors.description}<span class="invalid">{$errors.description}</span>{/if}
+					{#if $errors.instructions}<span class="invalid">{$errors.instructions}</span>{/if}
 				</div>
 				<!-- <div class="mt-5">
 					<label for="image">Image</label>

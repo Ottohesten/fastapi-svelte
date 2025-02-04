@@ -11,7 +11,7 @@ import type { Actions } from './$types.js';
 const RecipeSchema = z.object({
     title: z.string().min(3),
     // mpt optional
-    description: z.string().optional(),
+    instructions: z.string().optional(),
 
     // ingredients: an array of objects that have an id and a title
     ingredients: z.array(z.object({
@@ -54,7 +54,7 @@ export async function load({ fetch, params, locals, request, parent, url }) {
 
 
     // const form = await superValidate({ ingredients: parent_data.recipe.ingredients }, zod(RecipeSchema));
-    const form = await superValidate({ ingredients: parent_data.recipe.ingredients, title: parent_data.recipe.title, description: parent_data.recipe.description ?? undefined }, zod(RecipeSchema));
+    const form = await superValidate({ ingredients: parent_data.recipe.ingredients, title: parent_data.recipe.title, instructions: parent_data.recipe.instructions ?? undefined }, zod(RecipeSchema));
     // const form = await superValidate(parent_data.recipe, zod(RecipeSchema));
 
     return {

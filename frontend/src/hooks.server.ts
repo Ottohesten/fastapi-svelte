@@ -28,6 +28,8 @@ export const handle: Handle = async ({ event, resolve }) => {
         }
         if (apierror) {
             console.log("apierror in hooks.server.ts file", apierror);
+            // with tiemstamp
+            // console.error("error: apierror in hooks.server.ts file", apierror);
             // console.log(event.url)
             event.cookies.set("auth_token", "", {
                 httpOnly: true,
@@ -49,8 +51,8 @@ export const handle: Handle = async ({ event, resolve }) => {
             //         'Clear-Site-Data': '"*"'  // Forces a clean reload
             //     }
             // });
-            return redirect(302, event.url.pathname);
-            // return redirect(302, "/auth/login?redirectTo=" + event.url.pathname);
+            // redirect(302, event.url.pathname);
+            return redirect(302, "/auth/login?redirectTo=" + event.url.pathname);
         }
 
     }

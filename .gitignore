@@ -14,7 +14,7 @@ dist/
 downloads/
 eggs/
 .eggs/
-lib/
+# lib/ # should not be included when using sveltekit
 lib64/
 parts/
 sdist/

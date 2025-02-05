@@ -14,10 +14,8 @@
 
 <!-- {JSON.stringify(data.user)} -->'
 <!-- {console.timeStamp()} -->
-<div class="prose">
-	<Tiptap />
-</div>
 <div class="container">
+	<Tiptap />
 	<!-- <h1 class="mb-4 text-center text-3xl font-bold underline">Internationale Border Fanger Regler</h1>
 	<div>
 		<ul class="mb-4 rounded-lg border border-gray-200 text-center font-medium">

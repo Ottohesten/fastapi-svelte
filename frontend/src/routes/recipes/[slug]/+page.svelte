@@ -3,6 +3,7 @@
 	let { data } = $props();
 </script>
 
+<!-- {JSON.stringify(data.authenticatedUser)} -->
 <div class="container">
-	<Recipe recipe={data.recipe} user={data.user} />
+	<Recipe recipe={data.recipe} authenticatedUser={data.authenticatedUser ?? undefined} />
 </div>

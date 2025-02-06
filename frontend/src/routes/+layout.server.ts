@@ -18,7 +18,7 @@ export async function load({ locals, depends }) {
     // console.log("layout user", locals.user);
     // depends("user");
     return {
-        user: locals.user
+        authenticatedUser: locals.authenticatedUser
     }
 
 }

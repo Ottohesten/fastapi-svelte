@@ -67,7 +67,7 @@
 					class="rounded-md px-3 py-2 text-gray-300 hover:bg-gray-700 hover:text-white"
 					href="/admin">admin</a
 				>
-				{#if !data.user}
+				{#if !data.authenticatedUser}
 					<a
 						class="rounded-md px-3 py-2 text-gray-300 hover:bg-gray-700 hover:text-white"
 						href="/auth/login">Login</a

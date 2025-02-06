@@ -9,7 +9,7 @@ import { error } from '@sveltejs/kit';
 const RecipeSchema = z.object({
     title: z.string().min(3),
     // mpt optional
-    description: z.string().optional(),
+    instructions: z.string().optional(),
 
     // ingredients: an array of objects that have an id and a title
     ingredients: z.array(z.object({
@@ -57,7 +57,7 @@ export const actions = {
         const { data, error: apierror, response } = await client.POST("/recipes/", {
             body: {
                 title: form.data.title,
-                description: form.data.description,
+                instructions: form.data.instructions,
                 ingredients: form.data.ingredients,
                 // ingredients: [],
             },

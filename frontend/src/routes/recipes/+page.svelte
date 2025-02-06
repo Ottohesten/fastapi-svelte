@@ -5,19 +5,20 @@
 
 <!-- {console.log(form)} -->
 <!-- {console.log(data)} -->
+<!-- {JSON.stringify(data.authenticatedUser)} -->
 
 <div class="container">
 	<h1 class="text-4xl font-bold">Recipes:</h1>
 
 	{#each data.recipes as recipe}
 		<!-- <a href="/recipes/{recipe.id}"><Recipe {recipe} user={data.user} /></a> -->
-		{#if data.user}
-			<Recipe {recipe} user={data.user} />
+		{#if data.authenticatedUser}
+			<Recipe {recipe} authenticatedUser={data.authenticatedUser} />
 		{:else}
 			<Recipe {recipe} />
 		{/if}
 	{/each}
-	{#if data.user}
+	{#if data.authenticatedUser}
 		<div class="mt-4">
 			<a
 				href="/recipes/create"

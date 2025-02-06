@@ -39,7 +39,7 @@
 					{#if $errors.title}<span class="invalid">{$errors.title}</span>{/if}
 				</div>
 				<div class="mt-5">
-					<label class="" for="instructions">Description</label>
+					<label class="" for="instructions">Instructions</label>
 					<input
 						class="w-full appearance-none rounded-md border bg-gray-50 p-2 text-gray-700 shadow"
 						type="text"

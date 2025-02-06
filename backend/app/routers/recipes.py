@@ -53,7 +53,7 @@ def create_recipe(session: SessionDep, current_user: CurrentUser, recipe_in: Rec
     # create recipe without ingredients
     recipe = Recipe(
         title=recipe_in.title,
-        description=recipe_in.description,
+        instructions=recipe_in.instructions,
         owner_id=current_user.id
     )
 

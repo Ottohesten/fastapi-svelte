@@ -12,7 +12,7 @@ export const handle: Handle = async ({ event, resolve }) => {
 
 
     if (!auth_token) {
-        event.locals.user = null;
+        event.locals.authenticatedUser = null;
         return await resolve(event);
     }
     if (auth_token) {
@@ -23,7 +23,7 @@ export const handle: Handle = async ({ event, resolve }) => {
             }
         })
         if (data) {
-            event.locals.user = data;
+            event.locals.authenticatedUser = data;
 
         }
         if (apierror) {

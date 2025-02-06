@@ -9,6 +9,6 @@
 	<h1 class="text-4xl font-bold">Ingredients:</h1>
 
 	{#each data.ingredients as ingredient}
-		<Ingredient user={data.user} {ingredient} />
+		<Ingredient user={data.authenticatedUser} {ingredient} />
 	{/each}
 </div>

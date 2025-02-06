@@ -7,10 +7,10 @@
 
 	type Props = {
 		recipe: components['schemas']['RecipePublic'];
-		user?: components['schemas']['UserPublic'];
+		authenticatedUser?: components['schemas']['UserPublic'];
 	};
 
-	let { recipe, user }: Props = $props();
+	let { recipe, authenticatedUser }: Props = $props();
 </script>
 
 <div class="my-4 rounded-md bg-gray-100 p-4 dark:bg-gray-800">
@@ -36,7 +36,7 @@
 			</div>
 		</div>
 	</a>
-	{#if (user && user.id === recipe.owner.id) || (user && user.is_superuser)}
+	{#if (authenticatedUser && authenticatedUser.id === recipe.owner.id) || (authenticatedUser && authenticatedUser.is_superuser)}
 		<div class="mt-2 flex space-x-4">
 			<a
 				href="/recipes/{recipe.id}/update"

@@ -4,7 +4,7 @@ declare global {
 	namespace App {
 		// interface Error {}
 		interface Locals {
-			user: {
+			authenticatedUser: {
 				email: string;
 				is_active: boolean;
 				is_superuser: boolean;

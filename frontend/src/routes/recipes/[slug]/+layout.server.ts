@@ -17,7 +17,7 @@ export const load = async ({ fetch, params, locals }) => {
 
     return {
         recipe: data,
-        is_owner: locals.user ? data.owner.id === locals.user.id : false
+        is_owner: locals.authenticatedUser ? data.owner.id === locals.authenticatedUser.id : false
     }
 }
 

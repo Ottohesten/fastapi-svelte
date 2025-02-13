@@ -171,6 +171,7 @@ class RecipeIngredientLink(SQLModel, table=True):
 class RecipeBase(SQLModel):
     title: str = Field(max_length=255, min_length=1)
     instructions: str | None = Field(default=None, max_length=255)
+    servings: int = Field(default=1)
 
 
 class RecipeCreate(RecipeBase):
@@ -190,6 +191,8 @@ class Recipe(RecipeBase, table=True):
 
     owner_id: uuid.UUID = Field(foreign_key="user.id", nullable=False)
     owner: User = Relationship(back_populates="recipes")
+
+    servings: int = Field(default=1)
 
     # image
     # image: str | None = Field(default=None, max_length=255)

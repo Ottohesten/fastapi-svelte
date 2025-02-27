@@ -1,6 +1,6 @@
 import uuid
 from pydantic import BaseModel, EmailStr
-from sqlmodel import Field, SQLModel, Relationship
+from sqlmodel import Field, SQLModel, Relationship, Column, JSON
 from typing import List
 # from permissions.roles import Role
 
@@ -170,7 +170,7 @@ class RecipeIngredientLink(SQLModel, table=True):
 
 class RecipeBase(SQLModel):
     title: str = Field(max_length=255, min_length=1)
-    instructions: str | None = Field(default=None, max_length=255)
+    instructions: dict = Field(sa_column=Column(JSON)) # is going to have a rich text editor so it should accept json 
     servings: int = Field(default=1)
 
 
@@ -187,17 +187,21 @@ class Recipe(RecipeBase, table=True):
     """
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
     title: str = Field(max_length=255)
-    instrutions: str | None = Field(default=None, max_length=255)
+    instrutions: dict = Field(sa_column=Column(JSON))
 
     owner_id: uuid.UUID = Field(foreign_key="user.id", nullable=False)
     owner: User = Relationship(back_populates="recipes")
 
+    # we will use this field to be able to scale the recipe, can not be less than 1
     servings: int = Field(default=1)
 
     # image
     # image: str | None = Field(default=None, max_length=255)
 
     ingredients: List["Ingredient"] = Relationship(back_populates="recipes", link_model=RecipeIngredientLink)
+
+    class Config:
+        arbitrary_types_allowed = True
 
 
 class RecipePublic(RecipeBase):

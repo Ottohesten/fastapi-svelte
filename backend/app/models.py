@@ -170,7 +170,7 @@ class RecipeIngredientLink(SQLModel, table=True):
 
 class RecipeBase(SQLModel):
     title: str = Field(max_length=255, min_length=1)
-    instructions: dict = Field(sa_column=Column(JSON)) # is going to have a rich text editor so it should accept json 
+    instructions: dict | None = Field(sa_column=Column(JSON)) # is going to have a rich text editor so it should accept json 
     servings: int = Field(default=1)
 
 
@@ -187,7 +187,7 @@ class Recipe(RecipeBase, table=True):
     """
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
     title: str = Field(max_length=255)
-    instrutions: dict = Field(sa_column=Column(JSON))
+    instrutions: dict | None = Field(sa_column=Column(JSON))
 
     owner_id: uuid.UUID = Field(foreign_key="user.id", nullable=False)
     owner: User = Relationship(back_populates="recipes")

@@ -1,5 +1,6 @@
 import createClient from "openapi-fetch";
 import type { paths } from "./v1";
+import { BACKEND_HOST } from "$env/static/private";
 
 // export let { GET, POST, PATCH, PUT, DELETE, HEAD, TRACE } = createClient<paths>({
 //     baseUrl: 'http://127.0.0.1:8000/'
@@ -11,7 +12,7 @@ import type { paths } from "./v1";
 // Create a function that returns a client configured with the provided fetch
 export const createApiClient = (customFetch: typeof fetch = fetch) => {
     return createClient<paths>({
-        baseUrl: 'http://127.0.0.1:8000/',
+        baseUrl: BACKEND_HOST,
         // baseUrl: 'http://localhost:8000/',
         fetch: customFetch
     });

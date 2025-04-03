@@ -46,8 +46,8 @@ def init_db(session: Session) -> None:
         print("Superuser already exists")
 
         # check if there already are heroes in the database
-    heroes = session.exec(select(Hero)).all()
-    print(heroes)
+    heroes = session.exec(select(Hero).where(Hero.name == "Deadpond")).first()
+    print(f"Heroes: {heroes}")
     if not heroes:
         print("creating heroes")
         # create heroes initial data

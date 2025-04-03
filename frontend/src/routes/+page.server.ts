@@ -1,6 +1,8 @@
 import { createApiClient } from '$lib/api/api';
 import { error } from '@sveltejs/kit';
 import type { Actions } from "./$types";
+import { PASSPHRASE } from '$env/static/private';
+
 
 // import { GET } from '$lib/api/api';
 
@@ -12,6 +14,7 @@ import type { Actions } from "./$types";
 // }
 
 export const load = async ({ fetch, locals, cookies, url }) => {
+    // console.log("PASSPHRASE", PASSPHRASE);
     const client = createApiClient(fetch);
     // console.log(url)
     const { data, error: apierror, response } = await client.GET("/heroes/");

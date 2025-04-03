@@ -49,6 +49,7 @@
 		"@tiptap/extension-text-style": "^2.11.5",
 		"@tiptap/pm": "^2.11.5",
 		"@tiptap/starter-kit": "^2.11.5",
+		"dotenv": "^16.4.7",
 		"openapi-fetch": "^0.13.3"
 	}
 }

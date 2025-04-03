@@ -30,22 +30,6 @@ def init_db(session: Session) -> None:
     # This works because the models are already imported and registered from app.models
     # SQLModel.metadata.create_all(engine)
 
-
-    print("checking if heroes exist")
-    heroes = session.exec(select(Hero).where(Hero.name == "Deadpond")).first()
-    print(f"Heroes: {heroes}")
-    if not heroes:
-        print("creating heroes")
-        # create heroes initial data
-        hero_1 = Hero(name="Deadpond", secret_name="Dive Wilson")
-        hero_2 = Hero(name="Spider-Boy", secret_name="Pedro Parqueador")
-        hero_3 = Hero(name="Rusty-Man", secret_name="Tommy Sharp", age=48)
-    
-        session.add(hero_1)
-        session.add(hero_2)
-        session.add(hero_3)
-        session.commit()
-
     user = session.exec(
         select(User).where(User.email == settings.FIRST_SUPERUSER)
     ).first()
@@ -86,4 +70,19 @@ def create_ingredients_and_recipes(session: Session):
     session.refresh(recipe_2)
     
     print("Recipe created")
+
+def create_heroes(session: Session):
+    print("checking if heroes exist")
+    heroes = session.exec(select(Hero).where(Hero.name == "Deadpond")).first()
+    print(f"Heroes: {heroes}")
+    if not heroes:
+        print("creating heroes")
+        # create heroes initial data
+        hero_1 = Hero(name="Deadpond", secret_name="Dive Wilson")
+        hero_2 = Hero(name="Spider-Boy", secret_name="Pedro Parqueador")
+        hero_3 = Hero(name="Rusty-Man", secret_name="Tommy Sharp", age=48)
     
+        session.add(hero_1)
+        session.add(hero_2)
+        session.add(hero_3)
+        session.commit()

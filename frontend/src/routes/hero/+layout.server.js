@@ -16,12 +16,13 @@ export const load = async ({ fetch, locals }) => {
 
 
     const response = await fetch('https://fastapi-svelte.onrender.com/heroes/');
-    console.log(response);
+    const data = await response.json();
+    console.log(data)
 
 
 
 
     return {
-        // heroes: data
+        heroes: data
     }
 }

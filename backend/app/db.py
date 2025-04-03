@@ -47,8 +47,9 @@ def init_db(session: Session) -> None:
 
         # check if there already are heroes in the database
     heroes = session.exec(select(Hero)).all()
+    print(heroes)
     if not heroes:
-
+        print("creating heroes")
         # create heroes initial data
         hero_1 = Hero(name="Deadpond", secret_name="Dive Wilson")
         hero_2 = Hero(name="Spider-Boy", secret_name="Pedro Parqueador")

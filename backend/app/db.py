@@ -45,19 +45,19 @@ def init_db(session: Session) -> None:
     else:
         print("Superuser already exists")
 
+        # check if there already are heroes in the database
+    heroes = session.exec(select(Hero)).all()
+    if not heroes:
 
-
+        # create heroes initial data
+        hero_1 = Hero(name="Deadpond", secret_name="Dive Wilson")
+        hero_2 = Hero(name="Spider-Boy", secret_name="Pedro Parqueador")
+        hero_3 = Hero(name="Rusty-Man", secret_name="Tommy Sharp", age=48)
     
-
-    # create heroes initial data
-    # hero_1 = Hero(name="Deadpond", secret_name="Dive Wilson")
-    # hero_2 = Hero(name="Spider-Boy", secret_name="Pedro Parqueador")
-    # hero_3 = Hero(name="Rusty-Man", secret_name="Tommy Sharp", age=48)
- 
-    # session.add(hero_1)
-    # session.add(hero_2)
-    # session.add(hero_3)
-    # session.commit()
+        session.add(hero_1)
+        session.add(hero_2)
+        session.add(hero_3)
+        session.commit()
 
 def create_ingredients_and_recipes(session: Session):
     ingredient_1 = Ingredient(title="Tomato")

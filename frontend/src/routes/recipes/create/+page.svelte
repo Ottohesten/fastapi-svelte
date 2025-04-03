@@ -24,7 +24,7 @@
 
 <!-- {JSON.stringify(data.ingredients)} -->
 
-<!-- <SuperDebug data={$form} /> -->
+<SuperDebug data={$form} />
 
 <div class="container">
 	<div class="grid grid-cols-3 gap-4">

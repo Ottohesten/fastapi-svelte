@@ -5,22 +5,8 @@ import { zod } from 'sveltekit-superforms/adapters'
 import { z } from 'zod';
 import { message, superValidate, fail } from 'sveltekit-superforms';
 import { error } from '@sveltejs/kit';
+import { RecipeSchema } from '$lib/schemas/schemas.js';
 
-const RecipeSchema = z.object({
-    title: z.string().min(3),
-    // mpt optional
-    instructions: z.string().optional(),
-
-    // ingredients: an array of objects that have an id and a title
-    ingredients: z.array(z.object({
-        id: z.string(),
-        title: z.string()
-    })),
-
-    // image: z.instanceof(File).refine((f) => f.size < 1_000_000, 'Image must be less than 1MB').optional()
-
-
-});
 
 export const load = async ({ fetch, parent }) => {
     const client = createApiClient(fetch);
@@ -57,8 +43,9 @@ export const actions = {
         const { data, error: apierror, response } = await client.POST("/recipes/", {
             body: {
                 title: form.data.title,
-                instructions: form.data.instructions,
+                instructions: form.data.instructions ?? null,
                 ingredients: form.data.ingredients,
+                servings: form.data.servings,
                 // ingredients: [],
             },
             headers: {

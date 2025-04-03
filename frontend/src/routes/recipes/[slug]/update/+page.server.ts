@@ -6,24 +6,7 @@ import { zod } from 'sveltekit-superforms/adapters'
 import { z } from 'zod';
 import { message, superValidate, fail } from 'sveltekit-superforms';
 import type { Actions } from './$types.js';
-
-
-const RecipeSchema = z.object({
-    title: z.string().min(3),
-    // mpt optional
-    instructions: z.string().optional(),
-
-    // ingredients: an array of objects that have an id and a title
-    ingredients: z.array(z.object({
-        id: z.string(),
-        title: z.string()
-    })),
-
-    // image: z.instanceof(File).refine((f) => f.size < 1_000_000, 'Image must be less than 1MB').optional()
-
-
-});
-
+import { RecipeSchema } from '$lib/schemas/schemas.js';
 
 
 export async function load({ fetch, params, locals, request, parent, url }) {

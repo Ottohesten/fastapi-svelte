@@ -476,14 +476,19 @@ export interface components {
             /** Title */
             title: string;
             /** Instructions */
-            instructions?: string | null;
+            instructions: Record<string, never> | null;
+            /**
+             * Servings
+             * @default 1
+             */
+            servings: number;
             /**
              * Id
              * Format: uuid
              */
             id?: string;
             /** Instrutions */
-            instrutions?: string | null;
+            instrutions: Record<string, never> | null;
             /**
              * Owner Id
              * Format: uuid
@@ -495,7 +500,12 @@ export interface components {
             /** Title */
             title: string;
             /** Instructions */
-            instructions?: string | null;
+            instructions: Record<string, never> | null;
+            /**
+             * Servings
+             * @default 1
+             */
+            servings: number;
             /**
              * Ingredients
              * @default []
@@ -507,7 +517,12 @@ export interface components {
             /** Title */
             title: string;
             /** Instructions */
-            instructions?: string | null;
+            instructions: Record<string, never> | null;
+            /**
+             * Servings
+             * @default 1
+             */
+            servings: number;
             /**
              * Id
              * Format: uuid

@@ -27,38 +27,40 @@
 					href="/"
 					onclick={() => (activeButton = 'home')}>Home</a
 				>
-				<a
-					class="rounded-md px-3 py-2 text-sm font-medium {activeButton === 'about'
-						? 'bg-gray-900 text-white'
-						: 'text-gray-300 hover:bg-gray-700 hover:text-white'}"
-					href="/about"
-					aria-current={activeButton === 'about'}
-					onclick={() => (activeButton = 'about')}>About</a
-				>
-				<a
-					class="rounded-md px-3 py-2 text-sm font-medium {activeButton === 'hero'
-						? 'bg-gray-900 text-white'
-						: 'text-gray-300 hover:bg-gray-700 hover:text-white'}"
-					href="/hero"
-					aria-current={activeButton === 'hero'}
-					onclick={() => (activeButton = 'hero')}>Hero</a
-				>
-				<a
-					class="rounded-md px-3 py-2 text-sm font-medium {activeButton === 'recipes'
-						? 'bg-gray-900 text-white'
-						: 'text-gray-300 hover:bg-gray-700 hover:text-white'}"
-					href="/recipes"
-					aria-current={activeButton === 'recipes'}
-					onclick={() => (activeButton = 'recipes')}>Recipes</a
-				>
-				<a
-					class="rounded-md px-3 py-2 text-sm font-medium {activeButton === 'ingredients'
-						? 'bg-gray-900 text-white'
-						: 'text-gray-300 hover:bg-gray-700 hover:text-white'}"
-					href="/ingredients"
-					aria-current={activeButton === 'ingredients'}
-					onclick={() => (activeButton = 'ingredients')}>Ingredients</a
-				>
+				{#if data.authenticatedUser}
+					<a
+						class="rounded-md px-3 py-2 text-sm font-medium {activeButton === 'tiptap'
+							? 'bg-gray-900 text-white'
+							: 'text-gray-300 hover:bg-gray-700 hover:text-white'}"
+						href="/tiptap"
+						aria-current={activeButton === 'tiptap'}
+						onclick={() => (activeButton = 'tiptap')}>Tiptap</a
+					>
+					<a
+						class="rounded-md px-3 py-2 text-sm font-medium {activeButton === 'hero'
+							? 'bg-gray-900 text-white'
+							: 'text-gray-300 hover:bg-gray-700 hover:text-white'}"
+						href="/hero"
+						aria-current={activeButton === 'hero'}
+						onclick={() => (activeButton = 'hero')}>Hero</a
+					>
+					<a
+						class="rounded-md px-3 py-2 text-sm font-medium {activeButton === 'recipes'
+							? 'bg-gray-900 text-white'
+							: 'text-gray-300 hover:bg-gray-700 hover:text-white'}"
+						href="/recipes"
+						aria-current={activeButton === 'recipes'}
+						onclick={() => (activeButton = 'recipes')}>Recipes</a
+					>
+					<a
+						class="rounded-md px-3 py-2 text-sm font-medium {activeButton === 'ingredients'
+							? 'bg-gray-900 text-white'
+							: 'text-gray-300 hover:bg-gray-700 hover:text-white'}"
+						href="/ingredients"
+						aria-current={activeButton === 'ingredients'}
+						onclick={() => (activeButton = 'ingredients')}>Ingredients</a
+					>
+				{/if}
 			</div>
 
 			<!-- make some icons that are all the way to the right -->

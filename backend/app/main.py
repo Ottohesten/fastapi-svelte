@@ -35,6 +35,12 @@ origins = [
     "http://localhost:5173",
     "http://localhost:3000",
     # Add more origins here
+    "*",
+    "0.0.0.0:8000",
+    "0.0.0.0:10000",
+    "https://fastapi-svelte-frontend.onrender.com",
+    "fastapi-svelte:8000",
+    "fastapi-svelte:10000",
 ]
 
 app.add_middleware(

@@ -1,7 +1,7 @@
 import { createApiClient } from '$lib/api/api';
 import { error } from '@sveltejs/kit';
 import type { Actions } from "./$types";
-import { PASSPHRASE } from '$env/static/private';
+// import { PASSPHRASE } from '$env/static/private';
 
 
 // import { GET } from '$lib/api/api';

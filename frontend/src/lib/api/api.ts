@@ -11,6 +11,7 @@ import { BACKEND_HOST } from "$env/static/private";
 
 // Create a function that returns a client configured with the provided fetch
 export const createApiClient = (customFetch: typeof fetch = fetch) => {
+    console.log('baseUrl', BACKEND_HOST);
     return createClient<paths>({
         baseUrl: BACKEND_HOST,
         // baseUrl: 'http://localhost:8000/',

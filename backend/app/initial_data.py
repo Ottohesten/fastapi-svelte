@@ -14,8 +14,8 @@ def init() -> None:
         print("Creating superuser if none exists")
         init_db(session)
         # create_ingredients_and_recipes(session)
-        # print("Creating start hero data")
-        # create_heroes(session)
+        print("Creating start hero data")
+        create_heroes(session)
 
 
 

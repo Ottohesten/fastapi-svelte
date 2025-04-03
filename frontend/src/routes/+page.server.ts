@@ -13,22 +13,22 @@ import { PASSPHRASE } from '$env/static/private';
 //     id: number;
 // }
 
-export const load = async ({ fetch, locals, cookies, url }) => {
-    // console.log("PASSPHRASE", PASSPHRASE);
-    const client = createApiClient(fetch);
-    // console.log(url)
-    const { data, error: apierror, response } = await client.GET("/heroes/");
-    if (apierror) {
-        error(404, apierror);
-    }
+// export const load = async ({ fetch, locals, cookies, url }) => {
+//     // console.log("PASSPHRASE", PASSPHRASE);
+//     const client = createApiClient(fetch);
+//     // console.log(url)
+//     // const { data, error: apierror, response } = await client.GET("/heroes/");
+//     if (apierror) {
+//         error(404, apierror);
+//     }
 
 
-    return {
-        items: data,
-        // user: locals.user
-    }
-    // return {
-    //     items: [data]
-    // }
-};
+//     return {
+//         items: data,
+//         // user: locals.user
+//     }
+//     // return {
+//     //     items: [data]
+//     // }
+// };
 

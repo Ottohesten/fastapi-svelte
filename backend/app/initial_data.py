@@ -10,8 +10,8 @@ logger = logging.getLogger(__name__)
 
 def init() -> None:
     with Session(engine) as session:
-        # init_db(session)
-        create_ingredients_and_recipes(session)
+        init_db(session)
+        # create_ingredients_and_recipes(session)
 
 
 

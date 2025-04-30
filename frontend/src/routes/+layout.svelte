@@ -12,12 +12,13 @@
 
 	// $inspect(activeButton);
 
-	let routes = ['home', 'about', 'blog', 'temp'];
+	// let routes = ['home', 'about', 'blog', 'temp'];
 </script>
 
+<!-- TODO: Change this to grid -->
 <nav class="bg-gray-800">
-	<div class="px-2 sm:px-6 lg:px-12">
-		<div class="relative flex h-16 items-center justify-between">
+	<div class="px-2 py-3 sm:px-6 lg:px-12">
+		<div class="flex flex-col items-center justify-between sm:flex-row">
 			<div class="flex items-center space-x-0 sm:space-x-4">
 				<a
 					class="rounded-md px-3 py-2 text-sm font-medium {activeButton === 'home'
@@ -36,14 +37,14 @@
 						aria-current={activeButton === 'tiptap'}
 						onclick={() => (activeButton = 'tiptap')}>Tiptap</a
 					>
-					<a
+					<!-- <a
 						class="rounded-md px-3 py-2 text-sm font-medium {activeButton === 'hero'
 							? 'bg-gray-900 text-white'
 							: 'text-gray-300 hover:bg-gray-700 hover:text-white'}"
 						href="/hero"
 						aria-current={activeButton === 'hero'}
 						onclick={() => (activeButton = 'hero')}>Hero</a
-					>
+					> -->
 					<a
 						class="rounded-md px-3 py-2 text-sm font-medium {activeButton === 'recipes'
 							? 'bg-gray-900 text-white'

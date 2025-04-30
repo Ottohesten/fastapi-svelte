@@ -17,7 +17,8 @@ from app.routers import (
     users,
     login,
     recipes,
-    ingredients
+    ingredients,
+    game
 )
 
 # @asynccontextmanager
@@ -66,6 +67,7 @@ settings = get_settings()
 app.include_router(recipes.router)
 app.include_router(ingredients.router)
 app.include_router(users.router)
+app.include_router(game.router)
 app.include_router(heroes.router)
 app.include_router(login.router)
 

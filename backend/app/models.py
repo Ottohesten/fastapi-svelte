@@ -55,6 +55,9 @@ class User(UserBase, table=True):
     roles: list["Role"] = Relationship(back_populates="users", link_model=UserRoleLink)
     recipes: list["Recipe"] = Relationship(back_populates="owner")
 
+    # H.C game
+    game_sessions: list["GameSession"] = Relationship(back_populates="owner")
+
 
 # Properties to receive via API on creation
 class UserCreate(UserBase):
@@ -187,7 +190,7 @@ class Recipe(RecipeBase, table=True):
     """
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
     title: str = Field(max_length=255)
-    instrutions: dict | None = Field(sa_column=Column(JSON))
+    instructions: dict | None = Field(sa_column=Column(JSON))
 
     owner_id: uuid.UUID = Field(foreign_key="user.id", nullable=False)
     owner: User = Relationship(back_populates="recipes")
@@ -199,6 +202,9 @@ class Recipe(RecipeBase, table=True):
     # image: str | None = Field(default=None, max_length=255)
 
     ingredients: List["Ingredient"] = Relationship(back_populates="recipes", link_model=RecipeIngredientLink)
+
+    
+
 
     class Config:
         arbitrary_types_allowed = True
@@ -237,6 +243,58 @@ class Ingredient(IngredientBase, table=True):
     
 
 
+# for H.C game
+
+class GameSessionBase(SQLModel):
+    """
+    Base class for game session. Should have a title and a list of players and their information (scores etc.)
+    """
+    title: str = Field(max_length=255, min_length=1)
+    player_information: dict | None = Field(sa_column=Column(JSON)) # is going to have a rich text editor so it should accept json
+
+class GameSessionCreate(GameSessionBase):
+    pass
+
+
+class GameSessionPublic(GameSessionBase):
+    """
+    Game session model
+
+    Should have an owner (user) and a list of players and their information (scores etc.)
+    """
+    id: uuid.UUID
+    owner: UserPublic
+    player_information: dict | None = Field(sa_column=Column(JSON))
+
+
+
+class GameSession(GameSessionBase, table=True):
+    """
+    A game session that has an id, a user that created it (admin) and a list of players and their information (scores etc.)
+    """
+    title: str = Field(max_length=255, min_length=1, nullable=True)
+    id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
+    owner_id: uuid.UUID = Field(foreign_key="user.id", nullable=False)
+    owner: User = Relationship(back_populates="game_sessions")
+
+
+    player_information: dict | None = Field(sa_column=Column(JSON))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -248,7 +306,7 @@ class Ingredient(IngredientBase, table=True):
 
 
 # Generic message
-class Message(SQLModel):
+class Message(BaseModel):
     message: str
 
 # HTTPException detail

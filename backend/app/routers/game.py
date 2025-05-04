@@ -61,6 +61,30 @@ def create_game_session(session: SessionDep, current_user: CurrentUser, game_ses
 
     return game_session
 
+# delete game session
+@router.delete("/{game_session_id}", response_model=GameSessionPublic)
+def delete_game_session(session: SessionDep, game_session_id: str, current_user: CurrentUser):
+    """
+    Delete a game session.
+    """
+    # check valid uuid
+    try:
+        game_session = session.get(GameSession, game_session_id)
+    except Exception as e:
+        # except InvalidTextRepresentation as e:
+        raise HTTPException(status_code=400, detail="Invalid UUID")
+
+    if not game_session:
+        raise HTTPException(status_code=404, detail="Game session not found")
+
+    if game_session.owner_id != current_user.id or not current_user.is_superuser:
+        raise HTTPException(status_code=403, detail="Not authorized to delete this game session")
+
+    session.delete(game_session)
+    session.commit()
+
+    return game_session
+
 
 
 # make player and add to game session

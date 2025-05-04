@@ -3,12 +3,23 @@ from fastapi import FastAPI, Depends, HTTPException, status, Query
 from sqlmodel import select
 from app.deps import SessionDep, CurrentUser, get_current_active_superuser
 
-from app.models import GameSession, GameSessionCreate, GameSessionPublic
+from app.models import (
+    GameSession, 
+    GameSessionCreate, 
+    GameSessionPublic,
+    GameSessionUpdate,
+    GamePlayer,
+    GamePlayerCreate,
+    GamePlayerPublic,
+    GameTeam,
+    GameTeamCreate,
+    GameTeamPublic
+)
 
 
 router = APIRouter(prefix="/game", tags=["game"])
 
-@router.get("/", response_model=list[GameSession])
+@router.get("/", response_model=list[GameSessionPublic])
 def read_game_sessions(session: SessionDep, skip: int = 0, limit: int = 100):
     """
     Retrieve game sessions.
@@ -19,7 +30,7 @@ def read_game_sessions(session: SessionDep, skip: int = 0, limit: int = 100):
     return game_sessions
 
 
-@router.get("/{game_session_id}", response_model=GameSession)
+@router.get("/{game_session_id}", response_model=GameSessionPublic)
 def read_game_session(session: SessionDep, game_session_id: str):
     """
     Retrieve a game session.
@@ -49,3 +60,63 @@ def create_game_session(session: SessionDep, current_user: CurrentUser, game_ses
     session.refresh(game_session)
 
     return game_session
+
+
+
+# make player and add to game session
+@router.post("/{game_session_id}/player", response_model=GamePlayerPublic)
+def create_game_player(session: SessionDep, game_session_id: str, game_player_in: GamePlayerCreate, current_user: CurrentUser):
+    """
+    Create a new game player.
+    """
+    # check valid uuid
+    try:
+        game_session = session.get(GameSession, game_session_id)
+    except Exception as e:
+        # except InvalidTextRepresentation as e:
+        raise HTTPException(status_code=400, detail="Invalid UUID")
+
+    if not game_session:
+        raise HTTPException(status_code=404, detail="Game session not found")
+
+    # game_player = GamePlayer(
+    #     name=game_player_in.name,
+    #     game_session_id=game_session.id,
+    # )
+
+    game_player = GamePlayer.model_validate(game_player_in, update={"game_session_id": game_session.id} )
+    session.add(game_player)
+    session.commit()
+    session.refresh(game_player)
+
+    return game_player
+
+
+
+# make team and add to game session
+@router.post("/{game_session_id}/team", response_model=GameTeamPublic)
+def create_game_team(session: SessionDep, game_session_id: str, game_team_in: GameTeamCreate, current_user: CurrentUser):
+    """
+    Create a new game team.
+    """
+    # check valid uuid
+    try:
+        game_session = session.get(GameSession, game_session_id)
+    except Exception as e:
+        # except InvalidTextRepresentation as e:
+        raise HTTPException(status_code=400, detail="Invalid UUID")
+
+    if not game_session:
+        raise HTTPException(status_code=404, detail="Game session not found")
+
+    # game_player = GamePlayer(
+    #     name=game_player_in.name,
+    #     game_session_id=game_session.id,
+    # )
+
+    game_team = GameTeam.model_validate(game_team_in, update={"game_session_id": game_session.id} )
+    session.add(game_team)
+    session.commit()
+    session.refresh(game_team)
+
+    return game_team

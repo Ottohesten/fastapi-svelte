@@ -1,7 +1,7 @@
 import uuid
 from pydantic import BaseModel, EmailStr
 from sqlmodel import Field, SQLModel, Relationship, Column, JSON
-from typing import List
+from typing import List, Optional
 # from permissions.roles import Role
 
 
@@ -245,12 +245,17 @@ class Ingredient(IngredientBase, table=True):
 
 # for H.C game
 
+"""
+The game has a session. Each session has a title, a list of players and these players can be part of a team or not. Each team can have multiple players, but each player can only be in one team.
+
+"""
+
 class GameSessionBase(SQLModel):
     """
     Base class for game session. Should have a title and a list of players and their information (scores etc.)
     """
     title: str = Field(max_length=255, min_length=1)
-    player_information: dict | None = Field(sa_column=Column(JSON)) # is going to have a rich text editor so it should accept json
+
 
 class GameSessionCreate(GameSessionBase):
     pass
@@ -264,8 +269,18 @@ class GameSessionPublic(GameSessionBase):
     """
     id: uuid.UUID
     owner: UserPublic
-    player_information: dict | None = Field(sa_column=Column(JSON))
+    players: List["GamePlayer"]
+    teams: List["GameTeam"]
 
+class GameSessionUpdate(GameSessionBase):
+    """
+    Game session model
+
+    Should have an owner (user) and a list of players and their information (scores etc.)
+    """
+    id: uuid.UUID | None = None
+    players: List["GamePlayer"] | None = None
+    teams: List["GameTeam"] | None = None
 
 
 class GameSession(GameSessionBase, table=True):
@@ -277,14 +292,117 @@ class GameSession(GameSessionBase, table=True):
     owner_id: uuid.UUID = Field(foreign_key="user.id", nullable=False)
     owner: User = Relationship(back_populates="game_sessions")
 
-
-    player_information: dict | None = Field(sa_column=Column(JSON))
-
-
+    teams: Optional[List["GameTeam"]] = Relationship(back_populates="game_session", cascade_delete=True)
+    players: Optional[List["GamePlayer"]] = Relationship(back_populates="game_session", cascade_delete=True)
 
 
 
 
+class GamePlayerDrinkLink(SQLModel, table=True):
+    """
+    Link model for the many to many relationship between GamePlayer and Drink
+    """
+    game_player_id: uuid.UUID | None = Field(default=None, foreign_key="gameplayer.id", primary_key=True)
+    drink_id: uuid.UUID | None = Field(default=None, foreign_key="drink.id", primary_key=True)
+
+    # game_player: "GamePlayer" = Relationship(back_populates="drinks")
+    # drink: "Drink" = Relationship(back_populates="players")
+
+
+
+class GamePlayerBase(SQLModel):
+    """
+    Base class for game player
+    """
+    name: str = Field(max_length=255, min_length=1)
+
+
+class GamePlayerCreate(GamePlayerBase):
+    """
+    Create class for game player
+    """
+    pass
+
+class GamePlayerPublic(GamePlayerBase):
+    """
+    Public class for game player
+    """
+    id: uuid.UUID
+    game_session: GameSessionPublic
+    # drinks: List["Drink"]
+
+class GamePlayer(GamePlayerBase, table=True):
+    """
+    Game player model
+
+    Should have a name, a team and a list of drinks (many to many relationship)
+    """
+    id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
+    name: str = Field(max_length=255, min_length=1)
+
+    game_session_id: uuid.UUID = Field(foreign_key="gamesession.id", nullable=False)
+    game_session: GameSession = Relationship(back_populates="players")
+
+    team_id: Optional[uuid.UUID] = Field(default=None, foreign_key="gameteam.id", nullable=True)
+    team: Optional["GameTeam"] = Relationship(back_populates="players")
+
+    drinks: List["Drink"] = Relationship(back_populates="players", link_model=GamePlayerDrinkLink)
+
+
+
+class GameTeamBase(SQLModel):
+    """
+    Base class for game team
+    """
+    name: str = Field(max_length=255, min_length=1)
+
+
+class GameTeamCreate(GameTeamBase):
+    pass
+
+class GameTeamPublic(GameTeamBase):
+    """
+    Public class for game team
+    """
+    id: uuid.UUID
+    players: List["GamePlayer"]
+    game_session: GameSessionPublic
+
+class GameTeam(GameTeamBase, table=True):
+    """
+    Game team model
+
+    Should have a name and a list of players. Each player can only be in one team.
+    """
+    id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
+    name: str = Field(max_length=255, min_length=1)
+    players: Optional[List["GamePlayer"]] = Relationship(back_populates="team")
+
+    game_session_id: uuid.UUID = Field(default=None, foreign_key="gamesession.id", nullable=False)
+    game_session: "GameSession" = Relationship(back_populates="teams")
+
+
+
+class DrinkBase(SQLModel):
+    name: str = Field(max_length=255, min_length=1)
+
+class DrinkCreate(DrinkBase):
+    pass
+
+
+class DrinkPublic(DrinkBase):
+    pass
+
+
+class Drink(DrinkBase, table=True):
+    """
+    Drink model
+
+    Should have a name, and then later maybe add some more stuff.
+    """
+    id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
+    name: str = Field(max_length=255, min_length=1)
+    players: List["GamePlayer"] | None = Relationship(back_populates="drinks", link_model=GamePlayerDrinkLink)
 
 
 

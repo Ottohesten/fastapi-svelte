@@ -60,6 +60,14 @@
 						aria-current={activeButton === 'ingredients'}
 						onclick={() => (activeButton = 'ingredients')}>Ingredients</a
 					>
+					<a
+						class="rounded-md px-3 py-2 text-sm font-medium {activeButton === 'game'
+							? 'bg-gray-900 text-white'
+							: 'text-gray-300 hover:bg-gray-700 hover:text-white'}"
+						href="/game"
+						aria-current={activeButton === 'game'}
+						onclick={() => (activeButton = 'game')}>Game</a
+					>
 				{/if}
 			</div>
 

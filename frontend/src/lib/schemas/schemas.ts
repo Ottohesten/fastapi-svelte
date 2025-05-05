@@ -18,3 +18,7 @@ export const RecipeSchema = z.object({
 
 
 });
+
+export const GameSessionSchema = z.object({
+    title: z.string().min(1),
+});

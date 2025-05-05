@@ -224,6 +224,90 @@ export interface paths {
         patch: operations["update_user_users__user_id__patch"];
         trace?: never;
     };
+    "/game/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Read Game Sessions
+         * @description Retrieve game sessions.
+         */
+        get: operations["read_game_sessions_game__get"];
+        put?: never;
+        /**
+         * Create Game Session
+         * @description Create a new game session.
+         */
+        post: operations["create_game_session_game__post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/game/{game_session_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Read Game Session
+         * @description Retrieve a game session.
+         */
+        get: operations["read_game_session_game__game_session_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/game/{game_session_id}/player": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Create Game Player
+         * @description Create a new game player.
+         */
+        post: operations["create_game_player_game__game_session_id__player_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/game/{game_session_id}/team": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Create Game Team
+         * @description Create a new game team.
+         */
+        post: operations["create_game_team_game__game_session_id__team_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/heroes/": {
         parameters: {
             query?: never;
@@ -400,6 +484,116 @@ export interface components {
             /** Client Secret */
             client_secret?: string | null;
         };
+        /**
+         * GamePlayer
+         * @description Game player model
+         *
+         *     Should have a name, a team and a list of drinks (many to many relationship)
+         */
+        GamePlayer: {
+            /** Name */
+            name: string;
+            /**
+             * Id
+             * Format: uuid
+             */
+            id?: string;
+            /**
+             * Game Session Id
+             * Format: uuid
+             */
+            game_session_id: string;
+            /** Team Id */
+            team_id?: string | null;
+        };
+        /**
+         * GamePlayerCreate
+         * @description Create class for game player
+         */
+        GamePlayerCreate: {
+            /** Name */
+            name: string;
+        };
+        /**
+         * GamePlayerPublic
+         * @description Public class for game player
+         */
+        GamePlayerPublic: {
+            /** Name */
+            name: string;
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            game_session: components["schemas"]["GameSessionPublic"];
+        };
+        /** GameSessionCreate */
+        GameSessionCreate: {
+            /** Title */
+            title: string;
+        };
+        /**
+         * GameSessionPublic
+         * @description Game session model
+         *
+         *     Should have an owner (user) and a list of players and their information (scores etc.)
+         */
+        GameSessionPublic: {
+            /** Title */
+            title: string;
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            owner: components["schemas"]["UserPublic"];
+            /** Players */
+            players: components["schemas"]["GamePlayer"][];
+            /** Teams */
+            teams: components["schemas"]["GameTeam"][];
+        };
+        /**
+         * GameTeam
+         * @description Game team model
+         *
+         *     Should have a name and a list of players. Each player can only be in one team.
+         */
+        GameTeam: {
+            /** Name */
+            name: string;
+            /**
+             * Id
+             * Format: uuid
+             */
+            id?: string;
+            /**
+             * Game Session Id
+             * Format: uuid
+             */
+            game_session_id?: string;
+        };
+        /** GameTeamCreate */
+        GameTeamCreate: {
+            /** Name */
+            name: string;
+        };
+        /**
+         * GameTeamPublic
+         * @description Public class for game team
+         */
+        GameTeamPublic: {
+            /** Name */
+            name: string;
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Players */
+            players: components["schemas"]["GamePlayer"][];
+            game_session: components["schemas"]["GameSessionPublic"];
+        };
         /** HTTPExceptionDetail */
         HTTPExceptionDetail: {
             /** Detail */
@@ -487,8 +681,6 @@ export interface components {
              * Format: uuid
              */
             id?: string;
-            /** Instrutions */
-            instrutions: Record<string, never> | null;
             /**
              * Owner Id
              * Format: uuid
@@ -1245,6 +1437,172 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["UserPublic"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    read_game_sessions_game__get: {
+        parameters: {
+            query?: {
+                skip?: number;
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GameSessionPublic"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_game_session_game__post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["GameSessionCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GameSessionPublic"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    read_game_session_game__game_session_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                game_session_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GameSessionPublic"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_game_player_game__game_session_id__player_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                game_session_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["GamePlayerCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GamePlayerPublic"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_game_team_game__game_session_id__team_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                game_session_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["GameTeamCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GameTeamPublic"];
                 };
             };
             /** @description Validation Error */

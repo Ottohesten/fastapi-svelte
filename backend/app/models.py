@@ -258,7 +258,7 @@ class GameSessionBase(SQLModel):
 
 
 class GameSessionCreate(GameSessionBase):
-    pass
+    teams: Optional[List["GameTeamCreate"]] = None
 
 
 class GameSessionPublic(GameSessionBase):

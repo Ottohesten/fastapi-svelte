@@ -54,10 +54,21 @@ def create_game_session(session: SessionDep, current_user: CurrentUser, game_ses
     """
     Create a new game session.
     """
-    game_session = GameSession.model_validate(game_session_in, update={"owner_id": current_user.id} )
+    game_teams = [GameTeam(**team.model_dump()) for team in game_session_in.teams] if game_session_in.teams else []
+    # print(game_teams)
+
+    game_session = GameSession(
+        **game_session_in.model_dump(exclude=("teams")),  # Unpack the dictionary into the model
+        owner_id=current_user.id,
+        teams=game_teams,
+    )
+
+    # game_session = GameSession.model_validate(game_session_in, update={"owner_id": current_user.id})
     session.add(game_session)
     session.commit()
     session.refresh(game_session)
+
+    # update the 
 
     return game_session
 

@@ -155,3 +155,37 @@ def create_game_team(session: SessionDep, game_session_id: str, game_team_in: Ga
     session.refresh(game_team)
 
     return game_team
+
+# delete game team
+@router.delete("/{game_session_id}/team/{game_team_id}", response_model=GameTeamPublic)
+def delete_game_team(session: SessionDep, game_session_id: str, game_team_id: str, current_user: CurrentUser):
+    """
+    Delete a game team.
+    """
+    # check valid uuid
+    try:
+        game_session = session.get(GameSession, game_session_id)
+    except Exception as e:
+        # except InvalidTextRepresentation as e:
+        raise HTTPException(status_code=400, detail="Invalid UUID")
+
+    if not game_session:
+        raise HTTPException(status_code=404, detail="Game session not found")
+
+    # check valid uuid
+    try:
+        game_team = session.get(GameTeam, game_team_id)
+    except Exception as e:
+        # except InvalidTextRepresentation as e:
+        raise HTTPException(status_code=400, detail="Invalid UUID")
+
+    if not game_team:
+        raise HTTPException(status_code=404, detail="Game team not found")
+
+    if game_team.game_session_id != game_session.id:
+        raise HTTPException(status_code=404, detail="Game team not found in this game session")
+
+    session.delete(game_team)
+    session.commit()
+
+    return game_team

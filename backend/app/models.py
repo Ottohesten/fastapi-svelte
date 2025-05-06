@@ -269,8 +269,8 @@ class GameSessionPublic(GameSessionBase):
     """
     id: uuid.UUID
     owner: UserPublic
-    players: List["GamePlayer"]
-    teams: List["GameTeam"]
+    players: List["GamePlayerPublic"]
+    teams: List["GameTeamPublic"]
 
 class GameSessionUpdate(GameSessionBase):
     """
@@ -355,6 +355,7 @@ class GameTeamBase(SQLModel):
     Base class for game team
     """
     name: str = Field(max_length=255, min_length=1)
+    
 
 
 class GameTeamCreate(GameTeamBase):
@@ -366,7 +367,8 @@ class GameTeamPublic(GameTeamBase):
     """
     id: uuid.UUID
     players: List["GamePlayer"]
-    game_session: GameSessionPublic
+    game_session_id: uuid.UUID
+    # game_session: GameSessionPublic
 
 class GameTeam(GameTeamBase, table=True):
     """

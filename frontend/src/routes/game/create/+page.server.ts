@@ -33,6 +33,16 @@ export const actions = {
         const { data, error: apierror, response } = await client.POST("/game/", {
             body: {
                 title: form.data.title,
+                teams: form.data.teams.map((team) => {
+                    return {
+                        name: team.name,
+                        // players: (team.players ?? []).map((player) => {
+                        //     return {
+                        //         name: player.name
+                        //     }
+                        // })
+                    }
+                })
             },
             headers: {
                 Authorization: `Bearer ${auth_token}`

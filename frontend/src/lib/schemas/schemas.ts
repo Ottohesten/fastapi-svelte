@@ -20,5 +20,14 @@ export const RecipeSchema = z.object({
 });
 
 export const GameSessionSchema = z.object({
-    title: z.string().min(1),
+    title: z.string().min(2),
+
+    // a list of teams, each team is a dictionary with a name, and optional players, each player has a name
+    // teams: z.array(z.string())
+    teams: z.array(z.object({
+        name: z.string().min(1),
+        players: z.array(z.object({
+            name: z.string().min(1)
+        })).optional()
+    })),
 });

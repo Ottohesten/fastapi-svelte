@@ -262,7 +262,11 @@ export interface paths {
         get: operations["read_game_session_game__game_session_id__get"];
         put?: never;
         post?: never;
-        delete?: never;
+        /**
+         * Delete Game Session
+         * @description Delete a game session.
+         */
+        delete: operations["delete_game_session_game__game_session_id__delete"];
         options?: never;
         head?: never;
         patch?: never;
@@ -532,6 +536,8 @@ export interface components {
         GameSessionCreate: {
             /** Title */
             title: string;
+            /** Teams */
+            teams?: components["schemas"]["GameTeamCreate"][] | null;
         };
         /**
          * GameSessionPublic
@@ -1516,6 +1522,37 @@ export interface operations {
         };
     };
     read_game_session_game__game_session_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                game_session_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GameSessionPublic"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    delete_game_session_game__game_session_id__delete: {
         parameters: {
             query?: never;
             header?: never;

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import GameSession from '$lib/components/GameSession.svelte';
 	let { data } = $props();
 	// console.log(data);
 </script>
@@ -7,13 +8,7 @@
 	<h1 class="text-4xl font-bold">Game sessions:</h1>
 
 	{#each [...data.game_sessions].reverse() as session}
-		<!-- temporary display until i create component -->
-		<div class="my-4 rounded-md bg-gray-100 p-4 dark:bg-gray-800">
-			<a href="/game/{session.id}">
-				<p>Title: {session.title}</p>
-				<p>Owner: {session.owner.email}</p>
-			</a>
-		</div>
+		<GameSession {session} authenticatedUser={data.authenticatedUser ?? undefined} />
 	{/each}
 
 	{#if data.authenticatedUser}

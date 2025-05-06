@@ -22,14 +22,21 @@ export const load = async ({ fetch, parent }) => {
 
 export const actions = {
     default: async ({ fetch, request, cookies }) => {
+        const auth_token = cookies.get("auth_token");
         const form = await superValidate(request, zod(GameSessionSchema));
         // console.log(form)
+        if (!auth_token) {
+            redirect(302, "/auth/login");
+        }
+
         if (!form.valid) {
             return fail(400, { form });
         }
 
+
+
         const client = createApiClient(fetch);
-        const auth_token = cookies.get("auth_token");
+
         const { data, error: apierror, response } = await client.POST("/game/", {
             body: {
                 title: form.data.title,

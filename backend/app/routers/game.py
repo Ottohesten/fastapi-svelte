@@ -58,7 +58,7 @@ def create_game_session(session: SessionDep, current_user: CurrentUser, game_ses
     # print(game_teams)
 
     game_session = GameSession(
-        **game_session_in.model_dump(exclude=("teams")),  # Unpack the dictionary into the model
+        **game_session_in.model_dump(exclude={"teams"}),  # Unpack the dictionary into the model
         owner_id=current_user.id,
         teams=game_teams,
     )
@@ -88,7 +88,7 @@ def delete_game_session(session: SessionDep, game_session_id: str, current_user:
     if not game_session:
         raise HTTPException(status_code=404, detail="Game session not found")
 
-    if game_session.owner_id != current_user.id or not current_user.is_superuser:
+    if game_session.owner_id != current_user.id and not current_user.is_superuser:
         raise HTTPException(status_code=403, detail="Not authorized to delete this game session")
 
     session.delete(game_session)
@@ -155,6 +155,40 @@ def create_game_team(session: SessionDep, game_session_id: str, game_team_in: Ga
     session.refresh(game_team)
 
     return game_team
+
+# delete game player
+@router.delete("/{game_session_id}/player/{game_player_id}", response_model=GamePlayerPublic)
+def delete_game_player(session: SessionDep, game_session_id: str, game_player_id: str, current_user: CurrentUser):
+    """
+    Delete a game player.
+    """
+    # check valid uuid
+    try:
+        game_session = session.get(GameSession, game_session_id)
+    except Exception as e:
+        # except InvalidTextRepresentation as e:
+        raise HTTPException(status_code=400, detail="Invalid UUID")
+
+    if not game_session:
+        raise HTTPException(status_code=404, detail="Game session not found")
+
+    # check valid uuid
+    try:
+        game_player = session.get(GamePlayer, game_player_id)
+    except Exception as e:
+        # except InvalidTextRepresentation as e:
+        raise HTTPException(status_code=400, detail="Invalid UUID")
+
+    if not game_player:
+        raise HTTPException(status_code=404, detail="Game player not found")
+
+    if game_player.game_session_id != game_session.id:
+        raise HTTPException(status_code=404, detail="Game player not found in this game session")
+
+    session.delete(game_player)
+    session.commit()
+
+    return game_player
 
 # delete game team
 @router.delete("/{game_session_id}/team/{game_team_id}", response_model=GameTeamPublic)

@@ -328,7 +328,8 @@ class GamePlayerPublic(GamePlayerBase):
     Public class for game player
     """
     id: uuid.UUID
-    game_session: GameSessionPublic
+    # game_session: GameSessionPublic
+    game_session_id: uuid.UUID
     # drinks: List["Drink"]
 
 class GamePlayer(GamePlayerBase, table=True):

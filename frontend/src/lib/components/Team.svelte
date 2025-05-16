@@ -24,7 +24,7 @@
 	<!-- <a href="/" class="mr-2 flex rounded-md bg-blue-600 px-4 py-2 text-white">
 		<p>Delete</p>
 	</a> -->
-	<form action="/game?/delete" method="POST" use:enhance>
+	<form action="/game/{team.game_session_id}?/deleteTeam" method="POST" use:enhance>
 		<input type="hidden" name="team_id" value={team.id} />
 		<input type="hidden" name="game_session_id" value={team.game_session_id} />
 		<button

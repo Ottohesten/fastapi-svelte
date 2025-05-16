@@ -312,6 +312,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/game/{game_session_id}/player/{game_player_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * Delete Game Player
+         * @description Delete a game player.
+         */
+        delete: operations["delete_game_player_game__game_session_id__player__game_player_id__delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/game/{game_session_id}/team/{game_team_id}": {
         parameters: {
             query?: never;
@@ -550,7 +570,11 @@ export interface components {
              * Format: uuid
              */
             id: string;
-            game_session: components["schemas"]["GameSessionPublic"];
+            /**
+             * Game Session Id
+             * Format: uuid
+             */
+            game_session_id: string;
         };
         /** GameSessionCreate */
         GameSessionCreate: {
@@ -1644,6 +1668,38 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["GameTeamPublic"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    delete_game_player_game__game_session_id__player__game_player_id__delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                game_session_id: string;
+                game_player_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GamePlayerPublic"];
                 };
             };
             /** @description Validation Error */

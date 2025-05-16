@@ -53,33 +53,5 @@ export const actions = {
 
         // return redirect(302, "/recipes");
     },
-    delete: async ({ fetch, params, cookies, request }) => {
-        const client = createApiClient(fetch);
-        const auth_token = cookies.get("auth_token");
-
-        if (!auth_token) {
-            redirect(302, "/auth/login");
-        }
-
-        const formData = await request.formData();
-        const game_session_id = formData.get("game_session_id") as string;
-        const team_id = formData.get("team_id") as string;
-
-        const { error: apierror, response } = await client.DELETE("/game/{game_session_id}/team/{game_team_id}", {
-            params: {
-                path: { game_session_id: game_session_id, game_team_id: team_id }
-            },
-            headers: {
-                Authorization: `Bearer ${auth_token}`
-            }
-        })
-
-        if (apierror) {
-            // log with file name
-            // console.log("apierror in game/+page.server.ts", apierror);
-            error(404, JSON.stringify(apierror.detail));
-        }
-
-    },
 
 } satisfies Actions;

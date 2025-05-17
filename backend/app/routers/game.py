@@ -6,10 +6,11 @@ from app.deps import SessionDep, CurrentUser, get_current_active_superuser
 from app.models import (
     GameSession, 
     GameSessionCreate, 
-    GameSessionPublic,
     GameSessionUpdate,
+    GameSessionPublic,
     GamePlayer,
     GamePlayerCreate,
+    GamePlayerUpdate,
     GamePlayerPublic,
     GameTeam,
     GameTeamCreate,
@@ -223,3 +224,40 @@ def delete_game_team(session: SessionDep, game_session_id: str, game_team_id: st
     session.commit()
 
     return game_team
+
+# update game player
+@router.patch("/{game_session_id}/player/{game_player_id}", response_model=GamePlayerPublic)
+def update_game_player(session: SessionDep, game_session_id: str, game_player_id: str, game_player_in: GamePlayerUpdate, current_user: CurrentUser):
+    """
+    Update a game player (e.g., change name).
+    """
+    # check valid uuid
+    try:
+        game_session = session.get(GameSession, game_session_id)
+    except Exception as e:
+        raise HTTPException(status_code=400, detail="Invalid UUID")
+
+    if not game_session:
+        raise HTTPException(status_code=404, detail="Game session not found")
+
+    try:
+        game_player = session.get(GamePlayer, game_player_id)
+    except Exception as e:
+        raise HTTPException(status_code=400, detail="Invalid UUID")
+
+    if not game_player:
+        raise HTTPException(status_code=404, detail="Game player not found")
+
+    if game_player.game_session_id != game_session.id:
+        raise HTTPException(status_code=404, detail="Game player not found in this game session")
+
+    # Only allow owner or superuser to update
+    if game_session.owner_id != current_user.id and not current_user.is_superuser:
+        raise HTTPException(status_code=403, detail="Not authorized to update this game player")
+
+    # Update the game player
+    game_player_data = game_player.model_dump(exclude={"game_session_id"})
+    session.add(game_player)
+    session.commit()
+    session.refresh(game_player)
+    return game_player

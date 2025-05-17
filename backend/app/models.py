@@ -173,7 +173,7 @@ class RecipeIngredientLink(SQLModel, table=True):
 
 class RecipeBase(SQLModel):
     title: str = Field(max_length=255, min_length=1)
-    instructions: dict | None = Field(sa_column=Column(JSON)) # is going to have a rich text editor so it should accept json 
+    instructions: Optional[dict]  = Field(sa_column=Column(JSON)) # is going to have a rich text editor so it should accept json 
     servings: int = Field(default=1)
 
 
@@ -190,7 +190,7 @@ class Recipe(RecipeBase, table=True):
     """
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
     title: str = Field(max_length=255)
-    instructions: dict | None = Field(sa_column=Column(JSON))
+    instructions: Optional[dict] = Field(sa_column=Column(JSON))
 
     owner_id: uuid.UUID = Field(foreign_key="user.id", nullable=False)
     owner: User = Relationship(back_populates="recipes")
@@ -206,8 +206,8 @@ class Recipe(RecipeBase, table=True):
     
 
 
-    class Config:
-        arbitrary_types_allowed = True
+    # class Config:
+    #     arbitrary_types_allowed = True
 
 
 class RecipePublic(RecipeBase):
@@ -321,7 +321,16 @@ class GamePlayerCreate(GamePlayerBase):
     """
     Create class for game player
     """
-    pass
+    name: Optional[str] = None
+    team_id: Optional[uuid.UUID] = None
+
+class GamePlayerUpdate(GamePlayerBase):
+    """
+    Update class for game player, can update name and team, can not change game session
+    """
+    name: str | None = None
+    team_id: uuid.UUID | None = None
+
 
 class GamePlayerPublic(GamePlayerBase):
     """
@@ -361,6 +370,8 @@ class GameTeamBase(SQLModel):
 
 class GameTeamCreate(GameTeamBase):
     pass
+
+
 
 class GameTeamPublic(GameTeamBase):
     """

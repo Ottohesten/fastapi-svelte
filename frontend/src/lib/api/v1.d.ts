@@ -329,7 +329,11 @@ export interface paths {
         delete: operations["delete_game_player_game__game_session_id__player__game_player_id__delete"];
         options?: never;
         head?: never;
-        patch?: never;
+        /**
+         * Update Game Player
+         * @description Update a game player (e.g., change name).
+         */
+        patch: operations["update_game_player_game__game_session_id__player__game_player_id__patch"];
         trace?: never;
     };
     "/game/{game_session_id}/team/{game_team_id}": {
@@ -1692,6 +1696,42 @@ export interface operations {
             cookie?: never;
         };
         requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GamePlayerPublic"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_game_player_game__game_session_id__player__game_player_id__patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                game_session_id: string;
+                game_player_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["GamePlayerCreate"];
+            };
+        };
         responses: {
             /** @description Successful Response */
             200: {

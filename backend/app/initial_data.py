@@ -2,7 +2,11 @@ import logging
 
 from sqlmodel import Session
 
-from app.db import engine, init_db, create_ingredients_and_recipes
+from app.db import (
+    engine, 
+    init_db, 
+    # create_ingredients_and_recipes
+)
 # from app.db import create_heroes
 
 logging.basicConfig(level=logging.INFO)

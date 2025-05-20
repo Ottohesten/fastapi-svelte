@@ -300,10 +300,11 @@ class GameSession(GameSessionBase, table=True):
 
 class GamePlayerDrinkLink(SQLModel, table=True):
     """
-    Link model for the many to many relationship between GamePlayer and Drink
+    Link model for the many to many relationship between GamePlayer and Drink, with amount field
     """
     game_player_id: uuid.UUID | None = Field(default=None, foreign_key="gameplayer.id", primary_key=True)
     drink_id: uuid.UUID | None = Field(default=None, foreign_key="drink.id", primary_key=True)
+    amount: int = Field(default=1, ge=1, description="How many of this drink the player has consumed")
 
     # game_player: "GamePlayer" = Relationship(back_populates="drinks")
     # drink: "Drink" = Relationship(back_populates="players")
@@ -405,7 +406,8 @@ class DrinkCreate(DrinkBase):
 
 
 class DrinkPublic(DrinkBase):
-    pass
+    name: str
+    id: uuid.UUID
 
 
 class Drink(DrinkBase, table=True):

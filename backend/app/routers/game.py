@@ -14,7 +14,10 @@ from app.models import (
     GamePlayerPublic,
     GameTeam,
     GameTeamCreate,
-    GameTeamPublic
+    GameTeamPublic,
+    Drink,
+    DrinkPublic,
+    DrinkCreate,
 )
 
 
@@ -29,6 +32,30 @@ def read_game_sessions(session: SessionDep, skip: int = 0, limit: int = 100):
     game_sessions = session.exec(statement).all()
 
     return game_sessions
+
+# get all drinks
+@router.get("/drinks", response_model=list[DrinkPublic])
+def read_drinks(session: SessionDep, skip: int = 0, limit: int = 100):
+    """
+    Retrieve drinks.
+    """
+    print("Getting drinks")
+    statement = select(Drink).offset(skip).limit(limit)
+    drinks = session.exec(statement).all()
+    return drinks
+
+@router.post("/drinks", response_model=DrinkPublic)
+def create_drink(session: SessionDep, drink_in: DrinkCreate, current_user: CurrentUser):
+    """
+    Create a new drink.
+    """
+    drink = Drink.model_validate(drink_in)
+    session.add(drink)
+    session.commit()
+    session.refresh(drink)
+
+    return drink
+
 
 
 @router.get("/{game_session_id}", response_model=GameSessionPublic)
@@ -261,3 +288,5 @@ def update_game_player(session: SessionDep, game_session_id: str, game_player_id
     session.commit()
     session.refresh(game_player)
     return game_player
+
+

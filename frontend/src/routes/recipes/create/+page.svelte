@@ -13,7 +13,7 @@
 	// const file = fileProxy(form, 'image');
 
 	// let selectedIngredients = $state<{ title: string; id: string }[]>([]);
-	let selectedIngredient = $state<string>('');
+	let selectedIngredientId = $state<string>('');
 	let open = $state(false);
 
 	// $inspect(selectedIngredients);
@@ -81,7 +81,7 @@
 							<div>
 								<select
 									class="w-full appearance-none rounded-md border bg-gray-50 p-2 text-gray-700 shadow"
-									bind:value={selectedIngredient}
+									bind:value={selectedIngredientId}
 								>
 									{#each data.ingredients as ingredient}
 										<option value={ingredient.id}>{ingredient.title}</option>
@@ -96,14 +96,14 @@
 										// console.log('clicked add ingredient');
 
 										// add the selected ingredient to the list of ingredients
-										const ingredient = data.ingredients.find((i) => i.id === selectedIngredient); // This is just to find the ingredient object, from the ingredient id
+										const ingredient = data.ingredients.find((i) => i.id === selectedIngredientId); // This is just to find the ingredient object, from the ingredient id
 										if (ingredient) {
 											// add to form
 											$form.ingredients = $form.ingredients.concat(ingredient);
 
 											// remove ingredient from the dropdown (This is not really the way to do it, because if we come back later this will not work. We really just need to look at the ones already in $form.ingredients and compare with the ones in the dropdown)
 											data.ingredients = data.ingredients.filter(
-												(i) => i.id !== selectedIngredient
+												(i) => i.id !== selectedIngredientId
 											);
 											// close the dialog
 											open = false;

@@ -2,6 +2,7 @@ from logging.config import fileConfig
 
 from sqlalchemy import engine_from_config
 from sqlalchemy import pool
+import os
 
 from alembic import context
 
@@ -23,7 +24,12 @@ from app.models import SQLModel  # noqa
 from app.config import settings # noqa
 target_metadata = SQLModel.metadata
 
-config.set_main_option("sqlalchemy.url", str(settings.SQLALCHEMY_DATABASE_URI))
+if os.getenv("TESTING") == "1":
+    # if we are testing, we use a different database
+    # config.set_main_option("sqlalchemy.url", str(settings.SQLALCHEMY_DATABASE_URI_TEST))
+    config.set_main_option("sqlalchemy.url", str(settings.SQLALCHEMY_DATABASE_URI_TEST))
+else:
+    config.set_main_option("sqlalchemy.url", str(settings.SQLALCHEMY_DATABASE_URI))
 
 # other values from the config, defined by the needs of env.py,
 # can be acquired:

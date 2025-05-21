@@ -1,7 +1,9 @@
 <script lang="ts">
 	import * as Sidebar from '$lib/components/ui/sidebar/index.js';
+	import { Collapsible } from 'bits-ui';
 	// import { Calendar } from 'bits-ui';
 	import Calendar from 'lucide-svelte/icons/calendar';
+	import ChevronDown from 'lucide-svelte/icons/chevron-down';
 	import House from 'lucide-svelte/icons/house';
 	import Inbox from 'lucide-svelte/icons/inbox';
 	import Search from 'lucide-svelte/icons/search';
@@ -9,25 +11,56 @@
 	import User from 'lucide-svelte/icons/user';
 
 	const items = [
-		{
-			title: 'Home',
-			url: '/',
-			icon: House
-		},
+		// {
+		// 	title: 'Home',
+		// 	url: '/',
+		// 	icon: House
+		// },
 		{
 			title: 'Users',
 			url: '/admin/users',
 			icon: User
 		},
 		{
-			title: 'Inbox',
+			title: 'Game',
 			url: '#',
-			icon: Inbox
+			icon: Inbox,
+			collapsible: true,
+			// submenus
+			children: [
+				{
+					title: 'Sessions',
+					url: '/admin/game/sessions',
+					icon: Inbox
+				},
+				{
+					title: 'Drinks',
+					url: '/admin/game/drinks',
+					icon: Inbox
+				},
+				{
+					title: 'Players',
+					url: '/admin/game/players',
+					icon: Calendar
+				}
+			]
 		},
 		{
 			title: 'Calendar',
 			url: '#',
 			icon: Calendar
+			// children: [
+			// 	{
+			// 		title: 'test 1',
+			// 		url: '#',
+			// 		icon: Inbox
+			// 	},
+			// 	{
+			// 		title: 'Test 2',
+			// 		url: '/',
+			// 		icon: Calendar
+			// 	}
+			// ]
 		},
 		{
 			title: 'Search',
@@ -50,16 +83,55 @@
 			<Sidebar.GroupContent>
 				<Sidebar.Menu>
 					{#each items as item (item.title)}
-						<Sidebar.MenuItem>
-							<Sidebar.MenuButton>
-								{#snippet child({ props })}
-									<a href={item.url} {...props}>
-										<item.icon />
-										<span>{item.title}</span>
-									</a>
-								{/snippet}
-							</Sidebar.MenuButton>
-						</Sidebar.MenuItem>
+						<Collapsible.Root class="group/collapsible">
+							<Sidebar.MenuItem>
+								<Collapsible.Trigger class="w-full">
+									<Sidebar.MenuButton>
+										{#snippet child({ props })}
+											{#if item.url !== '#'}
+												<a href={item.url} {...props}>
+													<item.icon />
+													<span>{item.title}</span>
+													{#if item.collapsible}
+														<ChevronDown
+															class="ml-auto transition-transform group-data-[state=open]/collapsible:rotate-180"
+														/>
+													{/if}
+												</a>
+											{:else}
+												<button {...props}>
+													<item.icon />
+													<span>{item.title}</span>
+													{#if item.collapsible}
+														<ChevronDown
+															class="ml-auto transition-transform group-data-[state=open]/collapsible:rotate-180"
+														/>
+													{/if}
+												</button>
+											{/if}
+										{/snippet}
+									</Sidebar.MenuButton>
+								</Collapsible.Trigger>
+								<Collapsible.Content>
+									{#if item.children}
+										<Sidebar.MenuSub>
+											{#each item.children as subItem (subItem.title)}
+												<Sidebar.MenuSubItem>
+													<Sidebar.MenuSubButton>
+														{#snippet child({ props })}
+															<a href={subItem.url} {...props}>
+																<subItem.icon />
+																<span>{subItem.title}</span>
+															</a>
+														{/snippet}
+													</Sidebar.MenuSubButton>
+												</Sidebar.MenuSubItem>
+											{/each}
+										</Sidebar.MenuSub>
+									{/if}
+								</Collapsible.Content>
+							</Sidebar.MenuItem>
+						</Collapsible.Root>
 					{/each}
 				</Sidebar.Menu>
 			</Sidebar.GroupContent>

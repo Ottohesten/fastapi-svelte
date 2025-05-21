@@ -58,6 +58,9 @@ export const actions = {
             // maxAge: 60 * 5 // 5 minutes
         })
 
+        // store access token in local storage
+        // localStorage.setItem("auth_token", data.access_token);
+
         // get user info
         const { data: user, error: userError, response: userResponse } = await client.GET("/users/me", {
             headers: {

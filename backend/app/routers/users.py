@@ -61,7 +61,7 @@ def create_user(*, session: SessionDep, user_in: UserCreate):
     if user:
         raise HTTPException(
             status_code=400,
-            detail="The user with this email already exists in the system.",
+            detail="A user with this email already exists",
         )
 
     user = db_crud.create_user(session=session, user_create=user_in)
@@ -140,8 +140,6 @@ def delete_user_me(session: SessionDep, current_user: CurrentUser):
         raise HTTPException(
             status_code=403, detail="Super users are not allowed to delete themselves"
         )
-    statement = delete(Item).where(col(Item.owner_id) == current_user.id)
-    session.exec(statement)  # type: ignore
     session.delete(current_user)
     session.commit()
     return Message(message="User deleted successfully")
@@ -156,7 +154,7 @@ def register_user(session: SessionDep, user_in: UserRegister):
     if user:
         raise HTTPException(
             status_code=400,
-            detail="The user with this email already exists in the system",
+            detail="A user with this email already exists",
         )
     user_create = UserCreate.model_validate(user_in)
     user = db_crud.create_user(session=session, user_create=user_create)
@@ -186,12 +184,7 @@ def read_user_by_id(
     dependencies=[Depends(get_current_active_superuser)],
     response_model=UserPublic,
 )
-def update_user(
-    *,
-    session: SessionDep,
-    user_id: uuid.UUID,
-    user_in: UserUpdate,
-):
+def update_user(session: SessionDep, user_id: uuid.UUID, user_in: UserUpdate):
     """
     Update a user.
     """
@@ -200,19 +193,32 @@ def update_user(
     if not db_user:
         raise HTTPException(
             status_code=404,
-            detail="The user with this id does not exist in the system",
+            detail="A user with this id does not exist",
         )
     
     
     if user_in.email:
         existing_user = db_crud.get_user_by_email(session=session, email=user_in.email)
-        if existing_user and existing_user.id != user_id:
+        if existing_user and existing_user.id != db_user.id:
             raise HTTPException(
-                status_code=409, detail="User with this email already exists"
+                status_code=409, detail="A user with this email already exists"
             )
-
-    db_user = db_crud.update_user(session=session, db_user=db_user, user_in=user_in)
+    
+    # update the full name¨
+    # user_data = user_in.model_dump(exclude_unset=True)
+    # db_user.sqlmodel_update(user_data)
+    # session.add(db_user)
+    # session.commit()
+    # session.refresh(db_user)
+    db_user = db_crud.update_user(
+        session=session,
+        db_user=db_user,
+        user_in=user_in,
+    )
+    
     return db_user
+
+
 
 
 @router.delete("/{user_id}", dependencies=[Depends(get_current_active_superuser)])
@@ -224,13 +230,11 @@ def delete_user(
     """
     user = session.get(User, user_id)
     if not user:
-        raise HTTPException(status_code=404, detail="User not found")
+        raise HTTPException(status_code=404, detail="A user with this id does not exist")
     if user == current_user:
         raise HTTPException(
             status_code=403, detail="Super users are not allowed to delete themselves"
         )
-    statement = delete(Item).where(col(Item.owner_id) == user_id)
-    session.exec(statement)  # type: ignore
     session.delete(user)
     session.commit()
     return Message(message="User deleted successfully")

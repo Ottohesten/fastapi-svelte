@@ -57,14 +57,15 @@ def normal_user_token_headers(client: TestClient, db: Session) -> dict[str, str]
     )
 
 
-@pytest.fixture(autouse=True, scope="function")
 # @pytest.fixture(autouse=True, scope="session")
+@pytest.fixture(autouse=True, scope="function")
 def clean_db(db):
     yield
     # After each test, delete all data from all tables
-    for table in reversed(SQLModel.metadata.sorted_tables):
-        db.execute(table.delete())
-    db.commit()
+    if os.getenv("TESTING") == "1":
+        for table in reversed(SQLModel.metadata.sorted_tables):
+            db.execute(table.delete())
+        db.commit()
 
 
 @pytest.fixture(scope="session", autouse=True)

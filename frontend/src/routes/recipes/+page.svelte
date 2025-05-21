@@ -11,12 +11,7 @@
 	<h1 class="text-4xl font-bold">Recipes:</h1>
 
 	{#each data.recipes as recipe}
-		<!-- <a href="/recipes/{recipe.id}"><Recipe {recipe} user={data.user} /></a> -->
-		{#if data.authenticatedUser}
-			<Recipe {recipe} authenticatedUser={data.authenticatedUser} />
-		{:else}
-			<Recipe {recipe} />
-		{/if}
+		<Recipe {recipe} authenticatedUser={data.authenticatedUser ?? undefined} />
 	{/each}
 	{#if data.authenticatedUser}
 		<div class="mt-4">

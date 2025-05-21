@@ -30,7 +30,7 @@ export const load = async ({ fetch, parent }) => {
 export const actions = {
     default: async ({ fetch, request, cookies }) => {
         const form = await superValidate(request, zod(RecipeSchema));
-        // console.log(form)
+
         if (!form.valid) {
             return fail(400, { form });
         }

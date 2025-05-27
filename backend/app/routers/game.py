@@ -18,6 +18,8 @@ from app.models import (
     Drink,
     DrinkPublic,
     DrinkCreate,
+    GamePlayerDrinkLink,
+    GamePlayerDrinkLinkCreate,
 )
 
 
@@ -39,7 +41,7 @@ def read_drinks(session: SessionDep, skip: int = 0, limit: int = 100):
     """
     Retrieve drinks.
     """
-    print("Getting drinks")
+    # print("Getting drinks")
     statement = select(Drink).offset(skip).limit(limit)
     drinks = session.exec(statement).all()
     return drinks
@@ -258,35 +260,144 @@ def update_game_player(session: SessionDep, game_session_id: str, game_player_id
     """
     Update a game player (e.g., change name).
     """
+
     # check valid uuid
     try:
         game_session = session.get(GameSession, game_session_id)
     except Exception as e:
+        # except InvalidTextRepresentation as e:
         raise HTTPException(status_code=400, detail="Invalid UUID")
-
     if not game_session:
         raise HTTPException(status_code=404, detail="Game session not found")
-
+    # check valid uuid
     try:
         game_player = session.get(GamePlayer, game_player_id)
     except Exception as e:
+        # except InvalidTextRepresentation as e:
         raise HTTPException(status_code=400, detail="Invalid UUID")
-
     if not game_player:
         raise HTTPException(status_code=404, detail="Game player not found")
-
     if game_player.game_session_id != game_session.id:
         raise HTTPException(status_code=404, detail="Game player not found in this game session")
+    drink_links = game_player_in.drinks
+    print(drink_links)
+    if drink_links:
+        # Process each drink link
+        for drink_link in drink_links:
+            # Check if the drink itself exists
+            drink = session.get(Drink, drink_link.drink_id)
+            if not drink:
+                raise HTTPException(status_code=404, detail=f"Drink with id {drink_link.drink_id} not found")
 
-    # Only allow owner or superuser to update
-    if game_session.owner_id != current_user.id and not current_user.is_superuser:
-        raise HTTPException(status_code=403, detail="Not authorized to update this game player")
+            # Find if a link already exists between this player and this drink
+            statement = select(GamePlayerDrinkLink).where(
+                GamePlayerDrinkLink.game_player_id == game_player.id,
+                GamePlayerDrinkLink.drink_id == drink_link.drink_id
+            )
+            existing_link = session.exec(statement).one_or_none()
+            
+            if existing_link:
+                if drink_link.amount < 1:
+                    # if amount is less than 1 (most likely 0), delete the link
+                    session.delete(existing_link)
+                    print("Deleting link")
+                    continue
+                # If the link exists, update its amount
+                existing_link.amount = drink_link.amount
+                session.add(existing_link)
+            else:
+                print("Creating new link")
+                # If the link does not exist, create a new one
+                new_link = GamePlayerDrinkLink(
+                    game_player_id=game_player.id,
+                    drink_id=drink_link.drink_id,
+                    amount=drink_link.amount
+                )
+                session.add(new_link)
 
-    # Update the game player
-    game_player_data = game_player.model_dump(exclude={"game_session_id"})
+
+    # update the game player
+    game_player_data = game_player_in.model_dump(exclude_unset=True, exclude={"drinks"})
+    game_player.sqlmodel_update(game_player_data)
     session.add(game_player)
     session.commit()
     session.refresh(game_player)
     return game_player
 
 
+
+
+
+# @router.patch("/{game_session_id}/player/{game_player_id}/drink", response_model=GamePlayerPublic)
+# def temp_update_game_player(
+#     session: SessionDep, 
+#     game_session_id: str, 
+#     game_player_id: str, 
+#     current_user: CurrentUser, 
+#     drink_link_in: GamePlayerDrinkLinkCreate # Renamed from test_in for clarity
+# ):
+#     """
+#     Add a drink to a game player or update the amount if the drink link already exists.
+#     The amount provided in drink_link_in will be set as the new total amount for that drink.
+#     """
+
+#     # check valid uuid for game_session_id
+#     try:
+#         game_session = session.get(GameSession, game_session_id)
+#     except ValueError:
+#         raise HTTPException(status_code=400, detail="Invalid UUID format for game_session_id")
+#     except Exception: # Catch other potential errors from session.get if ID is malformed beyond simple UUID format
+#         raise HTTPException(status_code=400, detail="Error processing game_session_id")
+        
+#     if not game_session:
+#         raise HTTPException(status_code=404, detail="Game session not found")
+
+#     # check valid uuid for game_player_id
+#     try:
+#         game_player = session.get(GamePlayer, game_player_id)
+#     except ValueError:
+#         raise HTTPException(status_code=400, detail="Invalid UUID format for game_player_id")
+#     except Exception:
+#         raise HTTPException(status_code=400, detail="Error processing game_player_id")
+        
+#     if not game_player:
+#         raise HTTPException(status_code=404, detail="Game player not found")
+
+#     if game_player.game_session_id != game_session.id:
+#         raise HTTPException(status_code=403, detail="Game player not found in this game session")
+    
+#     # Check if the drink itself exists
+#     drink = session.get(Drink, drink_link_in.drink_id)
+#     if not drink:
+#         raise HTTPException(status_code=404, detail=f"Drink with id {drink_link_in.drink_id} not found")
+
+#     # Find if a link already exists between this player and this drink
+#     statement = select(GamePlayerDrinkLink).where(
+#         GamePlayerDrinkLink.game_player_id == game_player.id,
+#         GamePlayerDrinkLink.drink_id == drink_link_in.drink_id
+#     )
+#     existing_link = session.exec(statement).one_or_none()
+
+#     if existing_link:
+#         # If the link exists, update its amount
+#         # Ensure drink_link_in.amount respects constraints (e.g. >= 1 if defined in GamePlayerDrinkLink)
+#         existing_link.amount = drink_link_in.amount
+#         session.add(existing_link)
+#     else:
+#         # If the link does not exist, create a new one
+#         new_link = GamePlayerDrinkLink(
+#             game_player_id=game_player.id,
+#             drink_id=drink_link_in.drink_id,
+#             amount=drink_link_in.amount
+#         )
+#         session.add(new_link)
+    
+#     session.commit()
+#     # Refresh the game_player instance to load the updated/new drink_links
+#     # This is important for the response_model=GamePlayerPublic to serialize correctly
+#     session.refresh(game_player)
+#     # Also refresh related models if their state might have changed and is part of the response
+#     # For example, if GamePlayerPublic showed details of the drink that could change.
+#     # Here, refreshing game_player should be sufficient for its drink_links.
+
+#     return game_player

@@ -41,7 +41,7 @@ export const actions = {
                 name: teamForm.data.name,
             },
             params: {
-                path: { game_session_id: params.slug }
+                path: { game_session_id: params.game_session_id }
             },
             headers: {
                 Authorization: `Bearer ${auth_token}`
@@ -73,7 +73,7 @@ export const actions = {
                 name: playerForm.data.name,
             },
             params: {
-                path: { game_session_id: params.slug }
+                path: { game_session_id: params.game_session_id }
             },
             headers: {
                 Authorization: `Bearer ${auth_token}`

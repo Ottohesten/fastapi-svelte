@@ -307,9 +307,23 @@ class GamePlayerDrinkLink(SQLModel, table=True):
     drink_id: uuid.UUID | None = Field(default=None, foreign_key="drink.id", primary_key=True)
     amount: int = Field(default=1, ge=1, description="How many of this drink the player has consumed")
 
-    # game_player: "GamePlayer" = Relationship(back_populates="drinks")
-    # drink: "Drink" = Relationship(back_populates="players")
+    game_player: "GamePlayer" = Relationship(back_populates="drink_links")
+    drink: "Drink" = Relationship(back_populates="player_links")
 
+
+class GamePlayerDrinkLinkCreate(SQLModel):
+    """
+    Create class for GamePlayerDrinkLink
+    """
+    drink_id: uuid.UUID
+    amount: int = Field(default=1, ge=0, description="How many of this drink the player has consumed")
+
+class GamePlayerDrinkLinkPublic(SQLModel):
+    """
+    Public class for GamePlayerDrinkLink
+    """
+    amount: int
+    drink: "DrinkPublic"
 
 
 class GamePlayerBase(SQLModel):
@@ -323,15 +337,17 @@ class GamePlayerCreate(GamePlayerBase):
     """
     Create class for game player
     """
-    name: Optional[str] = None
     team_id: Optional[uuid.UUID] = None
 
 class GamePlayerUpdate(GamePlayerBase):
     """
     Update class for game player, can update name and team, can not change game session
     """
-    name: str | None = None
-    team_id: uuid.UUID | None = None
+    name: Optional[str] = None
+    team_id: Optional[uuid.UUID] = None
+    drinks: Optional[List[GamePlayerDrinkLinkCreate]] = None
+
+    # be able to add drinks to the player
 
 
 class GamePlayerPublic(GamePlayerBase):
@@ -341,7 +357,7 @@ class GamePlayerPublic(GamePlayerBase):
     id: uuid.UUID
     # game_session: GameSessionPublic
     game_session_id: uuid.UUID
-    # drinks: List["Drink"]
+    drink_links: List["GamePlayerDrinkLinkPublic"]
 
 class GamePlayer(GamePlayerBase, table=True):
     """
@@ -358,7 +374,8 @@ class GamePlayer(GamePlayerBase, table=True):
     team_id: Optional[uuid.UUID] = Field(default=None, foreign_key="gameteam.id", nullable=True)
     team: Optional["GameTeam"] = Relationship(back_populates="players")
 
-    drinks: List["Drink"] = Relationship(back_populates="players", link_model=GamePlayerDrinkLink)
+    # drinks: List["Drink"] = Relationship(back_populates="players", link_model=GamePlayerDrinkLink)
+    drink_links: List["GamePlayerDrinkLink"] = Relationship(back_populates="game_player")
 
 
 
@@ -410,16 +427,20 @@ class DrinkPublic(DrinkBase):
     name: str
     id: uuid.UUID
 
-
 class Drink(DrinkBase, table=True):
     """
     Drink model
 
-    Should have a name, and then later maybe add some more stuff.
+    Parameters:
+    - name: str
+    - players: List[GamePlayer] | None
     """
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
     name: str = Field(max_length=255, min_length=1)
-    players: List["GamePlayer"] | None = Relationship(back_populates="drinks", link_model=GamePlayerDrinkLink)
+
+
+    # players: List["GamePlayer"] | None = Relationship(back_populates="drinks", link_model=GamePlayerDrinkLink)
+    player_links: List["GamePlayerDrinkLink"] = Relationship(back_populates="drink")
 
 
 

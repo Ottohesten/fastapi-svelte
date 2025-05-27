@@ -8,7 +8,7 @@ export const load = async ({ fetch, params, locals }) => {
 
     const { data, error: apierror, response } = await client.GET("/game/{game_session_id}", {
         params: {
-            path: { game_session_id: params.slug }
+            path: { game_session_id: params.game_session_id }
         }
     });
 
@@ -16,8 +16,15 @@ export const load = async ({ fetch, params, locals }) => {
         error(response.status, apierror.detail?.toString());
     }
 
+    const { data: drinks, error: drinksError, response: drinksResponse } = await client.GET("/game/drinks",)
+
+    if (drinksError) {
+        error(drinksResponse.status, drinksError.detail?.toString());
+    }
+
     return {
         game_session: data,
+        drinks: drinks,
         is_owner: locals.authenticatedUser ? data.owner.id === locals.authenticatedUser.id : false
     }
 }

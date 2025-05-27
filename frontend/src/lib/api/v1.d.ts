@@ -4,106 +4,6 @@
  */
 
 export interface paths {
-    "/recipes/": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Read Recipes
-         * @description Retrieve recipes.
-         */
-        get: operations["read_recipes_recipes__get"];
-        put?: never;
-        /**
-         * Create Recipe
-         * @description Create a new recipe.
-         */
-        post: operations["create_recipe_recipes__post"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/recipes/{recipe_id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Read Recipe
-         * @description Retrieve a recipe.
-         */
-        get: operations["read_recipe_recipes__recipe_id__get"];
-        put?: never;
-        post?: never;
-        /**
-         * Delete Recipe
-         * @description Delete a recipe.
-         */
-        delete: operations["delete_recipe_recipes__recipe_id__delete"];
-        options?: never;
-        head?: never;
-        /**
-         * Update Recipe
-         * @description Update a recipe.
-         */
-        patch: operations["update_recipe_recipes__recipe_id__patch"];
-        trace?: never;
-    };
-    "/ingredients/": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Read Ingredients
-         * @description Retrieve ingredients.
-         */
-        get: operations["read_ingredients_ingredients__get"];
-        put?: never;
-        /**
-         * Create Ingredient
-         * @description Create a new ingredient.
-         */
-        post: operations["create_ingredient_ingredients__post"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/ingredients/{ingredient_id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Read Ingredient
-         * @description Retrieve a ingredient.
-         */
-        get: operations["read_ingredient_ingredients__ingredient_id__get"];
-        put?: never;
-        post?: never;
-        /**
-         * Delete Ingredient
-         * @description Delete a ingredient.
-         */
-        delete: operations["delete_ingredient_ingredients__ingredient_id__delete"];
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/users/": {
         parameters: {
             query?: never;
@@ -224,6 +124,106 @@ export interface paths {
         patch: operations["update_user_users__user_id__patch"];
         trace?: never;
     };
+    "/recipes/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Read Recipes
+         * @description Retrieve recipes.
+         */
+        get: operations["read_recipes_recipes__get"];
+        put?: never;
+        /**
+         * Create Recipe
+         * @description Create a new recipe.
+         */
+        post: operations["create_recipe_recipes__post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/recipes/{recipe_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Read Recipe
+         * @description Retrieve a recipe.
+         */
+        get: operations["read_recipe_recipes__recipe_id__get"];
+        put?: never;
+        post?: never;
+        /**
+         * Delete Recipe
+         * @description Delete a recipe.
+         */
+        delete: operations["delete_recipe_recipes__recipe_id__delete"];
+        options?: never;
+        head?: never;
+        /**
+         * Update Recipe
+         * @description Update a recipe.
+         */
+        patch: operations["update_recipe_recipes__recipe_id__patch"];
+        trace?: never;
+    };
+    "/ingredients/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Read Ingredients
+         * @description Retrieve ingredients.
+         */
+        get: operations["read_ingredients_ingredients__get"];
+        put?: never;
+        /**
+         * Create Ingredient
+         * @description Create a new ingredient.
+         */
+        post: operations["create_ingredient_ingredients__post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/ingredients/{ingredient_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Read Ingredient
+         * @description Retrieve a ingredient.
+         */
+        get: operations["read_ingredient_ingredients__ingredient_id__get"];
+        put?: never;
+        post?: never;
+        /**
+         * Delete Ingredient
+         * @description Delete a ingredient.
+         */
+        delete: operations["delete_ingredient_ingredients__ingredient_id__delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/game/": {
         parameters: {
             query?: never;
@@ -242,6 +242,30 @@ export interface paths {
          * @description Create a new game session.
          */
         post: operations["create_game_session_game__post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/game/drinks": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Read Drinks
+         * @description Retrieve drinks.
+         */
+        get: operations["read_drinks_game_drinks_get"];
+        put?: never;
+        /**
+         * Create Drink
+         * @description Create a new drink.
+         */
+        post: operations["create_drink_game_drinks_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -354,6 +378,27 @@ export interface paths {
         options?: never;
         head?: never;
         patch?: never;
+        trace?: never;
+    };
+    "/game/{game_session_id}/player/{game_player_id}/drink": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Temp Update Game Player
+         * @description Add a drink to a game player or update the amount if the drink link already exists.
+         *     The amount provided in drink_link_in will be set as the new total amount for that drink.
+         */
+        patch: operations["temp_update_game_player_game__game_session_id__player__game_player_id__drink_patch"];
         trace?: never;
     };
     "/heroes/": {
@@ -532,6 +577,21 @@ export interface components {
             /** Client Secret */
             client_secret?: string | null;
         };
+        /** DrinkCreate */
+        DrinkCreate: {
+            /** Name */
+            name: string;
+        };
+        /** DrinkPublic */
+        DrinkPublic: {
+            /** Name */
+            name: string;
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+        };
         /**
          * GamePlayer
          * @description Game player model
@@ -561,6 +621,34 @@ export interface components {
         GamePlayerCreate: {
             /** Name */
             name: string;
+            /** Team Id */
+            team_id?: string | null;
+        };
+        /**
+         * GamePlayerDrinkLinkCreate
+         * @description Create class for GamePlayerDrinkLink
+         */
+        GamePlayerDrinkLinkCreate: {
+            /**
+             * Drink Id
+             * Format: uuid
+             */
+            drink_id: string;
+            /**
+             * Amount
+             * @description How many of this drink the player has consumed
+             * @default 1
+             */
+            amount: number;
+        };
+        /**
+         * GamePlayerDrinkLinkPublic
+         * @description Public class for GamePlayerDrinkLink
+         */
+        GamePlayerDrinkLinkPublic: {
+            /** Amount */
+            amount: number;
+            drink: components["schemas"]["DrinkPublic"];
         };
         /**
          * GamePlayerPublic
@@ -579,6 +667,20 @@ export interface components {
              * Format: uuid
              */
             game_session_id: string;
+            /** Drink Links */
+            drink_links: components["schemas"]["GamePlayerDrinkLinkPublic"][];
+        };
+        /**
+         * GamePlayerUpdate
+         * @description Update class for game player, can update name and team, can not change game session
+         */
+        GamePlayerUpdate: {
+            /** Name */
+            name?: string | null;
+            /** Team Id */
+            team_id?: string | null;
+            /** Drinks */
+            drinks?: components["schemas"]["GamePlayerDrinkLinkCreate"][] | null;
         };
         /** GameSessionCreate */
         GameSessionCreate: {
@@ -889,295 +991,6 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
-    read_recipes_recipes__get: {
-        parameters: {
-            query?: {
-                skip?: number;
-                limit?: number;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["RecipePublic"][];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    create_recipe_recipes__post: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["RecipeCreate"];
-            };
-        };
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["RecipePublic"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    read_recipe_recipes__recipe_id__get: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                recipe_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["RecipePublic"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    delete_recipe_recipes__recipe_id__delete: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                recipe_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Recipe"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    update_recipe_recipes__recipe_id__patch: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                recipe_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["RecipeCreate"];
-            };
-        };
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["RecipePublic"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    read_ingredients_ingredients__get: {
-        parameters: {
-            query?: {
-                skip?: number;
-                limit?: number;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["IngredientPublic"][];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    create_ingredient_ingredients__post: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["IngredientCreate"];
-            };
-        };
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["IngredientPublic"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    read_ingredient_ingredients__ingredient_id__get: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                ingredient_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["IngredientPublic"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    delete_ingredient_ingredients__ingredient_id__delete: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                ingredient_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["IngredientPublic"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
     read_users_users__get: {
         parameters: {
             query?: {
@@ -1488,6 +1301,295 @@ export interface operations {
             };
         };
     };
+    read_recipes_recipes__get: {
+        parameters: {
+            query?: {
+                skip?: number;
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RecipePublic"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_recipe_recipes__post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RecipeCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RecipePublic"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    read_recipe_recipes__recipe_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                recipe_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RecipePublic"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    delete_recipe_recipes__recipe_id__delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                recipe_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Recipe"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_recipe_recipes__recipe_id__patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                recipe_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RecipeCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RecipePublic"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    read_ingredients_ingredients__get: {
+        parameters: {
+            query?: {
+                skip?: number;
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["IngredientPublic"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_ingredient_ingredients__post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["IngredientCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["IngredientPublic"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    read_ingredient_ingredients__ingredient_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                ingredient_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["IngredientPublic"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    delete_ingredient_ingredients__ingredient_id__delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                ingredient_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["IngredientPublic"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     read_game_sessions_game__get: {
         parameters: {
             query?: {
@@ -1540,6 +1642,71 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["GameSessionPublic"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    read_drinks_game_drinks_get: {
+        parameters: {
+            query?: {
+                skip?: number;
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DrinkPublic"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_drink_game_drinks_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DrinkCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DrinkPublic"];
                 };
             };
             /** @description Validation Error */
@@ -1729,7 +1896,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["GamePlayerCreate"];
+                "application/json": components["schemas"]["GamePlayerUpdate"];
             };
         };
         responses: {
@@ -1772,6 +1939,42 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["GameTeamPublic"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    temp_update_game_player_game__game_session_id__player__game_player_id__drink_patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                game_session_id: string;
+                game_player_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["GamePlayerDrinkLinkCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GamePlayerPublic"];
                 };
             };
             /** @description Validation Error */

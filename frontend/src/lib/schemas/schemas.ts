@@ -42,7 +42,7 @@ export const GameSessionPlayerSchema = z.object({
     name: z.string().min(1),
     // game_session_id that will be a hidden field in the form
     // game_session_id: z.string().min(1),
-    // team_id: z.string().min(1),
+    team_id: z.string().optional(),
 })
 
 

@@ -357,6 +357,8 @@ class GamePlayerPublic(GamePlayerBase):
     id: uuid.UUID
     # game_session: GameSessionPublic
     game_session_id: uuid.UUID
+    team_id: Optional[uuid.UUID] = None
+    team: Optional["GameTeamPlayerPublic"] = None
     drink_links: List["GamePlayerDrinkLinkPublic"]
 
 class GamePlayer(GamePlayerBase, table=True):
@@ -372,10 +374,8 @@ class GamePlayer(GamePlayerBase, table=True):
     game_session: GameSession = Relationship(back_populates="players")
 
     team_id: Optional[uuid.UUID] = Field(default=None, foreign_key="gameteam.id", nullable=True)
-    team: Optional["GameTeam"] = Relationship(back_populates="players")
-
-    # drinks: List["Drink"] = Relationship(back_populates="players", link_model=GamePlayerDrinkLink)
-    drink_links: List["GamePlayerDrinkLink"] = Relationship(back_populates="game_player")
+    team: Optional["GameTeam"] = Relationship(back_populates="players")    # drinks: List["Drink"] = Relationship(back_populates="players", link_model=GamePlayerDrinkLink)
+    drink_links: List["GamePlayerDrinkLink"] = Relationship(back_populates="game_player", cascade_delete=True)
 
 
 
@@ -400,6 +400,11 @@ class GameTeamPublic(GameTeamBase):
     players: List["GamePlayer"]
     game_session_id: uuid.UUID
     # game_session: GameSessionPublic
+
+
+class GameTeamPlayerPublic(GameTeamBase):
+    name: str
+
 
 class GameTeam(GameTeamBase, table=True):
     """

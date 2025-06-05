@@ -58,7 +58,7 @@ export const actions = {
     },
     addPlayer: async ({ fetch, params, cookies, request }) => {
         const auth_token = cookies.get("auth_token");
-        const playerForm = await superValidate(request, zod(GameSessionTeamSchema));
+        const playerForm = await superValidate(request, zod(GameSessionPlayerSchema));
         if (!auth_token) {
             redirect(302, "/auth/login");
         }
@@ -71,6 +71,7 @@ export const actions = {
         const { error: apierror, response } = await client.POST("/game/{game_session_id}/player", {
             body: {
                 name: playerForm.data.name,
+                team_id: playerForm.data.team_id || null,
             },
             params: {
                 path: { game_session_id: params.game_session_id }

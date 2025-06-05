@@ -91,6 +91,21 @@
 					/>
 					{#if $playerErrors.name}<span class="invalid">{$playerErrors.name}</span>{/if}
 				</div>
+				<div class="mt-4">
+					<label class="" for="team_id">Team (Optional)</label>
+					<select
+						class="w-full appearance-none rounded-md border bg-gray-50 p-2 text-gray-700 shadow"
+						name="team_id"
+						bind:value={$playerForm.team_id}
+						aria-invalid={$playerErrors.team_id ? 'true' : undefined}
+					>
+						<option value="">No Team</option>
+						{#each data.game_session.teams as team}
+							<option value={team.id}>{team.name}</option>
+						{/each}
+					</select>
+					{#if $playerErrors.team_id}<span class="invalid">{$playerErrors.team_id}</span>{/if}
+				</div>
 				<button
 					type="submit"
 					class="mt-4 rounded-md bg-blue-600 px-4 py-2 font-medium text-white hover:bg-blue-800"

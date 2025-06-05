@@ -11,8 +11,14 @@
 </script>
 
 <div class="flex h-12 items-center justify-between rounded-md bg-gray-100 dark:bg-gray-800">
-	<a href="/game/{player.game_session_id}/player/{player.id}" class="flex flex-auto pl-2">
+	<a
+		href="/game/{player.game_session_id}/player/{player.id}"
+		class="flex flex-auto items-center justify-between pl-2"
+	>
 		<p class="">{player.name}</p>
+		{#if player.team}
+			<p class=" pr-2">Team: {player.team.name}</p>
+		{/if}
 	</a>
 
 	<!-- <a href="/" class="mr-2 flex rounded-md bg-blue-600 px-4 py-2 text-white">

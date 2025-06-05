@@ -103,7 +103,7 @@ def create_game_session(session: SessionDep, current_user: CurrentUser, game_ses
     return game_session
 
 # delete game session
-@router.delete("/{game_session_id}", response_model=GameSessionPublic)
+@router.delete("/{game_session_id}")
 def delete_game_session(session: SessionDep, game_session_id: str, current_user: CurrentUser):
     """
     Delete a game session.
@@ -124,7 +124,7 @@ def delete_game_session(session: SessionDep, game_session_id: str, current_user:
     session.delete(game_session)
     session.commit()
 
-    return game_session
+    return {"success": True}
 
 
 
@@ -187,7 +187,7 @@ def create_game_team(session: SessionDep, game_session_id: str, game_team_in: Ga
     return game_team
 
 # delete game player
-@router.delete("/{game_session_id}/player/{game_player_id}", response_model=GamePlayerPublic)
+@router.delete("/{game_session_id}/player/{game_player_id}")
 def delete_game_player(session: SessionDep, game_session_id: str, game_player_id: str, current_user: CurrentUser):
     """
     Delete a game player.
@@ -218,10 +218,10 @@ def delete_game_player(session: SessionDep, game_session_id: str, game_player_id
     session.delete(game_player)
     session.commit()
 
-    return game_player
+    return {"success": True}
 
 # delete game team
-@router.delete("/{game_session_id}/team/{game_team_id}", response_model=GameTeamPublic)
+@router.delete("/{game_session_id}/team/{game_team_id}")
 def delete_game_team(session: SessionDep, game_session_id: str, game_team_id: str, current_user: CurrentUser):
     """
     Delete a game team.
@@ -252,7 +252,7 @@ def delete_game_team(session: SessionDep, game_session_id: str, game_team_id: st
     session.delete(game_team)
     session.commit()
 
-    return game_team
+    return {"success": True}
 
 # update game player
 @router.patch("/{game_session_id}/player/{game_player_id}", response_model=GamePlayerPublic)

@@ -380,27 +380,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/game/{game_session_id}/player/{game_player_id}/drink": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        /**
-         * Temp Update Game Player
-         * @description Add a drink to a game player or update the amount if the drink link already exists.
-         *     The amount provided in drink_link_in will be set as the new total amount for that drink.
-         */
-        patch: operations["temp_update_game_player_game__game_session_id__player__game_player_id__drink_patch"];
-        trace?: never;
-    };
     "/heroes/": {
         parameters: {
             query?: never;
@@ -667,6 +646,9 @@ export interface components {
              * Format: uuid
              */
             game_session_id: string;
+            /** Team Id */
+            team_id?: string | null;
+            team?: components["schemas"]["GameTeamPlayerPublic"] | null;
             /** Drink Links */
             drink_links: components["schemas"]["GamePlayerDrinkLinkPublic"][];
         };
@@ -711,6 +693,11 @@ export interface components {
         };
         /** GameTeamCreate */
         GameTeamCreate: {
+            /** Name */
+            name: string;
+        };
+        /** GameTeamPlayerPublic */
+        GameTeamPlayerPublic: {
             /** Name */
             name: string;
         };
@@ -1939,42 +1926,6 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["GameTeamPublic"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    temp_update_game_player_game__game_session_id__player__game_player_id__drink_patch: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                game_session_id: string;
-                game_player_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["GamePlayerDrinkLinkCreate"];
-            };
-        };
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["GamePlayerPublic"];
                 };
             };
             /** @description Validation Error */

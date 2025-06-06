@@ -27,7 +27,7 @@ def init():
         logger.info("Creating superuser if none exists")
         init_db(session)
         # create_drinks(session)
-        # create_game_session(session, session_name="Game Session 4")
+        create_game_session(session, session_name="Game Session 6")
         add_drinks_to_players(session)
 
 def create_drinks(session: Session):
@@ -101,11 +101,13 @@ def create_game_session(session: Session, session_name: str = "Game Session 1"):
 
 def add_drinks_to_players(session: Session):
     """
-        Add drinks to players
+        Add drinks to players with varied amounts for better chart visualization
     """
+    import random
+    
     logger.info("Adding drinks to players")
     game_session = session.exec(
-        select(GameSession).where(GameSession.title == "Game Session 4")
+        select(GameSession).where(GameSession.title == "Game Session 6")
     ).first()
     assert game_session
 
@@ -120,25 +122,26 @@ def add_drinks_to_players(session: Session):
     ).all()
     assert drinks
 
-    # add drinks to players - for now just add the first 2 drinks to the first player
-
-    player_1 = players[1]
-
-    player_1_drink_link = GamePlayerDrinkLink(
-        game_player=player_1,
-        drink=drinks[0],
-    )
-    player_1_drink_link_2 = GamePlayerDrinkLink(
-        game_player=player_1,
-        drink=drinks[1],
-    )
-    session.add(player_1_drink_link)
-    session.add(player_1_drink_link_2)
+    # Add varied drinks to first 10 players for better chart visualization
+    for i in range(min(10, len(players))):
+        player = players[i]
+        
+        # Each player gets 1-5 different drinks with amounts 1-3
+        num_drinks = random.randint(1, 5)
+        selected_drinks = random.sample(drinks, min(num_drinks, len(drinks)))
+        
+        for drink in selected_drinks:
+            amount = random.randint(1, 3)
+            drink_link = GamePlayerDrinkLink(
+                game_player=player,
+                drink=drink,
+                amount=amount
+            )
+            session.add(drink_link)
+            logger.info(f"Added {amount} x {drink.name} to player {player.name}")
+    
     session.commit()
-    session.refresh(player_1_drink_link)
-    session.refresh(player_1_drink_link_2)
-    logger.info(f"Added drink {drinks[0].name} to player {player_1.name}")
-    logger.info("Drinks added to players")
+    logger.info("Enhanced drinks added to players for chart visualization")
 
 
 

@@ -959,4 +959,15 @@
 			</div>
 		</div>
 	{/if}
+
+	<!-- update button, go to {gamesessionid/update} -->
+	{#if data.authenticatedUser?.is_superuser}
+		<div class="mt-6">
+			<a
+				class="rounded-md bg-blue-600 px-4 py-3 font-medium text-white hover:bg-blue-800"
+				type="button"
+				href="/game/{data.game_session.id}/update">Edit</a
+			>
+		</div>
+	{/if}
 </div>

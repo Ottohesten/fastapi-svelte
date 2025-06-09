@@ -52,6 +52,7 @@
 		"@tiptap/starter-kit": "^2.11.5",
 		"d3": "^7.9.0",
 		"dotenv": "^16.4.7",
+		"jsonwebtoken": "^9.0.2",
 		"openapi-fetch": "^0.13.3"
 	}
 }

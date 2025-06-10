@@ -24,13 +24,15 @@ from app.models import SQLModel  # noqa
 from app.config import settings # noqa
 target_metadata = SQLModel.metadata
 
-if os.getenv("TESTING") == "1":
-    # if we are testing, we use a different database
-    # config.set_main_option("sqlalchemy.url", str(settings.SQLALCHEMY_DATABASE_URI_TEST))
-    config.set_main_option("sqlalchemy.url", str(settings.SQLALCHEMY_DATABASE_URI_TEST))
-else:
-    config.set_main_option("sqlalchemy.url", str(settings.SQLALCHEMY_DATABASE_URI))
+# if os.getenv("TESTING") == "1":
+#     # if we are testing, we use a different database
+#     # config.set_main_option("sqlalchemy.url", str(settings.SQLALCHEMY_DATABASE_URI_TEST))
+#     config.set_main_option("sqlalchemy.url", str(settings.SQLALCHEMY_DATABASE_URI_TEST))
+# else:
+#     config.set_main_option("sqlalchemy.url", str(settings.SQLALCHEMY_DATABASE_URI))
 
+
+config.set_main_option("sqlalchemy.url", str(settings.SQLALCHEMY_DATABASE_URI))
 # other values from the config, defined by the needs of env.py,
 # can be acquired:
 # my_important_option = config.get_main_option("my_important_option")

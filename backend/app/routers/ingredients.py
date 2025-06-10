@@ -1,9 +1,9 @@
 from fastapi import APIRouter
-from fastapi import FastAPI, Depends, HTTPException, status, Query
+from fastapi import FastAPI, Depends, HTTPException, status, Query, Security
 from sqlmodel import select
-from app.deps import SessionDep, CurrentUser, get_current_active_superuser
+from app.deps import SessionDep, CurrentUser, get_current_user
 # from app.models import Recipe, RecipeCreate, RecipePublic
-from app.models import Ingredient, IngredientBase, IngredientCreate, IngredientPublic
+from app.models import Ingredient, IngredientBase, IngredientCreate, IngredientPublic, User
 
 
 router = APIRouter(prefix="/ingredients", tags=["ingredients"])
@@ -40,7 +40,11 @@ def read_ingredient(session: SessionDep, ingredient_id: str):
 
 
 @router.post("/", response_model=IngredientPublic)
-def create_ingredient(session: SessionDep, current_user: CurrentUser, ingredient_in: IngredientCreate):
+def create_ingredient(
+    session: SessionDep, 
+    ingredient_in: IngredientCreate,
+    current_user: User = Security(get_current_user, scopes=["ingredients:create"])
+):
     """
     Create a new ingredient.
     """
@@ -54,7 +58,11 @@ def create_ingredient(session: SessionDep, current_user: CurrentUser, ingredient
 
 
 @router.delete("/{ingredient_id}", response_model=IngredientPublic)
-def delete_ingredient(session: SessionDep, ingredient_id: str):
+def delete_ingredient(
+    session: SessionDep, 
+    ingredient_id: str,
+    current_user: User = Security(get_current_user, scopes=["ingredients:delete"])
+):
     """
     Delete a ingredient.
     """
@@ -64,4 +72,26 @@ def delete_ingredient(session: SessionDep, ingredient_id: str):
     session.delete(ingredient)
     session.commit()
 
+    return ingredient
+
+
+@router.patch("/{ingredient_id}", response_model=IngredientPublic)
+def update_ingredient(
+    session: SessionDep, 
+    ingredient_id: str, 
+    ingredient_in: IngredientCreate,
+    current_user: User = Security(get_current_user, scopes=["ingredients:update"])
+):
+    """
+    Update an ingredient.
+    """
+    ingredient = session.get(Ingredient, ingredient_id)
+    if not ingredient:
+        raise HTTPException(status_code=404, detail="Ingredient not found")
+    
+    ingredient_data = ingredient_in.model_dump(exclude_unset=True)
+    ingredient.sqlmodel_update(ingredient_data)
+    session.add(ingredient)
+    session.commit()
+    session.refresh(ingredient)
     return ingredient

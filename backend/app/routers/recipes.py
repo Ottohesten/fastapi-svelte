@@ -1,8 +1,8 @@
 from fastapi import APIRouter
-from fastapi import FastAPI, Depends, HTTPException, status, Query
+from fastapi import FastAPI, Depends, HTTPException, status, Query, Security
 from sqlmodel import select
-from app.deps import SessionDep, CurrentUser, get_current_active_superuser
-from app.models import Recipe, RecipeCreate, RecipePublic, Ingredient
+from app.deps import SessionDep, CurrentUser, get_current_user
+from app.models import Recipe, RecipeCreate, RecipePublic, Ingredient, User
 
 
 
@@ -45,7 +45,11 @@ def read_recipe(session: SessionDep, recipe_id: str):
 
 
 @router.post("/", response_model=RecipePublic)
-def create_recipe(session: SessionDep, current_user: CurrentUser, recipe_in: RecipeCreate):
+def create_recipe(
+    session: SessionDep, 
+    recipe_in: RecipeCreate,
+    current_user: User = Security(get_current_user, scopes=["recipes:create"])
+):
     """
     Create a new recipe.
     """
@@ -86,8 +90,13 @@ def create_recipe(session: SessionDep, current_user: CurrentUser, recipe_in: Rec
     return recipe
 
 
-@router.patch("/{recipe_id}", dependencies=[Depends(get_current_active_superuser)], response_model=RecipePublic)
-def update_recipe(session: SessionDep, recipe_id: str, recipe_in: RecipeCreate):
+@router.patch("/{recipe_id}", response_model=RecipePublic)
+def update_recipe(
+    session: SessionDep, 
+    recipe_id: str, 
+    recipe_in: RecipeCreate,
+    current_user: User = Security(get_current_user, scopes=["recipes:update"])
+):
     """
     Update a recipe.
     """
@@ -122,8 +131,12 @@ def update_recipe(session: SessionDep, recipe_id: str, recipe_in: RecipeCreate):
     return db_recipe
 
 
-@router.delete("/{recipe_id}", dependencies=[Depends(get_current_active_superuser)], response_model=Recipe)
-def delete_recipe(session: SessionDep, recipe_id: str):
+@router.delete("/{recipe_id}", response_model=Recipe)
+def delete_recipe(
+    session: SessionDep, 
+    recipe_id: str,
+    current_user: User = Security(get_current_user, scopes=["recipes:delete"])
+):
     """
     Delete a recipe.
     """

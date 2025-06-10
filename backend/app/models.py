@@ -1,7 +1,7 @@
 import uuid
 from pydantic import BaseModel, EmailStr
 from sqlmodel import Field, SQLModel, Relationship, Column, JSON
-from typing import List, Optional
+from typing import Optional
 # from permissions.roles import Role
 
 
@@ -37,7 +37,8 @@ class Role(SQLModel, table=True):
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
     name: str
     description: str | None = None
-    users: List["User"] = Relationship(back_populates="roles", link_model=UserRoleLink)
+    users: list["User"] = Relationship(back_populates="roles", link_model=UserRoleLink)
+    scopes: list[str] = Field(default_factory=list, description="List of scopes that this role has access to", sa_column=Column(JSON))
 
 
 
@@ -54,6 +55,8 @@ class User(UserBase, table=True):
     items: list["Item"] = Relationship(back_populates="owner", cascade_delete=True)
     roles: list["Role"] = Relationship(back_populates="users", link_model=UserRoleLink)
     recipes: list["Recipe"] = Relationship(back_populates="owner")
+    custom_scopes: list[str] = Field(
+        default_factory=list, description="List of custom scopes that this user has access to", sa_column=Column(JSON))
 
     # H.C game
     game_sessions: list["GameSession"] = Relationship(back_populates="owner")
@@ -202,7 +205,7 @@ class Recipe(RecipeBase, table=True):
     # image
     # image: str | None = Field(default=None, max_length=255)
 
-    ingredients: List["Ingredient"] = Relationship(back_populates="recipes", link_model=RecipeIngredientLink)
+    ingredients: list["Ingredient"] = Relationship(back_populates="recipes", link_model=RecipeIngredientLink)
 
     
 
@@ -214,7 +217,7 @@ class Recipe(RecipeBase, table=True):
 class RecipePublic(RecipeBase):
     id: uuid.UUID 
     owner: UserPublic
-    ingredients: List["IngredientPublic"]
+    ingredients: list["IngredientPublic"]
 
 
 #####################################################################################
@@ -240,7 +243,7 @@ class Ingredient(IngredientBase, table=True):
     """
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
     title: str = Field(max_length=255, min_length=1)
-    recipes: List["Recipe"] = Relationship(back_populates="ingredients", link_model=RecipeIngredientLink)
+    recipes: list["Recipe"] = Relationship(back_populates="ingredients", link_model=RecipeIngredientLink)
     
 
 
@@ -259,7 +262,7 @@ class GameSessionBase(SQLModel):
 
 
 class GameSessionCreate(GameSessionBase):
-    teams: Optional[List["GameTeamCreate"]] = None
+    teams: Optional[list["GameTeamCreate"]] = None
 
 
 class GameSessionPublic(GameSessionBase):
@@ -270,8 +273,8 @@ class GameSessionPublic(GameSessionBase):
     """
     id: uuid.UUID
     owner: UserPublic
-    players: List["GamePlayerPublic"]
-    teams: List["GameTeamPublic"]
+    players: list["GamePlayerPublic"]
+    teams: list["GameTeamPublic"]
 
 class GameSessionUpdate(GameSessionBase):
     """
@@ -280,8 +283,8 @@ class GameSessionUpdate(GameSessionBase):
     Should have an owner (user) and a list of players and their information (scores etc.)
     """
     id: uuid.UUID | None = None
-    players: List["GamePlayer"] | None = None
-    teams: List["GameTeam"] | None = None
+    players: list["GamePlayer"] | None = None
+    teams: list["GameTeam"] | None = None
 
 
 class GameSession(GameSessionBase, table=True):
@@ -293,8 +296,8 @@ class GameSession(GameSessionBase, table=True):
     owner_id: uuid.UUID = Field(foreign_key="user.id", nullable=False)
     owner: User = Relationship(back_populates="game_sessions")
 
-    teams: Optional[List["GameTeam"]] = Relationship(back_populates="game_session", cascade_delete=True)
-    players: Optional[List["GamePlayer"]] = Relationship(back_populates="game_session", cascade_delete=True)
+    teams: Optional[list["GameTeam"]] = Relationship(back_populates="game_session", cascade_delete=True)
+    players: Optional[list["GamePlayer"]] = Relationship(back_populates="game_session", cascade_delete=True)
 
 
 
@@ -345,7 +348,7 @@ class GamePlayerUpdate(GamePlayerBase):
     """
     name: Optional[str] = None
     team_id: Optional[uuid.UUID] = None
-    drinks: Optional[List[GamePlayerDrinkLinkCreate]] = None
+    drinks: Optional[list[GamePlayerDrinkLinkCreate]] = None
 
     # be able to add drinks to the player
 
@@ -359,7 +362,7 @@ class GamePlayerPublic(GamePlayerBase):
     game_session_id: uuid.UUID
     team_id: Optional[uuid.UUID] = None
     team: Optional["GameTeamPlayerPublic"] = None
-    drink_links: List["GamePlayerDrinkLinkPublic"]
+    drink_links: list["GamePlayerDrinkLinkPublic"]
 
 class GamePlayer(GamePlayerBase, table=True):
     """
@@ -374,8 +377,8 @@ class GamePlayer(GamePlayerBase, table=True):
     game_session: GameSession = Relationship(back_populates="players")
 
     team_id: Optional[uuid.UUID] = Field(default=None, foreign_key="gameteam.id", nullable=True)
-    team: Optional["GameTeam"] = Relationship(back_populates="players")    # drinks: List["Drink"] = Relationship(back_populates="players", link_model=GamePlayerDrinkLink)
-    drink_links: List["GamePlayerDrinkLink"] = Relationship(back_populates="game_player", cascade_delete=True)
+    team: Optional["GameTeam"] = Relationship(back_populates="players")    # drinks: list["Drink"] = Relationship(back_populates="players", link_model=GamePlayerDrinkLink)
+    drink_links: list["GamePlayerDrinkLink"] = Relationship(back_populates="game_player", cascade_delete=True)
 
 
 
@@ -397,7 +400,7 @@ class GameTeamPublic(GameTeamBase):
     Public class for game team
     """
     id: uuid.UUID
-    players: List["GamePlayer"]
+    players: list["GamePlayer"]
     game_session_id: uuid.UUID
     # game_session: GameSessionPublic
 
@@ -414,7 +417,7 @@ class GameTeam(GameTeamBase, table=True):
     """
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
     name: str = Field(max_length=255, min_length=1)
-    players: Optional[List["GamePlayer"]] = Relationship(back_populates="team")
+    players: Optional[list["GamePlayer"]] = Relationship(back_populates="team")
 
     game_session_id: uuid.UUID = Field(default=None, foreign_key="gamesession.id", nullable=False)
     game_session: "GameSession" = Relationship(back_populates="teams")
@@ -438,14 +441,14 @@ class Drink(DrinkBase, table=True):
 
     Parameters:
     - name: str
-    - players: List[GamePlayer] | None
+    - players: list[GamePlayer] | None
     """
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
     name: str = Field(max_length=255, min_length=1)
 
 
-    # players: List["GamePlayer"] | None = Relationship(back_populates="drinks", link_model=GamePlayerDrinkLink)
-    player_links: List["GamePlayerDrinkLink"] = Relationship(back_populates="drink")
+    # players: list["GamePlayer"] | None = Relationship(back_populates="drinks", link_model=GamePlayerDrinkLink)
+    player_links: list["GamePlayerDrinkLink"] = Relationship(back_populates="drink")
 
 
 

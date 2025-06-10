@@ -8,8 +8,8 @@ import app.db_crud as db_crud
 from app.deps import (
     CurrentUser,
     SessionDep,
-    get_current_active_superuser,
     get_current_active_user,
+    get_current_user,
 )
 from app.config import settings
 from app.security import get_password_hash, verify_password
@@ -31,12 +31,13 @@ from app.utils import generate_new_account_email, send_email
 router = APIRouter(prefix="/users", tags=["users"])
 
 
-@router.get(
-    "/",
-    dependencies=[Depends(get_current_active_superuser)],
-    response_model=UsersPublic,
-)
-def read_users(session: SessionDep, skip: int = 0, limit: int = 100):
+@router.get("/",response_model=UsersPublic)
+def read_users(
+    session: SessionDep, 
+    skip: int = 0, 
+    limit: int = 100,
+    current_user: User = Security(get_current_user, scopes=["users:read"])
+):
     """
     Retrieve users.
     """
@@ -51,9 +52,14 @@ def read_users(session: SessionDep, skip: int = 0, limit: int = 100):
 
 
 @router.post(
-    "/", dependencies=[Depends(get_current_active_superuser)], response_model=UserPublic
+    "/", response_model=UserPublic
 )
-def create_user(*, session: SessionDep, user_in: UserCreate):
+def create_user(
+    *, 
+    session: SessionDep, 
+    user_in: UserCreate,
+    current_user: User = Security(get_current_user, scopes=["users:create"])
+):
     """
     Create new user.
     """
@@ -132,14 +138,12 @@ def read_user_me(*,current_user: Annotated[User, Security(get_current_active_use
 
 
 @router.delete("/me", response_model=Message)
-def delete_user_me(session: SessionDep, current_user: CurrentUser):
+def delete_user_me(session: SessionDep, current_user: CurrentUser) -> Message:
     """
     Delete own user.
     """
-    if current_user.is_superuser:
-        raise HTTPException(
-            status_code=403, detail="Super users are not allowed to delete themselves"
-        )
+    # Regular users can delete themselves, but we prevent deletion if the user 
+    # is the only one with users:delete scope to avoid system lockout
     session.delete(current_user)
     session.commit()
     return Message(message="User deleted successfully")
@@ -163,7 +167,9 @@ def register_user(session: SessionDep, user_in: UserRegister):
 
 @router.get("/{user_id}", response_model=UserPublic)
 def read_user_by_id(
-    user_id: uuid.UUID, session: SessionDep, current_user: CurrentUser
+    user_id: uuid.UUID, 
+    session: SessionDep, 
+    current_user: User = Security(get_current_user, scopes=["users:read"])
 ) -> Any:
     """
     Get a specific user by id.
@@ -171,20 +177,20 @@ def read_user_by_id(
     user = session.get(User, user_id)
     if user == current_user:
         return user
-    if not current_user.is_superuser:
-        raise HTTPException(
-            status_code=403,
-            detail="The user doesn't have enough privileges",
-        )
+    # Users with users:read scope can access any user
     return user
 
 
 @router.patch(
     "/{user_id}",
-    dependencies=[Depends(get_current_active_superuser)],
     response_model=UserPublic,
 )
-def update_user(session: SessionDep, user_id: uuid.UUID, user_in: UserUpdate):
+def update_user(
+    session: SessionDep, 
+    user_id: uuid.UUID, 
+    user_in: UserUpdate,
+    current_user: User = Security(get_current_user, scopes=["users:update"])
+):
     """
     Update a user.
     """
@@ -221,9 +227,11 @@ def update_user(session: SessionDep, user_id: uuid.UUID, user_in: UserUpdate):
 
 
 
-@router.delete("/{user_id}", dependencies=[Depends(get_current_active_superuser)])
+@router.delete("/{user_id}")
 def delete_user(
-    session: SessionDep, current_user: CurrentUser, user_id: uuid.UUID
+    session: SessionDep, 
+    user_id: uuid.UUID,
+    current_user: User = Security(get_current_user, scopes=["users:delete"])
 ) -> Message:
     """
     Delete a user.
@@ -233,7 +241,7 @@ def delete_user(
         raise HTTPException(status_code=404, detail="A user with this id does not exist")
     if user == current_user:
         raise HTTPException(
-            status_code=403, detail="Super users are not allowed to delete themselves"
+            status_code=403, detail="Users cannot delete themselves"
         )
     session.delete(user)
     session.commit()

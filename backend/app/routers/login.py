@@ -1,16 +1,17 @@
 from datetime import timedelta
 from typing import Annotated, Any
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Security
 from fastapi.responses import HTMLResponse
 from fastapi.security import OAuth2PasswordRequestForm
 
 import app.db_crud as db_crud
-from app.deps import CurrentUser, SessionDep, get_current_active_superuser
+from app.deps import CurrentUser, SessionDep, get_current_user
 import app.security as security
 from app.config import settings
 from app.security import get_password_hash
-from app.models import Message, NewPassword, Token, UserPublic
+from app.models import Message, NewPassword, Token, UserPublic, User
+from app.permissions import get_user_effective_scopes
 from app.utils import (
     generate_password_reset_token,
     generate_reset_password_email,
@@ -28,15 +29,6 @@ def login_access_token(
     """
     OAuth2 compatible token login, get an access token for future requests
     """
-    # # print all form data
-    # print(form_data)
-    # # print(dir(form_data))
-    # print(form_data.username)
-    # print(form_data.password)
-    # print(form_data.grant_type)
-    # print(form_data.scopes)
-    # print(form_data.client_id)
-    # print(form_data.client_secret)
     user = db_crud.authenticate_user(
         session=session, email=form_data.username, password=form_data.password
     )
@@ -44,10 +36,14 @@ def login_access_token(
         raise HTTPException(status_code=400, detail="Incorrect email or password")
     elif not user.is_active:
         raise HTTPException(status_code=400, detail="Inactive user")
+    
+    # Get user's effective scopes from roles + custom scopes
+    user_scopes = list(get_user_effective_scopes(user))
+    
     access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
     return Token(
         access_token=security.create_access_token(
-            data={"sub": user.email, "scopes": form_data.scopes},
+            data={"sub": user.email, "scopes": user_scopes},
             expires_delta=access_token_expires
         )
     )
@@ -110,10 +106,13 @@ def reset_password(session: SessionDep, body: NewPassword) -> Message:
 
 @router.post(
     "/password-recovery-html-content/{email}",
-    dependencies=[Depends(get_current_active_superuser)],
     response_class=HTMLResponse,
 )
-def recover_password_html_content(email: str, session: SessionDep) -> Any:
+def recover_password_html_content(
+    email: str, 
+    session: SessionDep,
+    current_user: User = Security(get_current_user, scopes=["users:update"])
+) -> Any:
     """
     HTML Content for Password Recovery
     """

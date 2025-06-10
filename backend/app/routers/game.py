@@ -1,7 +1,8 @@
 from fastapi import APIRouter
-from fastapi import FastAPI, Depends, HTTPException, status, Query
+from fastapi import FastAPI, Depends, HTTPException, status, Query, Security
 from sqlmodel import select
-from app.deps import SessionDep, CurrentUser, get_current_active_superuser
+from app.deps import SessionDep, CurrentUser, get_current_user
+from typing import Annotated
 
 from app.models import (
     GameSession, 
@@ -20,6 +21,7 @@ from app.models import (
     DrinkCreate,
     GamePlayerDrinkLink,
     GamePlayerDrinkLinkCreate,
+    User,
 )
 
 
@@ -47,7 +49,7 @@ def read_drinks(session: SessionDep, skip: int = 0, limit: int = 100):
     return drinks
 
 @router.post("/drinks", response_model=DrinkPublic)
-def create_drink(session: SessionDep, drink_in: DrinkCreate, current_user: CurrentUser):
+def create_drink(session: SessionDep, drink_in: DrinkCreate, current_user: User = Security(get_current_user, scopes=["drinks:create"])):
     """
     Create a new drink.
     """
@@ -80,7 +82,7 @@ def read_game_session(session: SessionDep, game_session_id: str):
 
 
 @router.post("/", response_model=GameSessionPublic)
-def create_game_session(session: SessionDep, current_user: CurrentUser, game_session_in: GameSessionCreate):
+def create_game_session(session: SessionDep, current_user: Annotated[User, Security(get_current_user, scopes=["games:create"])], game_session_in: GameSessionCreate):
     """
     Create a new game session.
     """
@@ -106,7 +108,7 @@ def create_game_session(session: SessionDep, current_user: CurrentUser, game_ses
 @router.delete("/{game_session_id}")
 def delete_game_session(session: SessionDep, game_session_id: str, current_user: CurrentUser):
     """
-    Delete a game session.
+    Delete a game session. Users can delete their own game sessions.
     """
     # check valid uuid
     try:
@@ -114,11 +116,12 @@ def delete_game_session(session: SessionDep, game_session_id: str, current_user:
     except Exception as e:
         # except InvalidTextRepresentation as e:
         raise HTTPException(status_code=400, detail="Invalid UUID")
-
+    
     if not game_session:
         raise HTTPException(status_code=404, detail="Game session not found")
 
-    if game_session.owner_id != current_user.id and not current_user.is_superuser:
+    # Users can delete their own game sessions
+    if game_session.owner_id != current_user.id:
         raise HTTPException(status_code=403, detail="Not authorized to delete this game session")
 
     session.delete(game_session)
@@ -128,9 +131,27 @@ def delete_game_session(session: SessionDep, game_session_id: str, current_user:
 
 
 
+# delete game session (admin)
+@router.delete("/{game_session_id}/admin")
+def delete_game_session_admin(session: SessionDep,    game_session_id: str, current_user: User = Security(get_current_user, scopes=["games:delete"])):
+    """
+    Delete any game session (admin only).
+    """
+    try:
+        game_session = session.get(GameSession, game_session_id)
+    except Exception as e:
+        raise HTTPException(status_code=400, detail="Invalid UUID")
+    
+    if not game_session:
+        raise HTTPException(status_code=404, detail="Game session not found")
+
+    session.delete(game_session)
+    session.commit()
+    return {"success": True}
+
 # make player and add to game session
 @router.post("/{game_session_id}/player", response_model=GamePlayerPublic)
-def create_game_player(session: SessionDep, game_session_id: str, game_player_in: GamePlayerCreate, current_user: CurrentUser):
+def create_game_player(session: SessionDep, game_session_id: str, game_player_in: GamePlayerCreate, current_user: User = Security(get_current_user, scopes=["games:update", "players:create"])):
     """
     Create a new game player.
     """
@@ -160,7 +181,12 @@ def create_game_player(session: SessionDep, game_session_id: str, game_player_in
 
 # make team and add to game session
 @router.post("/{game_session_id}/team", response_model=GameTeamPublic)
-def create_game_team(session: SessionDep, game_session_id: str, game_team_in: GameTeamCreate, current_user: CurrentUser):
+def create_game_team(
+    session: SessionDep, 
+    game_session_id: str, 
+    game_team_in: GameTeamCreate, 
+    current_user: User = Security(get_current_user, scopes=["games:update"])
+):
     """
     Create a new game team.
     """
@@ -188,7 +214,12 @@ def create_game_team(session: SessionDep, game_session_id: str, game_team_in: Ga
 
 # delete game player
 @router.delete("/{game_session_id}/player/{game_player_id}")
-def delete_game_player(session: SessionDep, game_session_id: str, game_player_id: str, current_user: CurrentUser):
+def delete_game_player(
+    session: SessionDep, 
+    game_session_id: str, 
+    game_player_id: str, 
+    current_user: User = Security(get_current_user, scopes=["games:update"])
+):
     """
     Delete a game player.
     """
@@ -222,7 +253,12 @@ def delete_game_player(session: SessionDep, game_session_id: str, game_player_id
 
 # delete game team
 @router.delete("/{game_session_id}/team/{game_team_id}")
-def delete_game_team(session: SessionDep, game_session_id: str, game_team_id: str, current_user: CurrentUser):
+def delete_game_team(
+    session: SessionDep, 
+    game_session_id: str, 
+    game_team_id: str, 
+    current_user: User = Security(get_current_user, scopes=["games:update"])
+):
     """
     Delete a game team.
     """
@@ -256,7 +292,13 @@ def delete_game_team(session: SessionDep, game_session_id: str, game_team_id: st
 
 # update game player
 @router.patch("/{game_session_id}/player/{game_player_id}", response_model=GamePlayerPublic)
-def update_game_player(session: SessionDep, game_session_id: str, game_player_id: str, game_player_in: GamePlayerUpdate, current_user: CurrentUser):
+def update_game_player(
+    session: SessionDep, 
+    game_session_id: str, 
+    game_player_id: str, 
+    game_player_in: GamePlayerUpdate, 
+    current_user: User = Security(get_current_user, scopes=["games:update"])
+):
     """
     Update a game player (e.g., change name).
     """

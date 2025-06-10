@@ -57,8 +57,9 @@ export const actions = {
         });
 
         if (apierror) {
-            console.log("apierror in game/create/+page.server.ts", apierror);
-            return error(404, JSON.stringify(apierror.detail));
+            // console.log("apierror in game/create/+page.server.ts", apierror);
+            // return error(404, JSON.stringify(apierror.detail));
+            return message(form, `Error: ${apierror.detail}`);
         }
 
 

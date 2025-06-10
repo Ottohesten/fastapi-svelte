@@ -11,7 +11,8 @@
 		<GameSession {session} authenticatedUser={data.authenticatedUser ?? undefined} />
 	{/each}
 
-	{#if data.authenticatedUser}
+	{#if data.authenticatedUser && data.authenticatedUser.is_superuser}
+		<!-- {#if data.authenticatedUser} -->
 		<div class="mt-4">
 			<a
 				href="/game/create"

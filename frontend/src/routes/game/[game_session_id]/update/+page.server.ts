@@ -50,8 +50,9 @@ export const actions = {
 
         if (apierror) {
             // log with file name
-            // console.log("apierror in game/+page.server.ts", apierror);
-            error(404, JSON.stringify(apierror.detail));
+            console.log("apierror in game/+page.server.ts", apierror);
+            return message(teamForm, `Error: ${apierror.detail}`);
+            // error(404, JSON.stringify(apierror.detail));
         }
         // return message(teamForm, `Team ${teamForm.data.name} added successfully!`);
         // return message(teamForm, "Team added successfully!");
@@ -84,7 +85,8 @@ export const actions = {
         if (apierror) {
             // log with file name
             // console.log("apierror in game/+page.server.ts", apierror);
-            error(404, JSON.stringify(apierror.detail));
+            return message(playerForm, `Error: ${apierror.detail}`);
+            // error(404, JSON.stringify(apierror.detail));
         }
         // return message(playerForm, `Player ${playerForm.data.name} added successfully!`);
         // return message(playerForm, "Player added successfully!");

@@ -12,6 +12,7 @@
 
 <div class="container">
 	<form method="POST" action="" enctype="multipart/form-data" use:enhance>
+		{#if $message}<h3 class="text-center text-2xl">{$message}</h3>{/if}
 		<div class="">
 			<label class="" for="title">Title</label>
 			<input

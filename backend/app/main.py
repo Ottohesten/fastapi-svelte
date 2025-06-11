@@ -9,11 +9,9 @@ from contextlib import contextmanager, asynccontextmanager
 
 from fastapi import FastAPI, Depends, HTTPException, Request, Security
 
-from app.models import Hero, HeroCreate, HeroPublic, HeroUpdate
 from app.deps import SessionDep, TokenDep, create_db_and_tables
 from app.config import get_settings
 from app.routers import (
-    heroes,
     users,
     login,
     recipes,
@@ -70,7 +68,6 @@ app.include_router(users.router)
 app.include_router(recipes.router)
 app.include_router(ingredients.router)
 app.include_router(game.router)
-app.include_router(heroes.router)
 app.include_router(login.router)
 app.include_router(roles.router)
 app.include_router(user_permissions.router)

@@ -4,7 +4,6 @@ import app.db_crud as db_crud
 import os
 from app.config import settings
 from app.models import User, UserCreate
-from app.models import Hero
 from app.models import IngredientCreate, RecipeCreate, Ingredient, Recipe
 
 

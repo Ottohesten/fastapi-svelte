@@ -85,33 +85,28 @@
 					{#each items as item (item.title)}
 						<Collapsible.Root class="group/collapsible">
 							<Sidebar.MenuItem>
-								<Collapsible.Trigger class="w-full">
+								{#if item.collapsible}
+									<Collapsible.Trigger class="w-full">
+										{#snippet child({ props })}
+											<Sidebar.MenuButton {...props}>
+												<item.icon />
+												<span>{item.title}</span>
+												<ChevronDown
+													class="ml-auto transition-transform group-data-[state=open]/collapsible:rotate-180"
+												/>
+											</Sidebar.MenuButton>
+										{/snippet}
+									</Collapsible.Trigger>
+								{:else}
 									<Sidebar.MenuButton>
 										{#snippet child({ props })}
-											{#if item.url !== '#'}
-												<a href={item.url} {...props}>
-													<item.icon />
-													<span>{item.title}</span>
-													{#if item.collapsible}
-														<ChevronDown
-															class="ml-auto transition-transform group-data-[state=open]/collapsible:rotate-180"
-														/>
-													{/if}
-												</a>
-											{:else}
-												<button {...props}>
-													<item.icon />
-													<span>{item.title}</span>
-													{#if item.collapsible}
-														<ChevronDown
-															class="ml-auto transition-transform group-data-[state=open]/collapsible:rotate-180"
-														/>
-													{/if}
-												</button>
-											{/if}
+											<a href={item.url} {...props}>
+												<item.icon />
+												<span>{item.title}</span>
+											</a>
 										{/snippet}
 									</Sidebar.MenuButton>
-								</Collapsible.Trigger>
+								{/if}
 								<Collapsible.Content>
 									{#if item.children}
 										<Sidebar.MenuSub>

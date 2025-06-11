@@ -102,7 +102,7 @@ ROLE_TEMPLATES = {
             "players:read", "players:create", "players:update", "players:delete",
             "teams:read", "teams:create", "teams:update", "teams:delete",
             "drinks:read", "drinks:create", "drinks:update", "drinks:delete",
-            
+
         ]
     }
 }

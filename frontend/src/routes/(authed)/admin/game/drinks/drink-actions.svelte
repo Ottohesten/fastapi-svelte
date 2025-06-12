@@ -34,10 +34,10 @@
 	});
 </script>
 
-<div class="flex items-center justify-end space-x-0">
+<div class="flex items-center justify-end">
 	<Dialog.Root bind:open={editOpen}>
 		<Dialog.Trigger>
-			<Button variant="ghost" title="Edit drink" size="sm" class="p-2">
+			<Button variant="ghost" title="Edit drink" size="sm" class="p-2 hover:bg-gray-200">
 				<Pencil class="" />
 			</Button>
 		</Dialog.Trigger>

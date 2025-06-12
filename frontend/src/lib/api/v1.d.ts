@@ -276,6 +276,30 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/game/drinks/{drink_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * Delete Drink
+         * @description Delete a drink.
+         */
+        delete: operations["delete_drink_game_drinks__drink_id__delete"];
+        options?: never;
+        head?: never;
+        /**
+         * Update Drink
+         * @description Update a drink.
+         */
+        patch: operations["update_drink_game_drinks__drink_id__patch"];
+        trace?: never;
+    };
     "/game/{game_session_id}": {
         parameters: {
             query?: never;
@@ -402,43 +426,6 @@ export interface paths {
         options?: never;
         head?: never;
         patch?: never;
-        trace?: never;
-    };
-    "/heroes/": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Read Heroes */
-        get: operations["read_heroes_heroes__get"];
-        put?: never;
-        /** Create Hero */
-        post: operations["create_hero_heroes__post"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/heroes/{hero_id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Read Hero */
-        get: operations["read_hero_heroes__hero_id__get"];
-        put?: never;
-        post?: never;
-        /** Delete Hero */
-        delete: operations["delete_hero_heroes__hero_id__delete"];
-        options?: never;
-        head?: never;
-        /** Patch Hero */
-        patch: operations["patch_hero_heroes__hero_id__patch"];
         trace?: never;
     };
     "/login/access-token": {
@@ -966,35 +953,6 @@ export interface components {
         HTTPValidationError: {
             /** Detail */
             detail?: components["schemas"]["ValidationError"][];
-        };
-        /** HeroCreate */
-        HeroCreate: {
-            /** Name */
-            name: string;
-            /** Secret Name */
-            secret_name: string;
-            /** Age */
-            age?: number | null;
-        };
-        /** HeroPublic */
-        HeroPublic: {
-            /** Name */
-            name: string;
-            /** Secret Name */
-            secret_name: string;
-            /** Age */
-            age?: number | null;
-            /** Id */
-            id: number;
-        };
-        /** HeroUpdate */
-        HeroUpdate: {
-            /** Name */
-            name?: string | null;
-            /** Secret Name */
-            secret_name?: string | null;
-            /** Age */
-            age?: number | null;
         };
         /** IngredientCreate */
         IngredientCreate: {
@@ -2037,6 +1995,72 @@ export interface operations {
             };
         };
     };
+    delete_drink_game_drinks__drink_id__delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                drink_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_drink_game_drinks__drink_id__patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                drink_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DrinkCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DrinkPublic"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     read_game_session_game__game_session_id__get: {
         parameters: {
             query?: never;
@@ -2287,156 +2311,6 @@ export interface operations {
                 };
                 content: {
                     "application/json": unknown;
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    read_heroes_heroes__get: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HeroPublic"][];
-                };
-            };
-        };
-    };
-    create_hero_heroes__post: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["HeroCreate"];
-            };
-        };
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HeroPublic"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    read_hero_heroes__hero_id__get: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                hero_id: number;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HeroPublic"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    delete_hero_heroes__hero_id__delete: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                hero_id: number;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": unknown;
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    patch_hero_heroes__hero_id__patch: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                hero_id: number;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["HeroUpdate"];
-            };
-        };
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HeroPublic"];
                 };
             };
             /** @description Validation Error */

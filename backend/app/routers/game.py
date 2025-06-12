@@ -60,6 +60,45 @@ def create_drink(session: SessionDep, drink_in: DrinkCreate, current_user: User 
 
     return drink
 
+@router.patch("/drinks/{drink_id}", response_model=DrinkPublic)
+def update_drink(session: SessionDep, drink_id: str, drink_in: DrinkCreate, current_user: User = Security(get_current_user, scopes=["drinks:update"])):
+    """
+    Update a drink.
+    """
+    try:
+        drink = session.get(Drink, drink_id)
+    except Exception as e:
+        raise HTTPException(status_code=400, detail="Invalid UUID")
+    
+    if not drink:
+        raise HTTPException(status_code=404, detail="Drink not found")
+    
+    drink_data = drink_in.model_dump(exclude_unset=True)
+    drink.sqlmodel_update(drink_data)
+    session.add(drink)
+    session.commit()
+    session.refresh(drink)
+    
+    return drink
+
+@router.delete("/drinks/{drink_id}")
+def delete_drink(session: SessionDep, drink_id: str, current_user: User = Security(get_current_user, scopes=["drinks:delete"])):
+    """
+    Delete a drink.
+    """
+    try:
+        drink = session.get(Drink, drink_id)
+    except Exception as e:
+        raise HTTPException(status_code=400, detail="Invalid UUID")
+    
+    if not drink:
+        raise HTTPException(status_code=404, detail="Drink not found")
+    
+    session.delete(drink)
+    session.commit()
+    
+    return {"success": True}
+
 
 
 @router.get("/{game_session_id}", response_model=GameSessionPublic)

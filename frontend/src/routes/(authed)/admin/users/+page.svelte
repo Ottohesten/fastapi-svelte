@@ -1,10 +1,10 @@
 <script lang="ts">
 	let { data } = $props();
-	import DataTable from './data-table.svelte';
+	import DataTable from '$lib/components/ui/data-table.svelte';
 	import { columns } from './columns.js';
 </script>
 
-<div class="mx-auto max-w-md">
+<div class="mx-auto max-w-7xl">
 	<DataTable data={data.users.data} {columns} />
 </div>
 

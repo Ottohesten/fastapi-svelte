@@ -8,8 +8,7 @@ export const columns: ColumnDef<components['schemas']["DrinkPublic"]>[] = [
     {
         accessorKey: "name",
         header: "Name",
-    },
-    {
+    }, {
         id: "actions",
         header: "Actions",
         enableHiding: false,

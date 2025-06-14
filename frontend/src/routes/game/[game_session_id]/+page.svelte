@@ -8,6 +8,11 @@
 	import { page } from '$app/stores';
 	import { goto } from '$app/navigation';
 	import { browser } from '$app/environment';
+	import Button from '$lib/components/ui/button/button.svelte';
+	import { Pencil, Trash2 } from 'lucide-svelte';
+	import { enhance } from '$app/forms';
+	import * as Dialog from '$lib/components/ui/dialog/index.js';
+	import { Input } from '$lib/components/ui/input';
 	// Use the actual API types instead of custom interfaces
 	type GameSession = components['schemas']['GameSessionPublic'];
 	type Team = components['schemas']['GameTeamPublic'];
@@ -27,6 +32,7 @@
 	let viewMode: 'overview' | 'charts' | 'players' | 'teams' = $state(DEFAULT_VIEW_MODE);
 	let chartType: 'drinks' | 'players' = $state(DEFAULT_CHART_TYPE);
 	let hoveredSegment: string | null = $state(null);
+	let open = $state(false);
 
 	// Function to update URL with current state
 	function updateURL() {
@@ -963,6 +969,59 @@
 	<!-- update button, go to {gamesessionid/update} -->
 	{#if data.authenticatedUser?.is_superuser}
 		<div class="mt-6">
+			<Dialog.Root bind:open>
+				<Dialog.Trigger>
+					<Button>Add Drink to Player</Button>
+				</Dialog.Trigger>
+				<Dialog.Content class="sm:max-w-[425px]">
+					<Dialog.Header>
+						<Dialog.Title>Add New Drink</Dialog.Title>
+						<Dialog.Description>Select a player and enter add a drink and amount</Dialog.Description
+						>
+					</Dialog.Header>
+					<form action="?/addDrinkToPlayer" method="POST">
+						<div class="grid gap-4">
+							<label for="player-select" class="font-semibold text-gray-700">Select Player:</label>
+							<select
+								id="player-select"
+								name="player"
+								required
+								class="cursor-pointer rounded-lg border-2 border-gray-300 bg-white px-4 py-2 text-base transition-colors hover:border-blue-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100"
+							>
+								<!-- <option value="" disabled selected>Select a player</option> -->
+								{#each allPlayersData as player}
+									<option value={player.name}>{player.name} ({player.teamName})</option>
+								{/each}
+							</select>
+
+							<label for="drink-name" class="font-semibold text-gray-700">Drink Name:</label>
+							<select
+								name="player"
+								id="player-select"
+								required
+								class="cursor-pointer rounded-lg border-2 border-gray-300 bg-white px-4 py-2 text-base transition-colors hover:border-blue-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100"
+							>
+								<!-- <option value="" disabled selected>Select a drink</option> -->
+								{#each allDrinks() as drink}
+									<option value={drink}>{drink}</option>
+								{/each}
+							</select>
+
+							<label for="drink-amount" class="font-semibold text-gray-700">Amount:</label>
+							<input
+								type="number"
+								id="drink-amount"
+								name="amount"
+								min="1"
+								required
+								defaultValue="1"
+								class="rounded-lg border-2 border-gray-300 bg-white px-4 py-2 text-base transition-colors hover:border-blue-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100"
+							/>
+						</div>
+					</form>
+				</Dialog.Content>
+			</Dialog.Root>
+			<!-- Edit button -->
 			<a
 				class="rounded-md bg-blue-600 px-4 py-3 font-medium text-white hover:bg-blue-800"
 				type="button"

@@ -1,8 +1,9 @@
 import type { ColumnDef } from "@tanstack/table-core";
 import type { components } from '$lib/api/v1';
-import { renderComponent } from '$lib/components/ui/data-table/index.js';
+import { renderComponent, renderSnippet } from '$lib/components/ui/data-table/index.js';
 import UserBadge from "./user-badge.svelte";
 import UserActions from "./user-actions.svelte";
+import { createRawSnippet } from "svelte";
 
 export const columns: ColumnDef<components['schemas']["UserPublic"]>[] = [
     {
@@ -23,7 +24,14 @@ export const columns: ColumnDef<components['schemas']["UserPublic"]>[] = [
     },
     {
         id: "actiosn",
-        header: "Actions",
+        header: () => {
+            const actionsHeaderSnippet = createRawSnippet(() => {
+                return {
+                    render: () => '<div class="text-right"><span class="pr-2">Actions</span></div>',
+                }
+            });
+            return renderSnippet(actionsHeaderSnippet, "");
+        },
         enableHiding: false,
         cell: ({ row }) => {
             const user = row.original;

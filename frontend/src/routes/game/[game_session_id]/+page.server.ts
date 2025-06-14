@@ -145,6 +145,44 @@ export const actions = {
         }
 
     },
+    addDrinkToPlayer: async ({ fetch, params, cookies, request }) => {
+        const client = createApiClient(fetch);
+        const auth_token = cookies.get("auth_token");
+        if (!auth_token) {
+            redirect(302, "/auth/login");
+        }
+
+        const formData = await request.formData();
+        const player_id = formData.get("player_id") as string;
+        const drink_id = formData.get("drink_id") as string;
+        const amount = formData.get("amount") as string;
+        const { data, error: apierror, response } = await client.PATCH("/game/{game_session_id}/player/{game_player_id}/drink", {
+            params: {
+                path: {
+                    game_session_id: params.game_session_id,
+                    game_player_id: player_id,
+                }
+            },
+            body: {
+                drink_id: drink_id,
+                amount: amount ? parseInt(amount as string) : 0
+            },
+            headers: {
+                Authorization: `Bearer ${auth_token}`
+            }
+        });
+
+        if (apierror) {
+            // log with file name
+            // console.log("apierror in game/+page.server.ts", apierror);
+            error(404, JSON.stringify(apierror.detail));
+        }
+
+        // return message(form, 'Player updated successfully')
+        // redirect to last page
+        redirect(303, "/game/" + params.game_session_id);
+
+    }
 
 
 } satisfies Actions;

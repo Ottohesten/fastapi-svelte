@@ -428,6 +428,27 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/game/{game_session_id}/player/{game_player_id}/drink": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Add Drink To Player
+         * @description Add a drink to a game player or update the amount if the drink link already exists.
+         *     The amount provided in drink_link_in will be set as the new total amount for that drink.
+         */
+        patch: operations["add_drink_to_player_game__game_session_id__player__game_player_id__drink_patch"];
+        trace?: never;
+    };
     "/login/access-token": {
         parameters: {
             query?: never;
@@ -2311,6 +2332,42 @@ export interface operations {
                 };
                 content: {
                     "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    add_drink_to_player_game__game_session_id__player__game_player_id__drink_patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                game_session_id: string;
+                game_player_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["GamePlayerDrinkLinkCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GamePlayerPublic"];
                 };
             };
             /** @description Validation Error */

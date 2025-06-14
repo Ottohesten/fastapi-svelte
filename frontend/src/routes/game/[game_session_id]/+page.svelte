@@ -1017,18 +1017,18 @@
 								defaultValue="1"
 								class="rounded-lg border-2 border-gray-300 bg-white px-4 py-2 text-base transition-colors hover:border-blue-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100"
 							/>
+							<Dialog.Footer class="mt-4">
+								<Button
+									type="submit"
+									class="w-full bg-blue-600 text-white hover:bg-blue-800"
+									onclick={() => {
+										open = false;
+									}}
+								>
+									Add Drink
+								</Button>
+							</Dialog.Footer>
 						</div>
-						<Dialog.Footer class="mt-4">
-							<Button
-								type="submit"
-								class="w-full bg-blue-600 text-white hover:bg-blue-800"
-								onclick={() => {
-									open = false;
-								}}
-							>
-								Add Drink
-							</Button>
-						</Dialog.Footer>
 					</form>
 				</Dialog.Content>
 			</Dialog.Root>

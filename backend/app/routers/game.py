@@ -407,6 +407,81 @@ def update_game_player(
 
 
 
+@router.patch("/{game_session_id}/player/{game_player_id}/drink", response_model=GamePlayerPublic)
+def add_drink_to_player(
+    session: SessionDep, 
+    game_session_id: str, 
+    game_player_id: str, 
+    drink_link_in: GamePlayerDrinkLinkCreate
+):
+    """
+    Add a drink to a game player or update the amount if the drink link already exists.
+    The amount provided in drink_link_in will be set as the new total amount for that drink.
+
+    """
+
+    # check valid uuid for game_session_id
+    try:
+        game_session = session.get(GameSession, game_session_id)
+    except Exception as e:
+        raise HTTPException(status_code=400, detail="Invalid UUID format for game_session_id")
+        
+    if not game_session:
+        raise HTTPException(status_code=404, detail="Game session not found")
+
+    # check valid uuid for game_player_id
+    try:
+        game_player = session.get(GamePlayer, game_player_id)
+    except Exception as e:
+        raise HTTPException(status_code=400, detail="Invalid UUID format for game_player_id")
+        
+    if not game_player:
+        raise HTTPException(status_code=404, detail="Game player not found")
+
+    if game_player.game_session_id != game_session.id:
+        raise HTTPException(status_code=403, detail="Game player not found in this game session")
+    
+    # Check if the drink itself exists
+    drink = session.get(Drink, drink_link_in.drink_id)
+    if not drink:
+        raise HTTPException(status_code=404, detail=f"Drink with id {drink_link_in.drink_id} not found")
+
+    # Find if a link already exists between this player and this drink
+    statement = select(GamePlayerDrinkLink).where(
+        GamePlayerDrinkLink.game_player_id == game_player.id,
+        GamePlayerDrinkLink.drink_id == drink_link_in.drink_id
+    )
+    existing_link = session.exec(statement).one_or_none()
+
+    if existing_link:
+        # If the link exists, update its amount
+        existing_link.amount += drink_link_in.amount  # Increment the existing amount by the new amount
+        if existing_link.amount < 1:
+            # If the resulting amount is less than 1, delete the link
+            session.delete(existing_link)
+            existing_link = None
+        session.add(existing_link)
+    else:
+        # If the link does not exist, create a new one
+        new_link = GamePlayerDrinkLink(
+            game_player_id=game_player.id,
+            drink_id=drink_link_in.drink_id,
+            amount=drink_link_in.amount
+        )
+        session.add(new_link)
+    
+    session.commit()
+    
+    # Refresh the game_player instance to load the updated/new drink_links
+    session.refresh(game_player)
+
+    return game_player
+
+
+
+
+
+
 
 
 # @router.patch("/{game_session_id}/player/{game_player_id}/drink", response_model=GamePlayerPublic)

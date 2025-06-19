@@ -980,43 +980,48 @@
 						>
 					</Dialog.Header>
 					<form action="?/addDrinkToPlayer" method="POST">
-						<div class="grid gap-4">
-							<label for="player-select" class="font-semibold text-gray-700">Select Player:</label>
-							<select
-								id="player-select"
-								name="player_id"
-								required
-								class="cursor-pointer rounded-lg border-2 border-gray-300 bg-white px-4 py-2 text-base transition-colors hover:border-blue-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100"
-							>
-								<!-- <option value="" disabled selected>Select a player</option> -->
-								{#each allPlayersData as player}
-									<option value={player.playerId}>{player.name} ({player.teamName})</option>
-								{/each}
-							</select>
+						<div class="grid gap-4 py-4">
+							<div class="grid grid-cols-4 items-center gap-4">
+								<label for="player-select" class="font-semibold text-gray-700">Player:</label>
+								<select
+									id="player-select"
+									name="player_id"
+									required
+									class="col-span-3 cursor-pointer rounded-lg border-2 border-gray-300 bg-white px-4 py-2 text-base transition-colors hover:border-blue-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100"
+								>
+									<!-- <option value="" disabled selected>Select a player</option> -->
+									{#each allPlayersData as player}
+										<option value={player.playerId}>{player.name} ({player.teamName})</option>
+									{/each}
+								</select>
+							</div>
+							<div class="grid grid-cols-4 items-center gap-4">
+								<label for="drink-name" class="font-semibold text-gray-700">Drink:</label>
+								<select
+									name="drink_id"
+									id="player-select"
+									required
+									class="col-span-3 cursor-pointer rounded-lg border-2 border-gray-300 bg-white px-4 py-2 text-base transition-colors hover:border-blue-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100"
+								>
+									<!-- <option value="" disabled selected>Select a drink</option> -->
+									{#each data.drinks as drink}
+										<option value={drink.id}>{drink.name}</option>
+									{/each}
+								</select>
+							</div>
 
-							<label for="drink-name" class="font-semibold text-gray-700">Drink Name:</label>
-							<select
-								name="drink_id"
-								id="player-select"
-								required
-								class="cursor-pointer rounded-lg border-2 border-gray-300 bg-white px-4 py-2 text-base transition-colors hover:border-blue-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100"
-							>
-								<!-- <option value="" disabled selected>Select a drink</option> -->
-								{#each data.drinks as drink}
-									<option value={drink.id}>{drink.name}</option>
-								{/each}
-							</select>
-
-							<label for="drink-amount" class="font-semibold text-gray-700">Amount:</label>
-							<input
-								type="number"
-								id="drink-amount"
-								name="amount"
-								min="1"
-								required
-								defaultValue="1"
-								class="rounded-lg border-2 border-gray-300 bg-white px-4 py-2 text-base transition-colors hover:border-blue-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100"
-							/>
+							<div class="grid grid-cols-4 items-center gap-4">
+								<label for="drink-amount" class="font-semibold text-gray-700">Amount:</label>
+								<input
+									type="number"
+									id="drink-amount"
+									name="amount"
+									min="1"
+									required
+									defaultValue="1"
+									class="col-span-3 rounded-lg border-2 border-gray-300 bg-white px-4 py-2 text-base transition-colors hover:border-blue-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100"
+								/>
+							</div>
 							<Dialog.Footer class="mt-4">
 								<Button
 									type="submit"

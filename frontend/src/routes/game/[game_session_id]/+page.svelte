@@ -420,19 +420,20 @@
 	let stackedPlayerData = $derived(createStackedPlayerData());
 </script>
 
-<div class="mx-auto max-w-7xl p-4 font-sans md:p-8">
+<div class="mx-auto min-h-screen w-full max-w-7xl px-4 py-6 font-sans sm:px-6 lg:px-8">
 	<!-- Header -->
 	<div class="mb-8 border-b-2 border-gray-200 pb-6 text-center">
-		<h1 class="mb-2 text-3xl font-bold text-gray-800 md:text-4xl">Game Session Dashboard</h1>
-		<p class="text-lg text-gray-600">
+		<h1 class="mb-2 text-2xl font-bold text-gray-800 sm:text-3xl md:text-4xl">
+			Game Session Dashboard
+		</h1>
+		<p class="text-base text-gray-600 sm:text-lg">
 			Session: <strong>{gameSession.title}</strong>
 		</p>
 	</div>
-
 	<!-- Controls -->
-	<div class="mb-8 flex flex-col items-start justify-between gap-6 lg:flex-row lg:items-center">
-		<div class="flex flex-wrap items-center gap-4">
-			<div class="flex items-center gap-2">
+	<div class="mb-8 flex flex-col gap-6">
+		<div class="flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-center">
+			<div class="flex flex-col gap-2 sm:flex-row sm:items-center">
 				<label for="team-filter" class="font-semibold text-gray-700">Filter by Team:</label>
 				<select
 					id="team-filter"
@@ -451,7 +452,7 @@
 				</select>
 			</div>
 
-			<div class="flex items-center gap-2">
+			<div class="flex flex-col gap-2 sm:flex-row sm:items-center">
 				<label for="view-mode" class="font-semibold text-gray-700">View:</label>
 				<select
 					id="view-mode"
@@ -467,25 +468,25 @@
 		</div>
 
 		<!-- Summary Stats -->
-		<div class="flex gap-4">
+		<div class="grid grid-cols-1 gap-4 sm:grid-cols-3 sm:gap-6">
 			<div
-				class="rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 px-6 py-4 text-center text-white shadow-lg"
+				class="rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 px-4 py-4 text-center text-white shadow-lg sm:px-6"
 			>
-				<div class="text-2xl font-bold">{filteredPlayersData.length}</div>
+				<div class="text-xl font-bold sm:text-2xl">{filteredPlayersData.length}</div>
 				<div class="mt-1 text-sm opacity-90">Players</div>
 			</div>
 			<div
-				class="rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 px-6 py-4 text-center text-white shadow-lg"
+				class="rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 px-4 py-4 text-center text-white shadow-lg sm:px-6"
 			>
-				<div class="text-2xl font-bold">
+				<div class="text-xl font-bold sm:text-2xl">
 					{filteredPlayersData.reduce((sum, p) => sum + p.totalDrinks, 0)}
 				</div>
 				<div class="mt-1 text-sm opacity-90">Total Drinks</div>
 			</div>
 			<div
-				class="rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 px-6 py-4 text-center text-white shadow-lg"
+				class="rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 px-4 py-4 text-center text-white shadow-lg sm:px-6"
 			>
-				<div class="text-2xl font-bold">{teams.length}</div>
+				<div class="text-xl font-bold sm:text-2xl">{teams.length}</div>
 				<div class="mt-1 text-sm opacity-90">Teams</div>
 			</div>
 		</div>
@@ -550,11 +551,10 @@
 					{/each}
 				</div>
 			</div>
-
 			<!-- Top Players -->
 			<div class="rounded-2xl bg-white p-6 shadow-xl">
 				<h2 class="mb-6 text-2xl font-semibold text-gray-800">Top Players</h2>
-				<div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+				<div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
 					{#each filteredPlayersData
 						.sort((a, b) => b.totalDrinks - a.totalDrinks)
 						.slice(0, 8) as player}
@@ -594,9 +594,9 @@
 		<div class="space-y-8">
 			<!-- Chart Controls -->
 			<div class="rounded-2xl bg-white p-6 shadow-xl">
-				<div class="mb-4 flex items-center justify-between">
+				<div class="mb-4 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
 					<h2 class="text-2xl font-semibold text-gray-800">Team Stacked Bar Charts</h2>
-					<div class="flex items-center gap-2">
+					<div class="flex flex-col gap-2 sm:flex-row sm:items-center">
 						<label for="chart-type" class="font-semibold text-gray-700">Chart Type:</label>
 						<select
 							id="chart-type"
@@ -609,134 +609,139 @@
 					</div>
 				</div>
 				<!-- Chart Container -->
-				<div class="chart-container relative overflow-x-auto" bind:clientWidth={chartWidth}>
-					<svg width={chartWidth} height={chartHeight}>
-						<!-- Background grid -->
-						<g class="grid">
-							{#each yTicks as tick}
+				<div
+					class="chart-container relative min-h-0 w-full overflow-hidden"
+					bind:clientWidth={chartWidth}
+				>
+					<div class="w-full overflow-x-auto">
+						<svg width={Math.max(chartWidth, 600)} height={chartHeight} class="min-w-full">
+							<!-- Background grid -->
+							<g class="grid">
+								{#each yTicks as tick}
+									<line
+										x1={chartMargin.left}
+										x2={Math.max(chartWidth, 600) - chartMargin.right}
+										y1={yScale(tick)}
+										y2={yScale(tick)}
+										stroke="#f0f0f0"
+										stroke-width="1"
+									/>
+								{/each}
+							</g>
+
+							<!-- Stacked Bars -->
+							<g class="bars">
+								{#if chartType === 'drinks'}
+									{#each stackedDrinkData as teamData}
+										{#each teamData.segments as segment}
+											<rect
+												x={xScale(teamData.team)}
+												y={showAnimation ? yScale(segment.y1) : yScale(0)}
+												width={xScale.bandwidth()}
+												height={showAnimation ? yScale(segment.y0) - yScale(segment.y1) : 0}
+												fill={segment.color}
+												stroke="white"
+												stroke-width="1"
+												opacity={hoveredSegment &&
+												hoveredSegment !== `${segment.team}-${segment.drink}`
+													? 0.6
+													: 1}
+												class="cursor-pointer transition-all duration-300"
+												role="button"
+												tabindex="0"
+												onmouseenter={(e) => {
+													hoveredSegment = `${segment.team}-${segment.drink}`;
+													showTooltip(e, segment, teamData.total);
+												}}
+												onmouseleave={hideTooltip}
+											></rect>
+										{/each}
+									{/each}
+								{:else}
+									{#each stackedPlayerData as teamData}
+										{#each teamData.segments as segment}
+											<rect
+												x={xScale(teamData.team)}
+												y={showAnimation ? yScale(segment.y1) : yScale(0)}
+												width={xScale.bandwidth()}
+												height={showAnimation ? yScale(segment.y0) - yScale(segment.y1) : 0}
+												fill={segment.color}
+												stroke="white"
+												stroke-width="1"
+												opacity={hoveredSegment &&
+												hoveredSegment !== `${segment.team}-${segment.player}`
+													? 0.6
+													: 1}
+												class="cursor-pointer transition-all duration-300"
+												role="button"
+												tabindex="0"
+												onmouseenter={(e) => {
+													hoveredSegment = `${segment.team}-${segment.player}`;
+													showTooltip(e, segment, teamData.total);
+												}}
+												onmouseleave={hideTooltip}
+											></rect>
+										{/each}
+									{/each}
+								{/if}
+							</g>
+
+							<!-- Y-axis -->
+							<g class="y-axis">
+								<line
+									x1={chartMargin.left}
+									x2={chartMargin.left}
+									y1={chartMargin.top}
+									y2={chartHeight - chartMargin.bottom}
+									stroke="#333"
+									stroke-width="2"
+								/>
+								{#each yTicks as tick}
+									<g transform="translate({chartMargin.left}, {yScale(tick)})">
+										<line x1="-6" x2="0" stroke="#333" stroke-width="1" />
+										<text dy="0.32em" x="-10" text-anchor="end" class="fill-gray-700 text-sm"
+											>{tick}</text
+										>
+									</g>
+								{/each}
+								<text
+									transform="rotate(-90)"
+									y={chartMargin.left - 40}
+									x={-(chartHeight - chartMargin.bottom + chartMargin.top) / 2}
+									text-anchor="middle"
+									class="fill-gray-800 text-base font-semibold"
+								>
+									Total Drinks
+								</text>
+							</g>
+
+							<!-- X-axis -->
+							<g class="x-axis">
 								<line
 									x1={chartMargin.left}
 									x2={chartWidth - chartMargin.right}
-									y1={yScale(tick)}
-									y2={yScale(tick)}
-									stroke="#f0f0f0"
-									stroke-width="1"
+									y1={chartHeight - chartMargin.bottom}
+									y2={chartHeight - chartMargin.bottom}
+									stroke="#333"
+									stroke-width="2"
 								/>
-							{/each}
-						</g>
-
-						<!-- Stacked Bars -->
-						<g class="bars">
-							{#if chartType === 'drinks'}
-								{#each stackedDrinkData as teamData}
-									{#each teamData.segments as segment}
-										<rect
-											x={xScale(teamData.team)}
-											y={showAnimation ? yScale(segment.y1) : yScale(0)}
-											width={xScale.bandwidth()}
-											height={showAnimation ? yScale(segment.y0) - yScale(segment.y1) : 0}
-											fill={segment.color}
-											stroke="white"
-											stroke-width="1"
-											opacity={hoveredSegment &&
-											hoveredSegment !== `${segment.team}-${segment.drink}`
-												? 0.6
-												: 1}
-											class="cursor-pointer transition-all duration-300"
-											role="button"
-											tabindex="0"
-											onmouseenter={(e) => {
-												hoveredSegment = `${segment.team}-${segment.drink}`;
-												showTooltip(e, segment, teamData.total);
-											}}
-											onmouseleave={hideTooltip}
-										></rect>
-									{/each}
-								{/each}
-							{:else}
-								{#each stackedPlayerData as teamData}
-									{#each teamData.segments as segment}
-										<rect
-											x={xScale(teamData.team)}
-											y={showAnimation ? yScale(segment.y1) : yScale(0)}
-											width={xScale.bandwidth()}
-											height={showAnimation ? yScale(segment.y0) - yScale(segment.y1) : 0}
-											fill={segment.color}
-											stroke="white"
-											stroke-width="1"
-											opacity={hoveredSegment &&
-											hoveredSegment !== `${segment.team}-${segment.player}`
-												? 0.6
-												: 1}
-											class="cursor-pointer transition-all duration-300"
-											role="button"
-											tabindex="0"
-											onmouseenter={(e) => {
-												hoveredSegment = `${segment.team}-${segment.player}`;
-												showTooltip(e, segment, teamData.total);
-											}}
-											onmouseleave={hideTooltip}
-										></rect>
-									{/each}
-								{/each}
-							{/if}
-						</g>
-
-						<!-- Y-axis -->
-						<g class="y-axis">
-							<line
-								x1={chartMargin.left}
-								x2={chartMargin.left}
-								y1={chartMargin.top}
-								y2={chartHeight - chartMargin.bottom}
-								stroke="#333"
-								stroke-width="2"
-							/>
-							{#each yTicks as tick}
-								<g transform="translate({chartMargin.left}, {yScale(tick)})">
-									<line x1="-6" x2="0" stroke="#333" stroke-width="1" />
-									<text dy="0.32em" x="-10" text-anchor="end" class="fill-gray-700 text-sm"
-										>{tick}</text
+								{#each teamsData() as team}
+									<g
+										transform="translate({(xScale(team.name) || 0) +
+											xScale.bandwidth() / 2}, {chartHeight - chartMargin.bottom})"
 									>
-								</g>
-							{/each}
-							<text
-								transform="rotate(-90)"
-								y={chartMargin.left - 40}
-								x={-(chartHeight - chartMargin.bottom + chartMargin.top) / 2}
-								text-anchor="middle"
-								class="fill-gray-800 text-base font-semibold"
-							>
-								Total Drinks
-							</text>
-						</g>
-
-						<!-- X-axis -->
-						<g class="x-axis">
-							<line
-								x1={chartMargin.left}
-								x2={chartWidth - chartMargin.right}
-								y1={chartHeight - chartMargin.bottom}
-								y2={chartHeight - chartMargin.bottom}
-								stroke="#333"
-								stroke-width="2"
-							/>
-							{#each teamsData() as team}
-								<g
-									transform="translate({(xScale(team.name) || 0) +
-										xScale.bandwidth() / 2}, {chartHeight - chartMargin.bottom})"
-								>
-									<line y1="0" y2="6" stroke="#333" stroke-width="1" />
-									<text y="20" text-anchor="middle" class="text-sm font-medium">
-										{team.name}
-									</text>
-									<text y="35" text-anchor="middle" class="fill-gray-600 text-xs">
-										{team.totalDrinks} total
-									</text>
-								</g>
-							{/each}
-						</g>
-					</svg>
+										<line y1="0" y2="6" stroke="#333" stroke-width="1" />
+										<text y="20" text-anchor="middle" class="text-sm font-medium">
+											{team.name}
+										</text>
+										<text y="35" text-anchor="middle" class="fill-gray-600 text-xs">
+											{team.totalDrinks} total
+										</text>
+									</g>
+								{/each}
+							</g>
+						</svg>
+					</div>
 					<!-- Tooltip -->
 					{#if tooltip.visible}
 						<div
@@ -947,102 +952,112 @@
 			</div>
 		</div>
 	{/if}
-
 	<!-- Team Legend (always visible) -->
 	{#if teams.length > 1}
 		<div class="mt-8 rounded-2xl bg-white p-6 shadow-lg">
 			<h3 class="mb-4 text-lg font-semibold text-gray-800">Team Colors</h3>
-			<div class="flex flex-wrap gap-4">
+			<div class="grid grid-cols-2 gap-3 sm:flex sm:flex-wrap sm:gap-4">
 				{#each teams as team}
 					<div class="flex items-center gap-2 text-sm text-gray-700">
 						<div
-							class="h-4 w-4 rounded border border-black/10"
+							class="h-4 w-4 flex-shrink-0 rounded border border-black/10"
 							style="background-color: {colorScale(team)}"
 						></div>
-						<span>{team}</span>
+						<span class="truncate">{team}</span>
 					</div>
 				{/each}
 			</div>
 		</div>
 	{/if}
-
 	<!-- update button, go to {gamesessionid/update} -->
 	{#if data.authenticatedUser?.is_superuser}
 		<div class="mt-6">
-			<Dialog.Root bind:open>
-				<Dialog.Trigger>
-					<Button>Add Drink to Player</Button>
-				</Dialog.Trigger>
-				<Dialog.Content class="sm:max-w-[425px]">
-					<Dialog.Header>
-						<Dialog.Title>Add New Drink</Dialog.Title>
-						<Dialog.Description>Select a player and enter add a drink and amount</Dialog.Description
-						>
-					</Dialog.Header>
-					<form action="?/addDrinkToPlayer" method="POST">
-						<div class="grid gap-4 py-4">
-							<div class="grid grid-cols-4 items-center gap-4">
-								<label for="player-select" class="font-semibold text-gray-700">Player:</label>
-								<select
-									id="player-select"
-									name="player_id"
-									required
-									class="col-span-3 cursor-pointer rounded-lg border-2 border-gray-300 bg-white px-4 py-2 text-base transition-colors hover:border-blue-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100"
-								>
-									<!-- <option value="" disabled selected>Select a player</option> -->
-									{#each allPlayersData as player}
-										<option value={player.playerId}>{player.name} ({player.teamName})</option>
-									{/each}
-								</select>
-							</div>
-							<div class="grid grid-cols-4 items-center gap-4">
-								<label for="drink-name" class="font-semibold text-gray-700">Drink:</label>
-								<select
-									name="drink_id"
-									id="player-select"
-									required
-									class="col-span-3 cursor-pointer rounded-lg border-2 border-gray-300 bg-white px-4 py-2 text-base transition-colors hover:border-blue-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100"
-								>
-									<!-- <option value="" disabled selected>Select a drink</option> -->
-									{#each data.drinks as drink}
-										<option value={drink.id}>{drink.name}</option>
-									{/each}
-								</select>
-							</div>
+			<div class="flex flex-col gap-4 sm:flex-row">
+				<Dialog.Root bind:open>
+					<Dialog.Trigger>
+						<Button class="w-full sm:w-auto">Add Drink to Player</Button>
+					</Dialog.Trigger>
+					<Dialog.Content class="sm:max-w-[425px]">
+						<Dialog.Header>
+							<Dialog.Title>Add New Drink</Dialog.Title>
+							<Dialog.Description
+								>Select a player and enter add a drink and amount</Dialog.Description
+							>
+						</Dialog.Header>
+						<form action="?/addDrinkToPlayer" method="POST">
+							<div class="grid gap-4 py-4">
+								<div class="grid grid-cols-1 gap-2 sm:grid-cols-4 sm:items-center sm:gap-4">
+									<label for="player-select" class="font-semibold text-gray-700 sm:col-span-1"
+										>Player:</label
+									>
+									<select
+										id="player-select"
+										name="player_id"
+										required
+										class="cursor-pointer rounded-lg border-2 border-gray-300 bg-white px-4 py-2 text-base transition-colors hover:border-blue-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100 sm:col-span-3"
+									>
+										<!-- <option value="" disabled selected>Select a player</option> -->
+										{#each allPlayersData as player}
+											<option value={player.playerId}>{player.name} ({player.teamName})</option>
+										{/each}
+									</select>
+								</div>
+								<div class="grid grid-cols-1 gap-2 sm:grid-cols-4 sm:items-center sm:gap-4">
+									<label for="drink-name" class="font-semibold text-gray-700 sm:col-span-1"
+										>Drink:</label
+									>
+									<select
+										name="drink_id"
+										id="drink-select"
+										required
+										class="cursor-pointer rounded-lg border-2 border-gray-300 bg-white px-4 py-2 text-base transition-colors hover:border-blue-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100 sm:col-span-3"
+									>
+										<!-- <option value="" disabled selected>Select a drink</option> -->
+										{#each data.drinks as drink}
+											<option value={drink.id}>{drink.name}</option>
+										{/each}
+									</select>
+								</div>
 
-							<div class="grid grid-cols-4 items-center gap-4">
-								<label for="drink-amount" class="font-semibold text-gray-700">Amount:</label>
-								<input
-									type="number"
-									id="drink-amount"
-									name="amount"
-									min="1"
-									required
-									defaultValue="1"
-									class="col-span-3 rounded-lg border-2 border-gray-300 bg-white px-4 py-2 text-base transition-colors hover:border-blue-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100"
-								/>
+								<div class="grid grid-cols-1 gap-2 sm:grid-cols-4 sm:items-center sm:gap-4">
+									<label for="drink-amount" class="font-semibold text-gray-700 sm:col-span-1"
+										>Amount:</label
+									>
+									<input
+										type="number"
+										id="drink-amount"
+										name="amount"
+										min="1"
+										required
+										defaultValue="1"
+										class="rounded-lg border-2 border-gray-300 bg-white px-4 py-2 text-base transition-colors hover:border-blue-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100 sm:col-span-3"
+									/>
+								</div>
+								<Dialog.Footer class="mt-4">
+									<Button
+										type="submit"
+										class="w-full bg-blue-600 text-white hover:bg-blue-800"
+										onclick={() => {
+											open = false;
+										}}
+									>
+										Add Drink
+									</Button>
+								</Dialog.Footer>
 							</div>
-							<Dialog.Footer class="mt-4">
-								<Button
-									type="submit"
-									class="w-full bg-blue-600 text-white hover:bg-blue-800"
-									onclick={() => {
-										open = false;
-									}}
-								>
-									Add Drink
-								</Button>
-							</Dialog.Footer>
-						</div>
-					</form>
-				</Dialog.Content>
-			</Dialog.Root>
-			<!-- Edit button -->
-			<a
-				class="rounded-md bg-blue-600 px-4 py-3 font-medium text-white hover:bg-blue-800"
-				type="button"
-				href="/game/{data.game_session.id}/update">Edit</a
-			>
+						</form>
+					</Dialog.Content>
+				</Dialog.Root>
+				<!-- Edit button -->
+				<!-- <a
+					class="rounded-md bg-blue-600 px-4 py-2 text-center font-medium text-white hover:bg-blue-800"
+					type="button"
+					href="/game/{data.game_session.id}/update">Edit</a
+				> -->
+				<Button href="/game/{data.game_session.id}/update" class="bg-blue-600 hover:bg-blue-800"
+					>Edit</Button
+				>
+			</div>
 		</div>
 	{/if}
 </div>

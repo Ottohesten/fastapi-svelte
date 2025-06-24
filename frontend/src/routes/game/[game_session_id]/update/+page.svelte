@@ -22,7 +22,7 @@
 <!-- <SuperDebug data={$form} /> -->
 <!-- <SuperDebug data={$playerForm} /> -->
 
-<div class="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-4 sm:p-6 lg:p-8">
+<div class="min-h-screen bg-linear-to-br from-blue-50 to-indigo-100 p-4 sm:p-6 lg:p-8">
 	<div class="mx-auto max-w-7xl space-y-8">
 		<!-- Header -->
 		<div class="text-center">

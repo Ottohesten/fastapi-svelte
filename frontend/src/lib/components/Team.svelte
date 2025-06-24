@@ -36,7 +36,7 @@
 			action="/game/{team.game_session_id}?/deleteTeam"
 			method="POST"
 			use:enhance
-			class="flex-shrink-0"
+			class="shrink-0"
 		>
 			<input type="hidden" name="team_id" value={team.id} />
 			<input type="hidden" name="game_session_id" value={team.game_session_id} />

@@ -1,7 +1,12 @@
 import { createApiClient } from '$lib/api/api';
-import { error, fail } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import { redirect } from '@sveltejs/kit';
+import { message, superValidate, fail } from 'sveltekit-superforms';
+import { zod } from 'sveltekit-superforms/adapters';
+import { z } from 'zod';
 import type { Actions } from './$types.js';
+
+import { UserSchema } from '$lib/schemas/schemas.js';
 
 
 export const load = async ({ fetch, cookies }) => {
@@ -13,13 +18,19 @@ export const load = async ({ fetch, cookies }) => {
         }
     })
 
+    const userCreateForm = await superValidate(zod(UserSchema), {
+        id: "userCreateForm",
+    });
+
     if (apierror) {
         error(404, JSON.stringify(apierror.detail));
     }
 
 
     return {
-        users: data
+        users: data,
+        userCreateForm
+
     }
 
 }
@@ -28,42 +39,31 @@ export const load = async ({ fetch, cookies }) => {
 export const actions = {
     createUser: async ({ fetch, cookies, request }) => {
         // console.log('createUser action called');
-        const client = createApiClient(fetch);
         const auth_token = cookies.get("auth_token");
+        const userCreateForm = await superValidate(request, zod(UserSchema));
 
         if (!auth_token) {
             console.log('No auth token found');
             redirect(302, "/auth/login");
         }
-
-        const formData = await request.formData();
-        // console.log('Form data received:', Object.fromEntries(formData.entries()));
-        const email = formData.get('email') as string;
-        const password = formData.get('password') as string;
-        const confirmPassword = formData.get('confirm_password') as string;
-        const fullName = formData.get('full_name') as string;
-        const isActive = formData.get('is_active') === 'on';
-        const isSuperuser = formData.get('is_superuser') === 'on';
-
-        // Validate passwords match
-        if (password !== confirmPassword) {
-            return fail(400, { error: 'Passwords do not match' });
-        }        // Validate password length
-        if (password.length < 8) {
-            console.log('Password too short');
-            return fail(400, { error: 'Password must be at least 8 characters long' });
+        if (!userCreateForm.valid) {
+            return fail(400, { userCreateForm });
         }
 
-        // console.log('Calling API to create user:', { email, fullName, isActive, isSuperuser });
+
+        const client = createApiClient(fetch);
+
 
         const { error: apierror, response } = await client.POST("/users/", {
             body: {
-                email,
-                password,
-                full_name: fullName || null,
-                is_superuser: isSuperuser,
-                is_active: isActive
-            }, headers: {
+                email: userCreateForm.data.email,
+                password: userCreateForm.data.password,
+                full_name: userCreateForm.data.full_name || null,
+                is_active: userCreateForm.data.is_active,
+                is_superuser: userCreateForm.data.is_superuser
+
+            },
+            headers: {
                 Authorization: `Bearer ${auth_token}`
             }
         })
@@ -71,9 +71,10 @@ export const actions = {
         if (apierror) {
             console.log('API error:', apierror);
             return fail(400, { error: `Failed to create user: ${JSON.stringify(apierror.detail)}` });
-        } console.log('User created successfully');
+        }
+        // console.log('User created successfully');
         // Return success instead of redirect
-        return { success: true, message: 'User created successfully' };
+        return message(userCreateForm, "User created successfully")
     },
 
     updateUser: async ({ fetch, cookies, request }) => {
@@ -130,7 +131,8 @@ export const actions = {
                 path: {
                     user_id: userId
                 }
-            }, headers: {
+            },
+            headers: {
                 Authorization: `Bearer ${auth_token}`
             }
         })

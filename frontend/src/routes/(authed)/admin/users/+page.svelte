@@ -5,31 +5,29 @@
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { Button } from '$lib/components/ui/button';
 	import { superForm } from 'sveltekit-superforms';
+	import { zod } from 'sveltekit-superforms/adapters';
+	import { UserSchema } from '$lib/schemas/schemas.js';
 	import SuperDebug from 'sveltekit-superforms';
-
 	let { data } = $props();
+	let dialogOpen = $state(false);
 	const { form, errors, message, constraints, enhance, submitting } = superForm(
 		data.userCreateForm,
 		{
 			resetForm: true,
+			validators: zod(UserSchema),
 			onUpdated: ({ form }) => {
-				if (form.valid) {
+				if (form.valid && form.message) {
 					dialogOpen = false;
 				}
 			}
 		}
 	);
-
-	// const { form, errors, message, constraints, enhance } = superForm(data.userCreateForm, {
-	// 	dataType: 'json'
-	// });
-
-	// get usercreate type from components.schemas
-	type UserCreate = components['schemas']['UserCreate'];
-	let dialogOpen = $state(false);
 </script>
 
-<SuperDebug data={$form} />
+<!-- <SuperDebug data={$form} /> -->
+<!-- <SuperDebug data={$errors} /> -->
+<!-- <SuperDebug data={$message} /> -->
+<!-- <SuperDebug data={$constraints} /> -->
 
 <div class="mx-auto max-w-7xl space-y-6 p-4 sm:p-6 lg:p-8">
 	<!-- Header with Add User Button -->
@@ -81,7 +79,6 @@
 								{...$constraints.email}
 								required
 								placeholder="Enter user email"
-								autocomplete="off"
 							/>
 							{#if $errors.email}
 								<p class="mt-1 text-sm text-red-600">{$errors.email}</p>
@@ -108,7 +105,6 @@
 								<p class="mt-1 text-sm text-red-600">{$errors.full_name}</p>
 							{/if}
 						</div>
-
 						<!-- Password Field -->
 						<div>
 							<label for="password" class="mb-1 block text-sm font-medium text-gray-700"
@@ -119,7 +115,9 @@
 								name="password"
 								aria-invalid={$errors.password ? 'true' : 'false'}
 								id="password"
-								class="w-full rounded-md border border-gray-300 p-2 focus:border-blue-500 focus:ring-blue-500"
+								class="w-full rounded-md border p-2 focus:ring-blue-500 {$errors.password
+									? 'border-red-500 focus:border-red-500'
+									: 'border-gray-300 focus:border-blue-500'}"
 								bind:value={$form.password}
 								{...$constraints.password}
 								required
@@ -130,7 +128,6 @@
 								<p class="mt-1 text-sm text-red-600">{$errors.password}</p>
 							{/if}
 						</div>
-
 						<!-- Confirm Password Field -->
 						<div>
 							<label for="confirm_password" class="mb-1 block text-sm font-medium text-gray-700"
@@ -141,12 +138,13 @@
 								name="confirm_password"
 								aria-invalid={$errors.confirm_password ? 'true' : 'false'}
 								id="confirm_password"
-								class="w-full rounded-md border border-gray-300 p-2 focus:border-blue-500 focus:ring-blue-500"
+								class="w-full rounded-md border p-2 focus:ring-blue-500 {$errors.confirm_password
+									? 'border-red-500 focus:border-red-500'
+									: 'border-gray-300 focus:border-blue-500'}"
 								bind:value={$form.confirm_password}
 								{...$constraints.confirm_password}
 								required
 								placeholder="Confirm user password"
-								autocomplete="new-password"
 							/>
 							{#if $errors.confirm_password}
 								<p class="mt-1 text-sm text-red-600">{$errors.confirm_password}</p>

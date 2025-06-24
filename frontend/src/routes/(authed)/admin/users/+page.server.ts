@@ -16,11 +16,9 @@ export const load = async ({ fetch, cookies }) => {
         headers: {
             Authorization: `Bearer ${auth_token}`
         }
-    })
-
-    const userCreateForm = await superValidate(zod(UserSchema), {
-        id: "userCreateForm",
     });
+
+    const userCreateForm = await superValidate(zod(UserSchema));
 
     if (apierror) {
         error(404, JSON.stringify(apierror.detail));
@@ -72,7 +70,7 @@ export const actions = {
             console.log('API error:', apierror);
             return fail(400, { error: `Failed to create user: ${JSON.stringify(apierror.detail)}` });
         }
-        // console.log('User created successfully');
+        console.log('User created successfully');
         // Return success instead of redirect
         return message(userCreateForm, "User created successfully")
     },

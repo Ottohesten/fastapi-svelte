@@ -19,83 +19,139 @@
 	});
 </script>
 
-<SuperDebug data={$form} />
-<SuperDebug data={$playerForm} />
+<!-- <SuperDebug data={$form} /> -->
+<!-- <SuperDebug data={$playerForm} /> -->
 
-<div class="container">
-	<div>
-		<div>
-			<!-- teams -->
-			<h2 class="text-4xl font-bold">Teams:</h2>
-			<div class="grid grid-cols-3 gap-4">
+<div class="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-4 sm:p-6 lg:p-8">
+	<div class="mx-auto max-w-7xl space-y-8">
+		<!-- Header -->
+		<div class="text-center">
+			<h1 class="text-2xl font-bold text-gray-900 sm:text-3xl lg:text-4xl">Game Management</h1>
+			<p class="mt-2 text-sm text-gray-600 sm:text-base">
+				Manage teams and players for {data.game_session.title || 'your game session'}
+			</p>
+		</div>
+
+		<!-- Teams Section -->
+		<div class="rounded-2xl bg-white p-4 shadow-lg sm:p-6">
+			<h2 class="mb-4 text-xl font-bold text-gray-900 sm:mb-6 sm:text-2xl lg:text-3xl">Teams</h2>
+			<div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
 				{#if data.game_session.teams.length === 0}
-					<p>No teams available.</p>
+					<div class="col-span-full text-center text-gray-500">
+						<p class="text-sm sm:text-base">No teams available.</p>
+					</div>
 				{/if}
 
 				{#each data.game_session.teams as team}
 					<Team {team} />
 				{/each}
 			</div>
-			<h2 class="text-4xl font-bold">Players:</h2>
-			<div class="grid grid-cols-3 gap-4">
+		</div>
+
+		<!-- Players Section -->
+		<div class="rounded-2xl bg-white p-4 shadow-lg sm:p-6">
+			<h2 class="mb-4 text-xl font-bold text-gray-900 sm:mb-6 sm:text-2xl lg:text-3xl">Players</h2>
+			<div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
 				{#if data.game_session.teams.length === 0}
-					<p>No teams available.</p>
+					<div class="col-span-full text-center text-gray-500">
+						<p class="text-sm sm:text-base">No teams available.</p>
+					</div>
 				{/if}
 				{#if data.game_session.players.length === 0}
-					<p>No players available.</p>
+					<div class="col-span-full text-center text-gray-500">
+						<p class="text-sm sm:text-base">No players available.</p>
+					</div>
 				{/if}
 				{#each data.game_session.players as player}
 					<Player {player} />
 				{/each}
 			</div>
 		</div>
-
-		<div class="mt-10">
-			<h2 class="text-4xl font-bold">Create Team:</h2>
-			<form method="POST" action="?/addTeam" enctype="multipart/form-data" use:enhance>
-				{#if $message}<h3 class="text-center text-2xl">{$message}</h3>{/if}
-				<div class="">
-					<label class="" for="name">Team Name</label>
+		<!-- Create Team Section -->
+		<div class="rounded-2xl bg-white p-4 shadow-lg sm:p-6">
+			<h2 class="mb-4 text-xl font-bold text-gray-900 sm:mb-6 sm:text-2xl lg:text-3xl">
+				Create Team
+			</h2>
+			<form
+				method="POST"
+				action="?/addTeam"
+				enctype="multipart/form-data"
+				use:enhance
+				class="space-y-4"
+			>
+				{#if $message}
+					<div class="rounded-lg bg-blue-50 p-3 text-center">
+						<h3 class="text-sm font-medium text-blue-800 sm:text-base">{$message}</h3>
+					</div>
+				{/if}
+				<div class="space-y-2">
+					<label class="text-sm font-semibold text-gray-700 sm:text-base" for="name"
+						>Team Name</label
+					>
 					<input
-						class="w-full appearance-none rounded-md border bg-gray-50 p-2 text-gray-700 shadow"
+						class="w-full rounded-lg border-2 border-gray-300 bg-white px-4 py-2 text-base transition-colors hover:border-blue-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100 sm:py-3"
 						type="text"
 						name="team_name"
 						aria-invalid={$errors.name ? 'true' : undefined}
 						bind:value={$form.name}
 						{...$constraints.name}
 						required
+						placeholder="Enter team name"
 					/>
-					{#if $errors.name}<span class="invalid">{$errors.name}</span>{/if}
+					{#if $errors.name}
+						<span class="text-sm text-red-600">{$errors.name}</span>
+					{/if}
 				</div>
 				<button
 					type="submit"
-					class="mt-4 rounded-md bg-blue-600 px-4 py-2 font-medium text-white hover:bg-blue-800"
-					>Add Team
+					class="w-full rounded-lg bg-blue-600 px-4 py-2 font-medium text-white transition-colors hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-100 sm:w-auto sm:px-6 sm:py-3"
+				>
+					Add Team
 				</button>
 			</form>
 		</div>
-		<div class="mt-10">
-			<h2 class="text-4xl font-bold">Create Player:</h2>
-			<form method="POST" action="?/addPlayer" enctype="multipart/form-data" use:playerEnhance>
-				{#if $playerMessage}<h3 class="text-center text-2xl">{$playerMessage}</h3>{/if}
-				<!-- {console.log($message)} -->
-				<div class="">
-					<label class="" for="name">Player Name</label>
+
+		<!-- Create Player Section -->
+		<div class="rounded-2xl bg-white p-4 shadow-lg sm:p-6">
+			<h2 class="mb-4 text-xl font-bold text-gray-900 sm:mb-6 sm:text-2xl lg:text-3xl">
+				Create Player
+			</h2>
+			<form
+				method="POST"
+				action="?/addPlayer"
+				enctype="multipart/form-data"
+				use:playerEnhance
+				class="space-y-4"
+			>
+				{#if $playerMessage}
+					<div class="rounded-lg bg-blue-50 p-3 text-center">
+						<h3 class="text-sm font-medium text-blue-800 sm:text-base">{$playerMessage}</h3>
+					</div>
+				{/if}
+				<div class="space-y-2">
+					<label class="text-sm font-semibold text-gray-700 sm:text-base" for="name"
+						>Player Name</label
+					>
 					<input
-						class="w-full appearance-none rounded-md border bg-gray-50 p-2 text-gray-700 shadow"
+						class="w-full rounded-lg border-2 border-gray-300 bg-white px-4 py-2 text-base transition-colors hover:border-blue-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100 sm:py-3"
 						type="text"
 						name="player_name"
 						aria-invalid={$playerErrors.name ? 'true' : undefined}
 						bind:value={$playerForm.name}
 						{...$playerConstraints.name}
 						required
+						placeholder="Enter player name"
 					/>
-					{#if $playerErrors.name}<span class="invalid">{$playerErrors.name}</span>{/if}
+					{#if $playerErrors.name}
+						<span class="text-sm text-red-600">{$playerErrors.name}</span>
+					{/if}
 				</div>
-				<div class="mt-4">
-					<label class="" for="team_id">Team (Optional)</label>
+				<div class="space-y-2">
+					<label class="text-sm font-semibold text-gray-700 sm:text-base" for="team_id"
+						>Team (Optional)</label
+					>
 					<select
-						class="w-full appearance-none rounded-md border bg-gray-50 p-2 text-gray-700 shadow"
+						class="w-full cursor-pointer rounded-lg border-2 border-gray-300 bg-white px-4 py-2 text-base transition-colors hover:border-blue-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100 sm:py-3"
 						name="team_id"
 						bind:value={$playerForm.team_id}
 						aria-invalid={$playerErrors.team_id ? 'true' : undefined}
@@ -105,12 +161,15 @@
 							<option value={team.id}>{team.name}</option>
 						{/each}
 					</select>
-					{#if $playerErrors.team_id}<span class="invalid">{$playerErrors.team_id}</span>{/if}
+					{#if $playerErrors.team_id}
+						<span class="text-sm text-red-600">{$playerErrors.team_id}</span>
+					{/if}
 				</div>
 				<button
 					type="submit"
-					class="mt-4 rounded-md bg-blue-600 px-4 py-2 font-medium text-white hover:bg-blue-800"
-					>Add Player
+					class="w-full rounded-lg bg-blue-600 px-4 py-2 font-medium text-white transition-colors hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-100 sm:w-auto sm:px-6 sm:py-3"
+				>
+					Add Player
 				</button>
 			</form>
 		</div>

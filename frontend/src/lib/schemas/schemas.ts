@@ -10,6 +10,9 @@ export const UserSchema = z.object({
     full_name: z.string().min(1),
     is_active: z.boolean().default(true),
     is_superuser: z.boolean().default(false)
+}).refine((data) => data.password === data.confirm_password, {
+    message: "Passwords don't match",
+    path: ["confirm_password"],
 });
 
 

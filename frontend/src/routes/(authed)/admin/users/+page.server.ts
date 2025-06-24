@@ -1,5 +1,5 @@
 import { createApiClient } from '$lib/api/api';
-import { error } from '@sveltejs/kit';
+import { error, fail } from '@sveltejs/kit';
 import { redirect } from '@sveltejs/kit';
 import type { Actions } from './$types.js';
 
@@ -27,19 +27,34 @@ export const load = async ({ fetch, cookies }) => {
 
 export const actions = {
     createUser: async ({ fetch, cookies, request }) => {
+        // console.log('createUser action called');
         const client = createApiClient(fetch);
         const auth_token = cookies.get("auth_token");
 
         if (!auth_token) {
+            console.log('No auth token found');
             redirect(302, "/auth/login");
         }
 
         const formData = await request.formData();
+        // console.log('Form data received:', Object.fromEntries(formData.entries()));
         const email = formData.get('email') as string;
         const password = formData.get('password') as string;
+        const confirmPassword = formData.get('confirm_password') as string;
         const fullName = formData.get('full_name') as string;
         const isActive = formData.get('is_active') === 'on';
         const isSuperuser = formData.get('is_superuser') === 'on';
+
+        // Validate passwords match
+        if (password !== confirmPassword) {
+            return fail(400, { error: 'Passwords do not match' });
+        }        // Validate password length
+        if (password.length < 8) {
+            console.log('Password too short');
+            return fail(400, { error: 'Password must be at least 8 characters long' });
+        }
+
+        // console.log('Calling API to create user:', { email, fullName, isActive, isSuperuser });
 
         const { error: apierror, response } = await client.POST("/users/", {
             body: {
@@ -54,11 +69,11 @@ export const actions = {
         })
 
         if (apierror) {
-            error(400, `Failed to create user: ${JSON.stringify(apierror.detail)}`);
-        }
-
-        // Redirect to the users page after creating a user
-        redirect(302, "/admin/users");
+            console.log('API error:', apierror);
+            return fail(400, { error: `Failed to create user: ${JSON.stringify(apierror.detail)}` });
+        } console.log('User created successfully');
+        // Return success instead of redirect
+        return { success: true, message: 'User created successfully' };
     },
 
     updateUser: async ({ fetch, cookies, request }) => {

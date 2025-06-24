@@ -1,6 +1,19 @@
 import { zod } from 'sveltekit-superforms/adapters'
 import { z } from 'zod';
 
+
+// User Schema for creating a user
+export const UserSchema = z.object({
+    email: z.string().email(),
+    password: z.string().min(8),
+    confirm_password: z.string().min(8),
+    full_name: z.string().min(1),
+    is_active: z.boolean().default(true),
+    is_superuser: z.boolean().default(false)
+});
+
+
+
 export const RecipeSchema = z.object({
     title: z.string().min(3),
     // mpt optional
@@ -55,3 +68,4 @@ export const GameSessionPlayerUpdateSchema = z.object({
         amount: z.number().int().min(0).default(0),
     }))
 })
+

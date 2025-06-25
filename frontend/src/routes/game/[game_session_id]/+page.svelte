@@ -470,13 +470,13 @@
 		<!-- Summary Stats -->
 		<div class="grid grid-cols-1 gap-4 sm:grid-cols-3 sm:gap-6">
 			<div
-				class="rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 px-4 py-4 text-center text-white shadow-lg sm:px-6"
+				class="rounded-xl bg-linear-to-br from-indigo-500 to-purple-600 px-4 py-4 text-center text-white shadow-lg sm:px-6"
 			>
 				<div class="text-xl font-bold sm:text-2xl">{filteredPlayersData.length}</div>
 				<div class="mt-1 text-sm opacity-90">Players</div>
 			</div>
 			<div
-				class="rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 px-4 py-4 text-center text-white shadow-lg sm:px-6"
+				class="rounded-xl bg-linear-to-br from-indigo-500 to-purple-600 px-4 py-4 text-center text-white shadow-lg sm:px-6"
 			>
 				<div class="text-xl font-bold sm:text-2xl">
 					{filteredPlayersData.reduce((sum, p) => sum + p.totalDrinks, 0)}
@@ -484,7 +484,7 @@
 				<div class="mt-1 text-sm opacity-90">Total Drinks</div>
 			</div>
 			<div
-				class="rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 px-4 py-4 text-center text-white shadow-lg sm:px-6"
+				class="rounded-xl bg-linear-to-br from-indigo-500 to-purple-600 px-4 py-4 text-center text-white shadow-lg sm:px-6"
 			>
 				<div class="text-xl font-bold sm:text-2xl">{teams.length}</div>
 				<div class="mt-1 text-sm opacity-90">Teams</div>
@@ -960,7 +960,7 @@
 				{#each teams as team}
 					<div class="flex items-center gap-2 text-sm text-gray-700">
 						<div
-							class="h-4 w-4 flex-shrink-0 rounded border border-black/10"
+							class="h-4 w-4 shrink-0 rounded border border-black/10"
 							style="background-color: {colorScale(team)}"
 						></div>
 						<span class="truncate">{team}</span>

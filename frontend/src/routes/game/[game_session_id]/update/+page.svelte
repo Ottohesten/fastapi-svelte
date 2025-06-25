@@ -22,7 +22,7 @@
 <!-- <SuperDebug data={$form} /> -->
 <!-- <SuperDebug data={$playerForm} /> -->
 
-<div class="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-4 sm:p-6 lg:p-8">
+<div class="bg-linear-to-br min-h-screen from-blue-50 to-indigo-100 p-4 sm:p-6 lg:p-8">
 	<div class="mx-auto max-w-7xl space-y-8">
 		<!-- Header -->
 		<div class="text-center">
@@ -35,7 +35,7 @@
 		<!-- Teams Section -->
 		<div class="rounded-2xl bg-white p-4 shadow-lg sm:p-6">
 			<h2 class="mb-4 text-xl font-bold text-gray-900 sm:mb-6 sm:text-2xl lg:text-3xl">Teams</h2>
-			<div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+			<div class="grid grid-cols-1 gap-4 sm:grid-cols-3 xl:grid-cols-5">
 				{#if data.game_session.teams.length === 0}
 					<div class="col-span-full text-center text-gray-500">
 						<p class="text-sm sm:text-base">No teams available.</p>
@@ -51,7 +51,7 @@
 		<!-- Players Section -->
 		<div class="rounded-2xl bg-white p-4 shadow-lg sm:p-6">
 			<h2 class="mb-4 text-xl font-bold text-gray-900 sm:mb-6 sm:text-2xl lg:text-3xl">Players</h2>
-			<div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+			<div class="grid grid-cols-1 gap-4 sm:grid-cols-3 xl:grid-cols-5">
 				{#if data.game_session.teams.length === 0}
 					<div class="col-span-full text-center text-gray-500">
 						<p class="text-sm sm:text-base">No teams available.</p>

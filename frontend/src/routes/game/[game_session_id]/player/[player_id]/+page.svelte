@@ -96,7 +96,7 @@
 									class="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
 								/>
 							</div>
-							<div class="ml-3 flex-grow">
+							<div class="ml-3 grow">
 								<label
 									for={`drink-checkbox-${availableDrink.id}`}
 									class="block text-sm font-medium text-gray-800"

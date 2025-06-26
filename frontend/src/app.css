@@ -104,3 +104,49 @@
     @apply text-xl font-bold mb-2;
   }
 }
+
+
+
+/* Style inputs with errors */
+[data-fs-error] input,
+[data-fs-error] textarea,
+[data-fs-error] select {
+  @apply border-red-500 ring-red-500/20 focus:border-red-500 focus:ring-red-500/20;
+}
+
+/* Style labels with errors */
+[data-fs-error] [data-fs-label] {
+  @apply text-red-700;
+}
+
+/* Style field error messages */
+[data-fs-field-errors] {
+  @apply text-red-600 text-sm mt-1;
+}
+
+[data-fs-field-error] {
+  @apply block;
+}
+
+/* Style checkboxes with errors */
+[data-fs-error] input[type="checkbox"] {
+  @apply border-red-500 text-red-600 focus:ring-red-500/20;
+}
+
+/* Global aria-invalid styling for additional error indication */
+input[aria-invalid="true"],
+textarea[aria-invalid="true"],
+select[aria-invalid="true"] {
+  @apply border-red-500 ring-red-500/20 focus:border-red-500 focus:ring-red-500/20;
+}
+
+/* Checkbox with aria-invalid */
+input[type="checkbox"][aria-invalid="true"] {
+  @apply border-red-500 text-red-600 focus:ring-red-500/20;
+}
+
+/* Radio button with aria-invalid */
+input[type="radio"][aria-invalid="true"] {
+  @apply border-red-500 text-red-600 focus:ring-red-500/20;
+}
+

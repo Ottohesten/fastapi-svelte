@@ -4,7 +4,7 @@ import { z } from 'zod';
 
 // User Schema for creating a user
 export const UserSchema = z.object({
-    email: z.string().email(),
+    email: z.string().email("Please enter a valid email"),
     password: z.string().min(8),
     confirm_password: z.string().min(8),
     full_name: z.string().min(1),
@@ -14,6 +14,8 @@ export const UserSchema = z.object({
     message: "Passwords don't match",
     path: ["confirm_password"],
 });
+
+export type FormSchema = typeof UserSchema;
 
 
 

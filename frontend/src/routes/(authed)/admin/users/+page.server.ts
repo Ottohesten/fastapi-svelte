@@ -3,7 +3,6 @@ import { error } from '@sveltejs/kit';
 import { redirect } from '@sveltejs/kit';
 import { message, superValidate, fail } from 'sveltekit-superforms';
 import { zod } from 'sveltekit-superforms/adapters';
-import { z } from 'zod';
 import type { Actions } from './$types.js';
 
 import { UserSchema } from '$lib/schemas/schemas.js';
@@ -18,8 +17,6 @@ export const load = async ({ fetch, cookies }) => {
         }
     });
 
-    const userCreateForm = await superValidate(zod(UserSchema));
-
     if (apierror) {
         error(404, JSON.stringify(apierror.detail));
     }
@@ -27,7 +24,9 @@ export const load = async ({ fetch, cookies }) => {
 
     return {
         users: data,
-        userCreateForm
+        userCreateForm: await superValidate(zod(UserSchema), {
+            id: "userCreateForm",
+        }),
 
     }
 
@@ -72,7 +71,8 @@ export const actions = {
         }
         console.log('User created successfully');
         // Return success instead of redirect
-        return message(userCreateForm, "User created successfully")
+        return message(userCreateForm, `User ${userCreateForm.data.email} created successfully!`)
+        // redirect(302, "/admin/users");
     },
 
     updateUser: async ({ fetch, cookies, request }) => {

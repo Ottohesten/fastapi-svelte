@@ -32,18 +32,18 @@
 		if (updateMessage && updateErrors && editDialogOpen) {
 			const currentMessage = $updateMessage;
 			const currentErrors = $updateErrors;
-			
+
 			// If there's a success message and no errors, close the dialog
 			if (currentMessage && typeof currentMessage === 'string' && currentMessage.length > 0) {
 				// Check if there are no form errors (success condition)
-				const hasErrors = currentErrors && (
-					(currentErrors.email && currentErrors.email.length > 0) ||
-					(currentErrors.full_name && currentErrors.full_name.length > 0) ||
-					(currentErrors.password && currentErrors.password.length > 0) ||
-					(currentErrors.confirm_password && currentErrors.confirm_password.length > 0) ||
-					(currentErrors._errors && currentErrors._errors.length > 0)
-				);
-				
+				const hasErrors =
+					currentErrors &&
+					((currentErrors.email && currentErrors.email.length > 0) ||
+						(currentErrors.full_name && currentErrors.full_name.length > 0) ||
+						(currentErrors.password && currentErrors.password.length > 0) ||
+						(currentErrors.confirm_password && currentErrors.confirm_password.length > 0) ||
+						(currentErrors._errors && currentErrors._errors.length > 0));
+
 				if (!hasErrors) {
 					// Add a small delay to ensure the message is displayed
 					setTimeout(() => {
@@ -55,7 +55,10 @@
 	});
 
 	function openEditDialog() {
-		if (userUpdateForm && updateFormData) {
+		if (userUpdateForm && updateFormData && updateMessage) {
+			// Clear any previous form messages
+			updateMessage.set('');
+
 			// Pre-fill the form with current user data (all fields can be modified)
 			updateFormData.update(($form) => ({
 				...$form,

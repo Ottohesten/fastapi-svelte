@@ -23,7 +23,7 @@ export const columns: ColumnDef<components['schemas']["UserPublic"]>[] = [
         },
     },
     {
-        id: "actiosn",
+        id: "actions",
         header: () => {
             const actionsHeaderSnippet = createRawSnippet(() => {
                 return {

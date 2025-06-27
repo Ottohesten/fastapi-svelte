@@ -18,7 +18,7 @@ export const UserSchema = z.object({
 export type FormSchema = typeof UserSchema;
 
 
-export const userUpdateSchema = z.object({
+export const UserUpdateSchema = z.object({
     email: z.string().email("Please enter a valid email").optional(),
     full_name: z.string().min(1).optional(),
     is_active: z.boolean().default(true).optional(),

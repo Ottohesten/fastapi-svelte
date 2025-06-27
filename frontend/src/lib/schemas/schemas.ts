@@ -19,10 +19,35 @@ export type FormSchema = typeof UserSchema;
 
 
 export const UserUpdateSchema = z.object({
-    email: z.string().email("Please enter a valid email").optional(),
-    full_name: z.string().min(1).optional(),
-    is_active: z.boolean().default(true).optional(),
-    is_superuser: z.boolean().default(false).optional()
+    user_id: z.string(),
+    email: z.string().email("Please enter a valid email").or(z.literal("")).optional(),
+    full_name: z.string().or(z.literal("")).optional(),
+    password: z.string().or(z.literal("")).optional(),
+    confirm_password: z.string().or(z.literal("")).optional(),
+    is_active: z.boolean().optional(),
+    is_superuser: z.boolean().optional()
+}).superRefine((data, ctx) => {
+    // Only validate password if it's provided and not empty
+    if (data.password && data.password.trim() !== "") {
+        if (data.password.length < 8) {
+            ctx.addIssue({
+                code: z.ZodIssueCode.too_small,
+                minimum: 8,
+                type: "string",
+                inclusive: true,
+                message: "Password must be at least 8 characters",
+                path: ["password"]
+            });
+        }
+        // Only validate password confirmation if password is provided
+        if (data.password !== data.confirm_password) {
+            ctx.addIssue({
+                code: z.ZodIssueCode.custom,
+                message: "Passwords don't match",
+                path: ["confirm_password"]
+            });
+        }
+    }
 })
 
 

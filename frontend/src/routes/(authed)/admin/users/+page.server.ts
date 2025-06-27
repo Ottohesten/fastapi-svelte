@@ -86,34 +86,54 @@ export const actions = {
             redirect(302, "/auth/login");
         }
 
-        const formData = await request.formData();
-        const userId = formData.get('user_id') as string;
-        const email = formData.get('email') as string;
-        const fullName = formData.get('full_name') as string;
-        const isActive = formData.get('is_active') === 'on';
-        const isSuperuser = formData.get('is_superuser') === 'on';
+        const userUpdateForm = await superValidate(request, zod(UserUpdateSchema));
+
+        if (!userUpdateForm.valid) {
+            return fail(400, { userUpdateForm });
+        }
+
+        // Build update data with only provided fields
+        const updateData: any = {};
+
+        if (userUpdateForm.data.email && userUpdateForm.data.email.trim() !== '') {
+            updateData.email = userUpdateForm.data.email;
+        }
+
+        if (userUpdateForm.data.full_name && userUpdateForm.data.full_name.trim() !== '') {
+            updateData.full_name = userUpdateForm.data.full_name;
+        }
+
+        // Handle boolean fields explicitly (since false is a valid value)
+        if (userUpdateForm.data.is_active !== undefined) {
+            updateData.is_active = userUpdateForm.data.is_active;
+        }
+
+        if (userUpdateForm.data.is_superuser !== undefined) {
+            updateData.is_superuser = userUpdateForm.data.is_superuser;
+        }
+
+        // Only include password if it's provided and not empty
+        if (userUpdateForm.data.password && userUpdateForm.data.password.trim() !== '') {
+            updateData.password = userUpdateForm.data.password;
+        }
 
         const { error: apierror, response } = await client.PATCH("/users/{user_id}", {
             params: {
                 path: {
-                    user_id: userId
+                    user_id: userUpdateForm.data.user_id
                 }
-            }, body: {
-                email,
-                full_name: fullName || null,
-                is_active: isActive,
-                is_superuser: isSuperuser
             },
+            body: updateData,
             headers: {
                 Authorization: `Bearer ${auth_token}`
             }
         })
 
         if (apierror) {
-            error(400, `Failed to update user: ${JSON.stringify(apierror.detail)}`);
+            return fail(400, { userUpdateForm, error: `Failed to update user: ${JSON.stringify(apierror.detail)}` });
         }
 
-        return { success: true };
+        return message(userUpdateForm, `User updated successfully!`);
     },
 
     deleteUser: async ({ fetch, cookies, request }) => {

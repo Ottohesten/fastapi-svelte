@@ -1,6 +1,6 @@
 <script lang="ts">
 	import DataTable from '$lib/components/ui/data-table.svelte';
-	import { columns } from './columns.js';
+	import { createColumns } from './columns.js';
 	import type { components } from '$lib/api/v1';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { Button } from '$lib/components/ui/button';
@@ -37,7 +37,14 @@
 
 	const updateForm = superForm(data.userUpdateForm, {
 		id: 'userUpdateForm',
-		validators: zodClient(UserUpdateSchema)
+		dataType: 'json',
+		validators: zodClient(UserUpdateSchema),
+		onUpdated: ({ form }) => {
+			if (form.valid) {
+				// Dialog close will be handled in user-actions.svelte
+				console.log('Update form valid:', form.message);
+			}
+		}
 	});
 
 	const { form: formData, enhance, errors, message } = form;
@@ -48,6 +55,9 @@
 		errors: updateErrors,
 		message: updateMessage
 	} = updateForm;
+
+	// Create columns with the update form
+	const columns = createColumns(updateForm);
 
 	// const { form, enhance } = superForm(data.form, {
 	// 	// resetForm: true,
@@ -78,9 +88,23 @@
 			</div>
 		{/if}
 
+		{#if $updateMessage}
+			<div class="rounded-md border border-green-200 bg-green-50 p-3">
+				<p class="text-sm text-green-800">{$updateMessage}</p>
+			</div>
+		{/if}
+
 		{#if $errors._errors}
 			<div class="rounded-md border border-red-200 bg-red-50 p-3">
 				{#each $errors._errors as error}
+					<p class="text-sm text-red-800">{error}</p>
+				{/each}
+			</div>
+		{/if}
+
+		{#if $updateErrors._errors}
+			<div class="rounded-md border border-red-200 bg-red-50 p-3">
+				{#each $updateErrors._errors as error}
 					<p class="text-sm text-red-800">{error}</p>
 				{/each}
 			</div>

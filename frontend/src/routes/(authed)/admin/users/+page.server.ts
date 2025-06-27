@@ -5,7 +5,7 @@ import { message, superValidate, fail } from 'sveltekit-superforms';
 import { zod } from 'sveltekit-superforms/adapters';
 import type { Actions } from './$types.js';
 
-import { UserSchema } from '$lib/schemas/schemas.js';
+import { UserSchema, userUpdateSchema } from '$lib/schemas/schemas.js';
 
 
 export const load = async ({ fetch, cookies }) => {
@@ -26,6 +26,9 @@ export const load = async ({ fetch, cookies }) => {
         users: data,
         userCreateForm: await superValidate(zod(UserSchema), {
             id: "userCreateForm",
+        }),
+        userUpdateForm: await superValidate(zod(userUpdateSchema), {
+            id: "userUpdateForm",
         }),
 
     }

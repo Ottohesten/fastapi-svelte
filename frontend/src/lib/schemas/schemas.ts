@@ -18,6 +18,13 @@ export const UserSchema = z.object({
 export type FormSchema = typeof UserSchema;
 
 
+export const userUpdateSchema = z.object({
+    email: z.string().email("Please enter a valid email").optional(),
+    full_name: z.string().min(1).optional(),
+    is_active: z.boolean().default(true).optional(),
+    is_superuser: z.boolean().default(false).optional()
+})
+
 
 export const RecipeSchema = z.object({
     title: z.string().min(3),

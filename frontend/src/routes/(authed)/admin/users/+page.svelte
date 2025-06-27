@@ -41,6 +41,14 @@
 	});
 
 	const { form: formData, enhance, errors, message } = form;
+
+	const {
+		form: updateFormData,
+		enhance: updateEnhance,
+		errors: updateErrors,
+		message: updateMessage
+	} = updateForm;
+
 	// const { form, enhance } = superForm(data.form, {
 	// 	// resetForm: true,
 	// 	validators: zodClient(UserSchema)

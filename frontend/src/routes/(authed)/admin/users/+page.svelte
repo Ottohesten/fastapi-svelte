@@ -11,7 +11,7 @@
 	import { Field, Control, Label, Description, FieldErrors } from 'formsnap';
 	import { Input } from '$lib/components/ui/input/index.js';
 
-	import { UserSchema, type FormSchema } from '$lib/schemas/schemas.js';
+	import { UserSchema, UserUpdateSchema } from '$lib/schemas/schemas.js';
 	let { data } = $props();
 	// let { data }: { data: { form: SuperValidated<Infer<FormSchema>> } } = $props();
 	let dialogOpen = $state(false);
@@ -19,9 +19,6 @@
 	const form = superForm(data.userCreateForm, {
 		id: 'userCreateForm',
 		validators: zodClient(UserSchema),
-		warnings: {
-			duplicateId: false
-		},
 		onUpdated: ({ form }) => {
 			console.log('Form updated - valid:', form.valid, 'message:', form.message);
 			if (form.valid) {
@@ -36,6 +33,11 @@
 		// 		dialogOpen = false;
 		// 	}
 		// }
+	});
+
+	const updateForm = superForm(data.userUpdateForm, {
+		id: 'userUpdateForm',
+		validators: zodClient(UserUpdateSchema)
 	});
 
 	const { form: formData, enhance, errors, message } = form;

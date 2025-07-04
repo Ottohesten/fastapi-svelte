@@ -53,6 +53,27 @@
 			</li>
 		</ul>
 	</div>
+	<h1 class="mb-4 text-center text-3xl font-bold underline">Internationale Jinx Regler</h1>
+	<div>
+		<ul class="mb-4 rounded-lg border border-gray-200 text-center font-medium">
+			<li class="rounded-t-lg border-b border-gray-200 py-2">
+				Hvis 2 personer siger det samme ord på samme tid, så bliver den første der siger det jinxet
+			</li>
+			<li class="rounded-t-lg border-b border-gray-200 py-2">
+				Jinxet betyder at de ikke må sige noget for deres navn er blevet sagt af en vilkårlig person
+			</li>
+			<li class="rounded-t-lg border-b border-gray-200 py-2">
+				Jinx kan også ske online i form af en tekstbesked, hvor den første person skriver en
+				sætning, og den anden person skriver det ummidelbart lige efter, og derefter skriver "Jinx".
+				Derefter gælder der samme regel med at personen jinxet ikke må skrive noget i chatten før en
+				anden skriver deres navn, ellers skal de gøre en straf person der jinxer bestemmer, med max
+				værdi af samme som et tårn i kb.
+			</li>
+			<li class="rounded-t-lg border-b border-gray-200 py-2">
+				Jinx kan ikke ske på et citat, eller en sang
+			</li>
+		</ul>
+	</div>
 </div>
 <!-- <Dialog.Root>
 	<Dialog.Trigger class={buttonVariants({ variant: 'outline' })}>Edit Profile</Dialog.Trigger>

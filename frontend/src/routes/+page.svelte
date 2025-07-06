@@ -53,7 +53,7 @@
 			</li>
 		</ul>
 	</div>
-	<h1 class="mb-4 text-center text-3xl font-bold underline">Internationale Jinx Regler</h1>
+	<!-- <h1 class="mb-4 text-center text-3xl font-bold underline">Internationale Jinx Regler</h1>
 	<div>
 		<ul class="mb-4 rounded-lg border border-gray-200 text-center font-medium">
 			<li class="rounded-t-lg border-b border-gray-200 py-2">
@@ -73,7 +73,7 @@
 				Jinx kan ikke ske på et citat, eller en sang
 			</li>
 		</ul>
-	</div>
+	</div> -->
 </div>
 <!-- <Dialog.Root>
 	<Dialog.Trigger class={buttonVariants({ variant: 'outline' })}>Edit Profile</Dialog.Trigger>

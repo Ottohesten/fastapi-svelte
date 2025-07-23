@@ -203,6 +203,7 @@ class RecipePublic(RecipeBase):
 
 class IngredientBase(SQLModel):
     title: str = Field(max_length=255, min_length=1)
+    calories: int = Field(default=0, ge=0, description="Calories per 100g of the ingredient")
     # pass
 
 class IngredientCreate(IngredientBase):
@@ -221,7 +222,10 @@ class Ingredient(IngredientBase, table=True):
     """
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
     title: str = Field(max_length=255, min_length=1)
+    calories: int = Field(default=0, ge=0, description="Calories per 100g of the ingredient")
+
     recipes: list["Recipe"] = Relationship(back_populates="ingredients", link_model=RecipeIngredientLink)
+
     
 
 

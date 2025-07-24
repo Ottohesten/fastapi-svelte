@@ -3,6 +3,7 @@
 	import SuperDebug from 'sveltekit-superforms';
 	let { data } = $props();
 	import * as Dialog from '$lib/components/ui/dialog/index.js';
+	import InstructionsEditor from '$lib/components/InstructionsEditor.svelte';
 
 	// const { form, errors, message, constraints, enhance } = superForm(data.form);
 
@@ -45,15 +46,13 @@
 					{#if $errors.title}<span class="invalid">{$errors.title}</span>{/if}
 				</div>
 				<div class="mt-5">
-					<label class="" for="instructions">instructions</label>
-					<input
-						class="w-full appearance-none rounded-md border bg-gray-50 p-2 text-gray-700 shadow"
-						type="text"
-						name="instructions"
-						aria-invalid={$errors.instructions ? 'true' : undefined}
-						{...$constraints.instructions}
+					<label class="mb-2 block font-medium" for="instructions">Instructions</label>
+					<InstructionsEditor
 						bind:value={$form.instructions}
+						placeholder="Enter detailed cooking instructions..."
 					/>
+					<!-- Hidden input to ensure form submission includes the rich text content -->
+					<input type="hidden" name="instructions" bind:value={$form.instructions} />
 					{#if $errors.instructions}<span class="invalid">{$errors.instructions}</span>{/if}
 				</div>
 				<!-- <div class="mt-5">

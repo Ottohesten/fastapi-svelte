@@ -979,11 +979,23 @@ export interface components {
         IngredientCreate: {
             /** Title */
             title: string;
+            /**
+             * Calories
+             * @description Calories per 100g of the ingredient
+             * @default 0
+             */
+            calories: number;
         };
         /** IngredientPublic */
         IngredientPublic: {
             /** Title */
             title: string;
+            /**
+             * Calories
+             * @description Calories per 100g of the ingredient
+             * @default 0
+             */
+            calories: number;
             /**
              * Id
              * Format: uuid
@@ -1012,7 +1024,7 @@ export interface components {
             /** Title */
             title: string;
             /** Instructions */
-            instructions: Record<string, never> | null;
+            instructions?: string | null;
             /**
              * Servings
              * @default 1
@@ -1034,7 +1046,7 @@ export interface components {
             /** Title */
             title: string;
             /** Instructions */
-            instructions: Record<string, never> | null;
+            instructions?: string | null;
             /**
              * Servings
              * @default 1
@@ -1051,7 +1063,7 @@ export interface components {
             /** Title */
             title: string;
             /** Instructions */
-            instructions: Record<string, never> | null;
+            instructions?: string | null;
             /**
              * Servings
              * @default 1

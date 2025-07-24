@@ -59,7 +59,8 @@ export const RecipeSchema = z.object({
     // ingredients: an array of objects that have an id and a title
     ingredients: z.array(z.object({
         id: z.string(),
-        title: z.string()
+        title: z.string(),
+        calories: z.number().int().nonnegative("Calories must be a non-negative integer")
     })),
 
     servings: z.number().int().min(1).default(1),

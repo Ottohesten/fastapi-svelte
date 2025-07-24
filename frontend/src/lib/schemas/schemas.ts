@@ -15,7 +15,7 @@ export const UserSchema = z.object({
     path: ["confirm_password"],
 });
 
-export type FormSchema = typeof UserSchema;
+
 
 
 export const UserUpdateSchema = z.object({
@@ -53,8 +53,8 @@ export const UserUpdateSchema = z.object({
 
 export const RecipeSchema = z.object({
     title: z.string().min(3),
-    // mpt optional
-    instructions: z.object({}).nullable(),
+
+    instructions: z.string().min(1).max(9999),
 
     // ingredients: an array of objects that have an id and a title
     ingredients: z.array(z.object({
@@ -68,6 +68,12 @@ export const RecipeSchema = z.object({
 
 
 });
+
+export const IngredientSchema = z.object({
+    title: z.string().min(1, "Title is required").max(255, "Title must be less than 255 characters"),
+    calories: z.number().int().nonnegative("Calories must be a non-negative integer")
+});
+
 
 export const GameSessionSchema = z.object({
     title: z.string().min(2),

@@ -2,16 +2,16 @@
 	// @ts-nocheck
 	import './styles.scss';
 
-	import { Color } from '@tiptap/extension-color';
-	import ListItem from '@tiptap/extension-list-item';
-	import TextStyle from '@tiptap/extension-text-style';
+	import { Color } from '@tiptap/extension-text-style';
+	import { BulletList, ListItem } from '@tiptap/extension-list';
+	import { TextStyle } from '@tiptap/extension-text-style';
 	import StarterKit from '@tiptap/starter-kit';
 	import { Editor } from '@tiptap/core';
 	import { onMount } from 'svelte';
 
 	let element;
 	let editor;
-	let editor_json;
+	let editor_html;
 
 	onMount(() => {
 		editor = new Editor({
@@ -19,45 +19,53 @@
 			extensions: [
 				Color.configure({ types: [TextStyle.name, ListItem.name] }),
 				TextStyle.configure({ types: [ListItem.name] }),
+				BulletList,
+				ListItem,
 				StarterKit
 			],
+			editorProps: {
+				attributes: {
+					class:
+						'prose prose-sm sm:prose lg:prose-lg xl:prose-2xl mx-auto focus:outline-none min-h-[200px] p-4 border rounded-md bg-gray-50'
+				}
+			},
 			content: `
-			  <h2>
-				Hi there,
-			  </h2>
-			  <p>
-				this is a <em>basic</em> example of <strong>Tiptap</strong>. Sure, there are all kind of basic text styles you'd probably expect from a text editor. But wait until you see the lists:
-			  </p>
-			  <ul>
-				<li>
-				  That's a bullet list with one …
-				</li>
-				<li>
-				  … or two list items.
-				</li>
-			  </ul>
-			  <p>
-				Isn't that great? And all of that is editable. But wait, there's more. Let's try a code block:
-			  </p>
-			  <pre><code class="language-css">body {
-	display: none;
-  }</code></pre>
-			  <p>
-				I know, I know, this is impressive. It's only the tip of the iceberg though. Give it a try and click a little bit around. Don't forget to check the other examples too.
-			  </p>
-			  <blockquote>
-				Wow, that's amazing. Good work, boy! 👏
-				<br />
-				— Mom
-			  </blockquote>
-			`,
+            <h2>
+              Hi there,
+            </h2>
+            <p>
+              this is a <em>basic</em> example of <strong>Tiptap</strong>. Sure, there are all kind of basic text styles you'd probably expect from a text editor. But wait until you see the lists:
+            </p>
+            <ul>
+              <li>
+                That's a bullet list with one …
+              </li>
+              <li>
+                … or two list items.
+              </li>
+            </ul>
+            <p>
+              Isn't that great? And all of that is editable. But wait, there's more. Let's try a code block:
+            </p>
+            <pre><code class="language-css">body {
+  display: none;
+}</code></pre>
+            <p>
+              I know, I know, this is impressive. It's only the tip of the iceberg though. Give it a try and click a little bit around. Don't forget to check the other examples too.
+            </p>
+            <blockquote>
+              Wow, that's amazing. Good work, boy! 👏
+              <br />
+              — Mom
+            </blockquote>
+          `,
 			onTransaction: () => {
 				// force re-render so `editor.isActive` works as expected
 				editor = editor;
 			},
 			onUpdate: ({ editor }) => {
-				editor_json = editor.getJSON();
-				console.log(JSON.stringify(editor_json));
+				// Update the bound value with HTML content
+				editor_html = editor.getHTML();
 			}
 		});
 	});
@@ -187,4 +195,4 @@
 		</div>
 	</div>
 {/if}
-<div bind:this={element}></div>
+<div bind:this={element} />

@@ -74,6 +74,20 @@
 			</li>
 		</ul>
 	</div> -->
+	<div>
+		<ul class="list-disc">
+			<li>Now this is a story all about how, my life got flipped-turned upside down</li>
+			<!-- ... -->
+		</ul>
+		<ol class="list-decimal">
+			<li>Now this is a story all about how, my life got flipped-turned upside down</li>
+			<!-- ... -->
+		</ol>
+		<ul class="list-none">
+			<li>Now this is a story all about how, my life got flipped-turned upside down</li>
+			<!-- ... -->
+		</ul>
+	</div>
 </div>
 <!-- <Dialog.Root>
 	<Dialog.Trigger class={buttonVariants({ variant: 'outline' })}>Edit Profile</Dialog.Trigger>

@@ -61,7 +61,9 @@ export const actions = {
 
         })
 
-
+        if (apierror) {
+            return fail(400, { form });
+        }
 
         return redirect(302, "/recipes");
         // return message(form, "Form posted successfully!");

@@ -13,7 +13,7 @@
 
 	// let selectedIngredients = $state<{ title: string; id: string }[]>([]);
 	let selectedIngredientId = $state<string>('');
-	let ingredientAmount = $state<number>(1);
+	let ingredientAmount = $state<number>(1.0);
 	let ingredientUnit = $state<string>('g');
 	let open = $state(false);
 </script>
@@ -124,9 +124,12 @@
 
 						<!-- Add Ingredient Section -->
 						<div class="space-y-2">
-							<label class="text-sm font-semibold text-gray-700">Ingredients</label>
+							<label class="text-sm font-semibold text-gray-700" for="add-ingredient-trigger"
+								>Ingredients</label
+							>
 							<Dialog.Root bind:open>
 								<Dialog.Trigger
+									id="add-ingredient-trigger"
 									onclick={(event) => {
 										event.preventDefault();
 										open = true;
@@ -172,19 +175,27 @@
 
 										<div class="grid grid-cols-2 gap-3">
 											<div>
-												<label class="mb-2 block text-sm font-medium text-gray-700">Amount</label>
+												<label
+													for="ingredient-amount"
+													class="mb-2 block text-sm font-medium text-gray-700">Amount</label
+												>
 												<input
+													id="ingredient-amount"
 													type="number"
-													min="1"
-													step="1"
+													min="0.1"
+													step="0.1"
 													class="w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-gray-900 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
 													bind:value={ingredientAmount}
 													placeholder="1"
 												/>
 											</div>
 											<div>
-												<label class="mb-2 block text-sm font-medium text-gray-700">Unit</label>
+												<label
+													for="ingredient-unit"
+													class="mb-2 block text-sm font-medium text-gray-700">Unit</label
+												>
 												<select
+													id="ingredient-unit"
 													class="w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-gray-900 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
 													bind:value={ingredientUnit}
 												>
@@ -204,7 +215,7 @@
 											onclick={() => {
 												// Reset form when canceling
 												selectedIngredientId = '';
-												ingredientAmount = 1;
+												ingredientAmount = 1.0;
 												ingredientUnit = 'g';
 												open = false;
 											}}
@@ -214,7 +225,9 @@
 										<button
 											type="button"
 											class="flex-1 rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:bg-gray-300"
-											disabled={!selectedIngredientId || !ingredientAmount || ingredientAmount <= 0}
+											disabled={!selectedIngredientId ||
+												!ingredientAmount ||
+												ingredientAmount < 0.1}
 											onclick={(event) => {
 												event.preventDefault();
 												const ingredient = data.ingredients.find(
@@ -224,18 +237,23 @@
 													// Create the ingredient link object that matches your schema
 													const ingredientLink = {
 														id: ingredient.id,
+														title: ingredient.title,
+														calories: ingredient.calories,
 														amount: ingredientAmount,
-														unit: ingredientUnit,
-														// Also include the ingredient details for display
-														title: ingredient.title
+														unit: ingredientUnit as 'g' | 'kg' | 'ml' | 'L' | 'pcs'
 													};
-													$form.ingredients = $form.ingredients.concat(ingredientLink);
+													$form.ingredients = $form.ingredients.concat({
+														id: ingredientLink.id,
+														title: ingredientLink.title, // Include title for display
+														amount: ingredientLink.amount,
+														unit: ingredientLink.unit
+													});
 													data.ingredients = data.ingredients.filter(
 														(i) => i.id !== selectedIngredientId
 													);
 													// Reset form
 													selectedIngredientId = '';
-													ingredientAmount = 1;
+													ingredientAmount = 1.0;
 													ingredientUnit = 'g';
 													open = false;
 												} else {
@@ -255,9 +273,6 @@
 							<button
 								class="w-full rounded-lg bg-gradient-to-r from-blue-600 to-blue-700 px-6 py-3 text-base font-semibold text-white shadow-lg transition-all hover:from-blue-700 hover:to-blue-800 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
 								type="submit"
-								onclick={() => {
-									console.log($form.ingredients);
-								}}
 							>
 								Create Recipe
 							</button>
@@ -321,19 +336,32 @@
 											{index + 1}
 										</span>
 										<div class="flex flex-col">
-											<span class="text-sm font-medium text-gray-900">{ingredient.title}</span>
+											<span class="text-sm font-medium text-gray-900"
+												>{ingredient.title || 'Unknown Ingredient'}</span
+											>
 											<span class="text-xs text-gray-500"
-												>{ingredient.amount} {ingredient.unit}</span
+												>{ingredient.amount || 0} {ingredient.unit || 'units'}</span
 											>
 										</div>
 									</div>
 									<button
 										type="button"
+										aria-label="Remove ingredient"
 										onclick={() => {
 											$form.ingredients = $form.ingredients.filter((i) => i.id !== ingredient.id);
-											// Return the ingredient to the available list
-											const originalIngredient = { id: ingredient.id, title: ingredient.title };
-											data.ingredients = data.ingredients.concat(originalIngredient);
+											// Return the ingredient to the available list if it's not already there
+											const isAlreadyAvailable = data.ingredients.some(
+												(ing) => ing.id === ingredient.id
+											);
+											if (!isAlreadyAvailable) {
+												// Reconstruct the ingredient object for the available list
+												const originalIngredient = {
+													id: ingredient.id,
+													title: ingredient.title || 'Unknown Ingredient',
+													calories: 0 // Default calories since we don't store it in form
+												};
+												data.ingredients = data.ingredients.concat(originalIngredient);
+											}
 										}}
 										class="rounded-lg p-1.5 text-red-500 transition-colors hover:bg-red-50 hover:text-red-700"
 										title="Remove ingredient"

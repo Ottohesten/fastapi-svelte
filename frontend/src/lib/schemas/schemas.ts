@@ -59,7 +59,8 @@ export const RecipeSchema = z.object({
     // ingredients: an array of objects that have an id and a title
     ingredients: z.array(z.object({
         id: z.string(),
-        amount: z.number().int().min(1, "Amount must be at least 1").default(1),
+        title: z.string().optional(), // For display purposes only, not sent to backend
+        amount: z.number().min(0.1, "Amount must be at least 0.1").default(1),
         // unit is enum of "g", "kg", "ml", "L", "pcs"
         unit: z.enum(["g", "kg", "ml", "L", "pcs"]).default("g"),
     })),

@@ -169,11 +169,7 @@ export interface paths {
         delete: operations["delete_recipe_recipes__recipe_id__delete"];
         options?: never;
         head?: never;
-        /**
-         * Update Recipe
-         * @description Update a recipe.
-         */
-        patch: operations["update_recipe_recipes__recipe_id__patch"];
+        patch?: never;
         trace?: never;
     };
     "/ingredients/": {
@@ -1052,11 +1048,46 @@ export interface components {
              * @default 1
              */
             servings: number;
+            /** Ingredients */
+            ingredients: components["schemas"]["RecipeIngredientLinkCreate"][];
+        };
+        /**
+         * RecipeIngredientLinkCreate
+         * @description Create a new recipe ingredient link.
+         */
+        RecipeIngredientLinkCreate: {
             /**
-             * Ingredients
-             * @default []
+             * Ingredient Id
+             * Format: uuid
              */
-            ingredients: components["schemas"]["IngredientPublic"][];
+            ingredient_id: string;
+            /**
+             * Amount
+             * @description Amount of the ingredient in the recipe
+             * @default 1
+             */
+            amount: number;
+            /**
+             * Unit
+             * @description Unit of the amount, e.g. g, ml, pcs, etc.
+             * @default g
+             */
+            unit: string;
+        };
+        /**
+         * RecipeIngredientLinkPublic
+         * @description Public class for recipe ingredient link.
+         */
+        RecipeIngredientLinkPublic: {
+            ingredient: components["schemas"]["IngredientPublic"];
+            /** Amount */
+            amount: number;
+            /**
+             * Unit
+             * @description Unit of the amount, e.g. g, ml, pcs, etc.
+             * @default g
+             */
+            unit: string;
         };
         /** RecipePublic */
         RecipePublic: {
@@ -1075,8 +1106,8 @@ export interface components {
              */
             id: string;
             owner: components["schemas"]["UserPublic"];
-            /** Ingredients */
-            ingredients: components["schemas"]["IngredientPublic"][];
+            /** Ingredient Links */
+            ingredient_links: components["schemas"]["RecipeIngredientLinkPublic"][];
         };
         /** RoleCreate */
         RoleCreate: {
@@ -1688,41 +1719,6 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Recipe"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    update_recipe_recipes__recipe_id__patch: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                recipe_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["RecipeCreate"];
-            };
-        };
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["RecipePublic"];
                 };
             };
             /** @description Validation Error */

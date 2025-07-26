@@ -50,23 +50,23 @@
 						/>
 					</svg>
 					<p class="text-sm font-semibold text-gray-700">
-						Ingredients ({recipe.ingredients.length})
+						Ingredients ({recipe.ingredient_links.length})
 					</p>
 				</div>
-				{#if recipe.ingredients.length > 0}
+				{#if recipe.ingredient_links.length > 0}
 					<div class="flex flex-wrap gap-2">
-						{#each recipe.ingredients.slice(0, 6) as ingredient}
+						{#each recipe.ingredient_links.slice(0, 6) as ingredient_link}
 							<span
 								class="inline-flex items-center rounded-full border border-blue-200 bg-blue-50 px-2.5 py-1 text-xs font-medium text-blue-700"
 							>
-								{ingredient.title}
+								{ingredient_link.ingredient.title}
 							</span>
 						{/each}
-						{#if recipe.ingredients.length > 6}
+						{#if recipe.ingredient_links.length > 6}
 							<span
 								class="inline-flex items-center rounded-full bg-gray-100 px-2.5 py-1 text-xs font-medium text-gray-600"
 							>
-								+{recipe.ingredients.length - 6} more
+								+{recipe.ingredient_links.length - 6} more
 							</span>
 						{/if}
 					</div>

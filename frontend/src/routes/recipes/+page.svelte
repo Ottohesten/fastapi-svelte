@@ -10,9 +10,11 @@
 <div class="container">
 	<h1 class="text-4xl font-bold">Recipes:</h1>
 
-	{#each data.recipes as recipe}
-		<Recipe {recipe} authenticatedUser={data.authenticatedUser ?? undefined} />
-	{/each}
+	<div class="grid gap-4">
+		{#each data.recipes as recipe}
+			<Recipe {recipe} authenticatedUser={data.authenticatedUser ?? undefined} />
+		{/each}
+	</div>
 	{#if data.authenticatedUser}
 		<div class="mt-4">
 			<a

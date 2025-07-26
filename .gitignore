@@ -129,6 +129,7 @@ celerybeat.pid
 
 # Environments
 .env
+.env.test
 .venv
 env/
 venv/
@@ -200,3 +201,4 @@ symlink-from
 
 # temporary folder
 temp
+

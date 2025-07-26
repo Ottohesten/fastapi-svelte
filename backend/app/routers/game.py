@@ -361,7 +361,7 @@ def update_game_player(
     if game_player.game_session_id != game_session.id:
         raise HTTPException(status_code=404, detail="Game player not found in this game session")
     drink_links = game_player_in.drinks
-    print(drink_links)
+    # print(drink_links)
     if drink_links:
         # Process each drink link
         for drink_link in drink_links:

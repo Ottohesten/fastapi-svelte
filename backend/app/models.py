@@ -143,12 +143,33 @@ class ItemsPublic(SQLModel):
 class RecipeIngredientLink(SQLModel, table=True):
     recipe_id: uuid.UUID | None = Field(default=None, foreign_key="recipe.id", primary_key=True)
     ingredient_id: uuid.UUID | None = Field(default=None, foreign_key="ingredient.id", primary_key=True)
-    # amount: float
-    # unit: str
 
-    # recipe: "Recipe" = Relationship(back_populates="ingredient_links")
+    # units enum
+    amount: float = Field(default=1.0, ge=0, description="Amount of the ingredient in the recipe")
+    unit: str = Field(default="g", max_length=10, description="Unit of the amount, e.g. g, ml, pcs, etc.")
+
+    recipe: "Recipe" = Relationship(back_populates="ingredient_links")
+    ingredient: "Ingredient" = Relationship(back_populates="recipe_links")
 
 
+
+
+class RecipeIngredientLinkCreate(SQLModel):
+    """
+    Create a new recipe ingredient link.
+    """
+    ingredient_id: uuid.UUID
+    amount: float = Field(default=1.0, ge=0, description="Amount of the ingredient in the recipe")
+    unit: str = Field(default="g", max_length=10, description="Unit of the amount, e.g. g, ml, pcs, etc.")
+
+
+class RecipeIngredientLinkPublic(SQLModel):
+    """
+    Public class for recipe ingredient link.
+    """
+    ingredient: "IngredientPublic"
+    amount: float
+    unit: str = Field(default="g", max_length=10, description="Unit of the amount, e.g. g, ml, pcs, etc.")
 
 #####################################################################################
 # Recipes
@@ -160,7 +181,14 @@ class RecipeBase(SQLModel):
 
 
 class RecipeCreate(RecipeBase):
-    ingredients: list["IngredientPublic"] = []
+    ingredients: list[RecipeIngredientLinkCreate] 
+
+
+class RecipePublic(RecipeBase):
+    id: uuid.UUID 
+    owner: UserPublic
+    ingredient_links: list[RecipeIngredientLinkPublic]
+
 
 
 
@@ -183,8 +211,7 @@ class Recipe(RecipeBase, table=True):
     # image
     # image: str | None = Field(default=None, max_length=255)
 
-    ingredients: list["Ingredient"] = Relationship(back_populates="recipes", link_model=RecipeIngredientLink)
-
+    ingredient_links: list[RecipeIngredientLink] = Relationship(back_populates="recipe", cascade_delete=True)
     
 
 
@@ -192,10 +219,6 @@ class Recipe(RecipeBase, table=True):
     #     arbitrary_types_allowed = True
 
 
-class RecipePublic(RecipeBase):
-    id: uuid.UUID 
-    owner: UserPublic
-    ingredients: list["IngredientPublic"]
 
 
 #####################################################################################
@@ -224,7 +247,8 @@ class Ingredient(IngredientBase, table=True):
     title: str = Field(max_length=255, min_length=1)
     calories: int = Field(default=0, ge=0, description="Calories per 100g of the ingredient")
 
-    recipes: list["Recipe"] = Relationship(back_populates="ingredients", link_model=RecipeIngredientLink)
+    # recipes: list["Recipe"] = Relationship(back_populates="ingredients", link_model=RecipeIngredientLink)
+    recipe_links: list["RecipeIngredientLink"] = Relationship(back_populates="ingredient")
 
     
 

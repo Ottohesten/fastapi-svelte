@@ -40,13 +40,20 @@ export const actions = {
         // post form data to the API
         const client = createApiClient(fetch);
         const auth_token = cookies.get("auth_token");
+
+        // Transform ingredients from frontend format to backend format
+        const ingredientsForBackend = form.data.ingredients.map(ingredient => ({
+            ingredient_id: ingredient.id,
+            amount: ingredient.amount,
+            unit: ingredient.unit
+        }));
+
         const { data, error: apierror, response } = await client.POST("/recipes/", {
             body: {
                 title: form.data.title,
                 instructions: form.data.instructions ?? null,
-                ingredients: form.data.ingredients,
+                ingredients: ingredientsForBackend,
                 servings: form.data.servings,
-                // ingredients: [],
             },
             headers: {
                 Authorization: `Bearer ${auth_token}`

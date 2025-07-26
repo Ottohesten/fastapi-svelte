@@ -11,14 +11,14 @@
 		dataType: 'json'
 	});
 
-	// const file = fileProxy(form, 'image');
-
 	// let selectedIngredients = $state<{ title: string; id: string }[]>([]);
 	let selectedIngredientId = $state<string>('');
+	let ingredientAmount = $state<number>(1);
+	let ingredientUnit = $state<string>('g');
 	let open = $state(false);
 </script>
 
-<!-- <SuperDebug data={$form} /> -->
+<SuperDebug data={$form} />
 
 <div class="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 py-8">
 	<div class="container mx-auto max-w-7xl px-4">
@@ -64,6 +64,35 @@
 										/>
 									</svg>
 									{$errors.title}
+								</span>
+							{/if}
+						</div>
+						<!-- Servings -->
+						<div class="space-y-2">
+							<label class="text-sm font-semibold text-gray-700" for="servings">
+								Servings <span class="text-red-500">*</span>
+							</label>
+							<input
+								class="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-gray-900 placeholder-gray-500 shadow-sm transition-colors focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+								type="number"
+								name="servings"
+								min="1"
+								placeholder="Enter number of servings"
+								aria-invalid={$errors.servings ? 'true' : undefined}
+								bind:value={$form.servings}
+								{...$constraints.servings}
+								required
+							/>
+							{#if $errors.servings}
+								<span class="flex items-center gap-1 text-sm text-red-600">
+									<svg class="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+										<path
+											fill-rule="evenodd"
+											d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+											clip-rule="evenodd"
+										/>
+									</svg>
+									{$errors.servings}
 								</span>
 							{/if}
 						</div>
@@ -125,10 +154,12 @@
 									</Dialog.Header>
 									<div class="space-y-4">
 										<div>
-											<label class="mb-2 block text-sm font-medium text-gray-700"
-												>Choose Ingredient</label
+											<label
+												class="mb-2 block text-sm font-medium text-gray-700"
+												for="ingredient-select">Choose Ingredient</label
 											>
 											<select
+												id="ingredient-select"
 												class="w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-gray-900 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
 												bind:value={selectedIngredientId}
 											>
@@ -138,12 +169,43 @@
 												{/each}
 											</select>
 										</div>
+
+										<div class="grid grid-cols-2 gap-3">
+											<div>
+												<label class="mb-2 block text-sm font-medium text-gray-700">Amount</label>
+												<input
+													type="number"
+													min="1"
+													step="1"
+													class="w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-gray-900 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+													bind:value={ingredientAmount}
+													placeholder="1"
+												/>
+											</div>
+											<div>
+												<label class="mb-2 block text-sm font-medium text-gray-700">Unit</label>
+												<select
+													class="w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-gray-900 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+													bind:value={ingredientUnit}
+												>
+													<option value="g">grams (g)</option>
+													<option value="kg">kilograms (kg)</option>
+													<option value="ml">milliliters (ml)</option>
+													<option value="L">liters (L)</option>
+													<option value="pcs">pieces (pcs)</option>
+												</select>
+											</div>
+										</div>
 									</div>
 									<Dialog.Footer class="flex gap-3">
 										<button
 											type="button"
 											class="flex-1 rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
 											onclick={() => {
+												// Reset form when canceling
+												selectedIngredientId = '';
+												ingredientAmount = 1;
+												ingredientUnit = 'g';
 												open = false;
 											}}
 										>
@@ -152,18 +214,29 @@
 										<button
 											type="button"
 											class="flex-1 rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:bg-gray-300"
-											disabled={!selectedIngredientId}
+											disabled={!selectedIngredientId || !ingredientAmount || ingredientAmount <= 0}
 											onclick={(event) => {
 												event.preventDefault();
 												const ingredient = data.ingredients.find(
 													(i) => i.id === selectedIngredientId
 												);
 												if (ingredient) {
-													$form.ingredients = $form.ingredients.concat(ingredient);
+													// Create the ingredient link object that matches your schema
+													const ingredientLink = {
+														id: ingredient.id,
+														amount: ingredientAmount,
+														unit: ingredientUnit,
+														// Also include the ingredient details for display
+														title: ingredient.title
+													};
+													$form.ingredients = $form.ingredients.concat(ingredientLink);
 													data.ingredients = data.ingredients.filter(
 														(i) => i.id !== selectedIngredientId
 													);
+													// Reset form
 													selectedIngredientId = '';
+													ingredientAmount = 1;
+													ingredientUnit = 'g';
 													open = false;
 												} else {
 													alert('Ingredient not found');
@@ -247,13 +320,20 @@
 										>
 											{index + 1}
 										</span>
-										<span class="text-sm font-medium text-gray-900">{ingredient.title}</span>
+										<div class="flex flex-col">
+											<span class="text-sm font-medium text-gray-900">{ingredient.title}</span>
+											<span class="text-xs text-gray-500"
+												>{ingredient.amount} {ingredient.unit}</span
+											>
+										</div>
 									</div>
 									<button
 										type="button"
 										onclick={() => {
 											$form.ingredients = $form.ingredients.filter((i) => i.id !== ingredient.id);
-											data.ingredients = data.ingredients.concat(ingredient);
+											// Return the ingredient to the available list
+											const originalIngredient = { id: ingredient.id, title: ingredient.title };
+											data.ingredients = data.ingredients.concat(originalIngredient);
 										}}
 										class="rounded-lg p-1.5 text-red-500 transition-colors hover:bg-red-50 hover:text-red-700"
 										title="Remove ingredient"

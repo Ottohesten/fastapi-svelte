@@ -27,7 +27,7 @@
 			editorProps: {
 				attributes: {
 					class:
-						'prose prose-sm sm:prose lg:prose-lg xl:prose-2xl focus:outline-none min-h-[200px] p-4 border rounded-md bg-gray-50'
+						'prose focus:outline-none min-h-[200px] p-4 border rounded-md bg-gray-50 w-full max-w-none'
 				}
 			},
 			onTransaction: () => {
@@ -146,4 +146,4 @@
 		</div>
 	</div>
 {/if}
-<div bind:this={element} class=""></div>
+<div bind:this={element} class="w-full"></div>

@@ -1,6 +1,6 @@
 import createClient from "openapi-fetch";
 import type { paths } from "./v1";
-import { BACKEND_HOST } from "$env/static/private";
+import { env } from "$env/dynamic/private";
 
 // export let { GET, POST, PATCH, PUT, DELETE, HEAD, TRACE } = createClient<paths>({
 //     baseUrl: 'http://127.0.0.1:8000/'
@@ -11,9 +11,9 @@ import { BACKEND_HOST } from "$env/static/private";
 
 // Create a function that returns a client configured with the provided fetch
 export const createApiClient = (customFetch: typeof fetch = fetch) => {
-    // console.log('baseUrl', BACKEND_HOST);
+    // console.log('baseUrl', env.BACKEND_HOST);
     return createClient<paths>({
-        baseUrl: BACKEND_HOST,
+        baseUrl: env.BACKEND_HOST || 'http://127.0.0.1:8000',
         // baseUrl: 'http://localhost:8000/',
         fetch: customFetch
     });
@@ -28,7 +28,7 @@ const objectToFormData = (obj: Record<string, any>) => {
 
 export const createFormApiClient = (customFetch: typeof fetch = fetch) => {
     return createClient<paths>({
-        baseUrl: BACKEND_HOST,
+        baseUrl: env.BACKEND_HOST || 'http://127.0.0.1:8000',
         fetch: customFetch,
         // Add request transform
         headers: {

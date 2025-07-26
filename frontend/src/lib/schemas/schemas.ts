@@ -59,11 +59,13 @@ export const RecipeSchema = z.object({
     // ingredients: an array of objects that have an id and a title
     ingredients: z.array(z.object({
         id: z.string(),
-        title: z.string(),
-        calories: z.number().int().nonnegative("Calories must be a non-negative integer")
+        amount: z.number().int().min(1, "Amount must be at least 1").default(1),
+        // unit is enum of "g", "kg", "ml", "L", "pcs"
+        unit: z.enum(["g", "kg", "ml", "L", "pcs"]).default("g"),
     })),
 
     servings: z.number().int().min(1).default(1),
+
 
     // image: z.instanceof(File).refine((f) => f.size < 1_000_000, 'Image must be less than 1MB').optional()
 

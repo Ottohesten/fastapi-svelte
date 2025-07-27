@@ -58,23 +58,16 @@ def create_recipe(
     recipe = Recipe(
         title=recipe_in.title,
         instructions=recipe_in.instructions,
-        owner_id=current_user.id
+        owner_id=current_user.id,
+        servings=recipe_in.servings
     )
 
-    # session.add(recipe)
-    # session.commit()
-    # session.refresh(recipe)
+    # Save the recipe first to get a valid ID
+    session.add(recipe)
+    session.commit()
+    session.refresh(recipe)
 
-
-
-
-
-    # get ingredients
-    # for ingredient in recipe_in.ingredients:
-    #     ingredient = session.get(Ingredient, ingredient.id)
-    #     if not ingredient:
-    #         raise HTTPException(status_code=404, detail="Ingredient not found")
-    #     recipe.ingredients.append(ingredient)
+    # Now create ingredient links
     ingredient_links = recipe_in.ingredients
 
     for ingredient_link in ingredient_links:
@@ -82,29 +75,16 @@ def create_recipe(
         if not ingredient:
             raise HTTPException(status_code=404, detail="Ingredient not found")
         
-        # check if there is already a link for this ingredient in the recipe
-        # statement = select(RecipeIngredientLink).where(
-        #     RecipeIngredientLink.ingredient_id == ingredient_link.ingredient_id,
-        #     RecipeIngredientLink.recipe_id == recipe.id
-        # )
-        # existing_link = session.exec(statement).first()
-        # if existing_link:
-        #     raise HTTPException(
-        #         status_code=400, 
-        #         detail=f"Ingredient {ingredient.title} is already linked to this recipe"
-        #     )
-        
         # create a new RecipeIngredientLink
         recipe_ingredient_link = RecipeIngredientLink(
             ingredient_id=ingredient_link.ingredient_id,
-            recipe_id=recipe.id,
+            recipe_id=recipe.id,  # Now recipe.id is valid
             amount=ingredient_link.amount,
             unit=ingredient_link.unit
         )
-        # print(f"recipe_ingredient_link: {recipe_ingredient_link}")
         session.add(recipe_ingredient_link)
     
-    session.add(recipe)
+    # Commit the ingredient links
     session.commit()
     session.refresh(recipe)
 

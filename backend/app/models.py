@@ -1,5 +1,5 @@
 import uuid
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, computed_field
 from sqlmodel import Field, SQLModel, Relationship, Column, JSON
 from typing import Optional
 # from permissions.roles import Role
@@ -188,6 +188,40 @@ class RecipePublic(RecipeBase):
     id: uuid.UUID 
     owner: UserPublic
     ingredient_links: list[RecipeIngredientLinkPublic]
+    
+    @computed_field
+    @property
+    def total_calories(self) -> int:
+        """Calculate total calories for the entire recipe based on ingredients and their amounts."""
+        total = 0
+        for link in self.ingredient_links:
+            # Convert amount to standardized unit (grams) for calculation
+            amount_in_grams = link.amount
+            if link.unit == "kg":
+                amount_in_grams = link.amount * 1000
+            elif link.unit == "ml":
+                # Assume 1ml = 1g for simplicity (works for most liquids)
+                amount_in_grams = link.amount
+            elif link.unit == "L":
+                amount_in_grams = link.amount * 1000
+            elif link.unit == "pcs":
+                # For pieces, assume average weight of 50g per piece
+                # This could be made more sophisticated with ingredient-specific weights
+                amount_in_grams = link.amount * 50
+            
+            # Calculate calories: (calories_per_100g * amount_in_grams) / 100
+            ingredient_calories = (link.ingredient.calories * amount_in_grams) / 100
+            total += ingredient_calories
+            
+        return round(total)
+    
+    @computed_field
+    @property
+    def calories_per_serving(self) -> int:
+        """Calculate calories per serving."""
+        if self.servings <= 0:
+            return 0
+        return round(self.total_calories / self.servings)
 
 
 
@@ -248,7 +282,7 @@ class Ingredient(IngredientBase, table=True):
     calories: int = Field(default=0, ge=0, description="Calories per 100g of the ingredient")
 
     # recipes: list["Recipe"] = Relationship(back_populates="ingredients", link_model=RecipeIngredientLink)
-    recipe_links: list["RecipeIngredientLink"] = Relationship(back_populates="ingredient")
+    recipe_links: list["RecipeIngredientLink"] = Relationship(back_populates="ingredient", cascade_delete=True)
 
     
 

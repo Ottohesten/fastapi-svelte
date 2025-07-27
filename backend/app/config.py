@@ -31,7 +31,7 @@ class Settings(BaseSettings):
     
     SECRET_KEY: str = secrets.token_urlsafe(32)
     # ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 8
-    ACCESS_TOKEN_EXPIRE_MINUTES: int = 10
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 60
     FRONTEND_HOST: str = ""
     ENVIRONMENT: Literal["local", "staging", "production"] = "local"
     # print(f"{SECRET_KEY=}")

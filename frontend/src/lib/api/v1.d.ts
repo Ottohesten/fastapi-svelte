@@ -1108,6 +1108,16 @@ export interface components {
             owner: components["schemas"]["UserPublic"];
             /** Ingredient Links */
             ingredient_links: components["schemas"]["RecipeIngredientLinkPublic"][];
+            /**
+             * Total Calories
+             * @description Calculate total calories for the entire recipe based on ingredients and their amounts.
+             */
+            readonly total_calories: number;
+            /**
+             * Calories Per Serving
+             * @description Calculate calories per serving.
+             */
+            readonly calories_per_serving: number;
         };
         /** RoleCreate */
         RoleCreate: {

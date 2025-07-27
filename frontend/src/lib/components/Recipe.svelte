@@ -38,6 +38,56 @@
 				</div>
 			</div>
 
+			<!-- Recipe Stats -->
+			<div class="mb-4 grid grid-cols-2 gap-4 rounded-lg bg-gray-50 p-3">
+				<div class="text-center">
+					<div class="flex items-center justify-center gap-1">
+						<svg
+							class="h-4 w-4 text-orange-600"
+							fill="none"
+							stroke="currentColor"
+							viewBox="0 0 24 24"
+						>
+							<path
+								stroke-linecap="round"
+								stroke-linejoin="round"
+								stroke-width="2"
+								d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z"
+							/>
+						</svg>
+						<span class="text-xs font-medium text-gray-600">Calories</span>
+					</div>
+					<div class="mt-1">
+						<span class="text-lg font-bold text-gray-900">{recipe.total_calories || 0}</span>
+						<span class="text-xs text-gray-500">total</span>
+					</div>
+					<div class="text-xs text-gray-500">
+						{recipe.calories_per_serving || 0} per serving
+					</div>
+				</div>
+				<div class="text-center">
+					<div class="flex items-center justify-center gap-1">
+						<svg
+							class="h-4 w-4 text-blue-600"
+							fill="none"
+							stroke="currentColor"
+							viewBox="0 0 24 24"
+						>
+							<path
+								stroke-linecap="round"
+								stroke-linejoin="round"
+								stroke-width="2"
+								d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
+							/>
+						</svg>
+						<span class="text-xs font-medium text-gray-600">Servings</span>
+					</div>
+					<div class="mt-1">
+						<span class="text-lg font-bold text-gray-900">{recipe.servings}</span>
+					</div>
+				</div>
+			</div>
+
 			<!-- Ingredients Section -->
 			<div class="mb-4">
 				<div class="mb-3 flex items-center gap-2">

@@ -222,8 +222,31 @@ class RecipePublic(RecipeBase):
         if self.servings <= 0:
             return 0
         return round(self.total_calories / self.servings)
+    
 
+    @computed_field
+    @property
+    def calculated_weight(self) -> int:
+        """The calculated weight of the recipe based on the ingredients and their amounts. Returns the total weight in grams."""
+        total_weight = 0
+        for link in self.ingredient_links:
+            # Convert amount to standardized unit (grams) for calculation
+            amount_in_grams = link.amount
+            if link.unit == "kg":
+                amount_in_grams = link.amount * 1000
+            elif link.unit == "ml":
+                # Assume 1ml = 1g for simplicity (works for most liquids)
+                amount_in_grams = link.amount
+            elif link.unit == "L":
+                amount_in_grams = link.amount * 1000
+            elif link.unit == "pcs":
+                # For pieces, assume average weight of 50g per piece
+                # This could be made more sophisticated with ingredient-specific weights
+                amount_in_grams = link.amount * 50
 
+            total_weight += amount_in_grams
+
+        return round(total_weight)
 
 
 class Recipe(RecipeBase, table=True):

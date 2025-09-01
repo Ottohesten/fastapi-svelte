@@ -112,9 +112,9 @@
 .surface-3 { @apply border border-gray-200 bg-white shadow-lg dark:border-gray-800 dark:bg-gray-900/70; }
 
 
-/* Global link styling */
-a:not(.no-underline) {
-  @apply underline-offset-4 hover:underline;
+/* Global link styling (default: no underline; opt-in per component) */
+a {
+  @apply no-underline;
 }
 
 /* Container utility that matches tailwind config */

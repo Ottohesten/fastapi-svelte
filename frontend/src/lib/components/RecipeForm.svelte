@@ -39,32 +39,38 @@
 	};
 </script>
 
-<div class="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 py-8">
+<div
+	class="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 py-8 dark:from-gray-950 dark:to-gray-900"
+>
 	<div class="container mx-auto max-w-7xl px-4">
 		<!-- Page Header -->
 		<div class="mb-8">
-			<h1 class="mb-2 text-3xl font-bold text-gray-900">{pageTitle}</h1>
-			<p class="text-gray-600">{pageDescription}</p>
+			<h1 class="mb-2 text-3xl font-bold text-gray-900 dark:text-gray-100">{pageTitle}</h1>
+			<p class="text-gray-600 dark:text-gray-300">{pageDescription}</p>
 		</div>
 
 		{#if $message}
-			<div class="mb-6 rounded-lg border border-green-200 bg-green-50 p-4">
-				<h3 class="text-center text-lg font-medium text-green-800">{$message}</h3>
+			<div
+				class="mb-6 rounded-lg border border-green-200 bg-green-50 p-4 dark:border-green-900/50 dark:bg-green-900/20"
+			>
+				<h3 class="text-center text-lg font-medium text-green-800 dark:text-green-300">
+					{$message}
+				</h3>
 			</div>
 		{/if}
 
 		<div class="grid grid-cols-1 gap-8 lg:grid-cols-3">
 			<!-- Main Form -->
 			<div class="lg:col-span-2">
-				<div class="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+				<div class="surface-2 rounded-xl p-6">
 					<form method="POST" action="" enctype="multipart/form-data" use:enhance class="space-y-6">
 						<!-- Title Field -->
 						<div class="space-y-2">
-							<label class="text-sm font-semibold text-gray-700" for="title">
+							<label class="text-sm font-semibold text-gray-700 dark:text-gray-200" for="title">
 								Recipe Title <span class="text-red-500">*</span>
 							</label>
 							<input
-								class="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-gray-900 placeholder-gray-500 shadow-sm transition-colors focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+								class="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-gray-900 placeholder-gray-500 shadow-sm transition-colors focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 dark:border-gray-800 dark:bg-gray-900/40 dark:text-gray-100 dark:placeholder-gray-500 dark:focus:border-blue-400 dark:focus:ring-blue-400/20"
 								type="text"
 								name="title"
 								placeholder="Enter a delicious recipe name..."
@@ -89,11 +95,11 @@
 
 						<!-- Servings -->
 						<div class="space-y-2">
-							<label class="text-sm font-semibold text-gray-700" for="servings">
+							<label class="text-sm font-semibold text-gray-700 dark:text-gray-200" for="servings">
 								Servings <span class="text-red-500">*</span>
 							</label>
 							<input
-								class="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-gray-900 placeholder-gray-500 shadow-sm transition-colors focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+								class="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-gray-900 placeholder-gray-500 shadow-sm transition-colors focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 dark:border-gray-800 dark:bg-gray-900/40 dark:text-gray-100 dark:placeholder-gray-500 dark:focus:border-blue-400 dark:focus:ring-blue-400/20"
 								type="number"
 								name="servings"
 								min="1"
@@ -119,11 +125,14 @@
 
 						<!-- Instructions Field -->
 						<div class="space-y-2">
-							<label class="text-sm font-semibold text-gray-700" for="instructions">
+							<label
+								class="text-sm font-semibold text-gray-700 dark:text-gray-200"
+								for="instructions"
+							>
 								Cooking Instructions <span class="text-red-500">*</span>
 							</label>
 							<div
-								class="rounded-lg border border-gray-300 bg-white shadow-sm transition-colors focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-500/20"
+								class="rounded-lg border border-gray-300 bg-white shadow-sm transition-colors focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-500/20 dark:border-gray-800 dark:bg-gray-900/40 dark:focus-within:border-blue-400 dark:focus-within:ring-blue-400/20"
 							>
 								<InstructionsEditor bind:value={$form.instructions} />
 							</div>
@@ -144,7 +153,10 @@
 
 						<!-- Add Ingredient Section -->
 						<div class="space-y-2">
-							<label class="text-sm font-semibold text-gray-700" for="add-ingredient-trigger">
+							<label
+								class="text-sm font-semibold text-gray-700 dark:text-gray-200"
+								for="add-ingredient-trigger"
+							>
 								Ingredients
 							</label>
 							<Dialog.Root bind:open>
@@ -168,24 +180,24 @@
 								</Dialog.Trigger>
 								<Dialog.Content class="sm:max-w-md">
 									<Dialog.Header>
-										<Dialog.Title class="text-lg font-semibold text-gray-900">
+										<Dialog.Title class="text-lg font-semibold text-gray-900 dark:text-gray-100">
 											Add Ingredient
 										</Dialog.Title>
-										<Dialog.Description class="text-sm text-gray-600">
+										<Dialog.Description class="text-sm text-gray-600 dark:text-gray-300">
 											Select an ingredient to add to your recipe.
 										</Dialog.Description>
 									</Dialog.Header>
 									<div class="space-y-4">
 										<div>
 											<label
-												class="mb-2 block text-sm font-medium text-gray-700"
+												class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-200"
 												for="ingredient-select"
 											>
 												Choose Ingredient
 											</label>
 											<select
 												id="ingredient-select"
-												class="w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-gray-900 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+												class="w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-gray-900 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 dark:border-gray-800 dark:bg-gray-900/40 dark:text-gray-100 dark:focus:border-blue-400 dark:focus:ring-blue-400/20"
 												bind:value={selectedIngredientId}
 											>
 												<option value="">Select an ingredient...</option>
@@ -199,7 +211,7 @@
 											<div>
 												<label
 													for="ingredient-amount"
-													class="mb-2 block text-sm font-medium text-gray-700"
+													class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-200"
 												>
 													Amount
 												</label>
@@ -208,7 +220,7 @@
 													type="number"
 													min="0.1"
 													step="0.1"
-													class="w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-gray-900 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+													class="w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-gray-900 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 dark:border-gray-800 dark:bg-gray-900/40 dark:text-gray-100 dark:focus:border-blue-400 dark:focus:ring-blue-400/20"
 													bind:value={ingredientAmount}
 													placeholder="1"
 												/>
@@ -216,13 +228,13 @@
 											<div>
 												<label
 													for="ingredient-unit"
-													class="mb-2 block text-sm font-medium text-gray-700"
+													class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-200"
 												>
 													Unit
 												</label>
 												<select
 													id="ingredient-unit"
-													class="w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-gray-900 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+													class="w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-gray-900 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 dark:border-gray-800 dark:bg-gray-900/40 dark:text-gray-100 dark:focus:border-blue-400 dark:focus:ring-blue-400/20"
 													bind:value={ingredientUnit}
 												>
 													<option value="g">grams (g)</option>
@@ -237,7 +249,7 @@
 									<Dialog.Footer class="flex gap-3">
 										<button
 											type="button"
-											class="flex-1 rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+											class="flex-1 rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:border-gray-800 dark:bg-gray-900/40 dark:text-gray-200 dark:hover:bg-gray-800"
 											onclick={() => {
 												// Reset form when canceling
 												selectedIngredientId = '';
@@ -295,11 +307,11 @@
 						</div>
 
 						<!-- Submit Button -->
-						<div class="border-t border-gray-200 pt-4">
+						<div class="border-t border-gray-200 pt-4 dark:border-gray-800">
 							<button
 								class="w-full rounded-lg {colorClasses[
 									submitButtonColor
-								]} px-6 py-3 text-base font-semibold text-white shadow-lg transition-all hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+								]} px-6 py-3 text-base font-semibold text-white shadow-lg transition-all hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:focus:ring-offset-gray-900"
 								type="submit"
 								onclick={() => {
 									onSubmit?.();
@@ -314,7 +326,7 @@
 
 			<!-- Ingredients Sidebar -->
 			<div class="lg:col-span-1">
-				<div class="sticky top-8 rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+				<div class="surface-2 sticky top-8 rounded-xl p-6">
 					<div class="mb-4 flex items-center gap-2">
 						<svg
 							class="h-5 w-5 text-green-600"
@@ -329,16 +341,18 @@
 								d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
 							/>
 						</svg>
-						<h2 class="text-lg font-semibold text-gray-900">Recipe Ingredients</h2>
+						<h2 class="text-lg font-semibold text-gray-900 dark:text-gray-100">
+							Recipe Ingredients
+						</h2>
 					</div>
 
 					{#if $form.ingredients.length === 0}
 						<div class="py-8 text-center">
 							<div
-								class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gray-100"
+								class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gray-100 dark:bg-gray-800"
 							>
 								<svg
-									class="h-8 w-8 text-gray-400"
+									class="h-8 w-8 text-gray-400 dark:text-gray-500"
 									fill="none"
 									stroke="currentColor"
 									viewBox="0 0 24 24"
@@ -351,26 +365,28 @@
 									/>
 								</svg>
 							</div>
-							<p class="text-sm text-gray-500">No ingredients added yet</p>
-							<p class="mt-1 text-xs text-gray-400">Click "Add Ingredient" to get started</p>
+							<p class="text-sm text-gray-500 dark:text-gray-400">No ingredients added yet</p>
+							<p class="mt-1 text-xs text-gray-400 dark:text-gray-500">
+								Click "Add Ingredient" to get started
+							</p>
 						</div>
 					{:else}
 						<div class="space-y-3">
 							{#each $form.ingredients as ingredient, index}
 								<div
-									class="flex items-center justify-between rounded-lg border border-gray-200 bg-gray-50 p-3 transition-colors hover:bg-gray-100"
+									class="flex items-center justify-between rounded-lg border border-gray-200 bg-gray-50 p-3 transition-colors hover:bg-gray-100 dark:border-gray-800 dark:bg-gray-900/40 dark:hover:bg-gray-900/60"
 								>
 									<div class="flex items-center gap-3">
 										<span
-											class="flex h-6 w-6 items-center justify-center rounded-full bg-blue-100 text-xs font-medium text-blue-600"
+											class="flex h-6 w-6 items-center justify-center rounded-full bg-blue-100 text-xs font-medium text-blue-600 dark:bg-blue-900/30 dark:text-blue-300"
 										>
 											{index + 1}
 										</span>
 										<div class="flex flex-col">
-											<span class="text-sm font-medium text-gray-900">
+											<span class="text-sm font-medium text-gray-900 dark:text-gray-100">
 												{ingredient.title || 'Unknown Ingredient'}
 											</span>
-											<span class="text-xs text-gray-500">
+											<span class="text-xs text-gray-500 dark:text-gray-400">
 												{ingredient.amount || 0}
 												{ingredient.unit || 'units'}
 											</span>
@@ -397,7 +413,7 @@
 												data.ingredients = data.ingredients.concat(originalIngredient);
 											}
 										}}
-										class="rounded-lg p-1.5 text-red-500 transition-colors hover:bg-red-50 hover:text-red-700"
+										class="rounded-lg p-1.5 text-red-500 transition-colors hover:bg-red-50 hover:text-red-700 dark:hover:bg-red-900/20"
 										title="Remove ingredient"
 									>
 										<svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -27,7 +27,7 @@
 			editorProps: {
 				attributes: {
 					class:
-						'prose focus:outline-none min-h-[200px] p-4 border rounded-md bg-gray-50 w-full max-w-none'
+						'prose dark:prose-invert focus:outline-none min-h-[200px] p-4 border border-gray-300 rounded-lg bg-white text-gray-900 w-full max-w-none dark:border-gray-800 dark:bg-gray-900/40 dark:text-gray-100'
 				}
 			},
 			onTransaction: () => {
@@ -75,9 +75,9 @@
 				type="button"
 				onclick={() => editor.chain().focus().toggleBold().run()}
 				disabled={!canPerformAction('toggleBold')}
-				class="rounded border px-2 py-1 text-xs {isActive('bold')
+				class="rounded border border-gray-300 px-2 py-1 text-xs {isActive('bold')
 					? 'bg-gray-800 text-white'
-					: 'bg-white text-gray-700'} hover:bg-gray-100 disabled:opacity-50"
+					: 'bg-white text-gray-700 dark:bg-gray-900/40 dark:text-gray-200'} hover:bg-gray-100 disabled:opacity-50 dark:border-gray-800 dark:hover:bg-gray-800"
 			>
 				<strong>B</strong>
 			</button>
@@ -85,45 +85,45 @@
 				type="button"
 				onclick={() => editor.chain().focus().toggleItalic().run()}
 				disabled={!canPerformAction('toggleItalic')}
-				class="rounded border px-2 py-1 text-xs {isActive('italic')
+				class="rounded border border-gray-300 px-2 py-1 text-xs {isActive('italic')
 					? 'bg-gray-800 text-white'
-					: 'bg-white text-gray-700'} hover:bg-gray-100 disabled:opacity-50"
+					: 'bg-white text-gray-700 dark:bg-gray-900/40 dark:text-gray-200'} hover:bg-gray-100 disabled:opacity-50 dark:border-gray-800 dark:hover:bg-gray-800"
 			>
 				<em>I</em>
 			</button>
 			<button
 				type="button"
 				onclick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
-				class="rounded border px-2 py-1 text-xs {isActive('heading', { level: 2 })
+				class="rounded border border-gray-300 px-2 py-1 text-xs {isActive('heading', { level: 2 })
 					? 'bg-gray-800 text-white'
-					: 'bg-white text-gray-700'} hover:bg-gray-100"
+					: 'bg-white text-gray-700 dark:bg-gray-900/40 dark:text-gray-200'} hover:bg-gray-100 dark:border-gray-800 dark:hover:bg-gray-800"
 			>
 				H2
 			</button>
 			<button
 				type="button"
 				onclick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}
-				class="rounded border px-2 py-1 text-xs {isActive('heading', { level: 3 })
+				class="rounded border border-gray-300 px-2 py-1 text-xs {isActive('heading', { level: 3 })
 					? 'bg-gray-800 text-white'
-					: 'bg-white text-gray-700'} hover:bg-gray-100"
+					: 'bg-white text-gray-700 dark:bg-gray-900/40 dark:text-gray-200'} hover:bg-gray-100 dark:border-gray-800 dark:hover:bg-gray-800"
 			>
 				H3
 			</button>
 			<button
 				type="button"
 				onclick={() => editor.chain().focus().toggleBulletList().run()}
-				class="rounded border px-2 py-1 text-xs {isActive('bulletList')
+				class="rounded border border-gray-300 px-2 py-1 text-xs {isActive('bulletList')
 					? 'bg-gray-800 text-white'
-					: 'bg-white text-gray-700'} hover:bg-gray-100"
+					: 'bg-white text-gray-700 dark:bg-gray-900/40 dark:text-gray-200'} hover:bg-gray-100 dark:border-gray-800 dark:hover:bg-gray-800"
 			>
 				• List
 			</button>
 			<button
 				type="button"
 				onclick={() => editor.chain().focus().toggleOrderedList().run()}
-				class="rounded border px-2 py-1 text-xs {isActive('orderedList')
+				class="rounded border border-gray-300 px-2 py-1 text-xs {isActive('orderedList')
 					? 'bg-gray-800 text-white'
-					: 'bg-white text-gray-700'} hover:bg-gray-100"
+					: 'bg-white text-gray-700 dark:bg-gray-900/40 dark:text-gray-200'} hover:bg-gray-100 dark:border-gray-800 dark:hover:bg-gray-800"
 			>
 				1. List
 			</button>
@@ -131,7 +131,7 @@
 				type="button"
 				onclick={() => editor.chain().focus().undo().run()}
 				disabled={!canPerformAction('undo')}
-				class="rounded border bg-white px-2 py-1 text-xs text-gray-700 hover:bg-gray-100 disabled:opacity-50"
+				class="rounded border border-gray-300 bg-white px-2 py-1 text-xs text-gray-700 hover:bg-gray-100 disabled:opacity-50 dark:border-gray-800 dark:bg-gray-900/40 dark:text-gray-200 dark:hover:bg-gray-800"
 			>
 				↶
 			</button>
@@ -139,7 +139,7 @@
 				type="button"
 				onclick={() => editor.chain().focus().redo().run()}
 				disabled={!canPerformAction('redo')}
-				class="rounded border bg-white px-2 py-1 text-xs text-gray-700 hover:bg-gray-100 disabled:opacity-50"
+				class="rounded border border-gray-300 bg-white px-2 py-1 text-xs text-gray-700 hover:bg-gray-100 disabled:opacity-50 dark:border-gray-800 dark:bg-gray-900/40 dark:text-gray-200 dark:hover:bg-gray-800"
 			>
 				↷
 			</button>

@@ -75,37 +75,49 @@
 <!-- <SuperDebug data={$message} /> -->
 <!-- <SuperDebug data={$constraints} /> -->
 
-<div class="mx-auto max-w-7xl space-y-6 p-4 sm:p-6 lg:p-8">
+<div class="mx-auto max-w-7xl space-y-6">
 	<!-- Header with Add User Button -->
 	<div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
 		<div>
-			<h1 class="text-2xl font-bold text-gray-900 sm:text-3xl">User Management</h1>
-			<p class="mt-1 text-sm text-gray-600">Manage user accounts and permissions</p>
+			<h1 class="text-2xl font-bold text-gray-900 sm:text-3xl dark:text-gray-100">
+				User Management
+			</h1>
+			<p class="mt-1 text-sm text-gray-600 dark:text-gray-300">
+				Manage user accounts and permissions
+			</p>
 		</div>
 		{#if $message}
-			<div class="rounded-md border border-green-200 bg-green-50 p-3">
-				<p class="text-sm text-green-800">{$message}</p>
+			<div
+				class="rounded-md border border-green-200 bg-green-50 p-3 dark:border-green-900/50 dark:bg-green-900/20"
+			>
+				<p class="text-sm text-green-800 dark:text-green-300">{$message}</p>
 			</div>
 		{/if}
 
 		{#if $updateMessage}
-			<div class="rounded-md border border-green-200 bg-green-50 p-3">
-				<p class="text-sm text-green-800">{$updateMessage}</p>
+			<div
+				class="rounded-md border border-green-200 bg-green-50 p-3 dark:border-green-900/50 dark:bg-green-900/20"
+			>
+				<p class="text-sm text-green-800 dark:text-green-300">{$updateMessage}</p>
 			</div>
 		{/if}
 
 		{#if $errors._errors}
-			<div class="rounded-md border border-red-200 bg-red-50 p-3">
+			<div
+				class="rounded-md border border-red-200 bg-red-50 p-3 dark:border-red-900/50 dark:bg-red-900/20"
+			>
 				{#each $errors._errors as error}
-					<p class="text-sm text-red-800">{error}</p>
+					<p class="text-sm text-red-800 dark:text-red-300">{error}</p>
 				{/each}
 			</div>
 		{/if}
 
 		{#if $updateErrors._errors}
-			<div class="rounded-md border border-red-200 bg-red-50 p-3">
+			<div
+				class="rounded-md border border-red-200 bg-red-50 p-3 dark:border-red-900/50 dark:bg-red-900/20"
+			>
 				{#each $updateErrors._errors as error}
-					<p class="text-sm text-red-800">{error}</p>
+					<p class="text-sm text-red-800 dark:text-red-300">{error}</p>
 				{/each}
 			</div>
 		{/if}
@@ -143,13 +155,14 @@
 						<Field {form} name="email">
 							<Control>
 								{#snippet children({ props })}
-									<Label class="mb-1 block text-sm font-medium text-gray-700">Email *</Label>
-									<input
+									<Label class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-200"
+										>Email *</Label
+									>
+									<Input
 										{...props}
 										type="email"
 										bind:value={$formData.email}
 										placeholder="Enter user email"
-										class="w-full rounded-md border border-gray-300 p-2 transition-colors focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
 									/>
 								{/snippet}
 							</Control>
@@ -161,13 +174,14 @@
 						<Field {form} name="full_name">
 							<Control>
 								{#snippet children({ props })}
-									<Label class="mb-1 block text-sm font-medium text-gray-700">Full Name *</Label>
-									<input
+									<Label class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-200"
+										>Full Name *</Label
+									>
+									<Input
 										{...props}
 										type="text"
 										bind:value={$formData.full_name}
 										placeholder="Enter full name"
-										class="w-full rounded-md border border-gray-300 p-2 transition-colors focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
 									/>
 								{/snippet}
 							</Control>
@@ -177,14 +191,15 @@
 						<Field {form} name="password">
 							<Control>
 								{#snippet children({ props })}
-									<Label class="mb-1 block text-sm font-medium text-gray-700">Password *</Label>
-									<input
+									<Label class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-200"
+										>Password *</Label
+									>
+									<Input
 										{...props}
 										type="password"
 										bind:value={$formData.password}
 										placeholder="Enter user password"
 										autocomplete="new-password"
-										class="w-full rounded-md border border-gray-300 p-2 transition-colors focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
 									/>
 								{/snippet}
 							</Control>
@@ -195,16 +210,15 @@
 						<Field {form} name="confirm_password">
 							<Control>
 								{#snippet children({ props })}
-									<Label class="mb-1 block text-sm font-medium text-gray-700"
+									<Label class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-200"
 										>Confirm Password *</Label
 									>
-									<input
+									<Input
 										{...props}
 										type="password"
 										bind:value={$formData.confirm_password}
 										placeholder="Confirm user password"
 										autocomplete="new-password"
-										class="w-full rounded-md border border-gray-300 p-2 transition-colors focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
 									/>
 								{/snippet}
 							</Control>
@@ -221,9 +235,11 @@
 												{...props}
 												type="checkbox"
 												bind:checked={$formData.is_active}
-												class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-2 focus:ring-blue-500/20"
+												class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-2 focus:ring-blue-500/20 dark:border-gray-700"
 											/>
-											<Label class="ml-2 block text-sm text-gray-700">Active User</Label>
+											<Label class="ml-2 block text-sm text-gray-700 dark:text-gray-200"
+												>Active User</Label
+											>
 										</div>
 									{/snippet}
 								</Control>
@@ -238,9 +254,11 @@
 												{...props}
 												type="checkbox"
 												bind:checked={$formData.is_superuser}
-												class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-2 focus:ring-blue-500/20"
+												class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-2 focus:ring-blue-500/20 dark:border-gray-700"
 											/>
-											<Label class="ml-2 block text-sm text-gray-700">Superuser</Label>
+											<Label class="ml-2 block text-sm text-gray-700 dark:text-gray-200"
+												>Superuser</Label
+											>
 										</div>
 									{/snippet}
 								</Control>
@@ -261,9 +279,10 @@
 	</div>
 
 	<!-- Data Table -->
-	<div class="rounded-2xl bg-white shadow-lg">
+	<DataTable data={data.users.data} {columns} />
+	<!-- <div class="surface-2 rounded-2xl">
 		<DataTable data={data.users.data} {columns} />
-	</div>
+	</div> -->
 </div>
 
 <!-- <div>

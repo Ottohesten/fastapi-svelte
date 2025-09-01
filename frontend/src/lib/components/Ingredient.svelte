@@ -5,7 +5,7 @@
 </script>
 
 <div
-	class="group relative overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm transition-all duration-300 hover:border-gray-300 hover:shadow-lg"
+	class="group relative overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm transition-all duration-300 hover:border-gray-300 hover:shadow-lg dark:border-gray-800 dark:bg-gray-900/50 dark:shadow-none dark:hover:border-gray-700 dark:hover:bg-gray-900/60"
 >
 	<a href="/ingredients/{ingredient.id}" class="block">
 		<div class="p-6">
@@ -28,11 +28,11 @@
 					</div>
 					<div class="min-w-0 flex-1">
 						<h3
-							class="truncate text-lg font-bold text-gray-900 transition-colors duration-300 group-hover:text-green-600"
+							class="truncate text-lg font-bold text-gray-900 transition-colors duration-300 group-hover:text-green-600 dark:text-gray-100 dark:group-hover:text-green-400"
 						>
 							{ingredient.title}
 						</h3>
-						<p class="text-sm font-medium text-gray-500">Ingredient</p>
+						<p class="text-sm font-medium text-gray-500 dark:text-gray-400">Ingredient</p>
 					</div>
 				</div>
 			</div>
@@ -59,7 +59,7 @@
 				<!-- View Details Indicator -->
 				<div class="flex items-center justify-between pt-2">
 					<div
-						class="flex items-center text-sm font-medium text-green-600 transition-colors group-hover:text-green-700"
+						class="flex items-center text-sm font-medium text-green-600 transition-colors group-hover:text-green-700 dark:text-green-400 dark:group-hover:text-green-300"
 					>
 						<span>View ingredient details</span>
 						<svg
@@ -83,13 +83,15 @@
 
 	<!-- Admin Action Buttons (Edit/Delete) -->
 	{#if user && user.is_superuser}
-		<div class="border-t border-gray-100 bg-gray-50 px-6 py-3">
+		<div
+			class="border-t border-gray-100 bg-gray-50 px-6 py-3 dark:border-gray-800 dark:bg-gray-900/40"
+		>
 			<div class="flex items-center justify-between">
-				<span class="text-xs font-medium text-gray-500">Admin Actions</span>
+				<span class="text-xs font-medium text-gray-500 dark:text-gray-400">Admin Actions</span>
 				<div class="flex items-center gap-2">
 					<a
 						href="/ingredients/{ingredient.id}/update"
-						class="inline-flex items-center gap-1.5 rounded-lg border border-blue-200 bg-blue-50 px-3 py-1.5 text-xs font-medium text-blue-700 transition-colors hover:border-blue-300 hover:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1"
+						class="inline-flex items-center gap-1.5 rounded-lg border border-blue-200 bg-blue-50 px-3 py-1.5 text-xs font-medium text-blue-700 transition-colors hover:border-blue-300 hover:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 dark:border-blue-900/50 dark:bg-blue-900/30 dark:text-blue-300 dark:hover:border-blue-800 dark:hover:bg-blue-900/40"
 					>
 						<svg class="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 							<path
@@ -105,7 +107,7 @@
 						<input type="hidden" name="ingredient_id" value={ingredient.id} />
 						<button
 							type="submit"
-							class="inline-flex items-center gap-1.5 rounded-lg border border-red-200 bg-red-50 px-3 py-1.5 text-xs font-medium text-red-700 transition-colors hover:border-red-300 hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-1"
+							class="inline-flex items-center gap-1.5 rounded-lg border border-red-200 bg-red-50 px-3 py-1.5 text-xs font-medium text-red-700 transition-colors hover:border-red-300 hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-1 dark:border-red-900/50 dark:bg-red-900/40 dark:text-red-300 dark:hover:border-red-800 dark:hover:bg-red-900/50"
 							onclick={(e) => {
 								if (
 									!confirm(

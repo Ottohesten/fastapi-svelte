@@ -7,7 +7,9 @@
 	let { session, authenticatedUser }: Props = $props();
 </script>
 
-<div class="my-4 rounded-md bg-gray-100 p-4 dark:bg-gray-800">
+<div
+	class="my-4 rounded-md border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-800 dark:bg-gray-900/50"
+>
 	<a href="/game/{session.id}">
 		<p>Title: {session.title}</p>
 		<p>Owner: {session.owner.email}</p>

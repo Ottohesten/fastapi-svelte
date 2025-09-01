@@ -33,6 +33,7 @@
 	let chartType: 'drinks' | 'players' = $state(DEFAULT_CHART_TYPE);
 	let hoveredSegment: string | null = $state(null);
 	let open = $state(false);
+	let isDark = $state(false);
 
 	// Function to update URL with current state
 	function updateURL() {
@@ -240,14 +241,24 @@
 	);
 
 	let yTicks = $derived(yScale.ticks(6));
-	// Animation on mount
+	// Animation on mount and observe theme
 	onMount(() => {
 		// Restore state from URL first
 		restoreFromURL();
 
+		// Track theme for chart colors
+		const updateTheme = () => {
+			isDark = document.documentElement.classList.contains('dark');
+		};
+		updateTheme();
+		const observer = new MutationObserver(updateTheme);
+		observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+
 		setTimeout(() => {
 			showAnimation = true;
 		}, 100);
+
+		return () => observer.disconnect();
 	});
 
 	// Reactive effects to update URL when state changes
@@ -422,11 +433,11 @@
 
 <div class="mx-auto min-h-screen w-full max-w-7xl px-4 py-6 font-sans sm:px-6 lg:px-8">
 	<!-- Header -->
-	<div class="mb-8 border-b-2 border-gray-200 pb-6 text-center">
-		<h1 class="mb-2 text-2xl font-bold text-gray-800 sm:text-3xl md:text-4xl">
+	<div class="mb-8 border-b-2 border-gray-200 pb-6 text-center dark:border-gray-800">
+		<h1 class="mb-2 text-2xl font-bold text-gray-800 sm:text-3xl md:text-4xl dark:text-gray-100">
 			Game Session Dashboard
 		</h1>
-		<p class="text-base text-gray-600 sm:text-lg">
+		<p class="text-base text-gray-600 sm:text-lg dark:text-gray-400">
 			Session: <strong>{gameSession.title}</strong>
 		</p>
 	</div>
@@ -434,7 +445,9 @@
 	<div class="mb-8 flex flex-col gap-6">
 		<div class="flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-center">
 			<div class="flex flex-col gap-2 sm:flex-row sm:items-center">
-				<label for="team-filter" class="font-semibold text-gray-700">Filter by Team:</label>
+				<label for="team-filter" class="font-semibold text-gray-700 dark:text-gray-300"
+					>Filter by Team:</label
+				>
 				<select
 					id="team-filter"
 					value={selectedTeam || 'all'}
@@ -443,7 +456,7 @@
 							(e.target as HTMLSelectElement).value === 'all'
 								? null
 								: (e.target as HTMLSelectElement).value)}
-					class="cursor-pointer rounded-lg border-2 border-gray-300 bg-white px-4 py-2 text-base transition-colors hover:border-blue-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100"
+					class="cursor-pointer rounded-lg border-2 border-gray-300 bg-white px-4 py-2 text-base transition-colors hover:border-blue-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100 dark:focus:ring-blue-900/40"
 				>
 					<option value="all">All Teams</option>
 					{#each teams as team}
@@ -453,11 +466,11 @@
 			</div>
 
 			<div class="flex flex-col gap-2 sm:flex-row sm:items-center">
-				<label for="view-mode" class="font-semibold text-gray-700">View:</label>
+				<label for="view-mode" class="font-semibold text-gray-700 dark:text-gray-300">View:</label>
 				<select
 					id="view-mode"
 					bind:value={viewMode}
-					class="cursor-pointer rounded-lg border-2 border-gray-300 bg-white px-4 py-2 text-base transition-colors hover:border-blue-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100"
+					class="cursor-pointer rounded-lg border-2 border-gray-300 bg-white px-4 py-2 text-base transition-colors hover:border-blue-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100 dark:focus:ring-blue-900/40"
 				>
 					<option value="overview">Overview</option>
 					<option value="charts">Team Charts</option>
@@ -470,13 +483,13 @@
 		<!-- Summary Stats -->
 		<div class="grid grid-cols-1 gap-4 sm:grid-cols-3 sm:gap-6">
 			<div
-				class="rounded-xl bg-linear-to-br from-indigo-500 to-purple-600 px-4 py-4 text-center text-white shadow-lg sm:px-6"
+				class="bg-linear-to-br rounded-xl from-indigo-500 to-purple-600 px-4 py-4 text-center text-white shadow-lg sm:px-6"
 			>
 				<div class="text-xl font-bold sm:text-2xl">{filteredPlayersData.length}</div>
 				<div class="mt-1 text-sm opacity-90">Players</div>
 			</div>
 			<div
-				class="rounded-xl bg-linear-to-br from-indigo-500 to-purple-600 px-4 py-4 text-center text-white shadow-lg sm:px-6"
+				class="bg-linear-to-br rounded-xl from-indigo-500 to-purple-600 px-4 py-4 text-center text-white shadow-lg sm:px-6"
 			>
 				<div class="text-xl font-bold sm:text-2xl">
 					{filteredPlayersData.reduce((sum, p) => sum + p.totalDrinks, 0)}
@@ -484,7 +497,7 @@
 				<div class="mt-1 text-sm opacity-90">Total Drinks</div>
 			</div>
 			<div
-				class="rounded-xl bg-linear-to-br from-indigo-500 to-purple-600 px-4 py-4 text-center text-white shadow-lg sm:px-6"
+				class="bg-linear-to-br rounded-xl from-indigo-500 to-purple-600 px-4 py-4 text-center text-white shadow-lg sm:px-6"
 			>
 				<div class="text-xl font-bold sm:text-2xl">{teams.length}</div>
 				<div class="mt-1 text-sm opacity-90">Teams</div>
@@ -497,13 +510,15 @@
 		<!-- Overview Mode -->
 		<div class="space-y-8">
 			<!-- Teams Overview -->
-			<div class="rounded-2xl bg-white p-6 shadow-xl">
-				<h2 class="mb-6 text-2xl font-semibold text-gray-800">Teams Overview</h2>
+			<div
+				class="rounded-2xl border border-gray-200 bg-white p-6 shadow-xl dark:border-gray-800 dark:bg-gray-900/50"
+			>
+				<h2 class="mb-6 text-2xl font-semibold text-gray-800 dark:text-gray-100">Teams Overview</h2>
 				<div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
 					{#each teamsData() as team}
 						<!-- {console.log(selectedTeam === team.name)} -->
 						<div
-							class="cursor-pointer rounded-lg border-2 border-gray-200 p-4 transition-all hover:border-blue-400 hover:shadow-lg {selectedTeam ===
+							class="cursor-pointer rounded-lg border-2 border-gray-200 p-4 transition-all hover:border-blue-400 hover:shadow-lg dark:border-gray-800 {selectedTeam ===
 							team.name
 								? '-translate-y-2 border-black shadow-lg'
 								: ''}"
@@ -521,7 +536,7 @@
 							<h3 class="mb-2 text-lg font-semibold" style="color: {colorScale(team.name)}">
 								{team.name}
 							</h3>
-							<div class="space-y-2 text-sm text-gray-600">
+							<div class="space-y-2 text-sm text-gray-600 dark:text-gray-300">
 								<div class="flex justify-between">
 									<span>Players:</span>
 									<span class="font-medium">{team.playerCount}</span>
@@ -537,10 +552,12 @@
 								</div>
 							</div>
 							{#if team.drinkBreakdown.length > 0}
-								<div class="mt-3 border-t border-gray-200 pt-3">
-									<div class="mb-2 text-xs font-medium text-gray-500">Top Drinks:</div>
+								<div class="mt-3 border-t border-gray-200 pt-3 dark:border-gray-800">
+									<div class="mb-2 text-xs font-medium text-gray-500 dark:text-gray-400">
+										Top Drinks:
+									</div>
 									{#each getTopDrinks(team.drinkBreakdown, 3) as drink}
-										<div class="flex justify-between text-xs text-gray-600">
+										<div class="flex justify-between text-xs text-gray-600 dark:text-gray-300">
 											<span>{drink.name}</span>
 											<span>{drink.amount}</span>
 										</div>
@@ -552,14 +569,16 @@
 				</div>
 			</div>
 			<!-- Top Players -->
-			<div class="rounded-2xl bg-white p-6 shadow-xl">
-				<h2 class="mb-6 text-2xl font-semibold text-gray-800">Top Players</h2>
+			<div
+				class="rounded-2xl border border-gray-200 bg-white p-6 shadow-xl dark:border-gray-800 dark:bg-gray-900/50"
+			>
+				<h2 class="mb-6 text-2xl font-semibold text-gray-800 dark:text-gray-100">Top Players</h2>
 				<div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
 					{#each filteredPlayersData
 						.sort((a, b) => b.totalDrinks - a.totalDrinks)
 						.slice(0, 8) as player}
 						<div
-							class="cursor-pointer rounded-lg border-2 border-gray-200 p-4 transition-all hover:border-blue-400 hover:shadow-lg"
+							class="cursor-pointer rounded-lg border-2 border-gray-200 p-4 transition-all hover:border-blue-400 hover:shadow-lg dark:border-gray-800"
 							class:border-blue-500={selectedPlayer === player.name}
 							role="button"
 							tabindex="0"
@@ -571,17 +590,17 @@
 								}
 							}}
 						>
-							<h3 class="mb-2 font-semibold text-gray-800">{player.name}</h3>
+							<h3 class="mb-2 font-semibold text-gray-800 dark:text-gray-100">{player.name}</h3>
 							<div class="space-y-1 text-sm">
 								<div class="flex justify-between">
-									<span class="text-gray-600">Team:</span>
+									<span class="text-gray-600 dark:text-gray-300">Team:</span>
 									<span style="color: {colorScale(player.teamName)}" class="font-medium"
 										>{player.teamName}</span
 									>
 								</div>
 								<div class="flex justify-between">
-									<span class="text-gray-600">Drinks:</span>
-									<span class="text-lg font-bold">{player.totalDrinks}</span>
+									<span class="text-gray-600 dark:text-gray-300">Drinks:</span>
+									<span class="text-lg font-bold dark:text-gray-100">{player.totalDrinks}</span>
 								</div>
 							</div>
 						</div>
@@ -593,15 +612,21 @@
 		<!-- Charts Mode -->
 		<div class="space-y-8">
 			<!-- Chart Controls -->
-			<div class="rounded-2xl bg-white p-6 shadow-xl">
+			<div
+				class="rounded-2xl border border-gray-200 bg-white p-6 shadow-xl dark:border-gray-800 dark:bg-gray-900/50"
+			>
 				<div class="mb-4 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-					<h2 class="text-2xl font-semibold text-gray-800">Team Stacked Bar Charts</h2>
+					<h2 class="text-2xl font-semibold text-gray-800 dark:text-gray-100">
+						Team Stacked Bar Charts
+					</h2>
 					<div class="flex flex-col gap-2 sm:flex-row sm:items-center">
-						<label for="chart-type" class="font-semibold text-gray-700">Chart Type:</label>
+						<label for="chart-type" class="font-semibold text-gray-700 dark:text-gray-300"
+							>Chart Type:</label
+						>
 						<select
 							id="chart-type"
 							bind:value={chartType}
-							class="cursor-pointer rounded-lg border-2 border-gray-300 bg-white px-4 py-2 text-base transition-colors hover:border-blue-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100"
+							class="cursor-pointer rounded-lg border-2 border-gray-300 bg-white px-4 py-2 text-base transition-colors hover:border-blue-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100 dark:focus:ring-blue-900/40"
 						>
 							<option value="drinks">By Drink Type</option>
 							<option value="players">By Player Contribution</option>
@@ -623,7 +648,7 @@
 										x2={Math.max(chartWidth, 600) - chartMargin.right}
 										y1={yScale(tick)}
 										y2={yScale(tick)}
-										stroke="#f0f0f0"
+										stroke={isDark ? '#1f2937' : '#f0f0f0'}
 										stroke-width="1"
 									/>
 								{/each}
@@ -640,7 +665,7 @@
 												width={xScale.bandwidth()}
 												height={showAnimation ? yScale(segment.y0) - yScale(segment.y1) : 0}
 												fill={segment.color}
-												stroke="white"
+												stroke={isDark ? 'rgba(255,255,255,0.15)' : 'white'}
 												stroke-width="1"
 												opacity={hoveredSegment &&
 												hoveredSegment !== `${segment.team}-${segment.drink}`
@@ -666,7 +691,7 @@
 												width={xScale.bandwidth()}
 												height={showAnimation ? yScale(segment.y0) - yScale(segment.y1) : 0}
 												fill={segment.color}
-												stroke="white"
+												stroke={isDark ? 'rgba(255,255,255,0.15)' : 'white'}
 												stroke-width="1"
 												opacity={hoveredSegment &&
 												hoveredSegment !== `${segment.team}-${segment.player}`
@@ -693,14 +718,17 @@
 									x2={chartMargin.left}
 									y1={chartMargin.top}
 									y2={chartHeight - chartMargin.bottom}
-									stroke="#333"
+									stroke={isDark ? '#4b5563' : '#333'}
 									stroke-width="2"
 								/>
 								{#each yTicks as tick}
 									<g transform="translate({chartMargin.left}, {yScale(tick)})">
-										<line x1="-6" x2="0" stroke="#333" stroke-width="1" />
-										<text dy="0.32em" x="-10" text-anchor="end" class="fill-gray-700 text-sm"
-											>{tick}</text
+										<line x1="-6" x2="0" stroke={isDark ? '#4b5563' : '#333'} stroke-width="1" />
+										<text
+											dy="0.32em"
+											x="-10"
+											text-anchor="end"
+											class="fill-gray-700 text-sm dark:fill-gray-300">{tick}</text
 										>
 									</g>
 								{/each}
@@ -709,7 +737,7 @@
 									y={chartMargin.left - 40}
 									x={-(chartHeight - chartMargin.bottom + chartMargin.top) / 2}
 									text-anchor="middle"
-									class="fill-gray-800 text-base font-semibold"
+									class="fill-gray-800 text-base font-semibold dark:fill-gray-200"
 								>
 									Total Drinks
 								</text>
@@ -722,7 +750,7 @@
 									x2={chartWidth - chartMargin.right}
 									y1={chartHeight - chartMargin.bottom}
 									y2={chartHeight - chartMargin.bottom}
-									stroke="#333"
+									stroke={isDark ? '#4b5563' : '#333'}
 									stroke-width="2"
 								/>
 								{#each teamsData() as team}
@@ -730,11 +758,15 @@
 										transform="translate({(xScale(team.name) || 0) +
 											xScale.bandwidth() / 2}, {chartHeight - chartMargin.bottom})"
 									>
-										<line y1="0" y2="6" stroke="#333" stroke-width="1" />
+										<line y1="0" y2="6" stroke={isDark ? '#4b5563' : '#333'} stroke-width="1" />
 										<text y="20" text-anchor="middle" class="text-sm font-medium">
 											{team.name}
 										</text>
-										<text y="35" text-anchor="middle" class="fill-gray-600 text-xs">
+										<text
+											y="35"
+											text-anchor="middle"
+											class="fill-gray-600 text-xs dark:fill-gray-400"
+										>
 											{team.totalDrinks} total
 										</text>
 									</g>
@@ -745,33 +777,41 @@
 					<!-- Tooltip -->
 					{#if tooltip.visible}
 						<div
-							class="pointer-events-none absolute z-50 min-w-56 rounded-lg border border-gray-300 bg-white px-4 py-3 shadow-xl transition-all duration-150 ease-out"
+							class="pointer-events-none absolute z-50 min-w-56 rounded-lg border border-gray-300 bg-white px-4 py-3 shadow-xl transition-all duration-150 ease-out dark:border-gray-800 dark:bg-gray-900/95"
 							style="left: {tooltip.x}px; top: {tooltip.y}px; transform: translateZ(0);"
 						>
 							<div class="mb-2 flex items-center gap-2">
 								<div
-									class="h-4 w-4 rounded border border-gray-200"
+									class="h-4 w-4 rounded border border-gray-200 dark:border-gray-700"
 									style="background-color: {tooltip.content.color}"
 								></div>
-								<div class="text-base font-bold text-gray-900">{tooltip.content.title}</div>
-								<div class="rounded-full bg-gray-100 px-2 py-1 text-xs text-gray-600">
+								<div class="text-base font-bold text-gray-900 dark:text-gray-100">
+									{tooltip.content.title}
+								</div>
+								<div
+									class="rounded-full bg-gray-100 px-2 py-1 text-xs text-gray-600 dark:bg-gray-800 dark:text-gray-300"
+								>
 									{chartType === 'drinks' ? '🍹' : '👤'}
 								</div>
 							</div>
-							<div class="mb-2 text-sm text-gray-600">{tooltip.content.subtitle}</div>
+							<div class="mb-2 text-sm text-gray-600 dark:text-gray-300">
+								{tooltip.content.subtitle}
+							</div>
 							<div class="mb-3 flex items-baseline gap-2">
 								<span class="text-xl font-bold text-blue-600">
 									{tooltip.content.amount}
 								</span>
-								<span class="text-sm text-gray-600">drinks</span>
+								<span class="text-sm text-gray-600 dark:text-gray-300">drinks</span>
 								<span class="ml-auto text-sm font-semibold text-green-600">
 									{tooltip.content.percentage}%
 								</span>
 							</div>
 							<!-- Detailed breakdown -->
 							{#if tooltip.content.details.length > 0}
-								<div class="border-t border-gray-200 pt-2">
-									<div class="mb-2 flex items-center gap-1 text-xs font-semibold text-gray-500">
+								<div class="border-t border-gray-200 pt-2 dark:border-gray-800">
+									<div
+										class="mb-2 flex items-center gap-1 text-xs font-semibold text-gray-500 dark:text-gray-400"
+									>
 										{#if chartType === 'drinks'}
 											👥 Top Players:
 										{:else}
@@ -781,8 +821,12 @@
 									<div class="space-y-1">
 										{#each tooltip.content.details as detail}
 											<div class="flex items-center justify-between text-sm">
-												<span class="max-w-32 truncate text-gray-700">{detail.name}</span>
-												<span class="ml-2 font-semibold text-gray-900">{detail.value}</span>
+												<span class="max-w-32 truncate text-gray-700 dark:text-gray-300"
+													>{detail.name}</span
+												>
+												<span class="ml-2 font-semibold text-gray-900 dark:text-gray-100"
+													>{detail.value}</span
+												>
 											</div>
 										{/each}
 									</div>
@@ -793,8 +837,8 @@
 				</div>
 
 				<!-- Legend -->
-				<div class="mt-6 border-t border-gray-200 pt-4">
-					<h4 class="mb-3 text-sm font-semibold text-gray-700">
+				<div class="mt-6 border-t border-gray-200 pt-4 dark:border-gray-800">
+					<h4 class="mb-3 text-sm font-semibold text-gray-700 dark:text-gray-300">
 						{chartType === 'drinks' ? 'Drink Types' : 'Players'}
 					</h4>
 					<div class="flex flex-wrap gap-3">
@@ -805,7 +849,7 @@
 										class="h-3 w-3 rounded"
 										style="background-color: {drinkColorScale(drink)}"
 									></div>
-									<span class="text-gray-700">{drink}</span>
+									<span class="text-gray-700 dark:text-gray-300">{drink}</span>
 								</div>
 							{/each}
 						{:else}
@@ -815,11 +859,11 @@
 										class="h-3 w-3 rounded"
 										style="background-color: {playerColorScale(player.name)}"
 									></div>
-									<span class="text-gray-700">{player.name}</span>
+									<span class="text-gray-700 dark:text-gray-300">{player.name}</span>
 								</div>
 							{/each}
 							{#if allPlayersData.length > 10}
-								<div class="text-sm text-gray-500">
+								<div class="text-sm text-gray-500 dark:text-gray-400">
 									... and {allPlayersData.length - 10} more players
 								</div>
 							{/if}
@@ -830,34 +874,44 @@
 		</div>
 	{:else if viewMode === 'players'}
 		<!-- Players Detail Mode -->
-		<div class="rounded-2xl bg-white p-6 shadow-xl">
-			<h2 class="mb-6 text-2xl font-semibold text-gray-800">Player Details</h2>
+		<div
+			class="rounded-2xl border border-gray-200 bg-white p-6 shadow-xl dark:border-gray-800 dark:bg-gray-900/50"
+		>
+			<h2 class="mb-6 text-2xl font-semibold text-gray-800 dark:text-gray-100">Player Details</h2>
 			<div class="space-y-6">
 				{#each filteredPlayersData.sort((a, b) => b.totalDrinks - a.totalDrinks) as player}
-					<div class="rounded-lg border border-gray-200 p-6 shadow-sm">
+					<div class="rounded-lg border border-gray-200 p-6 shadow-sm dark:border-gray-800">
 						<div class="mb-4 flex items-start justify-between">
 							<div>
-								<h3 class="text-xl font-semibold text-gray-800">{player.name}</h3>
+								<h3 class="text-xl font-semibold text-gray-800 dark:text-gray-100">
+									{player.name}
+								</h3>
 								<p class="text-sm" style="color: {colorScale(player.teamName)}">
 									Team: {player.teamName}
 								</p>
 							</div>
 							<div class="text-right">
-								<div class="text-2xl font-bold text-gray-800">{player.totalDrinks}</div>
-								<div class="text-sm text-gray-600">Total Drinks</div>
+								<div class="text-2xl font-bold text-gray-800 dark:text-gray-100">
+									{player.totalDrinks}
+								</div>
+								<div class="text-sm text-gray-600 dark:text-gray-300">Total Drinks</div>
 							</div>
 						</div>
 
 						{#if player.drinkBreakdown.length > 0}
 							<div class="mt-4">
-								<h4 class="mb-3 font-medium text-gray-700">Drink Breakdown:</h4>
+								<h4 class="mb-3 font-medium text-gray-700 dark:text-gray-300">Drink Breakdown:</h4>
 								<div class="space-y-2">
 									{#each player.drinkBreakdown as drink}
-										<div class="flex items-center justify-between rounded bg-gray-50 px-3 py-2">
-											<span class="font-medium text-gray-700">{drink.name}</span>
+										<div
+											class="flex items-center justify-between rounded bg-gray-50 px-3 py-2 dark:bg-gray-800/50"
+										>
+											<span class="font-medium text-gray-700 dark:text-gray-200">{drink.name}</span>
 											<div class="flex items-center gap-3">
-												<span class="text-lg font-bold text-gray-800">{drink.amount}</span>
-												<span class="text-sm text-gray-500">
+												<span class="text-lg font-bold text-gray-800 dark:text-gray-100"
+													>{drink.amount}</span
+												>
+												<span class="text-sm text-gray-500 dark:text-gray-400">
 													({formatPercentage(drink.amount, player.totalDrinks)})
 												</span>
 											</div>
@@ -866,7 +920,7 @@
 								</div>
 							</div>
 						{:else}
-							<div class="mt-4 text-center text-gray-500">
+							<div class="mt-4 text-center text-gray-500 dark:text-gray-400">
 								<p>No drinks recorded for this player</p>
 							</div>
 						{/if}
@@ -876,20 +930,25 @@
 		</div>
 	{:else if viewMode === 'teams'}
 		<!-- Teams Detail Mode -->
-		<div class="rounded-2xl bg-white p-6 shadow-xl">
-			<h2 class="mb-6 text-2xl font-semibold text-gray-800">Team Details</h2>
+		<div
+			class="rounded-2xl border border-gray-200 bg-white p-6 shadow-xl dark:border-gray-800 dark:bg-gray-900/50"
+		>
+			<h2 class="mb-6 text-2xl font-semibold text-gray-800 dark:text-gray-100">Team Details</h2>
 			<div class="space-y-8">
 				{#each teamsData() as team}
 					<div
-						class="rounded-lg border-2 border-gray-200 p-6 shadow-sm"
+						class="rounded-lg border-2 border-gray-200 p-6 shadow-sm dark:border-gray-800"
 						style="border-left: 6px solid {colorScale(team.name)}"
 					>
 						<div class="mb-6 flex items-start justify-between">
 							<div>
-								<h3 class="text-2xl font-semibold" style="color: {colorScale(team.name)}">
+								<h3
+									class="text-2xl font-semibold dark:text-gray-100"
+									style="color: {colorScale(team.name)}"
+								>
 									{team.name}
 								</h3>
-								<div class="mt-2 flex gap-6 text-sm text-gray-600">
+								<div class="mt-2 flex gap-6 text-sm text-gray-600 dark:text-gray-300">
 									<span><strong>{team.playerCount}</strong> players</span>
 									<span><strong>{team.totalDrinks}</strong> total drinks</span>
 									<span
@@ -898,22 +957,30 @@
 								</div>
 							</div>
 							<div class="text-right">
-								<div class="text-3xl font-bold text-gray-800">{team.totalDrinks}</div>
-								<div class="text-sm text-gray-600">Total Drinks</div>
+								<div class="text-3xl font-bold text-gray-800 dark:text-gray-100">
+									{team.totalDrinks}
+								</div>
+								<div class="text-sm text-gray-600 dark:text-gray-300">Total Drinks</div>
 							</div>
 						</div>
 
 						<!-- Team Drink Breakdown -->
 						{#if team.drinkBreakdown.length > 0}
 							<div class="mb-6">
-								<h4 class="mb-3 font-medium text-gray-700">Team Drink Breakdown:</h4>
+								<h4 class="mb-3 font-medium text-gray-700 dark:text-gray-300">
+									Team Drink Breakdown:
+								</h4>
 								<div class="grid gap-2 md:grid-cols-2 lg:grid-cols-3">
 									{#each team.drinkBreakdown as drink}
-										<div class="flex items-center justify-between rounded bg-gray-50 px-3 py-2">
-											<span class="font-medium text-gray-700">{drink.name}</span>
+										<div
+											class="flex items-center justify-between rounded bg-gray-50 px-3 py-2 dark:bg-gray-800/50"
+										>
+											<span class="font-medium text-gray-700 dark:text-gray-200">{drink.name}</span>
 											<div class="flex items-center gap-2">
-												<span class="text-lg font-bold text-gray-800">{drink.amount}</span>
-												<span class="text-xs text-gray-500">
+												<span class="text-lg font-bold text-gray-800 dark:text-gray-100"
+													>{drink.amount}</span
+												>
+												<span class="text-xs text-gray-500 dark:text-gray-400">
 													({formatPercentage(drink.amount, team.totalDrinks)})
 												</span>
 											</div>
@@ -925,18 +992,25 @@
 
 						<!-- Team Players -->
 						<div>
-							<h4 class="mb-3 font-medium text-gray-700">Team Players:</h4>
+							<h4 class="mb-3 font-medium text-gray-700 dark:text-gray-300">Team Players:</h4>
 							<div class="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
 								{#each team.players.sort((a, b) => b.totalDrinks - a.totalDrinks) as player}
-									<div class="rounded border border-gray-200 bg-white p-3 shadow-sm">
+									<div
+										class="rounded border border-gray-200 bg-white p-3 shadow-sm dark:border-gray-800 dark:bg-gray-900/60"
+									>
 										<div class="flex items-center justify-between">
-											<span class="font-medium text-gray-800">{player.name}</span>
-											<span class="text-lg font-bold text-gray-700">{player.totalDrinks}</span>
+											<span class="font-medium text-gray-800 dark:text-gray-100">{player.name}</span
+											>
+											<span class="text-lg font-bold text-gray-700 dark:text-gray-200"
+												>{player.totalDrinks}</span
+											>
 										</div>
 										{#if player.drinkBreakdown.length > 0}
 											<div class="mt-2 space-y-1">
 												{#each getTopDrinks(player.drinkBreakdown, 2) as drink}
-													<div class="flex justify-between text-xs text-gray-600">
+													<div
+														class="flex justify-between text-xs text-gray-600 dark:text-gray-300"
+													>
 														<span>{drink.name}</span>
 														<span>{drink.amount}</span>
 													</div>
@@ -954,13 +1028,15 @@
 	{/if}
 	<!-- Team Legend (always visible) -->
 	{#if teams.length > 1}
-		<div class="mt-8 rounded-2xl bg-white p-6 shadow-lg">
-			<h3 class="mb-4 text-lg font-semibold text-gray-800">Team Colors</h3>
+		<div
+			class="mt-8 rounded-2xl border border-gray-200 bg-white p-6 shadow-lg dark:border-gray-800 dark:bg-gray-900/50"
+		>
+			<h3 class="mb-4 text-lg font-semibold text-gray-800 dark:text-gray-100">Team Colors</h3>
 			<div class="grid grid-cols-2 gap-3 sm:flex sm:flex-wrap sm:gap-4">
 				{#each teams as team}
-					<div class="flex items-center gap-2 text-sm text-gray-700">
+					<div class="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
 						<div
-							class="h-4 w-4 shrink-0 rounded border border-black/10"
+							class="h-4 w-4 shrink-0 rounded border border-black/10 dark:border-white/10"
 							style="background-color: {colorScale(team)}"
 						></div>
 						<span class="truncate">{team}</span>
@@ -975,7 +1051,11 @@
 			<div class="flex flex-col gap-4 sm:flex-row">
 				<Dialog.Root bind:open>
 					<Dialog.Trigger>
-						<Button class="w-full sm:w-auto">Add Drink to Player</Button>
+						<Button
+							class="w-full bg-blue-600 text-white shadow-sm hover:bg-blue-500 focus-visible:ring-blue-500 sm:w-auto dark:bg-blue-500 dark:text-white dark:hover:bg-blue-400"
+						>
+							Add Drink to Player
+						</Button>
 					</Dialog.Trigger>
 					<Dialog.Content class="sm:max-w-[425px]">
 						<Dialog.Header>
@@ -987,14 +1067,16 @@
 						<form action="?/addDrinkToPlayer" method="POST">
 							<div class="grid gap-4 py-4">
 								<div class="grid grid-cols-1 gap-2 sm:grid-cols-4 sm:items-center sm:gap-4">
-									<label for="player-select" class="font-semibold text-gray-700 sm:col-span-1"
+									<label
+										for="player-select"
+										class="font-semibold text-gray-700 sm:col-span-1 dark:text-gray-300"
 										>Player:</label
 									>
 									<select
 										id="player-select"
 										name="player_id"
 										required
-										class="cursor-pointer rounded-lg border-2 border-gray-300 bg-white px-4 py-2 text-base transition-colors hover:border-blue-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100 sm:col-span-3"
+										class="cursor-pointer rounded-lg border-2 border-gray-300 bg-white px-4 py-2 text-base transition-colors hover:border-blue-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100 sm:col-span-3 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100 dark:focus:ring-blue-900/40"
 									>
 										<!-- <option value="" disabled selected>Select a player</option> -->
 										{#each allPlayersData as player}
@@ -1003,14 +1085,16 @@
 									</select>
 								</div>
 								<div class="grid grid-cols-1 gap-2 sm:grid-cols-4 sm:items-center sm:gap-4">
-									<label for="drink-name" class="font-semibold text-gray-700 sm:col-span-1"
+									<label
+										for="drink-name"
+										class="font-semibold text-gray-700 sm:col-span-1 dark:text-gray-300"
 										>Drink:</label
 									>
 									<select
 										name="drink_id"
 										id="drink-select"
 										required
-										class="cursor-pointer rounded-lg border-2 border-gray-300 bg-white px-4 py-2 text-base transition-colors hover:border-blue-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100 sm:col-span-3"
+										class="cursor-pointer rounded-lg border-2 border-gray-300 bg-white px-4 py-2 text-base transition-colors hover:border-blue-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100 sm:col-span-3 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100 dark:focus:ring-blue-900/40"
 									>
 										<!-- <option value="" disabled selected>Select a drink</option> -->
 										{#each data.drinks as drink}
@@ -1020,7 +1104,9 @@
 								</div>
 
 								<div class="grid grid-cols-1 gap-2 sm:grid-cols-4 sm:items-center sm:gap-4">
-									<label for="drink-amount" class="font-semibold text-gray-700 sm:col-span-1"
+									<label
+										for="drink-amount"
+										class="font-semibold text-gray-700 sm:col-span-1 dark:text-gray-300"
 										>Amount:</label
 									>
 									<input
@@ -1030,7 +1116,7 @@
 										min="1"
 										required
 										defaultValue="1"
-										class="rounded-lg border-2 border-gray-300 bg-white px-4 py-2 text-base transition-colors hover:border-blue-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100 sm:col-span-3"
+										class="rounded-lg border-2 border-gray-300 bg-white px-4 py-2 text-base transition-colors hover:border-blue-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100 sm:col-span-3 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100 dark:focus:ring-blue-900/40"
 									/>
 								</div>
 								<Dialog.Footer class="mt-4">
@@ -1054,9 +1140,12 @@
 					type="button"
 					href="/game/{data.game_session.id}/update">Edit</a
 				> -->
-				<Button href="/game/{data.game_session.id}/update" class="bg-blue-600 hover:bg-blue-800"
-					>Edit</Button
+				<Button
+					href="/game/{data.game_session.id}/update"
+					class="w-full border border-gray-300 bg-white text-gray-800 shadow-sm hover:bg-gray-100 focus-visible:ring-gray-400 sm:w-auto dark:border-gray-700 dark:bg-gray-900/60 dark:text-gray-100 dark:hover:bg-gray-800/60"
 				>
+					Edit
+				</Button>
 			</div>
 		</div>
 	{/if}

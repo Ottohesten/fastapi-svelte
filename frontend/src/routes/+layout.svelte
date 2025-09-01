@@ -1,107 +1,79 @@
 <script lang="ts">
 	import '../app.css';
+	import Footer from '$lib/components/Footer.svelte';
+	import ThemeToggle from '$lib/components/ThemeToggle.svelte';
+	import { page } from '$app/stores';
+
 	let { children, data } = $props();
 
-	// when a new a tag is clicked we need to add some new classes to it and remove some from the last one that was the clicked one
+	const linksAuth = [
+		{ href: '/tiptap', label: 'Tiptap' },
+		{ href: '/recipes', label: 'Recipes' },
+		{ href: '/ingredients', label: 'Ingredients' },
+		{ href: '/game', label: 'Game' }
+	];
 
-	let activeButton = $state('home');
+	const linksAnon = [{ href: '/', label: 'Home' }];
 
-	function setActiveButton(button: string) {
-		activeButton = button;
-	}
-
-	// $inspect(activeButton);
-
-	// let routes = ['home', 'about', 'blog', 'temp'];
+	const isActive = (href: string) =>
+		$page.url.pathname === href || $page.url.pathname.startsWith(href + '/');
 </script>
 
-<!-- TODO: Change this to grid -->
-<nav class="bg-gray-800">
-	<div class="px-2 py-3 sm:px-6 lg:px-12">
-		<div class="flex flex-col items-center justify-between sm:flex-row">
-			<div class="flex items-center space-x-0 sm:space-x-4">
-				<a
-					class="rounded-md px-3 py-2 text-sm font-medium {activeButton === 'home'
-						? 'bg-gray-900 text-white'
-						: 'text-gray-300 hover:bg-gray-700 hover:text-white'}"
-					aria-current={activeButton === 'home'}
-					href="/"
-					onclick={() => (activeButton = 'home')}>Home</a
-				>
-				{#if data.authenticatedUser}
-					<a
-						class="rounded-md px-3 py-2 text-sm font-medium {activeButton === 'tiptap'
-							? 'bg-gray-900 text-white'
-							: 'text-gray-300 hover:bg-gray-700 hover:text-white'}"
-						href="/tiptap"
-						aria-current={activeButton === 'tiptap'}
-						onclick={() => (activeButton = 'tiptap')}>Tiptap</a
-					>
-					<!-- <a
-						class="rounded-md px-3 py-2 text-sm font-medium {activeButton === 'hero'
-							? 'bg-gray-900 text-white'
-							: 'text-gray-300 hover:bg-gray-700 hover:text-white'}"
-						href="/hero"
-						aria-current={activeButton === 'hero'}
-						onclick={() => (activeButton = 'hero')}>Hero</a
-					> -->
-					<a
-						class="rounded-md px-3 py-2 text-sm font-medium {activeButton === 'recipes'
-							? 'bg-gray-900 text-white'
-							: 'text-gray-300 hover:bg-gray-700 hover:text-white'}"
-						href="/recipes"
-						aria-current={activeButton === 'recipes'}
-						onclick={() => (activeButton = 'recipes')}>Recipes</a
-					>
-					<a
-						class="rounded-md px-3 py-2 text-sm font-medium {activeButton === 'ingredients'
-							? 'bg-gray-900 text-white'
-							: 'text-gray-300 hover:bg-gray-700 hover:text-white'}"
-						href="/ingredients"
-						aria-current={activeButton === 'ingredients'}
-						onclick={() => (activeButton = 'ingredients')}>Ingredients</a
-					>
-					<a
-						class="rounded-md px-3 py-2 text-sm font-medium {activeButton === 'game'
-							? 'bg-gray-900 text-white'
-							: 'text-gray-300 hover:bg-gray-700 hover:text-white'}"
-						href="/game"
-						aria-current={activeButton === 'game'}
-						onclick={() => (activeButton = 'game')}>Game</a
-					>
-				{/if}
-			</div>
+<header
+	class="sticky top-0 z-30 border-b border-gray-200 bg-white/70 backdrop-blur supports-[backdrop-filter]:bg-white/50 dark:border-gray-800 dark:bg-gray-900/60"
+>
+	<div class="container flex h-16 items-center justify-between">
+		<!-- Brand -->
+		<a href="/" class="flex items-center gap-2 text-gray-900 no-underline dark:text-white">
+			<svg class="h-6 w-6 text-blue-600" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+				<path
+					stroke-linecap="round"
+					stroke-linejoin="round"
+					stroke-width="2"
+					d="M3 7h18M5 7l1 12a2 2 0 002 2h8a2 2 0 002-2l1-12M8 7V5a4 4 0 118 0v2"
+				/>
+			</svg>
+			<span class="text-lg font-semibold tracking-tight">FastAPI Svelte</span>
+		</a>
 
-			<!-- make some icons that are all the way to the right -->
-			<div class="flex space-x-2">
+		<!-- Nav links -->
+		<nav class="hidden gap-1 md:flex">
+			{#each data.authenticatedUser ? linksAuth : linksAnon as link}
 				<a
-					class="rounded-md px-3 py-2 text-gray-300 hover:bg-gray-700 hover:text-white"
-					href="/admin">admin</a
+					href={link.href}
+					class="rounded-md px-3 py-2 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-100 hover:text-gray-900 data-[active=true]:bg-gray-900 data-[active=true]:text-white dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-white"
+					data-active={isActive(link.href)}>{link.label}</a
 				>
-				{#if !data.authenticatedUser}
-					<a
-						class="rounded-md px-3 py-2 text-gray-300 hover:bg-gray-700 hover:text-white"
-						href="/auth/login">Login</a
-					>
-				{:else}
-					<a
-						class="rounded-md px-3 py-2 text-gray-300 hover:bg-gray-700 hover:text-white"
-						href="/auth/logout">Logout</a
-					>
-				{/if}
-			</div>
+			{/each}
+		</nav>
+
+		<!-- Right actions -->
+		<div class="flex items-center gap-2">
+			<a
+				href="/admin"
+				class="hidden rounded-md px-3 py-2 text-sm text-gray-600 hover:bg-gray-100 hover:text-gray-900 md:inline dark:text-gray-300 dark:hover:bg-gray-800"
+				>Admin</a
+			>
+			<ThemeToggle />
+			{#if !data.authenticatedUser}
+				<a
+					href="/auth/login"
+					class="rounded-lg border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 dark:border-gray-700 dark:text-gray-200 dark:hover:bg-gray-800"
+					>Login</a
+				>
+			{:else}
+				<a
+					href="/auth/logout"
+					class="rounded-lg bg-emerald-600 px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-emerald-700"
+					>Logout</a
+				>
+			{/if}
 		</div>
 	</div>
-</nav>
+</header>
 
-<!-- {JSON.stringify(data.user)} -->
+<main class="min-h-[calc(100vh-4rem)]">
+	{@render children()}
+</main>
 
-<!-- {#if data.user}
-	<div class="bg-green-500 py-2 text-center text-white">
-		Welcome {data.user.email}
-	</div>
-{/if} -->
-
-<!-- <div class="container mx-auto px-2"> -->
-{@render children()}
-<!-- </div> -->
+<Footer />

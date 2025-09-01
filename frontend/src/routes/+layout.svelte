@@ -3,8 +3,12 @@
 	import Footer from '$lib/components/Footer.svelte';
 	import ThemeToggle from '$lib/components/ThemeToggle.svelte';
 	import { page } from '$app/stores';
+	import { slide } from 'svelte/transition';
 
 	let { children, data } = $props();
+
+	// Mobile nav state
+	let mobileOpen = $state(false);
 
 	const linksAuth = [
 		{ href: '/tiptap', label: 'Tiptap' },
@@ -33,7 +37,9 @@
 					d="M3 7h18M5 7l1 12a2 2 0 002 2h8a2 2 0 002-2l1-12M8 7V5a4 4 0 118 0v2"
 				/>
 			</svg>
-			<span class="text-lg font-semibold tracking-tight">FastAPI Svelte</span>
+			<span class="max-w-[55vw] truncate text-lg font-semibold tracking-tight md:max-w-none"
+				>Internationaleregler</span
+			>
 		</a>
 
 		<!-- Nav links -->
@@ -54,26 +60,82 @@
 				class="hidden rounded-md px-3 py-2 text-sm text-gray-600 hover:bg-gray-100 hover:text-gray-900 md:inline dark:text-gray-300 dark:hover:bg-gray-800"
 				>Admin</a
 			>
-			<ThemeToggle />
+			<div class="hidden md:block"><ThemeToggle /></div>
+
+			<!-- Desktop auth actions -->
 			{#if !data.authenticatedUser}
 				<a
 					href="/auth/login"
-					class="rounded-lg border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 dark:border-gray-700 dark:text-gray-200 dark:hover:bg-gray-800"
+					class="hidden rounded-lg border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 md:inline dark:border-gray-700 dark:text-gray-200 dark:hover:bg-gray-800"
 					>Login</a
 				>
 			{:else}
 				<a
 					href="/auth/logout"
-					class="rounded-lg bg-emerald-600 px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-emerald-700"
+					class="hidden rounded-lg bg-emerald-600 px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-emerald-700 md:inline"
 					>Logout</a
 				>
 			{/if}
+
+			<!-- Mobile menu toggle -->
+			<button
+				type="button"
+				class="inline-flex items-center justify-center rounded-md p-2 text-gray-600 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 md:hidden dark:text-gray-300 dark:hover:bg-gray-800"
+				aria-label="Toggle menu"
+				aria-expanded={mobileOpen}
+				onclick={() => (mobileOpen = !mobileOpen)}
+			>
+				<svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+					<path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+				</svg>
+			</button>
 		</div>
 	</div>
 </header>
+
+<!-- Mobile menu panel -->
+{#if mobileOpen}
+	<div
+		in:slide={{ duration: 180 }}
+		out:slide={{ duration: 140 }}
+		class="border-b border-gray-200 bg-white/95 backdrop-blur md:hidden dark:border-gray-800 dark:bg-gray-900/95"
+	>
+		<div class="container py-3">
+			<nav class="flex flex-col gap-1">
+				{#each data.authenticatedUser ? linksAuth : linksAnon as link}
+					<a
+						href={link.href}
+						class="rounded-md px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-200 dark:hover:bg-gray-800"
+						onclick={() => (mobileOpen = false)}>{link.label}</a
+					>
+				{/each}
+				<div class="my-2 h-px bg-gray-200 dark:bg-gray-800"></div>
+				<div class="flex items-center justify-between px-1">
+					<span class="text-sm text-gray-600 dark:text-gray-300">Theme</span>
+					<ThemeToggle />
+				</div>
+				<div class="mt-2 flex items-center gap-2 px-1">
+					{#if !data.authenticatedUser}
+						<a
+							href="/auth/login"
+							class="flex-1 rounded-lg border border-gray-300 px-3 py-1.5 text-center text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:text-gray-200 dark:hover:bg-gray-800"
+							onclick={() => (mobileOpen = false)}>Login</a
+						>
+					{:else}
+						<a
+							href="/auth/logout"
+							class="flex-1 rounded-lg bg-emerald-600 px-3 py-1.5 text-center text-sm font-medium text-white hover:bg-emerald-700"
+							onclick={() => (mobileOpen = false)}>Logout</a
+						>
+					{/if}
+				</div>
+			</nav>
+		</div>
+	</div>
+{/if}
 
 <main class="min-h-[calc(100vh-4rem)]">
 	{@render children()}
 </main>
 
-<Footer />
+<!-- <Footer /> -->

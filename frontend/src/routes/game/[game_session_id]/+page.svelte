@@ -9,6 +9,7 @@
 	import { goto } from '$app/navigation';
 	import { browser } from '$app/environment';
 	import Button from '$lib/components/ui/button/button.svelte';
+	import { Select } from '$lib/components/ui/select';
 	import { Pencil, Trash2 } from 'lucide-svelte';
 	import { enhance } from '$app/forms';
 	import * as Dialog from '$lib/components/ui/dialog/index.js';
@@ -448,7 +449,7 @@
 				<label for="team-filter" class="font-semibold text-gray-700 dark:text-gray-300"
 					>Filter by Team:</label
 				>
-				<select
+				<Select
 					id="team-filter"
 					value={selectedTeam || 'all'}
 					onchange={(e) =>
@@ -456,27 +457,23 @@
 							(e.target as HTMLSelectElement).value === 'all'
 								? null
 								: (e.target as HTMLSelectElement).value)}
-					class="cursor-pointer rounded-lg border-2 border-gray-300 bg-white px-4 py-2 text-base transition-colors hover:border-blue-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100 dark:focus:ring-blue-900/40"
+					class="max-w-[14rem]"
 				>
 					<option value="all">All Teams</option>
 					{#each teams as team}
 						<option value={team}>{team}</option>
 					{/each}
-				</select>
+				</Select>
 			</div>
 
 			<div class="flex flex-col gap-2 sm:flex-row sm:items-center">
 				<label for="view-mode" class="font-semibold text-gray-700 dark:text-gray-300">View:</label>
-				<select
-					id="view-mode"
-					bind:value={viewMode}
-					class="cursor-pointer rounded-lg border-2 border-gray-300 bg-white px-4 py-2 text-base transition-colors hover:border-blue-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100 dark:focus:ring-blue-900/40"
-				>
+				<Select id="view-mode" bind:value={viewMode} class="max-w-[14rem]">
 					<option value="overview">Overview</option>
 					<option value="charts">Team Charts</option>
 					<option value="players">Players Detail</option>
 					<option value="teams">Teams Detail</option>
-				</select>
+				</Select>
 			</div>
 		</div>
 
@@ -1051,11 +1048,7 @@
 			<div class="flex flex-col gap-4 sm:flex-row">
 				<Dialog.Root bind:open>
 					<Dialog.Trigger>
-						<Button
-							class="w-full bg-blue-600 text-white shadow-sm hover:bg-blue-500 focus-visible:ring-blue-500 sm:w-auto dark:bg-blue-500 dark:text-white dark:hover:bg-blue-400"
-						>
-							Add Drink to Player
-						</Button>
+						<Button variant="primary" class="w-full sm:w-auto">Add Drink to Player</Button>
 					</Dialog.Trigger>
 					<Dialog.Content class="sm:max-w-[425px]">
 						<Dialog.Header>
@@ -1072,17 +1065,12 @@
 										class="font-semibold text-gray-700 sm:col-span-1 dark:text-gray-300"
 										>Player:</label
 									>
-									<select
-										id="player-select"
-										name="player_id"
-										required
-										class="cursor-pointer rounded-lg border-2 border-gray-300 bg-white px-4 py-2 text-base transition-colors hover:border-blue-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100 sm:col-span-3 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100 dark:focus:ring-blue-900/40"
-									>
+									<Select id="player-select" name="player_id" required class="sm:col-span-3">
 										<!-- <option value="" disabled selected>Select a player</option> -->
 										{#each allPlayersData as player}
 											<option value={player.playerId}>{player.name} ({player.teamName})</option>
 										{/each}
-									</select>
+									</Select>
 								</div>
 								<div class="grid grid-cols-1 gap-2 sm:grid-cols-4 sm:items-center sm:gap-4">
 									<label
@@ -1090,17 +1078,12 @@
 										class="font-semibold text-gray-700 sm:col-span-1 dark:text-gray-300"
 										>Drink:</label
 									>
-									<select
-										name="drink_id"
-										id="drink-select"
-										required
-										class="cursor-pointer rounded-lg border-2 border-gray-300 bg-white px-4 py-2 text-base transition-colors hover:border-blue-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100 sm:col-span-3 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100 dark:focus:ring-blue-900/40"
-									>
+									<Select name="drink_id" id="drink-select" required class="sm:col-span-3">
 										<!-- <option value="" disabled selected>Select a drink</option> -->
 										{#each data.drinks as drink}
 											<option value={drink.id}>{drink.name}</option>
 										{/each}
-									</select>
+									</Select>
 								</div>
 
 								<div class="grid grid-cols-1 gap-2 sm:grid-cols-4 sm:items-center sm:gap-4">
@@ -1142,10 +1125,9 @@
 				> -->
 				<Button
 					href="/game/{data.game_session.id}/update"
-					class="w-full border border-gray-300 bg-white text-gray-800 shadow-sm hover:bg-gray-100 focus-visible:ring-gray-400 sm:w-auto dark:border-gray-700 dark:bg-gray-900/60 dark:text-gray-100 dark:hover:bg-gray-800/60"
+					variant="outline"
+					class="w-full sm:w-auto">Edit</Button
 				>
-					Edit
-				</Button>
 			</div>
 		</div>
 	{/if}

@@ -106,6 +106,12 @@
   }
 }
 
+/* Surface utilities (consistent elevation across themes) */
+.surface-1 { @apply border border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-900/50; }
+.surface-2 { @apply border border-gray-200 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-900/60; }
+.surface-3 { @apply border border-gray-200 bg-white shadow-lg dark:border-gray-800 dark:bg-gray-900/70; }
+
+
 /* Global link styling */
 a:not(.no-underline) {
   @apply underline-offset-4 hover:underline;

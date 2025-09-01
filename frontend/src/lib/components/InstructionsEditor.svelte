@@ -93,24 +93,6 @@
 			</button>
 			<button
 				type="button"
-				onclick={() => editor.chain().focus().toggleBulletList().run()}
-				class="rounded border px-2 py-1 text-xs {isActive('bulletList')
-					? 'bg-gray-800 text-white'
-					: 'bg-white text-gray-700'} hover:bg-gray-100"
-			>
-				• List
-			</button>
-			<button
-				type="button"
-				onclick={() => editor.chain().focus().toggleOrderedList().run()}
-				class="rounded border px-2 py-1 text-xs {isActive('orderedList')
-					? 'bg-gray-800 text-white'
-					: 'bg-white text-gray-700'} hover:bg-gray-100"
-			>
-				1. List
-			</button>
-			<button
-				type="button"
 				onclick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
 				class="rounded border px-2 py-1 text-xs {isActive('heading', { level: 2 })
 					? 'bg-gray-800 text-white'
@@ -126,6 +108,24 @@
 					: 'bg-white text-gray-700'} hover:bg-gray-100"
 			>
 				H3
+			</button>
+			<button
+				type="button"
+				onclick={() => editor.chain().focus().toggleBulletList().run()}
+				class="rounded border px-2 py-1 text-xs {isActive('bulletList')
+					? 'bg-gray-800 text-white'
+					: 'bg-white text-gray-700'} hover:bg-gray-100"
+			>
+				• List
+			</button>
+			<button
+				type="button"
+				onclick={() => editor.chain().focus().toggleOrderedList().run()}
+				class="rounded border px-2 py-1 text-xs {isActive('orderedList')
+					? 'bg-gray-800 text-white'
+					: 'bg-white text-gray-700'} hover:bg-gray-100"
+			>
+				1. List
 			</button>
 			<button
 				type="button"

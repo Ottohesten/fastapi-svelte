@@ -73,41 +73,35 @@ export const actions = {
             unit: ingredient.unit
         }));
 
-        // TODO: Implement PATCH endpoint in backend
-        console.log("Update data would be sent:", {
-            title: form.data.title,
-            instructions: form.data.instructions ?? null,
-            ingredients: ingredientsForBackend,
-            servings: form.data.servings,
-        });
-
-        // For now, just redirect back to show the form works
-        return redirect(302, "/recipes");
-
         // post form data to the API (when backend PATCH is implemented)
-        // const client = createApiClient(fetch);
-        // const auth_token = cookies.get("auth_token");
+        const client = createApiClient(fetch);
+        const auth_token = cookies.get("auth_token");
 
-        // const { data, error: apierror, response } = await client.PATCH("/recipes/{recipe_id}", {
-        //     params: {
-        //         path: { recipe_id: params.slug }
-        //     },
-        //     body: {
-        //         title: form.data.title,
-        //         instructions: form.data.instructions ?? null,
-        //         ingredients: ingredientsForBackend,
-        //         servings: form.data.servings,
-        //     },
-        //     headers: {
-        //         Authorization: `Bearer ${auth_token}`
-        //     }
-        // })
 
-        // if (apierror) {
-        //     console.log("apierror in recipes/[slug]/update/[page.server.ts file", apierror);
-        //     error(404, JSON.stringify(apierror.detail));
-        // }
+        const recipe_id = params.slug;
+        const { data, error: apierror, response } = await client.PATCH("/recipes/{recipe_id}", {
+            body: {
+                title: form.data.title,
+                instructions: form.data.instructions ?? null,
+                ingredients: ingredientsForBackend,
+                servings: form.data.servings,
 
-        // return redirect(302, "/recipes");
+            },
+            params: {
+                path: { recipe_id }
+            },
+            headers: {
+                Authorization: `Bearer ${auth_token}`
+            }
+        })
+
+        if (apierror) {
+            return fail(400, { form });
+        }
+
+        // Redirect to the recipes page
+        redirect(302, "/recipes");
+
+
     }
 } satisfies Actions;

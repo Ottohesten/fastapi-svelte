@@ -169,7 +169,11 @@ export interface paths {
         delete: operations["delete_recipe_recipes__recipe_id__delete"];
         options?: never;
         head?: never;
-        patch?: never;
+        /**
+         * Update Recipe
+         * @description Update a recipe.
+         */
+        patch: operations["update_recipe_recipes__recipe_id__patch"];
         trace?: never;
     };
     "/ingredients/": {
@@ -1118,6 +1122,11 @@ export interface components {
              * @description Calculate calories per serving.
              */
             readonly calories_per_serving: number;
+            /**
+             * Calculated Weight
+             * @description The calculated weight of the recipe based on the ingredients and their amounts. Returns the total weight in grams.
+             */
+            readonly calculated_weight: number;
         };
         /** RoleCreate */
         RoleCreate: {
@@ -1729,6 +1738,41 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Recipe"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_recipe_recipes__recipe_id__patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                recipe_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RecipeCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RecipePublic"];
                 };
             };
             /** @description Validation Error */

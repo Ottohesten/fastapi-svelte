@@ -37,7 +37,7 @@
 <div class="flex items-center justify-end">
 	<Dialog.Root bind:open={editOpen}>
 		<Dialog.Trigger>
-			<Button variant="ghost" title="Edit drink" size="sm" class="p-2 hover:bg-gray-200">
+			<Button variant="ghost" title="Edit drink" size="sm" class="p-2">
 				<Pencil class="" />
 			</Button>
 		</Dialog.Trigger>

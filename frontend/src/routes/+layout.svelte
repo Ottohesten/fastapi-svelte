@@ -109,6 +109,13 @@
 						onclick={() => (mobileOpen = false)}>{link.label}</a
 					>
 				{/each}
+				{#if data.authenticatedUser}
+					<a
+						href="/admin"
+						class="rounded-md px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-200 dark:hover:bg-gray-800"
+						onclick={() => (mobileOpen = false)}>Admin</a
+					>
+				{/if}
 				<div class="my-2 h-px bg-gray-200 dark:bg-gray-800"></div>
 				<div class="flex items-center justify-between px-1">
 					<span class="text-sm text-gray-600 dark:text-gray-300">Theme</span>

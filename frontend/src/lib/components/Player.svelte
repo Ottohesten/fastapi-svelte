@@ -10,9 +10,7 @@
 	let { player, authenticatedUser }: Props = $props();
 </script>
 
-<div
-	class="rounded-lg border border-gray-200 bg-white p-4 shadow-sm transition-shadow hover:shadow-md"
->
+<div class="surface-2 rounded-lg p-4 transition-shadow hover:shadow-md">
 	<div class="flex items-center justify-between gap-3">
 		<!-- Player Info -->
 		<a
@@ -20,14 +18,16 @@
 			class="min-w-0 flex-1 transition-colors hover:text-blue-600"
 		>
 			<div class="space-y-1">
-				<h3 class="truncate text-sm font-semibold text-gray-900 sm:text-base">{player.name}</h3>
+				<h3 class="truncate text-sm font-semibold text-gray-900 sm:text-base dark:text-gray-100">
+					{player.name}
+				</h3>
 				{#if player.team}
-					<p class="truncate text-xs text-gray-600 sm:text-sm">
+					<p class="truncate text-xs text-gray-600 sm:text-sm dark:text-gray-300">
 						<span class="font-medium">Team:</span>
 						{player.team.name}
 					</p>
 				{:else}
-					<p class="text-xs italic text-gray-500 sm:text-sm">No team assigned</p>
+					<p class="text-xs italic text-gray-500 sm:text-sm dark:text-gray-400">No team assigned</p>
 				{/if}
 			</div>
 		</a>

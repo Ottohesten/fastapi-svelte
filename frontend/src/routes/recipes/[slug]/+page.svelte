@@ -35,14 +35,16 @@
 	}
 </script>
 
-<div class="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
-	<div class="container mx-auto max-w-6xl px-4 py-8">
+<div
+	class="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 py-8 dark:from-gray-950 dark:to-gray-900"
+>
+	<div class="container mx-auto max-w-7xl px-4">
 		<!-- Header Section -->
 		<div class="mb-8">
 			<div class="mb-4 flex items-center gap-4">
 				<a
 					href="/recipes"
-					class="flex items-center gap-2 text-blue-600 transition-colors hover:text-blue-800"
+					class="flex items-center gap-2 text-blue-600 transition-colors hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
 				>
 					<svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 						<path
@@ -64,9 +66,9 @@
 				{/if}
 			</div>
 
-			<h1 class="mb-4 text-4xl font-bold text-gray-900">{data.recipe.title}</h1>
+			<h1 class="mb-4 text-4xl font-bold text-gray-900 dark:text-gray-100">{data.recipe.title}</h1>
 
-			<div class="flex flex-wrap items-center gap-4 text-sm text-gray-600">
+			<div class="flex flex-wrap items-center gap-4 text-sm text-gray-600 dark:text-gray-300">
 				<div class="flex items-center gap-2">
 					<svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 						<path
@@ -97,7 +99,7 @@
 			<div class="lg:col-span-2">
 				<!-- Recipe Stats -->
 				<div
-					class="mb-8 grid grid-cols-2 gap-6 rounded-xl border border-gray-200 bg-white p-6 shadow-sm md:grid-cols-5"
+					class="mb-8 grid grid-cols-2 gap-6 rounded-xl border border-gray-300 bg-white p-6 shadow-sm md:grid-cols-5 dark:border-gray-800 dark:bg-gray-900/40"
 				>
 					<div class="text-center">
 						<div class="mb-2 flex items-center justify-center">
@@ -115,8 +117,10 @@
 								/>
 							</svg>
 						</div>
-						<div class="text-2xl font-bold text-gray-900">{data.recipe.total_calories || 0}</div>
-						<div class="text-sm text-gray-600">Total Calories</div>
+						<div class="text-2xl font-bold text-gray-900 dark:text-gray-100">
+							{data.recipe.total_calories || 0}
+						</div>
+						<div class="text-sm text-gray-600 dark:text-gray-300">Total Calories</div>
 					</div>
 					<div class="text-center">
 						<div class="mb-2 flex items-center justify-center">
@@ -134,10 +138,10 @@
 								/>
 							</svg>
 						</div>
-						<div class="text-2xl font-bold text-gray-900">
+						<div class="text-2xl font-bold text-gray-900 dark:text-gray-100">
 							{data.recipe.calories_per_serving || 0}
 						</div>
-						<div class="text-sm text-gray-600">Per Serving</div>
+						<div class="text-sm text-gray-600 dark:text-gray-300">Per Serving</div>
 					</div>
 					<div class="text-center">
 						<div class="mb-2 flex items-center justify-center">
@@ -155,10 +159,10 @@
 								/>
 							</svg>
 						</div>
-						<div class="text-2xl font-bold text-gray-900">
+						<div class="text-2xl font-bold text-gray-900 dark:text-gray-100">
 							{data.recipe.calculated_weight || 0}g
 						</div>
-						<div class="text-sm text-gray-600">Total calculated weight</div>
+						<div class="text-sm text-gray-600 dark:text-gray-300">Total calculated weight</div>
 					</div>
 					<div class="text-center">
 						<div class="mb-2 flex items-center justify-center">
@@ -176,10 +180,10 @@
 								/>
 							</svg>
 						</div>
-						<div class="text-2xl font-bold text-gray-900">
+						<div class="text-2xl font-bold text-gray-900 dark:text-gray-100">
 							{data.recipe.ingredient_links.length}
 						</div>
-						<div class="text-sm text-gray-600">Ingredients</div>
+						<div class="text-sm text-gray-600 dark:text-gray-300">Ingredients</div>
 					</div>
 					<div class="text-center">
 						<div class="mb-2 flex items-center justify-center">
@@ -197,26 +201,34 @@
 								/>
 							</svg>
 						</div>
-						<div class="text-2xl font-bold text-gray-900">{stepCount}</div>
-						<div class="text-sm text-gray-600">Steps</div>
+						<div class="text-2xl font-bold text-gray-900 dark:text-gray-100">{stepCount}</div>
+						<div class="text-sm text-gray-600 dark:text-gray-300">Steps</div>
 					</div>
 				</div>
 
 				<!-- Instructions Section -->
 				{#if data.recipe.instructions}
-					<div class="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+					<div
+						class="rounded-xl border border-gray-300 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-900/40"
+					>
 						<div class="mb-4 flex items-center justify-between">
-							<h2 class="text-xl font-bold text-gray-900">Cooking Instructions</h2>
+							<h2 class="text-xl font-bold text-gray-900 dark:text-gray-100">
+								Cooking Instructions
+							</h2>
 						</div>
 
-						<div class="prose prose-lg max-w-none">
+						<div class="prose prose-lg dark:prose-invert max-w-none">
 							{@html data.recipe.instructions}
 						</div>
 					</div>
 				{:else}
-					<div class="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
-						<h2 class="mb-4 text-xl font-bold text-gray-900">Cooking Instructions</h2>
-						<p class="italic text-gray-500">No instructions provided.</p>
+					<div
+						class="rounded-xl border border-gray-300 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-900/40"
+					>
+						<h2 class="mb-4 text-xl font-bold text-gray-900 dark:text-gray-100">
+							Cooking Instructions
+						</h2>
+						<p class="italic text-gray-500 dark:text-gray-400">No instructions provided.</p>
 					</div>
 				{/if}
 			</div>
@@ -224,10 +236,12 @@
 			<!-- Sidebar -->
 			<div class="lg:col-span-1">
 				<!-- Ingredients Section -->
-				<div class="sticky top-8 rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+				<div
+					class="sticky top-8 rounded-xl border border-gray-300 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-900/40"
+				>
 					<div class="mb-4 flex items-center justify-between">
-						<h2 class="text-xl font-bold text-gray-900">Ingredients</h2>
-						<span class="text-sm text-gray-600">
+						<h2 class="text-xl font-bold text-gray-900 dark:text-gray-100">Ingredients</h2>
+						<span class="text-sm text-gray-600 dark:text-gray-300">
 							{checkedIngredients.size}/{data.recipe.ingredient_links.length} checked
 						</span>
 					</div>
@@ -235,10 +249,10 @@
 					<div class="space-y-3">
 						{#each data.recipe.ingredient_links as ingredient_link, index}
 							<div
-								class="flex cursor-pointer items-center gap-3 rounded-lg border border-gray-200 p-3 transition-all hover:bg-gray-50 {checkedIngredients.has(
+								class="flex cursor-pointer items-center gap-3 rounded-lg border border-gray-300 p-3 transition-all hover:bg-gray-50 dark:border-gray-800 dark:hover:bg-gray-900/60 {checkedIngredients.has(
 									ingredient_link.ingredient.id
 								)
-									? 'border-green-200 bg-green-50'
+									? 'border-green-200 bg-green-50 dark:border-green-900/50 dark:bg-green-900/20'
 									: ''}"
 								role="button"
 								tabindex="0"
@@ -260,16 +274,20 @@
 											/>
 										</svg>
 									{:else}
-										<div class="h-5 w-5 rounded-full border-2 border-gray-300"></div>
+										<div
+											class="h-5 w-5 rounded-full border-2 border-gray-300 dark:border-gray-600"
+										></div>
 									{/if}
 								</div>
 								<div
 									class="flex-1 {checkedIngredients.has(ingredient_link.ingredient.id)
-										? 'text-gray-500 line-through'
+										? 'text-gray-500 line-through dark:text-gray-400'
 										: ''}"
 								>
-									<div class="font-medium text-gray-900">{ingredient_link.ingredient.title}</div>
-									<div class="text-sm text-gray-600">
+									<div class="font-medium text-gray-900 dark:text-gray-100">
+										{ingredient_link.ingredient.title}
+									</div>
+									<div class="text-sm text-gray-600 dark:text-gray-400">
 										{ingredient_link.amount}
 										{ingredient_link.unit}
 									</div>
@@ -280,7 +298,7 @@
 
 					{#if data.recipe.ingredient_links.length === 0}
 						<div class="py-8 text-center">
-							<p class="text-gray-500">No ingredients listed</p>
+							<p class="text-gray-500 dark:text-gray-400">No ingredients listed</p>
 						</div>
 					{/if}
 				</div>

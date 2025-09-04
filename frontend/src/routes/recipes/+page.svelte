@@ -9,7 +9,7 @@
 
 <div class="container mx-auto px-4 py-4 sm:px-6 sm:py-6 lg:px-8">
 	<div class="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between">
-		<h1 class="mb-4 text-2xl font-bold text-gray-900 sm:mb-0 sm:text-3xl lg:text-4xl">Recipes</h1>
+		<h1 class="mb-4 text-2xl font-bold sm:mb-0 sm:text-3xl lg:text-4xl">Recipes</h1>
 		{#if data.authenticatedUser}
 			<a
 				href="/recipes/create"

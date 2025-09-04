@@ -75,7 +75,7 @@
 	];
 </script>
 
-<Sidebar.Root collapsible="none" class="">
+<Sidebar.Root collapsible="offcanvas" class="">
 	<!-- <Sidebar.Inset class="inset-y-10"> -->
 	<Sidebar.Content>
 		<Sidebar.Group>

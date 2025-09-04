@@ -17,7 +17,7 @@
 	<!-- <form method="POST" action="?/login"> -->
 	<form class="mx-auto max-w-xs" method="POST" action="" use:enhance>
 		<div class="mb-5">
-			<label class="mb-2 block font-medium text-gray-700" for="email">Your email</label>
+			<label class="mb-2 block font-medium" for="email">Your email</label>
 			<input
 				class="w-full appearance-none rounded-md border bg-gray-50 p-2 text-gray-700 shadow"
 				type="text"
@@ -29,7 +29,7 @@
 			/>
 		</div>
 		<div class="mb-5">
-			<label class="mb-2 block font-medium text-gray-700" for="password">Password</label>
+			<label class="mb-2 block font-medium" for="password">Password</label>
 			<input
 				class="w-full appearance-none rounded-md border bg-gray-50 p-2 text-gray-700 shadow"
 				type="password"

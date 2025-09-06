@@ -1,4 +1,5 @@
 import { untrack } from "svelte";
+import { browser } from "$app/environment";
 
 const MOBILE_BREAKPOINT = 768;
 
@@ -6,6 +7,10 @@ export class IsMobile {
 	#current = $state<boolean>(false);
 
 	constructor() {
+		if (!browser) {
+			// SSR: leave default false and skip window usage
+			return;
+		}
 		$effect(() => {
 			return untrack(() => {
 				const mql = window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT - 1}px)`);

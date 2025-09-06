@@ -70,12 +70,14 @@
 	}
 
 	onMount(() => {
+		if (typeof window === 'undefined') return;
 		window.addEventListener('touchstart', onTouchStart, { passive: true });
 		window.addEventListener('touchmove', onTouchMove, { passive: true });
 		window.addEventListener('touchend', onTouchEnd, { passive: true });
 	});
 
 	onDestroy(() => {
+		if (typeof window === 'undefined') return;
 		window.removeEventListener('touchstart', onTouchStart as any);
 		window.removeEventListener('touchmove', onTouchMove as any);
 		window.removeEventListener('touchend', onTouchEnd as any);

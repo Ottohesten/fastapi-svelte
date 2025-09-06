@@ -21,11 +21,16 @@ from app.models import (
     User,
     UserCreate,
     UserPublic,
+    UserMePublic,
+    RolePublic,
+    UserWithPermissionsPublic,
+    UsersWithPermissionsPublic,
     UserRegister,
     UsersPublic,
     UserUpdate,
     UserUpdateMe,
 )
+from app.permissions import get_user_effective_scopes
 from app.utils import generate_new_account_email, send_email
 
 router = APIRouter(prefix="/users", tags=["users"])
@@ -49,6 +54,54 @@ def read_users(
     users = session.exec(statement).all()
 
     return UsersPublic(data=[UserPublic.model_validate(user) for user in users], count=count)
+
+
+@router.get("/with-permissions", response_model=UsersWithPermissionsPublic)
+def read_users_with_permissions(
+    session: SessionDep,
+    skip: int = 0,
+    limit: int = 100,
+    current_user: User = Security(get_current_user),
+):
+    """
+    Retrieve users including their roles, custom_scopes and computed effective_scopes.
+    """
+    # Require superuser privileges for this consolidated permissions view
+    if not current_user.is_superuser:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="The user doesn't have enough privileges")
+    count_statement = select(func.count()).select_from(User)
+    count = session.exec(count_statement).one()
+
+    statement = select(User).offset(skip).limit(limit)
+    users = session.exec(statement).all()
+
+    data: list[UserWithPermissionsPublic] = []
+    for u in users:
+        roles_public = [
+            # Create RolePublic instances explicitly
+            RolePublic(
+                id=r.id,
+                name=r.name,
+                description=r.description,
+                scopes=r.scopes or []
+            )
+            for r in (u.roles or [])
+        ]
+        effective = sorted(list(get_user_effective_scopes(u)))
+        data.append(
+            UserWithPermissionsPublic(
+                id=u.id,
+                email=u.email,
+                is_active=u.is_active,
+                is_superuser=u.is_superuser,
+                full_name=u.full_name,
+                roles=roles_public,
+                custom_scopes=u.custom_scopes or [],
+                effective_scopes=effective,
+            )
+        )
+
+    return UsersWithPermissionsPublic(data=data, count=count)
 
 
 @router.post(
@@ -123,7 +176,7 @@ def update_password_me(
     return Message(message="Password updated successfully")
 
 
-@router.get("/me", response_model=UserPublic, responses={401: {
+@router.get("/me", response_model=UserMePublic, responses={401: {
     # "content": {"application/json": {"example": {"detail": "Not authenticated"}}},
     "model": HTTPExceptionDetail
 }})
@@ -134,7 +187,15 @@ def read_user_me(*,current_user: Annotated[User, Security(get_current_active_use
     """
     Get current user.
     """
-    return current_user
+    scopes = sorted(list(get_user_effective_scopes(current_user)))
+    return UserMePublic(
+        id=current_user.id,
+        email=current_user.email,
+        is_active=current_user.is_active,
+        is_superuser=current_user.is_superuser,
+        full_name=current_user.full_name,
+        scopes=scopes,
+    )
 
 
 @router.delete("/me", response_model=Message)

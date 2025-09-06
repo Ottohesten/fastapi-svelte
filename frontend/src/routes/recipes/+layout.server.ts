@@ -21,7 +21,9 @@ export const load = async ({ fetch, locals }) => {
 
     return {
         recipes: data,
-        ingredients: ingredients
+        ingredients: ingredients,
+        authenticatedUser: locals.authenticatedUser,
+        scopes: locals.authenticatedUser?.scopes ?? []
     }
 }
 

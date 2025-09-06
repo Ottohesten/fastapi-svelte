@@ -8,7 +8,7 @@ import type { SuperForm } from 'sveltekit-superforms';
 import type { UserUpdateSchema } from '$lib/schemas/schemas.js';
 import type { Infer } from 'sveltekit-superforms';
 
-export function createColumns(userUpdateForm: SuperForm<Infer<typeof UserUpdateSchema>>): ColumnDef<components['schemas']["UserPublic"]>[] {
+export function createColumns(userUpdateForm: SuperForm<Infer<typeof UserUpdateSchema>>, permissionsByEmail?: Record<string, components['schemas']['UserWithPermissionsPublic']>): ColumnDef<components['schemas']["UserPublic"]>[] {
     return [
         {
             accessorKey: "email",
@@ -17,6 +17,18 @@ export function createColumns(userUpdateForm: SuperForm<Infer<typeof UserUpdateS
         {
             accessorKey: "full_name",
             header: "Full Name"
+        },
+        {
+            id: "roles_scopes",
+            header: "Roles / Scopes",
+            cell: ({ row }) => {
+                const email = row.original.email;
+                const perms = permissionsByEmail?.[email];
+                if (!perms) return '—';
+                const roles = perms.roles.map(r => r.name).join(', ') || 'No roles';
+                const scopes = perms.effective_scopes.length;
+                return `${roles} • ${scopes} scopes`;
+            }
         },
         {
             accessorKey: "is_superuser",
@@ -39,7 +51,8 @@ export function createColumns(userUpdateForm: SuperForm<Infer<typeof UserUpdateS
             enableHiding: false,
             cell: ({ row }) => {
                 const user = row.original;
-                return renderComponent(UserActions, { user, userUpdateForm });
+                const perms = permissionsByEmail?.[user.email];
+                return renderComponent(UserActions, { user, userUpdateForm, permissions: perms });
             },
         }
     ];

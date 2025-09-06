@@ -81,6 +81,28 @@ class UsersPublic(SQLModel):
     count: int
 
 
+class UserMePublic(UserPublic):
+    scopes: list[str]
+
+
+class RolePublic(BaseModel):
+    id: uuid.UUID
+    name: str
+    description: str | None = None
+    scopes: list[str]
+
+
+class UserWithPermissionsPublic(UserPublic):
+    roles: list[RolePublic]
+    custom_scopes: list[str]
+    effective_scopes: list[str]
+
+
+class UsersWithPermissionsPublic(SQLModel):
+    data: list[UserWithPermissionsPublic]
+    count: int
+
+
 # JSON payload containing access token
 class Token(SQLModel):
     access_token: str

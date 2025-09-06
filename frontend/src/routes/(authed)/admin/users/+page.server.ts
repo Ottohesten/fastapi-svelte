@@ -4,6 +4,7 @@ import { redirect } from '@sveltejs/kit';
 import { message, superValidate, fail } from 'sveltekit-superforms';
 import { zod } from 'sveltekit-superforms/adapters';
 import type { Actions } from './$types.js';
+import type { components } from '$lib/api/v1';
 
 import { UserSchema, UserUpdateSchema } from '$lib/schemas/schemas.js';
 
@@ -11,19 +12,25 @@ import { UserSchema, UserUpdateSchema } from '$lib/schemas/schemas.js';
 export const load = async ({ fetch, cookies }) => {
     const client = createApiClient(fetch);
     const auth_token = cookies.get("auth_token");
-    const { data, error: apierror, response } = await client.GET("/users/", {
+    // Fetch consolidated permissions (superuser-only endpoint)
+    const { data: permsData, error: permsError } = await client.GET("/users/with-permissions", {
         headers: {
             Authorization: `Bearer ${auth_token}`
         }
     });
-
-    if (apierror) {
-        error(404, JSON.stringify(apierror.detail));
+    if (permsError) {
+        error(403, JSON.stringify(permsError.detail));
     }
 
+    // Build lookup by email for quick access in the table
+    const byEmail: Record<string, components['schemas']['UserWithPermissionsPublic']> = {};
+    for (const u of permsData?.data ?? []) {
+        byEmail[u.email] = u;
+    }
 
     return {
-        users: data,
+        users: { data: (permsData?.data ?? []).map(u => ({ id: u.id, email: u.email, is_active: u.is_active, is_superuser: u.is_superuser, full_name: u.full_name ?? null })), count: permsData?.count ?? 0 },
+        permissionsByEmail: byEmail,
         userCreateForm: await superValidate(zod(UserSchema), {
             id: "userCreateForm",
         }),

@@ -1,8 +1,9 @@
 <script lang="ts">
 	import Button from '$lib/components/ui/button/button.svelte';
-	import { Pencil, Trash2 } from 'lucide-svelte';
+	import { Pencil, Trash2, Shield } from 'lucide-svelte';
 	import { enhance } from '$app/forms';
 	import * as Dialog from '$lib/components/ui/dialog';
+	import * as Sheet from '$lib/components/ui/sheet';
 	import { Field, Control, Label, FieldErrors } from 'formsnap';
 	import { zodClient } from 'sveltekit-superforms/adapters';
 	import { UserUpdateSchema } from '$lib/schemas/schemas.js';
@@ -13,13 +14,16 @@
 
 	let {
 		user,
-		userUpdateForm
+		userUpdateForm,
+		permissions
 	}: {
 		user: components['schemas']['UserPublic'];
 		userUpdateForm?: SuperForm<Infer<typeof UserUpdateSchema>>;
+		permissions?: components['schemas']['UserWithPermissionsPublic'];
 	} = $props();
 
 	let editDialogOpen = $state(false);
+	let permsOpen = $state(false);
 
 	// Extract form properties from SuperForm if available
 	const updateFormData = userUpdateForm?.form;
@@ -81,6 +85,65 @@
 </script>
 
 <div class="flex items-center justify-end space-x-0">
+	{#if permissions}
+		<Sheet.Root bind:open={permsOpen}>
+			<Button
+				variant="ghost"
+				title="View permissions"
+				size="sm"
+				class="p-2"
+				onclick={() => (permsOpen = true)}
+			>
+				<Shield />
+			</Button>
+			<Sheet.Content side="right" class="w-full sm:max-w-xl">
+				<div class="space-y-4">
+					<div>
+						<h2 class="text-lg font-semibold">User permissions</h2>
+						<p class="text-muted-foreground text-sm">{user.email}</p>
+					</div>
+					<div class="space-y-2">
+						<h3 class="text-sm font-medium">Roles</h3>
+						{#if permissions.roles.length > 0}
+							<div class="flex flex-wrap gap-2">
+								{#each permissions.roles as r}
+									<span class="inline-flex items-center rounded-full border px-2 py-0.5 text-xs"
+										>{r.name}</span
+									>
+								{/each}
+							</div>
+						{:else}
+							<p class="text-muted-foreground text-sm">No roles</p>
+						{/if}
+					</div>
+					<div class="space-y-2">
+						<h3 class="text-sm font-medium">Custom scopes</h3>
+						{#if permissions.custom_scopes.length > 0}
+							<div class="flex max-h-24 flex-wrap gap-2 overflow-auto pr-1">
+								{#each permissions.custom_scopes as s}
+									<span class="inline-flex items-center rounded-full border px-2 py-0.5 text-xs"
+										>{s}</span
+									>
+								{/each}
+							</div>
+						{:else}
+							<p class="text-muted-foreground text-sm">No custom scopes</p>
+						{/if}
+					</div>
+					<div class="space-y-2">
+						<h3 class="text-sm font-medium">
+							Effective scopes ({permissions.effective_scopes.length})
+						</h3>
+						<div class="max-h-64 overflow-auto rounded border p-2 text-xs leading-6">
+							{#each permissions.effective_scopes as s}
+								<div class="font-mono">{s}</div>
+							{/each}
+						</div>
+					</div>
+				</div>
+			</Sheet.Content>
+		</Sheet.Root>
+	{/if}
 	{#if userUpdateForm && updateFormData && updateEnhance}
 		<Button variant="ghost" title="Edit user" size="sm" class="p-2" onclick={openEditDialog}>
 			<Pencil class="" />

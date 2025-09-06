@@ -1,10 +1,7 @@
 import { redirect, type Handle } from '@sveltejs/kit';
 import { createApiClient } from '$lib/api/api';
-import { env } from '$env/dynamic/private';
 
-// define function to make api request to get user info
-
-
+// Server handle: hydrate authenticatedUser from /users/me and manage token refresh
 
 export const handle: Handle = async ({ event, resolve }) => {
     let auth_token = event.cookies.get("auth_token");
@@ -63,7 +60,7 @@ export const handle: Handle = async ({ event, resolve }) => {
     });
 
     if (data) {
-        event.locals.authenticatedUser = data;
+        event.locals.authenticatedUser = data as any;
     } else if (apierror) {
         // Attempt refresh using refresh_token cookie
         const refresh = event.cookies.get("refresh_token");
@@ -99,7 +96,7 @@ export const handle: Handle = async ({ event, resolve }) => {
                         headers: { Authorization: `Bearer ${newAccess}` }
                     });
                     if (retry.data) {
-                        event.locals.authenticatedUser = retry.data;
+                        event.locals.authenticatedUser = retry.data as any;
                     } else {
                         // Failed even after refresh - fall through to logout
                         throw new Error('Failed to fetch user after refresh');

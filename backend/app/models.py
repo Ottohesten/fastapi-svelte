@@ -2,6 +2,7 @@ import uuid
 from pydantic import BaseModel, EmailStr, computed_field
 from sqlmodel import Field, SQLModel, Relationship, Column, JSON
 from typing import Optional
+from datetime import datetime
 # from permissions.roles import Role
 
 
@@ -84,6 +85,8 @@ class UsersPublic(SQLModel):
 class Token(SQLModel):
     access_token: str
     token_type: str = "Bearer"
+    # Optional refresh token if we ever decide to return it in body (we'll use cookie primarily)
+    refresh_token: str | None = None
 
 
 # Contents of JWT token
@@ -539,6 +542,23 @@ class Message(BaseModel):
 # HTTPException detail
 class HTTPExceptionDetail(BaseModel):
     detail: str
+
+
+class RefreshRequest(BaseModel):
+    refresh_token: str
+
+
+# Refresh token persistence for revocation/rotation
+class RefreshToken(SQLModel, table=True):
+    id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
+    user_id: uuid.UUID = Field(foreign_key="user.id", nullable=False)
+    token_hash: str = Field(index=True, max_length=128, description="SHA256 of the refresh token")
+    jti: uuid.UUID = Field(default_factory=uuid.uuid4, index=True)
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    expires_at: datetime
+    revoked_at: datetime | None = None
+
+    user: Optional["User"] = Relationship(sa_relationship_kwargs={"lazy": "selectin"})
 
 
 

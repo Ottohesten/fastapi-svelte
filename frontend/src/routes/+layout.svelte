@@ -11,7 +11,7 @@
 	let mobileOpen = $state(false);
 
 	const linksAuth = [
-		{ href: '/tiptap', label: 'Tiptap' },
+		// { href: '/tiptap', label: 'Tiptap' },
 		{ href: '/recipes', label: 'Recipes' },
 		{ href: '/ingredients', label: 'Ingredients' },
 		{ href: '/game', label: 'Game' }

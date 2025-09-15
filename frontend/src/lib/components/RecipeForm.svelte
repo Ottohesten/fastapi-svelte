@@ -2,6 +2,8 @@
 	import { superForm } from 'sveltekit-superforms';
 	import * as Dialog from '$lib/components/ui/dialog/index.js';
 	import InstructionsEditor from '$lib/components/InstructionsEditor.svelte';
+	import Select from '$lib/components/ui/select/select.svelte';
+	import { Combobox } from '$lib/components/ui/combobox';
 
 	interface Props {
 		data: any;
@@ -195,16 +197,16 @@
 											>
 												Choose Ingredient
 											</label>
-											<select
-												id="ingredient-select"
-												class="w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-gray-900 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 dark:border-gray-800 dark:bg-gray-900/40 dark:text-gray-100 dark:focus:border-blue-400 dark:focus:ring-blue-400/20"
+											<Combobox
+												items={data.ingredients.map((i: any) => ({ label: i.title, value: i.id }))}
 												bind:value={selectedIngredientId}
-											>
-												<option value="">Select an ingredient...</option>
-												{#each data.ingredients as ingredient}
-													<option value={ingredient.id}>{ingredient.title}</option>
-												{/each}
-											</select>
+												placeholder="Select an ingredient..."
+												searchPlaceholder="Type to filter ingredients..."
+												ariaLabel="Ingredient"
+												buttonClass="w-full justify-between"
+												popoverClass="w-full min-w-[var(--radix-popover-trigger-width)]"
+												class="w-full"
+											/>
 										</div>
 
 										<div class="grid grid-cols-2 gap-3">
@@ -232,17 +234,13 @@
 												>
 													Unit
 												</label>
-												<select
-													id="ingredient-unit"
-													class="w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-gray-900 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 dark:border-gray-800 dark:bg-gray-900/40 dark:text-gray-100 dark:focus:border-blue-400 dark:focus:ring-blue-400/20"
-													bind:value={ingredientUnit}
-												>
+												<Select id="ingredient-unit" bind:value={ingredientUnit} class="h-11">
 													<option value="g">grams (g)</option>
 													<option value="kg">kilograms (kg)</option>
 													<option value="ml">milliliters (ml)</option>
 													<option value="L">liters (L)</option>
 													<option value="pcs">pieces (pcs)</option>
-												</select>
+												</Select>
 											</div>
 										</div>
 									</div>

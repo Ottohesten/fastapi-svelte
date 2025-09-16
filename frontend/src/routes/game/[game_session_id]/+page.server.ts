@@ -7,7 +7,7 @@ import { z } from 'zod';
 import { message, superValidate, fail } from 'sveltekit-superforms';
 import { GameSessionTeamSchema, GameSessionPlayerSchema } from '$lib/schemas/schemas.js';
 
-export const load = async ({ }) => {
+export const load = async ({ fetch, params, cookies }) => {
     const teamForm = await superValidate(zod(GameSessionTeamSchema), {
         id: "teamForm",
     });
@@ -15,9 +15,24 @@ export const load = async ({ }) => {
         id: "playerForm",
     });
 
+    // Fetch initial game session snapshot (public)
+    let game_session = null;
+    try {
+        const client = createApiClient(fetch);
+        const { data, error: apierror } = await client.GET('/game/{game_session_id}', {
+            params: { path: { game_session_id: params.game_session_id } }
+        });
+        if (!apierror) {
+            game_session = data;
+        }
+    } catch (e) {
+        // ignore; page can still render forms
+    }
+
     return {
         teamForm,
-        playerForm
+        playerForm,
+        game_session
     }
 }
 

@@ -247,6 +247,61 @@
 		// Restore state from URL first
 		restoreFromURL();
 
+		// WebSocket live updates
+		if (browser) {
+			const sessionId = data.game_session?.id;
+			if (sessionId) {
+				const protocol = location.protocol === 'https:' ? 'wss' : 'ws';
+				const ws = new WebSocket(
+					`${protocol}://${location.host.replace(/:\d+$/, ':8000')}/ws/game/${sessionId}`
+				);
+				ws.onmessage = (ev) => {
+					try {
+						const msg = JSON.parse(ev.data);
+						if (msg.type === 'snapshot' || msg.type === 'update') {
+							// Map minimal broadcast format back to existing structure expected by page (GameSessionPublic)
+							const incoming = msg.data;
+							gameSession = {
+								...gameSession,
+								id: incoming.id,
+								title: incoming.title,
+								players: incoming.players.map((p: any) => ({
+									id: p.id,
+									name: p.name,
+									team_id: p.team_id,
+									team: p.team_id
+										? { name: (incoming.teams.find((t: any) => t.id === p.team_id) || {}).name }
+										: null,
+									drink_links: p.drinks.map((d: any) => ({
+										amount: d.amount,
+										drink: { id: d.drink_id, name: d.drink_name }
+									}))
+								})),
+								teams: incoming.teams.map((t: any) => ({
+									id: t.id,
+									name: t.name,
+									players: (incoming.players.filter((p: any) => p.team_id === t.id) || []).map(
+										(p: any) => ({ id: p.id, name: p.name })
+									)
+								}))
+							} as unknown as GameSession;
+						}
+					} catch (e) {
+						console.error('WS parse error', e);
+					}
+				};
+				ws.onclose = () => {
+					// simple retry after delay
+					setTimeout(() => {
+						// naive one-shot retry
+						if (browser) {
+							location.reload();
+						}
+					}, 3000);
+				};
+			}
+		}
+
 		// Track theme for chart colors
 		const updateTheme = () => {
 			isDark = document.documentElement.classList.contains('dark');
@@ -439,7 +494,7 @@
 			Game Session Dashboard
 		</h1>
 		<p class="text-base text-gray-600 sm:text-lg dark:text-gray-400">
-			Session: <strong>{gameSession.title}</strong>
+			Session: <strong>{gameSession?.title}</strong>
 		</p>
 	</div>
 	<!-- Controls -->
@@ -1125,7 +1180,7 @@
 					href="/game/{data.game_session.id}/update">Edit</a
 				> -->
 				<Button
-					href="/game/{data.game_session.id}/update"
+					href={data.game_session ? `/game/${data.game_session.id}/update` : '#'}
 					variant="outline"
 					class="w-full sm:w-auto">Edit</Button
 				>

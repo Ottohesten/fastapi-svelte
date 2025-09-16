@@ -7,7 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from sqlmodel import Field, SQLModel, create_engine, Session, select
 from contextlib import contextmanager, asynccontextmanager
 
-from fastapi import FastAPI, Depends, HTTPException, Request, Security
+from fastapi import FastAPI, Depends, HTTPException, Request, Security, WebSocket, WebSocketDisconnect
 
 from app.deps import SessionDep, TokenDep, create_db_and_tables
 from app.config import get_settings
@@ -20,6 +20,9 @@ from app.routers import (
     roles,
     user_permissions
 )
+from app.realtime import manager, serialize_game_session, broadcast_game_session_state
+from sqlmodel import Session as SQLModelSession
+import asyncio
 
 # @asynccontextmanager
 # async def lifespan(app: FastAPI):
@@ -84,6 +87,40 @@ app.include_router(user_permissions.router)
 
 
 
+
+
+@app.websocket("/ws/game/{game_session_id}")
+async def game_session_ws(websocket: WebSocket, game_session_id: str):
+    """WebSocket providing real-time updates for a game session.
+
+    Anonymous read-only access: no auth required (public scoreboard).
+    On connect: send initial snapshot (if exists) then incremental updates broadcast
+    whenever mutation endpoints call broadcast helper.
+    """
+    await manager.connect(game_session_id, websocket)
+    try:
+        # Send initial snapshot
+        # Acquire a short-lived DB session for snapshot only
+        from app.db import engine
+        with SQLModelSession(engine) as session:
+            from app.models import GameSession as GS
+            instance = session.get(GS, game_session_id)
+            if instance:
+                # Eagerly load relationships via access
+                players = instance.players or []  # type: ignore
+                teams = instance.teams or []  # type: ignore
+                payload = serialize_game_session(instance)
+                await websocket.send_json({"type": "snapshot", "data": payload})
+            else:
+                await websocket.send_json({"type": "error", "detail": "Game session not found"})
+        # Keep connection alive: we don't expect client -> server messages yet
+        while True:
+            # Await any message just to detect client disconnect; ignore contents
+            await websocket.receive_text()
+    except WebSocketDisconnect:
+        await manager.disconnect(game_session_id, websocket)
+    except Exception:
+        await manager.disconnect(game_session_id, websocket)
 
 
 @app.get("/")

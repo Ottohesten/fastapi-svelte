@@ -23,6 +23,7 @@ from app.models import (
     GamePlayerDrinkLinkCreate,
     User,
 )
+from app.realtime import broadcast_game_session_state
 
 
 router = APIRouter(prefix="/game", tags=["game"])
@@ -141,6 +142,9 @@ def create_game_session(session: SessionDep, current_user: Annotated[User, Secur
 
     # update the 
 
+    # Broadcast new session state
+    broadcast_game_session_state(session, str(game_session.id))
+
     return game_session
 
 # delete game session
@@ -166,6 +170,8 @@ def delete_game_session(session: SessionDep, game_session_id: str, current_user:
     session.delete(game_session)
     session.commit()
 
+    broadcast_game_session_state(session, str(game_session.id))
+
     return {"success": True}
 
 
@@ -186,6 +192,7 @@ def delete_game_session_admin(session: SessionDep,    game_session_id: str, curr
 
     session.delete(game_session)
     session.commit()
+    broadcast_game_session_state(session, str(game_session.id))
     return {"success": True}
 
 # make player and add to game session
@@ -214,6 +221,7 @@ def create_game_player(session: SessionDep, game_session_id: str, game_player_in
     session.commit()
     session.refresh(game_player)
 
+    broadcast_game_session_state(session, str(game_session.id))
     return game_player
 
 
@@ -249,6 +257,7 @@ def create_game_team(
     session.commit()
     session.refresh(game_team)
 
+    broadcast_game_session_state(session, str(game_session.id))
     return game_team
 
 # delete game player
@@ -288,6 +297,7 @@ def delete_game_player(
     session.delete(game_player)
     session.commit()
 
+    broadcast_game_session_state(session, str(game_session.id))
     return {"success": True}
 
 # delete game team
@@ -327,6 +337,7 @@ def delete_game_team(
     session.delete(game_team)
     session.commit()
 
+    broadcast_game_session_state(session, str(game_session.id))
     return {"success": True}
 
 # update game player
@@ -403,6 +414,7 @@ def update_game_player(
     session.add(game_player)
     session.commit()
     session.refresh(game_player)
+    broadcast_game_session_state(session, str(game_session.id))
     return game_player
 
 
@@ -476,6 +488,7 @@ def add_drink_to_player(
     # Refresh the game_player instance to load the updated/new drink_links
     session.refresh(game_player)
 
+    broadcast_game_session_state(session, str(game_session.id))
     return game_player
 
 

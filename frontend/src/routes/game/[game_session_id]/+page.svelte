@@ -1043,7 +1043,8 @@
 		</div>
 	{/if}
 	<!-- update button, go to {gamesessionid/update} -->
-	{#if data.authenticatedUser?.is_superuser}
+	{#if data.authenticatedUser && data.authenticatedUser.scopes && data.authenticatedUser.scopes.includes('games:update')}
+		<!-- {#if data.authenticatedUser} -->
 		<div class="mt-6">
 			<div class="flex flex-col gap-4 sm:flex-row">
 				<Dialog.Root bind:open>

@@ -10,14 +10,31 @@
 	// Mobile nav state
 	let mobileOpen = $state(false);
 
-	const linksAuth = [
+	type NavItem = { href: string; label: string; requiredScopes?: string | string[] };
+	const linksAuthConfig: NavItem[] = [
 		// { href: '/tiptap', label: 'Tiptap' },
-		{ href: '/recipes', label: 'Recipes' },
-		{ href: '/ingredients', label: 'Ingredients' },
-		{ href: '/game', label: 'Game' }
+		{ href: '/recipes', label: 'Recipes', requiredScopes: 'recipes:read' },
+		{ href: '/ingredients', label: 'Ingredients', requiredScopes: 'ingredients:read' },
+		{ href: '/game', label: 'Game' } // no scope required
 	];
 
-	const linksAnon = [{ href: '/', label: 'Home' }];
+	function hasRequiredScopes(item: NavItem, scopes: string[] | undefined) {
+		if (!item.requiredScopes) return true;
+		if (!scopes) return false;
+		return Array.isArray(item.requiredScopes)
+			? item.requiredScopes.every((s) => scopes.includes(s))
+			: scopes.includes(item.requiredScopes);
+	}
+
+	// Reactive filtered auth links based on current scopes
+	const linksAuth: NavItem[] = $derived(
+		linksAuthConfig.filter((i) => hasRequiredScopes(i, data.scopes))
+	);
+
+	const linksAnon = [
+		{ href: '/', label: 'Home' },
+		{ href: '/game', label: 'Game' }
+	];
 
 	const isActive = (href: string) =>
 		$page.url.pathname === href || $page.url.pathname.startsWith(href + '/');

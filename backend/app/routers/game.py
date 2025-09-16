@@ -145,7 +145,7 @@ def create_game_session(session: SessionDep, current_user: Annotated[User, Secur
 
 # delete game session
 @router.delete("/{game_session_id}")
-def delete_game_session(session: SessionDep, game_session_id: str, current_user: CurrentUser):
+def delete_game_session(session: SessionDep, game_session_id: str, current_user: User = Security(get_current_user, scopes=["games:delete"])):
     """
     Delete a game session. Users can delete their own game sessions.
     """
@@ -412,7 +412,8 @@ def add_drink_to_player(
     session: SessionDep, 
     game_session_id: str, 
     game_player_id: str, 
-    drink_link_in: GamePlayerDrinkLinkCreate
+    drink_link_in: GamePlayerDrinkLinkCreate,
+    current_user: User = Security(get_current_user, scopes=["games:update"])
 ):
     """
     Add a drink to a game player or update the amount if the drink link already exists.

@@ -58,6 +58,19 @@ export const actions = {
             // maxAge: 60 * 5 // 5 minutes
         })
 
+        // also set refresh token cookie (rotated by backend on refresh)
+        const anyData: any = data as any;
+        if (anyData.refresh_token) {
+            cookies.set("refresh_token", anyData.refresh_token, {
+                httpOnly: true,
+                path: '/',
+                secure: true,
+                sameSite: "lax",
+                // align with backend default (7 days)
+                maxAge: 60 * 60 * 24 * 7
+            })
+        }
+
         // store access token in local storage
         // localStorage.setItem("auth_token", data.access_token);
 

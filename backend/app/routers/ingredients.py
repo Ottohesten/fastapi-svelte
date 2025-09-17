@@ -3,7 +3,7 @@ from fastapi import FastAPI, Depends, HTTPException, status, Query, Security
 from sqlmodel import select
 from app.deps import SessionDep, CurrentUser, get_current_user
 # from app.models import Recipe, RecipeCreate, RecipePublic
-from app.models import Ingredient, IngredientBase, IngredientCreate, IngredientPublic, User
+from app.models import Ingredient, IngredientBase, IngredientCreate, IngredientPublic, User, RecipeIngredientLink
 
 
 router = APIRouter(prefix="/ingredients", tags=["ingredients"])
@@ -69,6 +69,18 @@ def delete_ingredient(
     ingredient = session.get(Ingredient, ingredient_id)
     if not ingredient:
         raise HTTPException(status_code=404, detail="Ingredient not found")
+    
+    # Check if the ingredient is used in any recipes
+    recipe_links = session.exec(
+        select(RecipeIngredientLink).where(RecipeIngredientLink.ingredient_id == ingredient_id)
+    ).all()
+    
+    if recipe_links:
+        # Delete all recipe ingredient links first
+        for link in recipe_links:
+            session.delete(link)
+        session.flush()  # Ensure links are deleted before deleting the ingredient
+    
     session.delete(ingredient)
     session.commit()
 

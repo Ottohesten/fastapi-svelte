@@ -16,9 +16,7 @@
 
 <!-- {JSON.stringify(team)} -->
 
-<div
-	class="rounded-lg border border-gray-200 bg-white p-4 shadow-sm transition-shadow hover:shadow-md"
->
+<div class="surface-2 rounded-lg p-4 transition-shadow hover:shadow-md">
 	<div class="flex items-center justify-between gap-3">
 		<!-- Team Info -->
 		<a
@@ -26,8 +24,10 @@
 			class="min-w-0 flex-1 transition-colors hover:text-blue-600"
 		>
 			<div class="space-y-1">
-				<h3 class="truncate text-sm font-semibold text-gray-900 sm:text-base">{team.name}</h3>
-				<p class="text-xs text-gray-500 sm:text-sm">Team</p>
+				<h3 class="truncate text-sm font-semibold text-gray-900 sm:text-base dark:text-gray-100">
+					{team.name}
+				</h3>
+				<p class="text-xs text-gray-500 sm:text-sm dark:text-gray-400">Team</p>
 			</div>
 		</a>
 

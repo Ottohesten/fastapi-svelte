@@ -10,6 +10,7 @@ declare global {
 				is_superuser: boolean;
 				full_name?: string | null;
 				id: string;
+				scopes?: string[];
 			} | null;
 		}
 		// interface PageData {}

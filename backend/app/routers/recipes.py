@@ -2,7 +2,7 @@ from fastapi import APIRouter
 from fastapi import FastAPI, Depends, HTTPException, status, Query, Security
 from sqlmodel import select
 from app.deps import SessionDep, CurrentUser, get_current_user
-from app.models import Recipe, RecipeCreate, RecipePublic, Ingredient, User
+from app.models import Recipe, RecipeCreate, RecipeIngredientLink, RecipePublic, Ingredient, User
 
 
 
@@ -58,33 +58,35 @@ def create_recipe(
     recipe = Recipe(
         title=recipe_in.title,
         instructions=recipe_in.instructions,
-        owner_id=current_user.id
+        owner_id=current_user.id,
+        servings=recipe_in.servings
     )
 
-
-
-
-
-    # get ingredients
-    for ingredient in recipe_in.ingredients:
-        ingredient = session.get(Ingredient, ingredient.id)
-        if not ingredient:
-            raise HTTPException(status_code=404, detail="Ingredient not found")
-        recipe.ingredients.append(ingredient)
-    
+    # Save the recipe first to get a valid ID
     session.add(recipe)
     session.commit()
     session.refresh(recipe)
-    # print(recipe)
-    
-    
-    # check if ingredients exist
 
+    # Now create ingredient links
+    ingredient_links = recipe_in.ingredients
 
-    # recipe = Recipe.model_validate(recipe_in, update={"owner_id": current_user.id})
-    # session.add(recipe)
-    # session.commit()
-    # session.refresh(recipe)
+    for ingredient_link in ingredient_links:
+        ingredient = session.get(Ingredient, ingredient_link.ingredient_id)
+        if not ingredient:
+            raise HTTPException(status_code=404, detail="Ingredient not found")
+        
+        # create a new RecipeIngredientLink
+        recipe_ingredient_link = RecipeIngredientLink(
+            ingredient_id=ingredient_link.ingredient_id,
+            recipe_id=recipe.id,  # Now recipe.id is valid
+            amount=ingredient_link.amount,
+            unit=ingredient_link.unit
+        )
+        session.add(recipe_ingredient_link)
+    
+    # Commit the ingredient links
+    session.commit()
+    session.refresh(recipe)
 
 
     return recipe
@@ -100,34 +102,43 @@ def update_recipe(
     """
     Update a recipe.
     """
-    print(f"recipe_in 1: {recipe_in}")
+    # print(f"recipe_in 1: {recipe_in}")
 
     db_recipe = session.get(Recipe, recipe_id)
     if not db_recipe:
         raise HTTPException(status_code=404, detail="Recipe not found")
     
+    # update the ingredient links
+    for ingredient_link in recipe_in.ingredients:
+        existing_link = session.exec(
+            select(RecipeIngredientLink).where(
+                RecipeIngredientLink.recipe_id == db_recipe.id,
+                RecipeIngredientLink.ingredient_id == ingredient_link.ingredient_id
+            )
+        ).one_or_none()
 
-    ingredients = []
-    for ingredient in recipe_in.ingredients:
-        ingredient = session.get(Ingredient, ingredient.id)
-        if not ingredient:
-            raise HTTPException(status_code=404, detail="Ingredient not found")
-        ingredients.append(ingredient)
-    # recipe_in.ingredients = ingredients
-    # print(f"recipe_in 2: {recipe_in}")
+        if existing_link:
+            # Update existing link
+            existing_link.amount = ingredient_link.amount
+            existing_link.unit = ingredient_link.unit
+        else:
+            # Create new link
+            new_link = RecipeIngredientLink(
+                recipe_id=db_recipe.id,
+                ingredient_id=ingredient_link.ingredient_id,
+                amount=ingredient_link.amount,
+                unit=ingredient_link.unit
+            )
+            session.add(new_link)
+    
 
-    
-    db_recipe.ingredients = ingredients # required to update the relationship
-    
-    recipe_data = recipe_in.model_dump(exclude_unset=True)
-    # recipe_data = recipe_in.model_dump()
-    # print(recipe_data)
-    db_recipe.sqlmodel_update(recipe_data)
-    # db_recipe.sqlmodel_update(recipe_data, update={"ingredients": ingredients})
-    # print(f"db_recipe: {db_recipe}")
+
+    recipe_in_data = recipe_in.model_dump(exclude_unset=True, exclude={"ingredients"})
+    db_recipe.sqlmodel_update(recipe_in_data)
     session.add(db_recipe)
     session.commit()
     session.refresh(db_recipe)
+
     return db_recipe
 
 
@@ -144,6 +155,10 @@ def delete_recipe(
     recipe = session.get(Recipe, recipe_id)
     if not recipe:
         raise HTTPException(status_code=404, detail="Recipe not found")
+    
+    # Delete associated ingredient links first (optional since we have cascade_delete=True)
+    # for link in recipe.ingredient_links:
+    #     session.delete(link)
     
     session.delete(recipe)
     session.commit()

@@ -28,6 +28,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/users/with-permissions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Read Users With Permissions
+         * @description Retrieve users including their roles, custom_scopes and computed effective_scopes.
+         */
+        get: operations["read_users_with_permissions_users_with_permissions_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/users/me": {
         parameters: {
             query?: never;
@@ -469,6 +489,46 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/login/refresh": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Refresh Access Token
+         * @description Issue a new access token using the refresh token from cookie (preferred) or body.
+         */
+        post: operations["refresh_access_token_login_refresh_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/logout": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Logout
+         * @description Clear refresh cookie (client should also clear access-token cookie).
+         */
+        post: operations["logout_logout_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/login/test-token": {
         parameters: {
             query?: never;
@@ -550,6 +610,218 @@ export interface paths {
         trace?: never;
     };
     "/roles/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Roles
+         * @description List all roles
+         */
+        get: operations["list_roles_roles__get"];
+        put?: never;
+        /**
+         * Create Role
+         * @description Create a new role
+         */
+        post: operations["create_role_roles__post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/roles/{role_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Role
+         * @description Get a specific role
+         */
+        get: operations["get_role_roles__role_id__get"];
+        /**
+         * Update Role
+         * @description Update a role
+         */
+        put: operations["update_role_roles__role_id__put"];
+        post?: never;
+        /**
+         * Delete Role
+         * @description Delete a role
+         */
+        delete: operations["delete_role_roles__role_id__delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/roles/templates/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Role Templates
+         * @description List available role templates
+         */
+        get: operations["list_role_templates_roles_templates__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/roles/from-template/{template_key}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Create Role From Template Endpoint
+         * @description Create a role from a predefined template
+         */
+        post: operations["create_role_from_template_endpoint_roles_from_template__template_key__post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/roles/scopes/available": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Available Scopes
+         * @description List all available scopes
+         */
+        get: operations["list_available_scopes_roles_scopes_available_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/user-permissions/assign-role": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Assign Role To User
+         * @description Assign a role to a user
+         */
+        post: operations["assign_role_to_user_user_permissions_assign_role_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/user-permissions/remove-role": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Remove Role From User
+         * @description Remove a role from a user
+         */
+        post: operations["remove_role_from_user_user_permissions_remove_role_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/user-permissions/grant-scope": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Grant Scope To User
+         * @description Grant an individual scope to a user
+         */
+        post: operations["grant_scope_to_user_user_permissions_grant_scope_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/user-permissions/revoke-scope": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Revoke Scope From User
+         * @description Revoke an individual scope from a user
+         */
+        post: operations["revoke_scope_from_user_user_permissions_revoke_scope_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/user-permissions/{user_email}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get User Permissions
+         * @description Get a user's complete permission information
+         */
+        get: operations["get_user_permissions_user_permissions__user_email__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/": {
         parameters: {
             query?: never;
             header?: never;
@@ -979,11 +1251,23 @@ export interface components {
         IngredientCreate: {
             /** Title */
             title: string;
+            /**
+             * Calories
+             * @description Calories per 100g of the ingredient
+             * @default 0
+             */
+            calories: number;
         };
         /** IngredientPublic */
         IngredientPublic: {
             /** Title */
             title: string;
+            /**
+             * Calories
+             * @description Calories per 100g of the ingredient
+             * @default 0
+             */
+            calories: number;
             /**
              * Id
              * Format: uuid
@@ -1012,7 +1296,7 @@ export interface components {
             /** Title */
             title: string;
             /** Instructions */
-            instructions: Record<string, never> | null;
+            instructions?: string | null;
             /**
              * Servings
              * @default 1
@@ -1034,24 +1318,59 @@ export interface components {
             /** Title */
             title: string;
             /** Instructions */
-            instructions: Record<string, never> | null;
+            instructions?: string | null;
             /**
              * Servings
              * @default 1
              */
             servings: number;
+            /** Ingredients */
+            ingredients: components["schemas"]["RecipeIngredientLinkCreate"][];
+        };
+        /**
+         * RecipeIngredientLinkCreate
+         * @description Create a new recipe ingredient link.
+         */
+        RecipeIngredientLinkCreate: {
             /**
-             * Ingredients
-             * @default []
+             * Ingredient Id
+             * Format: uuid
              */
-            ingredients: components["schemas"]["IngredientPublic"][];
+            ingredient_id: string;
+            /**
+             * Amount
+             * @description Amount of the ingredient in the recipe
+             * @default 1
+             */
+            amount: number;
+            /**
+             * Unit
+             * @description Unit of the amount, e.g. g, ml, pcs, etc.
+             * @default g
+             */
+            unit: string;
+        };
+        /**
+         * RecipeIngredientLinkPublic
+         * @description Public class for recipe ingredient link.
+         */
+        RecipeIngredientLinkPublic: {
+            ingredient: components["schemas"]["IngredientPublic"];
+            /** Amount */
+            amount: number;
+            /**
+             * Unit
+             * @description Unit of the amount, e.g. g, ml, pcs, etc.
+             * @default g
+             */
+            unit: string;
         };
         /** RecipePublic */
         RecipePublic: {
             /** Title */
             title: string;
             /** Instructions */
-            instructions: Record<string, never> | null;
+            instructions?: string | null;
             /**
              * Servings
              * @default 1
@@ -1063,8 +1382,49 @@ export interface components {
              */
             id: string;
             owner: components["schemas"]["UserPublic"];
-            /** Ingredients */
-            ingredients: components["schemas"]["IngredientPublic"][];
+            /** Ingredient Links */
+            ingredient_links: components["schemas"]["RecipeIngredientLinkPublic"][];
+            /**
+             * Total Calories
+             * @description Calculate total calories for the entire recipe based on ingredients and their amounts.
+             */
+            readonly total_calories: number;
+            /**
+             * Calories Per Serving
+             * @description Calculate calories per serving.
+             */
+            readonly calories_per_serving: number;
+            /**
+             * Calculated Weight
+             * @description The calculated weight of the recipe based on the ingredients and their amounts. Returns the total weight in grams.
+             */
+            readonly calculated_weight: number;
+        };
+        /** RefreshRequest */
+        RefreshRequest: {
+            /** Refresh Token */
+            refresh_token: string;
+        };
+        /** RoleCreate */
+        RoleCreate: {
+            /** Name */
+            name: string;
+            /** Description */
+            description?: string | null;
+            /**
+             * Scopes
+             * @default []
+             */
+            scopes: string[];
+        };
+        /** RoleUpdate */
+        RoleUpdate: {
+            /** Name */
+            name?: string | null;
+            /** Description */
+            description?: string | null;
+            /** Scopes */
+            scopes?: string[] | null;
         };
         /** RoleCreate */
         RoleCreate: {
@@ -1110,6 +1470,8 @@ export interface components {
              * @default Bearer
              */
             token_type: string;
+            /** Refresh Token */
+            refresh_token?: string | null;
         };
         /** UpdatePassword */
         UpdatePassword: {
@@ -1140,11 +1502,38 @@ export interface components {
             /** Password */
             password: string;
         };
+        /** UserMePublic */
+        UserMePublic: {
+            /**
+             * Email
+             * Format: email
+             */
+            email: string;
+            /**
+             * Is Active
+             * @default true
+             */
+            is_active: boolean;
+            /**
+             * Is Superuser
+             * @default false
+             */
+            is_superuser: boolean;
+            /** Full Name */
+            full_name?: string | null;
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Scopes */
+            scopes: string[];
+        };
         /** UserPermissionsResponse */
         UserPermissionsResponse: {
             user: components["schemas"]["UserPublic"];
             /** Roles */
-            roles: components["schemas"]["RolePublic"][];
+            roles: components["schemas"]["app__routers__user_permissions__RolePublic"][];
             /** Custom Scopes */
             custom_scopes: string[];
             /** Effective Scopes */
@@ -1175,17 +1564,26 @@ export interface components {
              */
             id: string;
         };
-        /** UserRegister */
-        UserRegister: {
-            /**
-             * Email
-             * Format: email
-             */
-            email: string;
-            /** Password */
-            password: string;
-            /** Full Name */
-            full_name?: string | null;
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UserPublic"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
         };
         /** UserRoleAssignment */
         UserRoleAssignment: {
@@ -1220,17 +1618,69 @@ export interface components {
             /** Password */
             password?: string | null;
         };
-        /** UserUpdateMe */
-        UserUpdateMe: {
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Message"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+        /** UserWithPermissionsPublic */
+        UserWithPermissionsPublic: {
+            /**
+             * Email
+             * Format: email
+             */
+            email: string;
+            /**
+             * Is Active
+             * @default true
+             */
+            is_active: boolean;
+            /**
+             * Is Superuser
+             * @default false
+             */
+            is_superuser: boolean;
             /** Full Name */
             full_name?: string | null;
-            /** Email */
-            email?: string | null;
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Roles */
+            roles: components["schemas"]["app__models__RolePublic"][];
+            /** Custom Scopes */
+            custom_scopes: string[];
+            /** Effective Scopes */
+            effective_scopes: string[];
         };
         /** UsersPublic */
         UsersPublic: {
             /** Data */
             data: components["schemas"]["UserPublic"][];
+            /** Count */
+            count: number;
+        };
+        /** UsersWithPermissionsPublic */
+        UsersWithPermissionsPublic: {
+            /** Data */
+            data: components["schemas"]["UserWithPermissionsPublic"][];
             /** Count */
             count: number;
         };
@@ -1242,6 +1692,48 @@ export interface components {
             msg: string;
             /** Error Type */
             type: string;
+        };
+        /** RolePublic */
+        app__models__RolePublic: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Name */
+            name: string;
+            /** Description */
+            description?: string | null;
+            /** Scopes */
+            scopes: string[];
+        };
+        /** RolePublic */
+        app__routers__roles__RolePublic: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Name */
+            name: string;
+            /** Description */
+            description: string | null;
+            /** Scopes */
+            scopes: string[];
+        };
+        /** RolePublic */
+        app__routers__user_permissions__RolePublic: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Name */
+            name: string;
+            /** Description */
+            description: string | null;
+            /** Scopes */
+            scopes: string[];
         };
     };
     responses: never;
@@ -1317,6 +1809,38 @@ export interface operations {
             };
         };
     };
+    read_users_with_permissions_users_with_permissions_get: {
+        parameters: {
+            query?: {
+                skip?: number;
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UsersWithPermissionsPublic"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     read_user_me_users_me_get: {
         parameters: {
             query?: never;
@@ -1332,7 +1856,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["UserPublic"];
+                    "application/json": components["schemas"]["UserMePublic"];
                 };
             };
             /** @description Unauthorized */
@@ -2188,7 +2712,9 @@ export interface operations {
             content: {
                 "application/json": components["schemas"]["GamePlayerCreate"];
             };
+            cookie?: never;
         };
+        requestBody?: never;
         responses: {
             /** @description Successful Response */
             200: {
@@ -2385,7 +2911,9 @@ export interface operations {
         parameters: {
             query?: never;
             header?: never;
-            path?: never;
+            path: {
+                game_session_id: string;
+            };
             cookie?: never;
         };
         requestBody: {
@@ -2401,6 +2929,74 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Token"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    refresh_access_token_login_refresh_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RefreshRequest"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Token"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    logout_logout_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["RefreshRequest"] | null;
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Message"];
                 };
             };
             /** @description Validation Error */
@@ -2544,7 +3140,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["RolePublic"][];
+                    "application/json": components["schemas"]["app__routers__roles__RolePublic"][];
                 };
             };
         };
@@ -2568,7 +3164,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["RolePublic"];
+                    "application/json": components["schemas"]["app__routers__roles__RolePublic"];
                 };
             };
             /** @description Validation Error */
@@ -2599,7 +3195,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["RolePublic"];
+                    "application/json": components["schemas"]["app__routers__roles__RolePublic"];
                 };
             };
             /** @description Validation Error */
@@ -2634,7 +3230,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["RolePublic"];
+                    "application/json": components["schemas"]["app__routers__roles__RolePublic"];
                 };
             };
             /** @description Validation Error */
@@ -2686,7 +3282,11 @@ export interface operations {
             path?: never;
             cookie?: never;
         };
-        requestBody?: never;
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RoleUpdate"];
+            };
+        };
         responses: {
             /** @description Successful Response */
             200: {
@@ -2716,7 +3316,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["RolePublic"];
+                    "application/json": components["schemas"]["app__routers__roles__RolePublic"];
                 };
             };
             /** @description Validation Error */

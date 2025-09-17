@@ -12,6 +12,12 @@ export const GET = async ({ fetch, cookies }) => {
         // set to 1 day
         maxAge: 0
     })
+    cookies.set("refresh_token", "", {
+        httpOnly: true,
+        path: '/',
+        secure: true,
+        maxAge: 0
+    })
 
     // redirect to login page
     return redirect(302, "/");

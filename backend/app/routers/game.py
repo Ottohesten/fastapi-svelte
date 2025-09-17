@@ -23,6 +23,7 @@ from app.models import (
     GamePlayerDrinkLinkCreate,
     User,
 )
+from app.realtime import broadcast_game_session_state
 
 
 router = APIRouter(prefix="/game", tags=["game"])
@@ -141,11 +142,14 @@ def create_game_session(session: SessionDep, current_user: Annotated[User, Secur
 
     # update the 
 
+    # Broadcast new session state
+    broadcast_game_session_state(session, str(game_session.id))
+
     return game_session
 
 # delete game session
 @router.delete("/{game_session_id}")
-def delete_game_session(session: SessionDep, game_session_id: str, current_user: CurrentUser):
+def delete_game_session(session: SessionDep, game_session_id: str, current_user: User = Security(get_current_user, scopes=["games:delete"])):
     """
     Delete a game session. Users can delete their own game sessions.
     """
@@ -166,9 +170,24 @@ def delete_game_session(session: SessionDep, game_session_id: str, current_user:
     session.delete(game_session)
     session.commit()
 
+    broadcast_game_session_state(session, str(game_session.id))
+
     return {"success": True}
 
 
+# delete game session (admin)
+@router.delete("/{game_session_id}/admin")
+def delete_game_session_admin(session: SessionDep,    game_session_id: str, current_user: User = Security(get_current_user, scopes=["games:delete"])):
+    """
+    Delete any game session (admin only).
+    """
+    try:
+        game_session = session.get(GameSession, game_session_id)
+    except Exception as e:
+        raise HTTPException(status_code=400, detail="Invalid UUID")
+    
+    if not game_session:
+        raise HTTPException(status_code=404, detail="Game session not found")
 
 # delete game session (admin)
 @router.delete("/{game_session_id}/admin")
@@ -186,6 +205,7 @@ def delete_game_session_admin(session: SessionDep,    game_session_id: str, curr
 
     session.delete(game_session)
     session.commit()
+    broadcast_game_session_state(session, str(game_session.id))
     return {"success": True}
 
 # make player and add to game session
@@ -214,6 +234,7 @@ def create_game_player(session: SessionDep, game_session_id: str, game_player_in
     session.commit()
     session.refresh(game_player)
 
+    broadcast_game_session_state(session, str(game_session.id))
     return game_player
 
 
@@ -249,6 +270,7 @@ def create_game_team(
     session.commit()
     session.refresh(game_team)
 
+    broadcast_game_session_state(session, str(game_session.id))
     return game_team
 
 # delete game player
@@ -288,6 +310,7 @@ def delete_game_player(
     session.delete(game_player)
     session.commit()
 
+    broadcast_game_session_state(session, str(game_session.id))
     return {"success": True}
 
 # delete game team
@@ -327,6 +350,7 @@ def delete_game_team(
     session.delete(game_team)
     session.commit()
 
+    broadcast_game_session_state(session, str(game_session.id))
     return {"success": True}
 
 # update game player
@@ -361,7 +385,7 @@ def update_game_player(
     if game_player.game_session_id != game_session.id:
         raise HTTPException(status_code=404, detail="Game player not found in this game session")
     drink_links = game_player_in.drinks
-    print(drink_links)
+    # print(drink_links)
     if drink_links:
         # Process each drink link
         for drink_link in drink_links:
@@ -403,6 +427,7 @@ def update_game_player(
     session.add(game_player)
     session.commit()
     session.refresh(game_player)
+    broadcast_game_session_state(session, str(game_session.id))
     return game_player
 
 
@@ -412,7 +437,8 @@ def add_drink_to_player(
     session: SessionDep, 
     game_session_id: str, 
     game_player_id: str, 
-    drink_link_in: GamePlayerDrinkLinkCreate
+    drink_link_in: GamePlayerDrinkLinkCreate,
+    current_user: User = Security(get_current_user, scopes=["games:update"])
 ):
     """
     Add a drink to a game player or update the amount if the drink link already exists.
@@ -475,6 +501,7 @@ def add_drink_to_player(
     # Refresh the game_player instance to load the updated/new drink_links
     session.refresh(game_player)
 
+    broadcast_game_session_state(session, str(game_session.id))
     return game_player
 
 

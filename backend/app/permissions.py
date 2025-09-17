@@ -47,7 +47,7 @@ ROLE_TEMPLATES = {
     "viewer": {
         "name": "Viewer",
         "description": "Basic read-only access to recipes and ingredients",
-        "scopes": ["recipes:read", "ingredients:read", "profile:read"]
+    "scopes": ["recipes:read", "ingredients:read"]
     },
     "recipe_contributor": {
         "name": "Recipe Contributor",
@@ -70,7 +70,7 @@ ROLE_TEMPLATES = {
         "description": "Can manage game sessions and players",
         "scopes": [
             "games:read", "games:create", "games:update", "games:delete",
-            "recipes:read", "profile:read", "profile:update"
+            "recipes:read"
         ]
     },
     "user_manager": {

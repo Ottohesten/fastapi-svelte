@@ -1,7 +1,8 @@
 import uuid
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, computed_field
 from sqlmodel import Field, SQLModel, Relationship, Column, JSON
 from typing import Optional
+from datetime import datetime
 # from permissions.roles import Role
 
 
@@ -80,10 +81,34 @@ class UsersPublic(SQLModel):
     count: int
 
 
+class UserMePublic(UserPublic):
+    scopes: list[str]
+
+
+class RolePublic(BaseModel):
+    id: uuid.UUID
+    name: str
+    description: str | None = None
+    scopes: list[str]
+
+
+class UserWithPermissionsPublic(UserPublic):
+    roles: list[RolePublic]
+    custom_scopes: list[str]
+    effective_scopes: list[str]
+
+
+class UsersWithPermissionsPublic(SQLModel):
+    data: list[UserWithPermissionsPublic]
+    count: int
+
+
 # JSON payload containing access token
 class Token(SQLModel):
     access_token: str
     token_type: str = "Bearer"
+    # Optional refresh token if we ever decide to return it in body (we'll use cookie primarily)
+    refresh_token: str | None = None
 
 
 # Contents of JWT token
@@ -143,25 +168,110 @@ class ItemsPublic(SQLModel):
 class RecipeIngredientLink(SQLModel, table=True):
     recipe_id: uuid.UUID | None = Field(default=None, foreign_key="recipe.id", primary_key=True)
     ingredient_id: uuid.UUID | None = Field(default=None, foreign_key="ingredient.id", primary_key=True)
-    # amount: float
-    # unit: str
 
-    # recipe: "Recipe" = Relationship(back_populates="ingredient_links")
+    # units enum
+    amount: float = Field(default=1.0, ge=0, description="Amount of the ingredient in the recipe")
+    unit: str = Field(default="g", max_length=10, description="Unit of the amount, e.g. g, ml, pcs, etc.")
+
+    recipe: "Recipe" = Relationship(back_populates="ingredient_links")
+    ingredient: "Ingredient" = Relationship(back_populates="recipe_links")
 
 
+
+
+class RecipeIngredientLinkCreate(SQLModel):
+    """
+    Create a new recipe ingredient link.
+    """
+    ingredient_id: uuid.UUID
+    amount: float = Field(default=1.0, ge=0, description="Amount of the ingredient in the recipe")
+    unit: str = Field(default="g", max_length=10, description="Unit of the amount, e.g. g, ml, pcs, etc.")
+
+
+class RecipeIngredientLinkPublic(SQLModel):
+    """
+    Public class for recipe ingredient link.
+    """
+    ingredient: "IngredientPublic"
+    amount: float
+    unit: str = Field(default="g", max_length=10, description="Unit of the amount, e.g. g, ml, pcs, etc.")
 
 #####################################################################################
 # Recipes
 
 class RecipeBase(SQLModel):
     title: str = Field(max_length=255, min_length=1)
-    instructions: Optional[dict]  = Field(sa_column=Column(JSON)) # is going to have a rich text editor so it should accept json 
+    instructions: Optional[str]  = Field(default=None, max_length=9999)
     servings: int = Field(default=1)
 
 
 class RecipeCreate(RecipeBase):
-    ingredients: list["IngredientPublic"] = []
+    ingredients: list[RecipeIngredientLinkCreate] 
 
+
+class RecipePublic(RecipeBase):
+    id: uuid.UUID 
+    owner: UserPublic
+    ingredient_links: list[RecipeIngredientLinkPublic]
+    
+    @computed_field
+    @property
+    def total_calories(self) -> int:
+        """Calculate total calories for the entire recipe based on ingredients and their amounts."""
+        total = 0
+        for link in self.ingredient_links:
+            # Convert amount to standardized unit (grams) for calculation
+            amount_in_grams = link.amount
+            if link.unit == "kg":
+                amount_in_grams = link.amount * 1000
+            elif link.unit == "ml":
+                # Assume 1ml = 1g for simplicity (works for most liquids)
+                amount_in_grams = link.amount
+            elif link.unit == "L":
+                amount_in_grams = link.amount * 1000
+            elif link.unit == "pcs":
+                # For pieces, assume average weight of 50g per piece
+                # This could be made more sophisticated with ingredient-specific weights
+                amount_in_grams = link.amount * 50
+            
+            # Calculate calories: (calories_per_100g * amount_in_grams) / 100
+            ingredient_calories = (link.ingredient.calories * amount_in_grams) / 100
+            total += ingredient_calories
+            
+        return round(total)
+    
+    @computed_field
+    @property
+    def calories_per_serving(self) -> int:
+        """Calculate calories per serving."""
+        if self.servings <= 0:
+            return 0
+        return round(self.total_calories / self.servings)
+    
+
+    @computed_field
+    @property
+    def calculated_weight(self) -> int:
+        """The calculated weight of the recipe based on the ingredients and their amounts. Returns the total weight in grams."""
+        total_weight = 0
+        for link in self.ingredient_links:
+            # Convert amount to standardized unit (grams) for calculation
+            amount_in_grams = link.amount
+            if link.unit == "kg":
+                amount_in_grams = link.amount * 1000
+            elif link.unit == "ml":
+                # Assume 1ml = 1g for simplicity (works for most liquids)
+                amount_in_grams = link.amount
+            elif link.unit == "L":
+                amount_in_grams = link.amount * 1000
+            elif link.unit == "pcs":
+                # For pieces, assume average weight of 50g per piece
+                # This could be made more sophisticated with ingredient-specific weights
+                amount_in_grams = link.amount * 50
+
+            total_weight += amount_in_grams
+
+        return round(total_weight)
 
 
 class Recipe(RecipeBase, table=True):
@@ -172,7 +282,7 @@ class Recipe(RecipeBase, table=True):
     """
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
     title: str = Field(max_length=255)
-    instructions: Optional[dict] = Field(sa_column=Column(JSON))
+    instructions: Optional[str] = Field(default=None, max_length=9999)
 
     owner_id: uuid.UUID = Field(foreign_key="user.id", nullable=False)
     owner: User = Relationship(back_populates="recipes")
@@ -183,8 +293,7 @@ class Recipe(RecipeBase, table=True):
     # image
     # image: str | None = Field(default=None, max_length=255)
 
-    ingredients: list["Ingredient"] = Relationship(back_populates="recipes", link_model=RecipeIngredientLink)
-
+    ingredient_links: list[RecipeIngredientLink] = Relationship(back_populates="recipe", cascade_delete=True)
     
 
 
@@ -192,10 +301,6 @@ class Recipe(RecipeBase, table=True):
     #     arbitrary_types_allowed = True
 
 
-class RecipePublic(RecipeBase):
-    id: uuid.UUID 
-    owner: UserPublic
-    ingredients: list["IngredientPublic"]
 
 
 #####################################################################################
@@ -203,6 +308,7 @@ class RecipePublic(RecipeBase):
 
 class IngredientBase(SQLModel):
     title: str = Field(max_length=255, min_length=1)
+    calories: int = Field(default=0, ge=0, description="Calories per 100g of the ingredient")
     # pass
 
 class IngredientCreate(IngredientBase):
@@ -221,7 +327,11 @@ class Ingredient(IngredientBase, table=True):
     """
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
     title: str = Field(max_length=255, min_length=1)
-    recipes: list["Recipe"] = Relationship(back_populates="ingredients", link_model=RecipeIngredientLink)
+    calories: int = Field(default=0, ge=0, description="Calories per 100g of the ingredient")
+
+    # recipes: list["Recipe"] = Relationship(back_populates="ingredients", link_model=RecipeIngredientLink)
+    recipe_links: list["RecipeIngredientLink"] = Relationship(back_populates="ingredient", cascade_delete=True)
+
     
 
 
@@ -291,6 +401,20 @@ class GamePlayerDrinkLink(SQLModel, table=True):
     game_player: "GamePlayer" = Relationship(back_populates="drink_links")
     drink: "Drink" = Relationship(back_populates="player_links")
 
+
+class GamePlayerDrinkLinkCreate(SQLModel):
+    """
+    Create class for GamePlayerDrinkLink
+    """
+    drink_id: uuid.UUID
+    amount: int = Field(default=1, ge=0, description="How many of this drink the player has consumed")
+
+class GamePlayerDrinkLinkPublic(SQLModel):
+    """
+    Public class for GamePlayerDrinkLink
+    """
+    amount: int
+    drink: "DrinkPublic"
 
 class GamePlayerDrinkLinkCreate(SQLModel):
     """
@@ -454,6 +578,23 @@ class Message(BaseModel):
 # HTTPException detail
 class HTTPExceptionDetail(BaseModel):
     detail: str
+
+
+class RefreshRequest(BaseModel):
+    refresh_token: str
+
+
+# Refresh token persistence for revocation/rotation
+class RefreshToken(SQLModel, table=True):
+    id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
+    user_id: uuid.UUID = Field(foreign_key="user.id", nullable=False)
+    token_hash: str = Field(index=True, max_length=128, description="SHA256 of the refresh token")
+    jti: uuid.UUID = Field(default_factory=uuid.uuid4, index=True)
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    expires_at: datetime
+    revoked_at: datetime | None = None
+
+    user: Optional["User"] = Relationship(sa_relationship_kwargs={"lazy": "selectin"})
 
 
 

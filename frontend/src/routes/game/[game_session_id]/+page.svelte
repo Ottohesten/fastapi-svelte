@@ -1,5 +1,6 @@
 <script lang="ts">
-	let { data } = $props();
+	import type { PageData } from './$types';
+	let { data }: { data: PageData } = $props();
 	import { schemeCategory10, schemeSet3 } from 'd3-scale-chromatic';
 	import { scaleLinear, scaleBand, scaleOrdinal } from 'd3-scale';
 	import { max as d3Max } from 'd3-array';
@@ -12,7 +13,17 @@
 	import { Select } from '$lib/components/ui/select';
 	import { Pencil, Trash2 } from 'lucide-svelte';
 	import { enhance } from '$app/forms';
-	import * as Dialog from '$lib/components/ui/dialog/index.js';
+	import {
+		Dialog,
+		DialogClose,
+		DialogContent,
+		DialogDescription,
+		DialogFooter,
+		DialogHeader,
+		DialogTitle,
+		DialogTrigger
+	} from '$lib/components/ui/dialog';
+	// import * as Dialog from '$lib/components/ui/dialog/index.js';
 	import { Input } from '$lib/components/ui/input';
 	// Use the actual API types instead of custom interfaces
 	type GameSession = components['schemas']['GameSessionPublic'];
@@ -20,11 +31,30 @@
 	type Player = components['schemas']['GamePlayerPublic'];
 	type DrinkLink = components['schemas']['GamePlayerDrinkLinkPublic'];
 
+	// Local view models to power charts/UI
+	type DrinkAmount = { name: string; amount: number };
+	type PlayerView = {
+		name: string;
+		playerId: string;
+		teamName: string;
+		teamId: string | null;
+		totalDrinks: number;
+		drinkBreakdown: DrinkAmount[];
+	};
+	type TeamView = {
+		name: string;
+		id: string | null;
+		totalDrinks: number;
+		playerCount: number;
+		players: PlayerView[];
+		drinkBreakdown: DrinkAmount[];
+	};
+
 	// Default values for dashboard state
 	const DEFAULT_VIEW_MODE: 'overview' | 'charts' | 'players' | 'teams' = 'charts';
 	const DEFAULT_CHART_TYPE: 'drinks' | 'players' = 'drinks';
 	// gameSession is derived from the 'data' prop's 'game_session' property
-	let gameSession = $derived(data.game_session);
+	let gameSession: GameSession | undefined = $derived(data.game_session as GameSession | undefined);
 
 	// State for interactivity - initialize from URL parameters
 	let selectedTeam: string | null = $state(null);
@@ -88,8 +118,8 @@
 	});
 
 	// Process player data with drink breakdowns
-	let allPlayersData = $derived(
-		gameSession?.players?.map((player) => {
+	let allPlayersData: PlayerView[] = $derived(
+		gameSession?.players?.map((player: Player) => {
 			const drinkBreakdown = new Map<string, { name: string; amount: number }>();
 
 			player.drink_links?.forEach((drinkLink: DrinkLink) => {
@@ -105,31 +135,23 @@
 				name: player.name,
 				playerId: player.id,
 				teamName: player.team?.name || 'No Team',
-				teamId: player.team_id,
+				teamId: (player.team_id ?? null) as string | null,
 				totalDrinks:
 					player.drink_links?.reduce(
 						(sum: number, drinkLink: DrinkLink) => sum + drinkLink.amount,
 						0
 					) || 0,
-				drinkBreakdown: Array.from(drinkBreakdown.values()).sort((a, b) => b.amount - a.amount)
-			};
+				drinkBreakdown: Array.from(drinkBreakdown.values()).sort(
+					(a: DrinkAmount, b: DrinkAmount) => b.amount - a.amount
+				)
+			} satisfies PlayerView;
 		}) ?? []
 	);
 	// Process team data with aggregations and drink breakdowns
-	let teamsData = $derived(() => {
-		const teamMap = new Map<
-			string,
-			{
-				name: string;
-				id: string | null;
-				totalDrinks: number;
-				playerCount: number;
-				players: typeof allPlayersData;
-				drinkBreakdown: { name: string; amount: number }[];
-			}
-		>();
+	let teamsData = $derived((): TeamView[] => {
+		const teamMap = new Map<string, TeamView>();
 
-		allPlayersData.forEach((player) => {
+		allPlayersData.forEach((player: PlayerView) => {
 			const teamName = player.teamName;
 			if (!teamMap.has(teamName)) {
 				teamMap.set(teamName, {
@@ -139,7 +161,7 @@
 					playerCount: 0,
 					players: [],
 					drinkBreakdown: []
-				});
+				} as TeamView);
 			}
 
 			const team = teamMap.get(teamName)!;
@@ -149,10 +171,10 @@
 		});
 
 		// Calculate drink breakdowns for each team
-		teamMap.forEach((team) => {
+		teamMap.forEach((team: TeamView) => {
 			const drinkMap = new Map<string, number>();
-			team.players.forEach((player) => {
-				player.drinkBreakdown.forEach((drink) => {
+			team.players.forEach((player: PlayerView) => {
+				player.drinkBreakdown.forEach((drink: DrinkAmount) => {
 					drinkMap.set(drink.name, (drinkMap.get(drink.name) || 0) + drink.amount);
 				});
 			});
@@ -165,14 +187,16 @@
 	});
 
 	// Filter data based on selected team
-	let filteredPlayersData = $derived(
+	let filteredPlayersData: PlayerView[] = $derived(
 		selectedTeam && selectedTeam !== 'all'
-			? allPlayersData.filter((p) => p.teamName === selectedTeam)
+			? allPlayersData.filter((p: PlayerView) => p.teamName === selectedTeam)
 			: allPlayersData
 	);
 
 	// Get unique teams for filter dropdown
-	let teams = $derived(Array.from(new Set(allPlayersData.map((p) => p.teamName))).sort());
+	let teams: string[] = $derived(
+		Array.from(new Set<string>(allPlayersData.map((p: PlayerView) => p.teamName))).sort()
+	);
 
 	// Stable color assignment that preserves team colors when new teams are added
 	let teamColorMap = $state(new Map<string, string>());
@@ -182,7 +206,7 @@
 		const colors = schemeCategory10;
 
 		// Assign colors to new teams while preserving existing assignments
-		teams.forEach((team, index) => {
+		teams.forEach((team: string, index: number) => {
 			if (!teamColorMap.has(team)) {
 				// Find the next available color that's not already used
 				let colorIndex = 0;
@@ -438,9 +462,11 @@
 		<h1 class="mb-2 text-2xl font-bold text-gray-800 sm:text-3xl md:text-4xl dark:text-gray-100">
 			Game Session Dashboard
 		</h1>
-		<p class="text-base text-gray-600 sm:text-lg dark:text-gray-400">
-			Session: <strong>{gameSession.title}</strong>
-		</p>
+		{#if gameSession}
+			<p class="text-base text-gray-600 sm:text-lg dark:text-gray-400">
+				Session: <strong>{gameSession.title}</strong>
+			</p>
+		{/if}
 	</div>
 	<!-- Controls -->
 	<div class="mb-8 flex flex-col gap-6">
@@ -1047,17 +1073,21 @@
 		<!-- {#if data.authenticatedUser} -->
 		<div class="mt-6">
 			<div class="flex flex-col gap-4 sm:flex-row">
-				<Dialog.Root bind:open>
-					<Dialog.Trigger>
-						<Button variant="primary" class="w-full sm:w-auto">Add Drink to Player</Button>
-					</Dialog.Trigger>
-					<Dialog.Content class="sm:max-w-[425px]">
-						<Dialog.Header>
-							<Dialog.Title>Add New Drink</Dialog.Title>
-							<Dialog.Description
-								>Select a player and enter add a drink and amount</Dialog.Description
+				<Dialog bind:open>
+					<DialogTrigger>
+						<!-- Styled like Button variant="primary" size="default" -->
+						<span
+							class="ring-offset-background inline-flex h-10 w-full cursor-pointer items-center justify-center gap-2 whitespace-nowrap rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors hover:bg-blue-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 sm:w-auto dark:bg-blue-500 dark:text-white dark:hover:bg-blue-400 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0"
+						>
+							Add Drink to Player
+						</span>
+					</DialogTrigger>
+					<DialogContent class="sm:max-w-[425px]">
+						<DialogHeader>
+							<DialogTitle>Add New Drink</DialogTitle>
+							<DialogDescription>Select a player and enter add a drink and amount</DialogDescription
 							>
-						</Dialog.Header>
+						</DialogHeader>
 						<form action="?/addDrinkToPlayer" method="POST">
 							<div class="grid gap-4 py-4">
 								<div class="grid grid-cols-1 gap-2 sm:grid-cols-4 sm:items-center sm:gap-4">
@@ -1103,7 +1133,7 @@
 										class="rounded-lg border-2 border-gray-300 bg-white px-4 py-2 text-base transition-colors hover:border-blue-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100 sm:col-span-3 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100 dark:focus:ring-blue-900/40"
 									/>
 								</div>
-								<Dialog.Footer class="mt-4">
+								<DialogFooter class="mt-4">
 									<Button
 										type="submit"
 										class="w-full bg-blue-600 text-white hover:bg-blue-800"
@@ -1113,11 +1143,11 @@
 									>
 										Add Drink
 									</Button>
-								</Dialog.Footer>
+								</DialogFooter>
 							</div>
 						</form>
-					</Dialog.Content>
-				</Dialog.Root>
+					</DialogContent>
+				</Dialog>
 				<!-- Edit button -->
 				<!-- <a
 					class="rounded-md bg-blue-600 px-4 py-2 text-center font-medium text-white hover:bg-blue-800"

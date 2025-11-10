@@ -1,6 +1,7 @@
 import { createApiClient } from '$lib/api/api';
 import { error } from '@sveltejs/kit';
 import { redirect } from '@sveltejs/kit';
+import { env } from '$env/dynamic/private';
 
 
 export const load = async ({ fetch, params, locals }) => {
@@ -25,6 +26,7 @@ export const load = async ({ fetch, params, locals }) => {
     return {
         game_session: data,
         drinks: drinks,
-        is_owner: locals.authenticatedUser ? data.owner.id === locals.authenticatedUser.id : false
+        is_owner: locals.authenticatedUser ? data.owner.id === locals.authenticatedUser.id : false,
+        backendHost: env.BACKEND_HOST || 'http://127.0.0.1:8000'
     }
 }

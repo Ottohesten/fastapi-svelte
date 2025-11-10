@@ -5,7 +5,7 @@
 	import { scaleLinear, scaleBand, scaleOrdinal } from 'd3-scale';
 	import { max as d3Max } from 'd3-array';
 	import type { components } from '$lib/api/v1';
-	import { onMount } from 'svelte';
+	import { onMount, onDestroy } from 'svelte';
 	import { page } from '$app/stores';
 	import { goto } from '$app/navigation';
 	import { browser } from '$app/environment';
@@ -53,8 +53,9 @@
 	// Default values for dashboard state
 	const DEFAULT_VIEW_MODE: 'overview' | 'charts' | 'players' | 'teams' = 'charts';
 	const DEFAULT_CHART_TYPE: 'drinks' | 'players' = 'drinks';
-	// gameSession is derived from the 'data' prop's 'game_session' property
-	let gameSession: GameSession | undefined = $derived(data.game_session as GameSession | undefined);
+
+	// Make gameSession a state variable instead of derived so we can update it directly
+	let gameSession: GameSession | undefined = $state(data.game_session as GameSession | undefined);
 
 	// State for interactivity - initialize from URL parameters
 	let selectedTeam: string | null = $state(null);
@@ -65,6 +66,13 @@
 	let hoveredSegment: string | null = $state(null);
 	let open = $state(false);
 	let isDark = $state(false);
+
+	// Watch for data prop changes and update gameSession
+	$effect(() => {
+		if (data.game_session) {
+			gameSession = data.game_session as GameSession;
+		}
+	});
 
 	// Function to update URL with current state
 	function updateURL() {
@@ -266,6 +274,26 @@
 	);
 
 	let yTicks = $derived(yScale.ticks(6));
+
+	// SSE connection state
+	let eventSource: EventSource | null = null;
+
+	// Function to fetch updated game data
+	async function refreshGameData() {
+		if (!gameSession?.id) return;
+
+		try {
+			// Fetch updated game session data directly
+			const response = await fetch(`${data.backendHost}/game/${gameSession.id}`);
+			if (response.ok) {
+				const updatedGameSession = await response.json();
+				gameSession = updatedGameSession;
+			}
+		} catch (error) {
+			console.error('Error refreshing game data:', error);
+		}
+	}
+
 	// Animation on mount and observe theme
 	onMount(() => {
 		// Restore state from URL first
@@ -283,7 +311,40 @@
 			showAnimation = true;
 		}, 100);
 
-		return () => observer.disconnect();
+		// Connect to SSE endpoint for real-time updates
+		if (browser && gameSession?.id) {
+			const sseUrl = `${data.backendHost}/game/${gameSession.id}/updates`;
+			eventSource = new EventSource(sseUrl);
+
+			eventSource.onmessage = (event) => {
+				try {
+					const eventData = JSON.parse(event.data);
+
+					if (eventData.type === 'drink_added') {
+						refreshGameData();
+					}
+				} catch (error) {
+					console.error('Error parsing SSE message:', error);
+				}
+			};
+
+			eventSource.onerror = (error) => {
+				console.error('SSE connection error:', error);
+			};
+		}
+
+		return () => {
+			observer.disconnect();
+			if (eventSource) {
+				eventSource.close();
+			}
+		};
+	});
+
+	onDestroy(() => {
+		if (eventSource) {
+			eventSource.close();
+		}
 	});
 
 	// Reactive effects to update URL when state changes
@@ -1088,7 +1149,19 @@
 							<DialogDescription>Select a player and enter add a drink and amount</DialogDescription
 							>
 						</DialogHeader>
-						<form action="?/addDrinkToPlayer" method="POST">
+						<form
+							action="?/addDrinkToPlayer"
+							method="POST"
+							use:enhance={() => {
+								return async ({ result }) => {
+									if (result.type === 'redirect') {
+										// Prevent the redirect and just close the dialog
+										open = false;
+										// The SSE will handle updating the data
+									}
+								};
+							}}
+						>
 							<div class="grid gap-4 py-4">
 								<div class="grid grid-cols-1 gap-2 sm:grid-cols-4 sm:items-center sm:gap-4">
 									<label
@@ -1134,13 +1207,7 @@
 									/>
 								</div>
 								<DialogFooter class="mt-4">
-									<Button
-										type="submit"
-										class="w-full bg-blue-600 text-white hover:bg-blue-800"
-										onclick={() => {
-											open = false;
-										}}
-									>
+									<Button type="submit" class="w-full bg-blue-600 text-white hover:bg-blue-800">
 										Add Drink
 									</Button>
 								</DialogFooter>

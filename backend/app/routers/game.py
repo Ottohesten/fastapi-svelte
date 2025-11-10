@@ -1,8 +1,12 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, BackgroundTasks
 from fastapi import FastAPI, Depends, HTTPException, status, Query, Security
+from fastapi.responses import StreamingResponse
 from sqlmodel import select
 from app.deps import SessionDep, CurrentUser, get_current_user
 from typing import Annotated
+import asyncio
+import json
+from datetime import datetime
 
 from app.models import (
     GameSession, 
@@ -24,6 +28,27 @@ from app.models import (
     User,
 )
 
+# Store active SSE connections for each game session
+from collections import defaultdict
+game_session_subscribers = defaultdict(list)
+
+# Helper function to broadcast updates to all subscribers of a game session
+async def broadcast_game_update(game_session_id: str, event_type: str):
+    """Broadcast an update event to all subscribers of a specific game session"""
+    if game_session_id in game_session_subscribers:
+        # Create the message to send
+        message = {
+            "type": event_type,
+            "timestamp": datetime.now().isoformat(),
+            "game_session_id": game_session_id
+        }
+        
+        # Send to all subscribers (queues)
+        for queue in game_session_subscribers[game_session_id]:
+            try:
+                await queue.put(message)
+            except Exception as e:
+                print(f"Error broadcasting to subscriber: {e}")
 
 router = APIRouter(prefix="/game", tags=["game"])
 
@@ -409,6 +434,7 @@ def update_game_player(
 
 @router.patch("/{game_session_id}/player/{game_player_id}/drink", response_model=GamePlayerPublic)
 def add_drink_to_player(
+    background_tasks: BackgroundTasks,
     session: SessionDep, 
     game_session_id: str, 
     game_player_id: str, 
@@ -475,6 +501,9 @@ def add_drink_to_player(
     
     # Refresh the game_player instance to load the updated/new drink_links
     session.refresh(game_player)
+
+    # Schedule the broadcast as a background task
+    background_tasks.add_task(broadcast_game_update, game_session_id, "drink_added")
 
     return game_player
 
@@ -558,3 +587,55 @@ def add_drink_to_player(
 #     # Here, refreshing game_player should be sufficient for its drink_links.
 
 #     return game_player
+
+
+# SSE endpoint for real-time updates
+@router.get("/{game_session_id}/updates")
+async def game_session_updates(game_session_id: str):
+    """
+    Server-Sent Events endpoint that streams real-time updates for a game session.
+    Clients can connect to this endpoint to receive notifications when drinks are added.
+    """
+    
+    async def event_generator():
+        # Create a queue for this client
+        queue = asyncio.Queue()
+        
+        # Add this client's queue to the subscribers list
+        game_session_subscribers[game_session_id].append(queue)
+        
+        try:
+            # Send initial connection message
+            yield f"data: {json.dumps({'type': 'connected', 'game_session_id': game_session_id})}\n\n"
+            
+            # Send periodic heartbeat and listen for updates
+            while True:
+                try:
+                    # Wait for a message with a timeout for heartbeat
+                    message = await asyncio.wait_for(queue.get(), timeout=30.0)
+                    yield f"data: {json.dumps(message)}\n\n"
+                except asyncio.TimeoutError:
+                    # Send heartbeat to keep connection alive
+                    yield f"data: {json.dumps({'type': 'heartbeat', 'timestamp': datetime.now().isoformat()})}\n\n"
+                    
+        except asyncio.CancelledError:
+            # Client disconnected
+            pass
+        finally:
+            # Remove this client's queue from subscribers
+            if queue in game_session_subscribers[game_session_id]:
+                game_session_subscribers[game_session_id].remove(queue)
+            
+            # Clean up empty subscriber lists
+            if not game_session_subscribers[game_session_id]:
+                del game_session_subscribers[game_session_id]
+    
+    return StreamingResponse(
+        event_generator(),
+        media_type="text/event-stream",
+        headers={
+            "Cache-Control": "no-cache",
+            "Connection": "keep-alive",
+            "X-Accel-Buffering": "no",  # Disable buffering in nginx
+        }
+    )

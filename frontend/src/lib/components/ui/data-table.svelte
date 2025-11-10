@@ -22,7 +22,7 @@
 
 	let { data, columns, searchColumn, searchPlaceholder }: DataTableProps<TData, TValue> = $props();
 
-	let pagination = $state<PaginationState>({ pageIndex: 0, pageSize: 10 });
+	let pagination = $state<PaginationState>({ pageIndex: 0, pageSize: 100 });
 	let sorting = $state<SortingState>([]);
 	let columnFilters = $state<ColumnFiltersState>([]);
 

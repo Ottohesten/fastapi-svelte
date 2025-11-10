@@ -279,15 +279,12 @@
 	</div>
 
 	<!-- Data Table -->
-	<div class="-mx-3 overflow-x-auto md:mx-0">
-		<div class="inline-block min-w-full align-middle">
-			<div
-				class="rounded-lg border border-gray-200 md:rounded-none md:border-0 dark:border-gray-800"
-			>
-				<DataTable data={data.users.data} {columns} />
-			</div>
-		</div>
-	</div>
+	<DataTable
+		data={data.users.data}
+		{columns}
+		searchColumn="email"
+		searchPlaceholder="Filter users by email..."
+	/>
 	<!-- <div class="surface-2 rounded-2xl">
 		<DataTable data={data.users.data} {columns} />
 	</div> -->

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import Button from '$lib/components/ui/button/button.svelte';
+	import Button, { buttonVariants } from '$lib/components/ui/button/button.svelte';
 	import { Pencil, Trash2 } from 'lucide-svelte';
 	import { enhance } from '$app/forms';
 	import * as Dialog from '$lib/components/ui/dialog/index.js';
@@ -36,10 +36,10 @@
 
 <div class="flex items-center justify-end">
 	<Dialog.Root bind:open={editOpen}>
-		<Dialog.Trigger>
-			<Button variant="ghost" title="Edit drink" size="sm" class="p-2">
-				<Pencil class="" />
-			</Button>
+		<Dialog.Trigger class={buttonVariants({ variant: 'ghost', size: 'sm', class: 'p-2' })}>
+			<!-- <Button variant="ghost" title="Edit drink" size="sm" class="p-2"> -->
+			<Pencil class="" />
+			<!-- </Button> -->
 		</Dialog.Trigger>
 		<Dialog.Content class="sm:max-w-[425px]">
 			<Dialog.Header>

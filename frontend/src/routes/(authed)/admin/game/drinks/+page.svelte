@@ -90,7 +90,12 @@
 			</Dialog.Content>
 		</Dialog.Root>
 	</div>
-	<DataTable data={data.drinks} {columns} />
+	<DataTable
+		data={data.drinks}
+		{columns}
+		searchColumn="name"
+		searchPlaceholder="Filter drinks..."
+	/>
 </div>
 
 <!-- {JSON.stringify(data.drinks)} -->

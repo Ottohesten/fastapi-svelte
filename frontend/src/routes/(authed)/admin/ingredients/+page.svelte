@@ -83,6 +83,22 @@
 							</Control>
 							<FieldErrors />
 						</Field>
+						<Field {form} name="weight_per_piece">
+							<Control>
+								{#snippet children({ props })}
+									<Label>Weight per piece (g)</Label>
+									<Input
+										{...props}
+										type="number"
+										bind:value={$formData.weight_per_piece}
+										placeholder="Enter weight per piece"
+										class="mt-2"
+										min="1"
+									/>
+								{/snippet}
+							</Control>
+							<FieldErrors />
+						</Field>
 					</div>
 					<Dialog.Footer>
 						<Button type="submit">Add Ingredient</Button>

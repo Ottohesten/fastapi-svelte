@@ -13,6 +13,7 @@
 	let editOpen = $state(false);
 	let editTitle = $state('');
 	let editCalories = $state(0);
+	let editWeightPerPiece = $state(100);
 	let editError = $state('');
 	let isSubmitting = $state(false);
 
@@ -21,17 +22,19 @@
 		if (editOpen) {
 			editTitle = ingredient.title;
 			editCalories = ingredient.calories;
+			editWeightPerPiece = ingredient.weight_per_piece;
 			editError = '';
 		} else {
 			editTitle = '';
 			editCalories = 0;
+			editWeightPerPiece = 1;
 			editError = '';
 		}
 	});
 
 	// Clear error when user starts typing
 	$effect(() => {
-		if ((editTitle || editCalories) && editError) {
+		if ((editTitle || editCalories || editWeightPerPiece) && editError) {
 			editError = '';
 		}
 	});
@@ -60,6 +63,7 @@
 							editOpen = false;
 							editTitle = '';
 							editCalories = 0;
+							editWeightPerPiece = 1;
 							editError = '';
 							invalidateAll();
 						} else if (result.type === 'failure' && result.data) {
@@ -99,6 +103,20 @@
 							required
 							disabled={isSubmitting}
 							min="0"
+						/>
+					</div>
+					<div class="items-center">
+						<label for="edit-weight" class="">Weight per piece (g)</label>
+						<Input
+							id="edit-weight"
+							name="weight_per_piece"
+							type="number"
+							bind:value={editWeightPerPiece}
+							class="mt-2"
+							placeholder="Enter weight per piece"
+							required
+							disabled={isSubmitting}
+							min="1"
 						/>
 					</div>
 				</div>

@@ -230,9 +230,8 @@ class RecipePublic(RecipeBase):
             elif link.unit == "L":
                 amount_in_grams = link.amount * 1000
             elif link.unit == "pcs":
-                # For pieces, assume average weight of 50g per piece
-                # This could be made more sophisticated with ingredient-specific weights
-                amount_in_grams = link.amount * 50
+                # Use ingredient's weight_per_piece for calculation
+                amount_in_grams = link.amount * link.ingredient.weight_per_piece
             
             # Calculate calories: (calories_per_100g * amount_in_grams) / 100
             ingredient_calories = (link.ingredient.calories * amount_in_grams) / 100
@@ -265,13 +264,22 @@ class RecipePublic(RecipeBase):
             elif link.unit == "L":
                 amount_in_grams = link.amount * 1000
             elif link.unit == "pcs":
-                # For pieces, assume average weight of 50g per piece
-                # This could be made more sophisticated with ingredient-specific weights
-                amount_in_grams = link.amount * 50
+                # Use ingredient's weight_per_piece for calculation
+                amount_in_grams = link.amount * link.ingredient.weight_per_piece
 
             total_weight += amount_in_grams
 
         return round(total_weight)
+    
+
+    @computed_field
+    @property
+    def calories_per_100g(self) -> int:
+        """Calculate calories per 100g of the recipe."""
+        total_weight = self.calculated_weight
+        if total_weight <= 0:
+            return 0
+        return round((self.total_calories / total_weight) * 100)
 
 
 class Recipe(RecipeBase, table=True):
@@ -309,6 +317,7 @@ class Recipe(RecipeBase, table=True):
 class IngredientBase(SQLModel):
     title: str = Field(max_length=255, min_length=1)
     calories: int = Field(default=0, ge=0, description="Calories per 100g of the ingredient")
+    weight_per_piece: int = Field(default=100, ge=0, description="Average weight per piece in grams (used when unit is 'pcs')")
     # pass
 
 class IngredientCreate(IngredientBase):
@@ -328,6 +337,7 @@ class Ingredient(IngredientBase, table=True):
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
     title: str = Field(max_length=255, min_length=1)
     calories: int = Field(default=0, ge=0, description="Calories per 100g of the ingredient")
+    weight_per_piece: int = Field(default=1, ge=0, description="Average weight per piece in grams (used when unit is 'pcs')", sa_column_kwargs={"server_default": "1"})
 
     # recipes: list["Recipe"] = Relationship(back_populates="ingredients", link_model=RecipeIngredientLink)
     recipe_links: list["RecipeIngredientLink"] = Relationship(back_populates="ingredient", cascade_delete=True)

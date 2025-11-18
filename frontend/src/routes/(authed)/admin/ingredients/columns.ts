@@ -18,6 +18,14 @@ export const columns: ColumnDef<components['schemas']["IngredientPublic"]>[] = [
         },
     },
     {
+        accessorKey: "weight_per_piece",
+        header: "Weight per piece",
+        cell: ({ row }) => {
+            const weight = row.getValue("weight_per_piece") as number;
+            return `${weight}g`;
+        },
+    },
+    {
         id: "actions",
         header: () => {
             const actionsHeaderSnippet = createRawSnippet(() => {

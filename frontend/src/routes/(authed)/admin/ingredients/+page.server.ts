@@ -53,8 +53,9 @@ export const actions = {
         const id = formData.get('id') as string;
         const title = formData.get('title') as string;
         const calories = parseInt(formData.get('calories') as string);
+        const weight_per_piece = parseInt(formData.get('weight_per_piece') as string);
 
-        if (!id || !title || isNaN(calories)) {
+        if (!id || !title || isNaN(calories) || isNaN(weight_per_piece)) {
             return fail(400, { error: 'Invalid data provided' });
         }
 
@@ -64,7 +65,8 @@ export const actions = {
             },
             body: {
                 title,
-                calories
+                calories,
+                weight_per_piece
             },
             headers: {
                 Authorization: `Bearer ${auth_token}`

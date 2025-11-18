@@ -75,7 +75,8 @@ export const RecipeSchema = z.object({
 
 export const IngredientSchema = z.object({
     title: z.string().min(1, "Title is required").max(255, "Title must be less than 255 characters"),
-    calories: z.number().int().nonnegative("Calories must be a non-negative integer")
+    calories: z.number().int().nonnegative("Calories must be a non-negative integer"),
+    weight_per_piece: z.number().int().positive("Weight per piece must be a positive integer").default(1)
 });
 
 

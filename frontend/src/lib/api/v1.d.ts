@@ -469,6 +469,27 @@ export interface paths {
         patch: operations["add_drink_to_player_game__game_session_id__player__game_player_id__drink_patch"];
         trace?: never;
     };
+    "/game/{game_session_id}/updates": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Game Session Updates
+         * @description Server-Sent Events endpoint that streams real-time updates for a game session.
+         *     Clients can connect to this endpoint to receive notifications when drinks are added.
+         */
+        get: operations["game_session_updates_game__game_session_id__updates_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/login/access-token": {
         parameters: {
             query?: never;
@@ -1045,6 +1066,12 @@ export interface components {
              * @default 0
              */
             calories: number;
+            /**
+             * Weight Per Piece
+             * @description Average weight per piece in grams (used when unit is 'pcs')
+             * @default 100
+             */
+            weight_per_piece: number;
         };
         /** IngredientPublic */
         IngredientPublic: {
@@ -1056,6 +1083,12 @@ export interface components {
              * @default 0
              */
             calories: number;
+            /**
+             * Weight Per Piece
+             * @description Average weight per piece in grams (used when unit is 'pcs')
+             * @default 100
+             */
+            weight_per_piece: number;
             /**
              * Id
              * Format: uuid
@@ -1187,6 +1220,11 @@ export interface components {
              * @description The calculated weight of the recipe based on the ingredients and their amounts. Returns the total weight in grams.
              */
             readonly calculated_weight: number;
+            /**
+             * Calories Per 100G
+             * @description Calculate calories per 100g of the recipe.
+             */
+            readonly calories_per_100g: number;
         };
         /** RefreshRequest */
         RefreshRequest: {
@@ -2622,6 +2660,37 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["GamePlayerPublic"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    game_session_updates_game__game_session_id__updates_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                game_session_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
                 };
             };
             /** @description Validation Error */

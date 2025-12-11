@@ -27,6 +27,7 @@
 	} from '$lib/components/ui/dialog';
 	// import * as Dialog from '$lib/components/ui/dialog/index.js';
 	import { Input } from '$lib/components/ui/input';
+	import { fade } from 'svelte/transition';
 	// Use the actual API types instead of custom interfaces
 	type GameSession = components['schemas']['GameSessionPublic'];
 	type Team = components['schemas']['GameTeamPublic'];
@@ -63,6 +64,15 @@
 			if (result.type === 'success') {
 				open = false;
 			}
+		}
+	});
+
+	$effect(() => {
+		if ($addDrinkMessage) {
+			const timer = setTimeout(() => {
+				$addDrinkMessage = undefined;
+			}, 3000);
+			return () => clearTimeout(timer);
 		}
 	});
 
@@ -545,6 +555,16 @@
 			</p>
 		{/if}
 	</div>
+
+	{#if $addDrinkMessage}
+		<div
+			transition:fade
+			class="mb-6 rounded-md bg-green-50 p-4 text-center text-sm text-green-700 dark:bg-green-900/20 dark:text-green-300"
+		>
+			{$addDrinkMessage}
+		</div>
+	{/if}
+
 	<!-- Controls -->
 	<div class="mb-8 flex flex-col gap-6">
 		<div class="flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-center">
@@ -1166,14 +1186,6 @@
 							>
 						</DialogHeader>
 						<form action="?/addDrinkToPlayer" method="POST" use:addDrinkEnhance class="space-y-4">
-							{#if $addDrinkMessage}
-								<div
-									class="rounded-md bg-green-50 p-4 text-sm text-green-700 dark:bg-green-900/20 dark:text-green-300"
-								>
-									{$addDrinkMessage}
-								</div>
-							{/if}
-
 							<div class="space-y-2">
 								<label
 									for="player-select"

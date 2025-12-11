@@ -117,3 +117,9 @@ export const GameSessionPlayerUpdateSchema = z.object({
     }))
 })
 
+export const GameSessionAddDrinkSchema = z.object({
+    player_id: z.string().min(1, "Player is required"),
+    drink_id: z.string().min(1, "Drink is required"),
+    amount: z.number().int().min(1, "Amount must be at least 1").default(1)
+})
+

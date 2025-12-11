@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { superForm } from 'sveltekit-superforms/client';
+	import { Combobox } from '$lib/components/ui/combobox';
 	import type { PageData } from './$types';
 	let { data }: { data: PageData } = $props();
 	import { schemeCategory10, schemeSet3 } from 'd3-scale-chromatic';
@@ -49,6 +51,20 @@
 		players: PlayerView[];
 		drinkBreakdown: DrinkAmount[];
 	};
+
+	const {
+		form: addDrinkForm,
+		errors: addDrinkErrors,
+		message: addDrinkMessage,
+		enhance: addDrinkEnhance
+	} = superForm(data.addDrinkForm, {
+		dataType: 'json',
+		onResult: ({ result }) => {
+			if (result.type === 'success') {
+				open = false;
+			}
+		}
+	});
 
 	// Default values for dashboard state
 	const DEFAULT_VIEW_MODE: 'overview' | 'charts' | 'players' | 'teams' = 'charts';
@@ -1149,69 +1165,79 @@
 							<DialogDescription>Select a player and enter add a drink and amount</DialogDescription
 							>
 						</DialogHeader>
-						<form
-							action="?/addDrinkToPlayer"
-							method="POST"
-							use:enhance={() => {
-								return async ({ result }) => {
-									if (result.type === 'redirect') {
-										// Prevent the redirect and just close the dialog
-										open = false;
-										// The SSE will handle updating the data
-									}
-								};
-							}}
-						>
-							<div class="grid gap-4 py-4">
-								<div class="grid grid-cols-1 gap-2 sm:grid-cols-4 sm:items-center sm:gap-4">
-									<label
-										for="player-select"
-										class="font-semibold text-gray-700 sm:col-span-1 dark:text-gray-300"
-										>Player:</label
-									>
-									<Select id="player-select" name="player_id" required class="sm:col-span-3">
-										<!-- <option value="" disabled selected>Select a player</option> -->
-										{#each allPlayersData as player}
-											<option value={player.playerId}>{player.name} ({player.teamName})</option>
-										{/each}
-									</Select>
+						<form action="?/addDrinkToPlayer" method="POST" use:addDrinkEnhance class="space-y-4">
+							{#if $addDrinkMessage}
+								<div
+									class="rounded-md bg-green-50 p-4 text-sm text-green-700 dark:bg-green-900/20 dark:text-green-300"
+								>
+									{$addDrinkMessage}
 								</div>
-								<div class="grid grid-cols-1 gap-2 sm:grid-cols-4 sm:items-center sm:gap-4">
-									<label
-										for="drink-name"
-										class="font-semibold text-gray-700 sm:col-span-1 dark:text-gray-300"
-										>Drink:</label
-									>
-									<Select name="drink_id" id="drink-select" required class="sm:col-span-3">
-										<!-- <option value="" disabled selected>Select a drink</option> -->
-										{#each data.drinks as drink}
-											<option value={drink.id}>{drink.name}</option>
-										{/each}
-									</Select>
-								</div>
+							{/if}
 
-								<div class="grid grid-cols-1 gap-2 sm:grid-cols-4 sm:items-center sm:gap-4">
-									<label
-										for="drink-amount"
-										class="font-semibold text-gray-700 sm:col-span-1 dark:text-gray-300"
-										>Amount:</label
-									>
-									<input
-										type="number"
-										id="drink-amount"
-										name="amount"
-										min="1"
-										required
-										defaultValue="1"
-										class="rounded-lg border-2 border-gray-300 bg-white px-4 py-2 text-base transition-colors hover:border-blue-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100 sm:col-span-3 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100 dark:focus:ring-blue-900/40"
-									/>
-								</div>
-								<DialogFooter class="mt-4">
-									<Button type="submit" class="w-full bg-blue-600 text-white hover:bg-blue-800">
-										Add Drink
-									</Button>
-								</DialogFooter>
+							<div class="space-y-2">
+								<label
+									for="player-select"
+									class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+									>Player</label
+								>
+								<Combobox
+									items={allPlayersData.map((p) => ({
+										label: `${p.name} (${p.teamName})`,
+										value: p.playerId
+									}))}
+									bind:value={$addDrinkForm.player_id}
+									placeholder="Select a player..."
+									searchPlaceholder="Search players..."
+									class="w-full"
+									buttonClass="w-full justify-between"
+								/>
+								{#if $addDrinkErrors.player_id}
+									<p class="text-sm text-red-500">{$addDrinkErrors.player_id}</p>
+								{/if}
 							</div>
+
+							<div class="space-y-2">
+								<label
+									for="drink-select"
+									class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+									>Drink</label
+								>
+								<Combobox
+									items={data.drinks.map((d) => ({ label: d.name, value: d.id }))}
+									bind:value={$addDrinkForm.drink_id}
+									placeholder="Select a drink..."
+									searchPlaceholder="Search drinks..."
+									class="w-full"
+									buttonClass="w-full justify-between"
+								/>
+								{#if $addDrinkErrors.drink_id}
+									<p class="text-sm text-red-500">{$addDrinkErrors.drink_id}</p>
+								{/if}
+							</div>
+
+							<div class="space-y-2">
+								<label
+									for="drink-amount"
+									class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+									>Amount</label
+								>
+								<Input
+									type="number"
+									id="drink-amount"
+									name="amount"
+									min="1"
+									bind:value={$addDrinkForm.amount}
+								/>
+								{#if $addDrinkErrors.amount}
+									<p class="text-sm text-red-500">{$addDrinkErrors.amount}</p>
+								{/if}
+							</div>
+
+							<DialogFooter>
+								<Button type="submit" class="w-full bg-blue-600 text-white hover:bg-blue-800">
+									Add Drink
+								</Button>
+							</DialogFooter>
 						</form>
 					</DialogContent>
 				</Dialog>

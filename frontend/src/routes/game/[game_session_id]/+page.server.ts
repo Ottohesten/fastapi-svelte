@@ -5,7 +5,7 @@ import type { Actions } from './$types.js';
 import { zod } from 'sveltekit-superforms/adapters'
 import { z } from 'zod';
 import { message, superValidate, fail } from 'sveltekit-superforms';
-import { GameSessionTeamSchema, GameSessionPlayerSchema } from '$lib/schemas/schemas.js';
+import { GameSessionTeamSchema, GameSessionPlayerSchema, GameSessionAddDrinkSchema } from '$lib/schemas/schemas.js';
 
 export const load = async ({ }) => {
     const teamForm = await superValidate(zod(GameSessionTeamSchema), {
@@ -14,10 +14,14 @@ export const load = async ({ }) => {
     const playerForm = await superValidate(zod(GameSessionPlayerSchema), {
         id: "playerForm",
     });
+    const addDrinkForm = await superValidate(zod(GameSessionAddDrinkSchema), {
+        id: "addDrinkForm",
+    });
 
     return {
         teamForm,
-        playerForm
+        playerForm,
+        addDrinkForm
     }
 }
 
@@ -152,10 +156,13 @@ export const actions = {
             redirect(302, "/auth/login");
         }
 
-        const formData = await request.formData();
-        const player_id = formData.get("player_id") as string;
-        const drink_id = formData.get("drink_id") as string;
-        const amount = formData.get("amount") as string;
+        const form = await superValidate(request, zod(GameSessionAddDrinkSchema));
+        if (!form.valid) {
+            return fail(400, { form });
+        }
+
+        const { player_id, drink_id, amount } = form.data;
+
         const { data, error: apierror, response } = await client.PATCH("/game/{game_session_id}/player/{game_player_id}/drink", {
             params: {
                 path: {
@@ -165,7 +172,7 @@ export const actions = {
             },
             body: {
                 drink_id: drink_id,
-                amount: amount ? parseInt(amount as string) : 0
+                amount: amount
             },
             headers: {
                 Authorization: `Bearer ${auth_token}`
@@ -175,13 +182,10 @@ export const actions = {
         if (apierror) {
             // log with file name
             // console.log("apierror in game/+page.server.ts", apierror);
-            error(404, JSON.stringify(apierror.detail));
+            return message(form, JSON.stringify(apierror.detail), { status: 400 });
         }
 
-        // return message(form, 'Player updated successfully')
-        // redirect to last page
-        redirect(303, "/game/" + params.game_session_id);
-
+        return message(form, 'Drink added successfully');
     }
 
 

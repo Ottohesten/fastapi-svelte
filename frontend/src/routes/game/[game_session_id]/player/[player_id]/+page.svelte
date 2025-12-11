@@ -34,7 +34,7 @@
 	}
 </script>
 
-<SuperDebug data={{ $form, $errors, $constraints, $message }} />
+<!-- <SuperDebug data={{ $form, $errors, $constraints, $message }} /> -->
 
 <div class="container mx-auto p-4">
 	<h1 class="mb-4 text-2xl font-bold">Edit Player: {data.player.name}</h1>
@@ -43,12 +43,12 @@
 		<div class="mb-4 rounded-md bg-green-50 p-4 text-sm text-green-700" role="alert">
 			{$message}
 		</div>
-		{console.log(message)}
+		<!-- {console.log(message)} -->
 	{/if}
 
 	<form method="POST" use:enhance class="space-y-6">
 		<div>
-			<label for="name" class="block text-sm font-medium text-gray-700">Player Name</label>
+			<label for="name" class="block text-sm font-medium">Player Name</label>
 			<input
 				type="text"
 				id="name"
@@ -65,8 +65,8 @@
 		</div>
 
 		<div>
-			<h3 class="text-lg font-medium text-gray-900">Drinks</h3>
-			<p class="mb-2 text-sm text-gray-500">
+			<h3 class="text-lg font-medium">Drinks</h3>
+			<p class="mb-2 text-sm text-gray-500 dark:text-gray-400">
 				Select the drinks and specify amounts for this player.
 			</p>
 			{#if typeof $errors.drinks === 'string'}
@@ -99,7 +99,7 @@
 							<div class="ml-3 grow">
 								<label
 									for={`drink-checkbox-${availableDrink.id}`}
-									class="block text-sm font-medium text-gray-800"
+									class="block text-sm font-medium"
 								>
 									{availableDrink.name}
 									<!-- {#if availableDrink.description}

@@ -8,7 +8,7 @@ from fastapi import APIRouter, HTTPException, Security
 from sqlmodel import Session
 
 from app.deps import SessionDep, get_current_user
-from app.models import User, UserPublic, Message
+from app.models import User, UserPublic, Message, RolePublic
 from app.permissions import (
     get_user_effective_scopes,
     assign_role_to_user as assign_role_to_user_impl,
@@ -32,13 +32,6 @@ class UserRoleAssignment(BaseModel):
 class UserScopeGrant(BaseModel):
     user_email: str
     scope: str
-
-
-class RolePublic(BaseModel):
-    id: uuid.UUID
-    name: str
-    description: str | None
-    scopes: List[str]
 
 
 class UserPermissionsResponse(BaseModel):

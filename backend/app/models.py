@@ -92,6 +92,18 @@ class RolePublic(BaseModel):
     scopes: list[str]
 
 
+class RoleCreate(BaseModel):
+    name: str
+    description: str | None = None
+    scopes: list[str] = []
+
+
+class RoleUpdate(BaseModel):
+    name: str | None = None
+    description: str | None = None
+    scopes: list[str] | None = None
+
+
 class UserWithPermissionsPublic(UserPublic):
     roles: list[RolePublic]
     custom_scopes: list[str]

@@ -7,7 +7,7 @@ from fastapi import APIRouter, HTTPException, Security
 from sqlmodel import select
 
 from app.deps import SessionDep, get_current_user
-from app.models import Role, User, Message
+from app.models import Role, User, Message, RoleCreate, RoleUpdate, RolePublic
 from app.permissions import AVAILABLE_SCOPES, ROLE_TEMPLATES, create_role_from_template
 from pydantic import BaseModel
 
@@ -15,40 +15,12 @@ from pydantic import BaseModel
 router = APIRouter(prefix="/roles", tags=["roles"])
 
 
-# Pydantic models for API
-class RoleCreate(BaseModel):
-    name: str
-    description: Optional[str] = None
-    scopes: List[str] = []
-
-
-class RoleUpdate(BaseModel):
-    name: Optional[str] = None
-    description: Optional[str] = None
-    scopes: Optional[List[str]] = None
-
-
-class RolePublic(BaseModel):
-    id: uuid.UUID
-    name: str
-    description: Optional[str]
-    scopes: List[str]
-
-
 # Role CRUD endpoints
 @router.get("/", response_model=List[RolePublic])
 def list_roles(session: SessionDep, current_user: User = Security(get_current_user, scopes=["roles:read"])):
     """List all roles"""
     roles = session.exec(select(Role)).all()
-    return [
-        RolePublic(
-            id=role.id,
-            name=role.name,
-            description=role.description,
-            scopes=role.scopes or []
-        )
-        for role in roles
-    ]
+    return roles
 
 
 @router.post("/", response_model=RolePublic)
@@ -81,12 +53,7 @@ def create_role(role_data: RoleCreate,session: SessionDep,current_user: User = S
     session.commit()
     session.refresh(role)
     
-    return RolePublic(
-        id=role.id,
-        name=role.name,
-        description=role.description,
-        scopes=role.scopes or []
-    )
+    return role
 
 
 @router.get("/{role_id}", response_model=RolePublic)
@@ -96,12 +63,7 @@ def get_role(role_id: uuid.UUID, session: SessionDep, current_user: User = Secur
     if not role:
         raise HTTPException(status_code=404, detail="Role not found")
     
-    return RolePublic(
-        id=role.id,
-        name=role.name,
-        description=role.description,
-        scopes=role.scopes or []
-    )
+    return role
 
 
 @router.put("/{role_id}", response_model=RolePublic)
@@ -140,12 +102,7 @@ def update_role(role_id: uuid.UUID, role_data: RoleUpdate, session: SessionDep, 
     session.commit()
     session.refresh(role)
     
-    return RolePublic(
-        id=role.id,
-        name=role.name,
-        description=role.description,
-        scopes=role.scopes or []
-    )
+    return role
 
 
 @router.delete("/{role_id}", response_model=Message)

@@ -121,6 +121,9 @@
 							{data.recipe.total_calories || 0}
 						</div>
 						<div class="text-sm text-gray-600 dark:text-gray-300">Total Calories</div>
+						<div class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+							{data.recipe.calories_per_100g || 0} cal/100g
+						</div>
 					</div>
 					<div class="text-center">
 						<div class="mb-2 flex items-center justify-center">
@@ -162,7 +165,7 @@
 						<div class="text-2xl font-bold text-gray-900 dark:text-gray-100">
 							{data.recipe.calculated_weight || 0}g
 						</div>
-						<div class="text-sm text-gray-600 dark:text-gray-300">Total calculated weight</div>
+						<div class="text-sm text-gray-600 dark:text-gray-300">Total Weight</div>
 					</div>
 					<div class="text-center">
 						<div class="mb-2 flex items-center justify-center">

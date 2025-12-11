@@ -22,6 +22,13 @@ export const load = async ({ fetch, cookies }) => {
         error(403, JSON.stringify(permsError.detail));
     }
 
+    // Fetch all available roles
+    const { data: rolesData, error: rolesError } = await client.GET("/roles/", {
+        headers: {
+            Authorization: `Bearer ${auth_token}`
+        }
+    });
+
     // Build lookup by email for quick access in the table
     const byEmail: Record<string, components['schemas']['UserWithPermissionsPublic']> = {};
     for (const u of permsData?.data ?? []) {
@@ -31,6 +38,7 @@ export const load = async ({ fetch, cookies }) => {
     return {
         users: { data: (permsData?.data ?? []).map(u => ({ id: u.id, email: u.email, is_active: u.is_active, is_superuser: u.is_superuser, full_name: u.full_name ?? null })), count: permsData?.count ?? 0 },
         permissionsByEmail: byEmail,
+        roles: rolesData ?? [],
         userCreateForm: await superValidate(zod(UserSchema), {
             id: "userCreateForm",
         }),
@@ -221,6 +229,54 @@ export const actions = {
             error(400, `Failed to toggle user status: ${JSON.stringify(apierror.detail)}`);
         }
 
+        return { success: true };
+    },
+
+    assignRole: async ({ fetch, cookies, request }) => {
+        const client = createApiClient(fetch);
+        const auth_token = cookies.get("auth_token");
+        if (!auth_token) redirect(302, "/auth/login");
+
+        const formData = await request.formData();
+        const user_email = formData.get("user_email") as string;
+        const role_name = formData.get("role_name") as string;
+
+        if (!user_email || !role_name) {
+            return fail(400, { error: "Missing user_email or role_name" });
+        }
+
+        const { error: apiError } = await client.POST("/user-permissions/assign-role", {
+            body: { user_email, role_name },
+            headers: { Authorization: `Bearer ${auth_token}` }
+        });
+
+        if (apiError) {
+            return fail(400, { error: `Failed to assign role: ${JSON.stringify(apiError.detail)}` });
+        }
+        return { success: true };
+    },
+
+    removeRole: async ({ fetch, cookies, request }) => {
+        const client = createApiClient(fetch);
+        const auth_token = cookies.get("auth_token");
+        if (!auth_token) redirect(302, "/auth/login");
+
+        const formData = await request.formData();
+        const user_email = formData.get("user_email") as string;
+        const role_name = formData.get("role_name") as string;
+
+        if (!user_email || !role_name) {
+            return fail(400, { error: "Missing user_email or role_name" });
+        }
+
+        const { error: apiError } = await client.POST("/user-permissions/remove-role", {
+            body: { user_email, role_name },
+            headers: { Authorization: `Bearer ${auth_token}` }
+        });
+
+        if (apiError) {
+            return fail(400, { error: `Failed to remove role: ${JSON.stringify(apiError.detail)}` });
+        }
         return { success: true };
     }
 } satisfies Actions;

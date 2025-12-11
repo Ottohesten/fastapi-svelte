@@ -57,7 +57,7 @@
 	} = updateForm;
 
 	// Create columns with the update form
-	const columns = createColumns(updateForm, data.permissionsByEmail);
+	const columns = createColumns(updateForm, data.permissionsByEmail, data.roles);
 
 	// const { form, enhance } = superForm(data.form, {
 	// 	// resetForm: true,

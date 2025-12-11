@@ -1243,6 +1243,20 @@ export interface components {
              */
             scopes: string[];
         };
+        /** RolePublic */
+        RolePublic: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Name */
+            name: string;
+            /** Description */
+            description?: string | null;
+            /** Scopes */
+            scopes: string[];
+        };
         /** RoleUpdate */
         RoleUpdate: {
             /** Name */
@@ -1324,7 +1338,7 @@ export interface components {
         UserPermissionsResponse: {
             user: components["schemas"]["UserPublic"];
             /** Roles */
-            roles: components["schemas"]["app__routers__user_permissions__RolePublic"][];
+            roles: components["schemas"]["RolePublic"][];
             /** Custom Scopes */
             custom_scopes: string[];
             /** Effective Scopes */
@@ -1432,7 +1446,7 @@ export interface components {
              */
             id: string;
             /** Roles */
-            roles: components["schemas"]["app__models__RolePublic"][];
+            roles: components["schemas"]["RolePublic"][];
             /** Custom Scopes */
             custom_scopes: string[];
             /** Effective Scopes */
@@ -1460,48 +1474,6 @@ export interface components {
             msg: string;
             /** Error Type */
             type: string;
-        };
-        /** RolePublic */
-        app__models__RolePublic: {
-            /**
-             * Id
-             * Format: uuid
-             */
-            id: string;
-            /** Name */
-            name: string;
-            /** Description */
-            description?: string | null;
-            /** Scopes */
-            scopes: string[];
-        };
-        /** RolePublic */
-        app__routers__roles__RolePublic: {
-            /**
-             * Id
-             * Format: uuid
-             */
-            id: string;
-            /** Name */
-            name: string;
-            /** Description */
-            description: string | null;
-            /** Scopes */
-            scopes: string[];
-        };
-        /** RolePublic */
-        app__routers__user_permissions__RolePublic: {
-            /**
-             * Id
-             * Format: uuid
-             */
-            id: string;
-            /** Name */
-            name: string;
-            /** Description */
-            description: string | null;
-            /** Scopes */
-            scopes: string[];
         };
     };
     responses: never;
@@ -2933,7 +2905,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["app__routers__roles__RolePublic"][];
+                    "application/json": components["schemas"]["RolePublic"][];
                 };
             };
         };
@@ -2957,7 +2929,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["app__routers__roles__RolePublic"];
+                    "application/json": components["schemas"]["RolePublic"];
                 };
             };
             /** @description Validation Error */
@@ -2988,7 +2960,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["app__routers__roles__RolePublic"];
+                    "application/json": components["schemas"]["RolePublic"];
                 };
             };
             /** @description Validation Error */
@@ -3023,7 +2995,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["app__routers__roles__RolePublic"];
+                    "application/json": components["schemas"]["RolePublic"];
                 };
             };
             /** @description Validation Error */
@@ -3105,7 +3077,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["app__routers__roles__RolePublic"];
+                    "application/json": components["schemas"]["RolePublic"];
                 };
             };
             /** @description Validation Error */

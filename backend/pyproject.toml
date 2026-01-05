@@ -1,8 +1,26 @@
 [project]
-name = "app"
+name = "backend"
 version = "0.1.0"
-description = ""
-requires-python = ">=3.10,<4.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "alembic>=1.17.2",
+    "bcrypt==4.0.1",
+    "emails>=0.6",
+    "fastapi[standard]>=0.128.0",
+    "passlib>=1.7.4",
+    "psycopg[binary]>=3.3.2",
+    "pwdlib[argon2]>=0.3.0",
+    "pyjwt>=2.10.1",
+    "python-dotenv>=1.2.1",
+    "sqlalchemy>=2.0.45",
+    "sqlmodel>=0.0.31",
+    "typer>=0.21.0",
+    "websockets>=15.0.1",
+]
 
-[project.scripts]
-app-cli = "app.cli:app"
+[dependency-groups]
+dev = [
+    "ruff>=0.14.10",
+]

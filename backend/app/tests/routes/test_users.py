@@ -364,7 +364,7 @@ def test_update_user_me_email_exists_by_normal_user(
     username = random_email()
     password = random_lower_string()
     user_in = UserCreate(email=username, password=password)
-    user = db_crud.create_user(session=db, user_create=user_in)
+    db_crud.create_user(session=db, user_create=user_in)
 
     data = {"email": username}
     r = client.patch(
@@ -385,7 +385,7 @@ def test_update_user_me_email_exists_by_superuser(
     username = random_email()
     password = random_lower_string()
     user_in = UserCreate(email=username, password=password)
-    user = db_crud.create_user(session=db, user_create=user_in)
+    db_crud.create_user(session=db, user_create=user_in)
 
     data = {"email": username}
     r = client.patch(
@@ -536,7 +536,7 @@ def test_update_user_by_superuser_not_exists(
     password = random_lower_string()
 
     user_in = UserCreate(email=username, password=password)
-    user = db_crud.create_user(session=db, user_create=user_in)
+    db_crud.create_user(session=db, user_create=user_in)
 
     new_email = random_email()
     full_name = "Updated name"
@@ -567,7 +567,7 @@ def test_update_user_by_superuser_email_exists(
     password_2 = random_lower_string()
 
     user_in_2 = UserCreate(email=username_2, password=password_2)
-    user_2 = db_crud.create_user(session=db, user_create=user_in_2)
+    db_crud.create_user(session=db, user_create=user_in_2)
 
     data = {"email": username_2}
 
@@ -590,7 +590,7 @@ def test_delete_user_me(client: TestClient, db: Session):
     username = random_email()
     password = random_lower_string()
     user_in = UserCreate(email=username, password=password)
-    user = db_crud.create_user(session=db, user_create=user_in)
+    db_crud.create_user(session=db, user_create=user_in)
 
     login_data = {
         "username": username,

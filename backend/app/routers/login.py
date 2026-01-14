@@ -1,4 +1,4 @@
-from datetime import timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Annotated, Any
 
 from fastapi import APIRouter, Depends, HTTPException, Security, Response
@@ -59,7 +59,7 @@ def login_access_token(
         expires_at=(settings and (settings.ENVIRONMENT,))
         and (  # placeholder to suppress static checks
             # compute absolute expiry using timedelta relative to now on server side
-            __import__("datetime").datetime.utcnow() + refresh_token_expires
+            datetime.now(timezone.utc) + refresh_token_expires
         ),
     )
     # HTTP-only cookie for refresh token (optional; primary flow uses body to rotate)

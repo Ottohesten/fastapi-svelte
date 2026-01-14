@@ -5,20 +5,6 @@ from app.config import settings
 from app.models import User, UserCreate
 
 
-# if we actually want to use SQLite, we can use the following line
-# engine = create_engine("sqlite:///database.db")
-
-# if os.getenv("TESTING") == "1":
-#     print("TESTING")
-#     # if we are testing, we use a different database
-#     # engine = create_engine(settings.TEST_DATABASE_URL, connect_args={"check_same_thread": False})
-#     engine = create_engine(str(settings.SQLALCHEMY_DATABASE_URI_TEST))
-# else:
-#     print("NOT TESTING")
-#     # if we are not testing, we use the default database
-#     # engine = create_engine(settings.SQLALCHEMY_DATABASE_URI, connect_args={"check_same_thread": False})
-#     engine = create_engine(str(settings.SQLALCHEMY_DATABASE_URI))
-
 engine = create_engine(str(settings.SQLALCHEMY_DATABASE_URI))
 # Make sure to actually create the database
 # engine = create_engine(str(settings.SQLALCHEMY_DATABASE_URI))

@@ -1,8 +1,8 @@
 import uuid
 from typing import Annotated, Any
 
-from fastapi import APIRouter, Depends, HTTPException, Security, status, Response
-from sqlmodel import col, delete, func, select
+from fastapi import APIRouter, HTTPException, Security, status
+from sqlmodel import func, select
 
 import app.db_crud as db_crud
 from app.deps import (
@@ -15,7 +15,6 @@ from app.config import settings
 from app.security import get_password_hash, verify_password
 from app.models import (
     HTTPExceptionDetail,
-    Item,
     Message,
     UpdatePassword,
     User,
@@ -36,12 +35,12 @@ from app.utils import generate_new_account_email, send_email
 router = APIRouter(prefix="/users", tags=["users"])
 
 
-@router.get("/",response_model=UsersPublic)
+@router.get("/", response_model=UsersPublic)
 def read_users(
-    session: SessionDep, 
-    skip: int = 0, 
+    session: SessionDep,
+    skip: int = 0,
     limit: int = 100,
-    current_user: User = Security(get_current_user, scopes=["users:read"])
+    current_user: User = Security(get_current_user, scopes=["users:read"]),
 ):
     """
     Retrieve users.
@@ -53,7 +52,9 @@ def read_users(
     statement = select(User).offset(skip).limit(limit)
     users = session.exec(statement).all()
 
-    return UsersPublic(data=[UserPublic.model_validate(user) for user in users], count=count)
+    return UsersPublic(
+        data=[UserPublic.model_validate(user) for user in users], count=count
+    )
 
 
 @router.get("/with-permissions", response_model=UsersWithPermissionsPublic)
@@ -68,7 +69,10 @@ def read_users_with_permissions(
     """
     # Require superuser privileges for this consolidated permissions view
     if not current_user.is_superuser:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="The user doesn't have enough privileges")
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="The user doesn't have enough privileges",
+        )
     count_statement = select(func.count()).select_from(User)
     count = session.exec(count_statement).one()
 
@@ -80,10 +84,7 @@ def read_users_with_permissions(
         roles_public = [
             # Create RolePublic instances explicitly
             RolePublic(
-                id=r.id,
-                name=r.name,
-                description=r.description,
-                scopes=r.scopes or []
+                id=r.id, name=r.name, description=r.description, scopes=r.scopes or []
             )
             for r in (u.roles or [])
         ]
@@ -104,14 +105,12 @@ def read_users_with_permissions(
     return UsersWithPermissionsPublic(data=data, count=count)
 
 
-@router.post(
-    "/", response_model=UserPublic
-)
+@router.post("/", response_model=UserPublic)
 def create_user(
-    *, 
-    session: SessionDep, 
+    *,
+    session: SessionDep,
     user_in: UserCreate,
-    current_user: User = Security(get_current_user, scopes=["users:create"])
+    current_user: User = Security(get_current_user, scopes=["users:create"]),
 ):
     """
     Create new user.
@@ -138,7 +137,8 @@ def create_user(
 
 @router.patch("/me", response_model=UserPublic)
 def update_user_me(
-    *, session: SessionDep, user_in: UserUpdateMe, current_user: CurrentUser):
+    *, session: SessionDep, user_in: UserUpdateMe, current_user: CurrentUser
+):
     """
     Update own user.
     """
@@ -159,7 +159,8 @@ def update_user_me(
 
 @router.patch("/me/password", response_model=Message)
 def update_password_me(
-    *, session: SessionDep, body: UpdatePassword, current_user: CurrentUser):
+    *, session: SessionDep, body: UpdatePassword, current_user: CurrentUser
+):
     """
     Update own password.
     """
@@ -176,14 +177,20 @@ def update_password_me(
     return Message(message="Password updated successfully")
 
 
-@router.get("/me", response_model=UserMePublic, responses={401: {
-    # "content": {"application/json": {"example": {"detail": "Not authenticated"}}},
-    "model": HTTPExceptionDetail
-}})
-def read_user_me(*,current_user: Annotated[User, Security(get_current_active_user)]):
-# def read_user_me(current_user: Annotated[User, Security(get_current_active_user, scopes=["me"])],) -> Any:
-# def read_user_me(current_user: CurrentUser) -> Any:
-    
+@router.get(
+    "/me",
+    response_model=UserMePublic,
+    responses={
+        401: {
+            # "content": {"application/json": {"example": {"detail": "Not authenticated"}}},
+            "model": HTTPExceptionDetail
+        }
+    },
+)
+def read_user_me(*, current_user: Annotated[User, Security(get_current_active_user)]):
+    # def read_user_me(current_user: Annotated[User, Security(get_current_active_user, scopes=["me"])],) -> Any:
+    # def read_user_me(current_user: CurrentUser) -> Any:
+
     """
     Get current user.
     """
@@ -203,7 +210,7 @@ def delete_user_me(session: SessionDep, current_user: CurrentUser) -> Message:
     """
     Delete own user.
     """
-    # Regular users can delete themselves, but we prevent deletion if the user 
+    # Regular users can delete themselves, but we prevent deletion if the user
     # is the only one with users:delete scope to avoid system lockout
     session.delete(current_user)
     session.commit()
@@ -228,9 +235,9 @@ def register_user(session: SessionDep, user_in: UserRegister):
 
 @router.get("/{user_id}", response_model=UserPublic)
 def read_user_by_id(
-    user_id: uuid.UUID, 
-    session: SessionDep, 
-    current_user: User = Security(get_current_user, scopes=["users:read"])
+    user_id: uuid.UUID,
+    session: SessionDep,
+    current_user: User = Security(get_current_user, scopes=["users:read"]),
 ) -> Any:
     """
     Get a specific user by id.
@@ -247,10 +254,10 @@ def read_user_by_id(
     response_model=UserPublic,
 )
 def update_user(
-    session: SessionDep, 
-    user_id: uuid.UUID, 
+    session: SessionDep,
+    user_id: uuid.UUID,
     user_in: UserUpdate,
-    current_user: User = Security(get_current_user, scopes=["users:update"])
+    current_user: User = Security(get_current_user, scopes=["users:update"]),
 ):
     """
     Update a user.
@@ -262,15 +269,14 @@ def update_user(
             status_code=404,
             detail="A user with this id does not exist",
         )
-    
-    
+
     if user_in.email:
         existing_user = db_crud.get_user_by_email(session=session, email=user_in.email)
         if existing_user and existing_user.id != db_user.id:
             raise HTTPException(
                 status_code=409, detail="A user with this email already exists"
             )
-    
+
     # update the full name¨
     # user_data = user_in.model_dump(exclude_unset=True)
     # db_user.sqlmodel_update(user_data)
@@ -282,28 +288,26 @@ def update_user(
         db_user=db_user,
         user_in=user_in,
     )
-    
+
     return db_user
-
-
 
 
 @router.delete("/{user_id}")
 def delete_user(
-    session: SessionDep, 
+    session: SessionDep,
     user_id: uuid.UUID,
-    current_user: User = Security(get_current_user, scopes=["users:delete"])
+    current_user: User = Security(get_current_user, scopes=["users:delete"]),
 ) -> Message:
     """
     Delete a user.
     """
     user = session.get(User, user_id)
     if not user:
-        raise HTTPException(status_code=404, detail="A user with this id does not exist")
-    if user == current_user:
         raise HTTPException(
-            status_code=403, detail="Users cannot delete themselves"
+            status_code=404, detail="A user with this id does not exist"
         )
+    if user == current_user:
+        raise HTTPException(status_code=403, detail="Users cannot delete themselves")
     session.delete(user)
     session.commit()
     return Message(message="User deleted successfully")

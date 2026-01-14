@@ -1,17 +1,16 @@
 from fastapi import APIRouter, BackgroundTasks
-from fastapi import FastAPI, Depends, HTTPException, status, Query, Security
+from fastapi import HTTPException, Security
 from fastapi.responses import StreamingResponse
 from sqlmodel import select
-from app.deps import SessionDep, CurrentUser, get_current_user
+from app.deps import SessionDep, get_current_user
 from typing import Annotated
 import asyncio
 import json
 from datetime import datetime
 
 from app.models import (
-    GameSession, 
-    GameSessionCreate, 
-    GameSessionUpdate,
+    GameSession,
+    GameSessionCreate,
     GameSessionPublic,
     GamePlayer,
     GamePlayerCreate,
@@ -30,7 +29,9 @@ from app.models import (
 
 # Store active SSE connections for each game session
 from collections import defaultdict
+
 game_session_subscribers = defaultdict(list)
+
 
 # Helper function to broadcast updates to all subscribers of a game session
 async def broadcast_game_update(game_session_id: str, event_type: str):
@@ -40,9 +41,9 @@ async def broadcast_game_update(game_session_id: str, event_type: str):
         message = {
             "type": event_type,
             "timestamp": datetime.now().isoformat(),
-            "game_session_id": game_session_id
+            "game_session_id": game_session_id,
         }
-        
+
         # Send to all subscribers (queues)
         for queue in game_session_subscribers[game_session_id]:
             try:
@@ -50,7 +51,9 @@ async def broadcast_game_update(game_session_id: str, event_type: str):
             except Exception as e:
                 print(f"Error broadcasting to subscriber: {e}")
 
+
 router = APIRouter(prefix="/game", tags=["game"])
+
 
 @router.get("/", response_model=list[GameSessionPublic])
 def read_game_sessions(session: SessionDep, skip: int = 0, limit: int = 100):
@@ -61,6 +64,7 @@ def read_game_sessions(session: SessionDep, skip: int = 0, limit: int = 100):
     game_sessions = session.exec(statement).all()
 
     return game_sessions
+
 
 # get all drinks
 @router.get("/drinks", response_model=list[DrinkPublic])
@@ -73,8 +77,13 @@ def read_drinks(session: SessionDep, skip: int = 0, limit: int = 100):
     drinks = session.exec(statement).all()
     return drinks
 
+
 @router.post("/drinks", response_model=DrinkPublic)
-def create_drink(session: SessionDep, drink_in: DrinkCreate, current_user: User = Security(get_current_user, scopes=["drinks:create"])):
+def create_drink(
+    session: SessionDep,
+    drink_in: DrinkCreate,
+    current_user: User = Security(get_current_user, scopes=["drinks:create"]),
+):
     """
     Create a new drink.
     """
@@ -85,45 +94,55 @@ def create_drink(session: SessionDep, drink_in: DrinkCreate, current_user: User 
 
     return drink
 
+
 @router.patch("/drinks/{drink_id}", response_model=DrinkPublic)
-def update_drink(session: SessionDep, drink_id: str, drink_in: DrinkCreate, current_user: User = Security(get_current_user, scopes=["drinks:update"])):
+def update_drink(
+    session: SessionDep,
+    drink_id: str,
+    drink_in: DrinkCreate,
+    current_user: User = Security(get_current_user, scopes=["drinks:update"]),
+):
     """
     Update a drink.
     """
     try:
         drink = session.get(Drink, drink_id)
-    except Exception as e:
+    except Exception:
         raise HTTPException(status_code=400, detail="Invalid UUID")
-    
+
     if not drink:
         raise HTTPException(status_code=404, detail="Drink not found")
-    
+
     drink_data = drink_in.model_dump(exclude_unset=True)
     drink.sqlmodel_update(drink_data)
     session.add(drink)
     session.commit()
     session.refresh(drink)
-    
+
     return drink
 
+
 @router.delete("/drinks/{drink_id}")
-def delete_drink(session: SessionDep, drink_id: str, current_user: User = Security(get_current_user, scopes=["drinks:delete"])):
+def delete_drink(
+    session: SessionDep,
+    drink_id: str,
+    current_user: User = Security(get_current_user, scopes=["drinks:delete"]),
+):
     """
     Delete a drink.
     """
     try:
         drink = session.get(Drink, drink_id)
-    except Exception as e:
+    except Exception:
         raise HTTPException(status_code=400, detail="Invalid UUID")
-    
+
     if not drink:
         raise HTTPException(status_code=404, detail="Drink not found")
-    
+
     session.delete(drink)
     session.commit()
-    
-    return {"success": True}
 
+    return {"success": True}
 
 
 @router.get("/{game_session_id}", response_model=GameSessionPublic)
@@ -135,7 +154,7 @@ def read_game_session(session: SessionDep, game_session_id: str):
 
     try:
         game_session = session.get(GameSession, game_session_id)
-    except Exception as e:
+    except Exception:
         # except InvalidTextRepresentation as e:
         raise HTTPException(status_code=400, detail="Invalid UUID")
 
@@ -146,15 +165,25 @@ def read_game_session(session: SessionDep, game_session_id: str):
 
 
 @router.post("/", response_model=GameSessionPublic)
-def create_game_session(session: SessionDep, current_user: Annotated[User, Security(get_current_user, scopes=["games:create"])], game_session_in: GameSessionCreate):
+def create_game_session(
+    session: SessionDep,
+    current_user: Annotated[User, Security(get_current_user, scopes=["games:create"])],
+    game_session_in: GameSessionCreate,
+):
     """
     Create a new game session.
     """
-    game_teams = [GameTeam(**team.model_dump()) for team in game_session_in.teams] if game_session_in.teams else []
+    game_teams = (
+        [GameTeam(**team.model_dump()) for team in game_session_in.teams]
+        if game_session_in.teams
+        else []
+    )
     # print(game_teams)
 
     game_session = GameSession(
-        **game_session_in.model_dump(exclude={"teams"}),  # Unpack the dictionary into the model
+        **game_session_in.model_dump(
+            exclude={"teams"}
+        ),  # Unpack the dictionary into the model
         owner_id=current_user.id,
         teams=game_teams,
     )
@@ -164,29 +193,36 @@ def create_game_session(session: SessionDep, current_user: Annotated[User, Secur
     session.commit()
     session.refresh(game_session)
 
-    # update the 
+    # update the
 
     return game_session
 
+
 # delete game session
 @router.delete("/{game_session_id}")
-def delete_game_session(session: SessionDep, game_session_id: str, current_user: User = Security(get_current_user, scopes=["games:delete"])):
+def delete_game_session(
+    session: SessionDep,
+    game_session_id: str,
+    current_user: User = Security(get_current_user, scopes=["games:delete"]),
+):
     """
     Delete a game session. Users can delete their own game sessions.
     """
     # check valid uuid
     try:
         game_session = session.get(GameSession, game_session_id)
-    except Exception as e:
+    except Exception:
         # except InvalidTextRepresentation as e:
         raise HTTPException(status_code=400, detail="Invalid UUID")
-    
+
     if not game_session:
         raise HTTPException(status_code=404, detail="Game session not found")
 
     # Users can delete their own game sessions
     if game_session.owner_id != current_user.id:
-        raise HTTPException(status_code=403, detail="Not authorized to delete this game session")
+        raise HTTPException(
+            status_code=403, detail="Not authorized to delete this game session"
+        )
 
     session.delete(game_session)
     session.commit()
@@ -194,18 +230,21 @@ def delete_game_session(session: SessionDep, game_session_id: str, current_user:
     return {"success": True}
 
 
-
 # delete game session (admin)
 @router.delete("/{game_session_id}/admin")
-def delete_game_session_admin(session: SessionDep,    game_session_id: str, current_user: User = Security(get_current_user, scopes=["games:delete"])):
+def delete_game_session_admin(
+    session: SessionDep,
+    game_session_id: str,
+    current_user: User = Security(get_current_user, scopes=["games:delete"]),
+):
     """
     Delete any game session (admin only).
     """
     try:
         game_session = session.get(GameSession, game_session_id)
-    except Exception as e:
+    except Exception:
         raise HTTPException(status_code=400, detail="Invalid UUID")
-    
+
     if not game_session:
         raise HTTPException(status_code=404, detail="Game session not found")
 
@@ -213,16 +252,24 @@ def delete_game_session_admin(session: SessionDep,    game_session_id: str, curr
     session.commit()
     return {"success": True}
 
+
 # make player and add to game session
 @router.post("/{game_session_id}/player", response_model=GamePlayerPublic)
-def create_game_player(session: SessionDep, game_session_id: str, game_player_in: GamePlayerCreate, current_user: User = Security(get_current_user, scopes=["games:update", "players:create"])):
+def create_game_player(
+    session: SessionDep,
+    game_session_id: str,
+    game_player_in: GamePlayerCreate,
+    current_user: User = Security(
+        get_current_user, scopes=["games:update", "players:create"]
+    ),
+):
     """
     Create a new game player.
     """
     # check valid uuid
     try:
         game_session = session.get(GameSession, game_session_id)
-    except Exception as e:
+    except Exception:
         # except InvalidTextRepresentation as e:
         raise HTTPException(status_code=400, detail="Invalid UUID")
 
@@ -234,7 +281,9 @@ def create_game_player(session: SessionDep, game_session_id: str, game_player_in
     #     game_session_id=game_session.id,
     # )
 
-    game_player = GamePlayer.model_validate(game_player_in, update={"game_session_id": game_session.id} )
+    game_player = GamePlayer.model_validate(
+        game_player_in, update={"game_session_id": game_session.id}
+    )
     session.add(game_player)
     session.commit()
     session.refresh(game_player)
@@ -242,14 +291,13 @@ def create_game_player(session: SessionDep, game_session_id: str, game_player_in
     return game_player
 
 
-
 # make team and add to game session
 @router.post("/{game_session_id}/team", response_model=GameTeamPublic)
 def create_game_team(
-    session: SessionDep, 
-    game_session_id: str, 
-    game_team_in: GameTeamCreate, 
-    current_user: User = Security(get_current_user, scopes=["games:update"])
+    session: SessionDep,
+    game_session_id: str,
+    game_team_in: GameTeamCreate,
+    current_user: User = Security(get_current_user, scopes=["games:update"]),
 ):
     """
     Create a new game team.
@@ -257,7 +305,7 @@ def create_game_team(
     # check valid uuid
     try:
         game_session = session.get(GameSession, game_session_id)
-    except Exception as e:
+    except Exception:
         # except InvalidTextRepresentation as e:
         raise HTTPException(status_code=400, detail="Invalid UUID")
 
@@ -269,20 +317,23 @@ def create_game_team(
     #     game_session_id=game_session.id,
     # )
 
-    game_team = GameTeam.model_validate(game_team_in, update={"game_session_id": game_session.id} )
+    game_team = GameTeam.model_validate(
+        game_team_in, update={"game_session_id": game_session.id}
+    )
     session.add(game_team)
     session.commit()
     session.refresh(game_team)
 
     return game_team
 
+
 # delete game player
 @router.delete("/{game_session_id}/player/{game_player_id}")
 def delete_game_player(
-    session: SessionDep, 
-    game_session_id: str, 
-    game_player_id: str, 
-    current_user: User = Security(get_current_user, scopes=["games:update"])
+    session: SessionDep,
+    game_session_id: str,
+    game_player_id: str,
+    current_user: User = Security(get_current_user, scopes=["games:update"]),
 ):
     """
     Delete a game player.
@@ -290,7 +341,7 @@ def delete_game_player(
     # check valid uuid
     try:
         game_session = session.get(GameSession, game_session_id)
-    except Exception as e:
+    except Exception:
         # except InvalidTextRepresentation as e:
         raise HTTPException(status_code=400, detail="Invalid UUID")
 
@@ -300,7 +351,7 @@ def delete_game_player(
     # check valid uuid
     try:
         game_player = session.get(GamePlayer, game_player_id)
-    except Exception as e:
+    except Exception:
         # except InvalidTextRepresentation as e:
         raise HTTPException(status_code=400, detail="Invalid UUID")
 
@@ -308,20 +359,23 @@ def delete_game_player(
         raise HTTPException(status_code=404, detail="Game player not found")
 
     if game_player.game_session_id != game_session.id:
-        raise HTTPException(status_code=404, detail="Game player not found in this game session")
+        raise HTTPException(
+            status_code=404, detail="Game player not found in this game session"
+        )
 
     session.delete(game_player)
     session.commit()
 
     return {"success": True}
 
+
 # delete game team
 @router.delete("/{game_session_id}/team/{game_team_id}")
 def delete_game_team(
-    session: SessionDep, 
-    game_session_id: str, 
-    game_team_id: str, 
-    current_user: User = Security(get_current_user, scopes=["games:update"])
+    session: SessionDep,
+    game_session_id: str,
+    game_team_id: str,
+    current_user: User = Security(get_current_user, scopes=["games:update"]),
 ):
     """
     Delete a game team.
@@ -329,7 +383,7 @@ def delete_game_team(
     # check valid uuid
     try:
         game_session = session.get(GameSession, game_session_id)
-    except Exception as e:
+    except Exception:
         # except InvalidTextRepresentation as e:
         raise HTTPException(status_code=400, detail="Invalid UUID")
 
@@ -339,7 +393,7 @@ def delete_game_team(
     # check valid uuid
     try:
         game_team = session.get(GameTeam, game_team_id)
-    except Exception as e:
+    except Exception:
         # except InvalidTextRepresentation as e:
         raise HTTPException(status_code=400, detail="Invalid UUID")
 
@@ -347,21 +401,26 @@ def delete_game_team(
         raise HTTPException(status_code=404, detail="Game team not found")
 
     if game_team.game_session_id != game_session.id:
-        raise HTTPException(status_code=404, detail="Game team not found in this game session")
+        raise HTTPException(
+            status_code=404, detail="Game team not found in this game session"
+        )
 
     session.delete(game_team)
     session.commit()
 
     return {"success": True}
 
+
 # update game player
-@router.patch("/{game_session_id}/player/{game_player_id}", response_model=GamePlayerPublic)
+@router.patch(
+    "/{game_session_id}/player/{game_player_id}", response_model=GamePlayerPublic
+)
 def update_game_player(
-    session: SessionDep, 
-    game_session_id: str, 
-    game_player_id: str, 
-    game_player_in: GamePlayerUpdate, 
-    current_user: User = Security(get_current_user, scopes=["games:update"])
+    session: SessionDep,
+    game_session_id: str,
+    game_player_id: str,
+    game_player_in: GamePlayerUpdate,
+    current_user: User = Security(get_current_user, scopes=["games:update"]),
 ):
     """
     Update a game player (e.g., change name).
@@ -370,7 +429,7 @@ def update_game_player(
     # check valid uuid
     try:
         game_session = session.get(GameSession, game_session_id)
-    except Exception as e:
+    except Exception:
         # except InvalidTextRepresentation as e:
         raise HTTPException(status_code=400, detail="Invalid UUID")
     if not game_session:
@@ -378,13 +437,15 @@ def update_game_player(
     # check valid uuid
     try:
         game_player = session.get(GamePlayer, game_player_id)
-    except Exception as e:
+    except Exception:
         # except InvalidTextRepresentation as e:
         raise HTTPException(status_code=400, detail="Invalid UUID")
     if not game_player:
         raise HTTPException(status_code=404, detail="Game player not found")
     if game_player.game_session_id != game_session.id:
-        raise HTTPException(status_code=404, detail="Game player not found in this game session")
+        raise HTTPException(
+            status_code=404, detail="Game player not found in this game session"
+        )
     drink_links = game_player_in.drinks
     # print(drink_links)
     if drink_links:
@@ -393,15 +454,18 @@ def update_game_player(
             # Check if the drink itself exists
             drink = session.get(Drink, drink_link.drink_id)
             if not drink:
-                raise HTTPException(status_code=404, detail=f"Drink with id {drink_link.drink_id} not found")
+                raise HTTPException(
+                    status_code=404,
+                    detail=f"Drink with id {drink_link.drink_id} not found",
+                )
 
             # Find if a link already exists between this player and this drink
             statement = select(GamePlayerDrinkLink).where(
                 GamePlayerDrinkLink.game_player_id == game_player.id,
-                GamePlayerDrinkLink.drink_id == drink_link.drink_id
+                GamePlayerDrinkLink.drink_id == drink_link.drink_id,
             )
             existing_link = session.exec(statement).one_or_none()
-            
+
             if existing_link:
                 if drink_link.amount < 1:
                     # if amount is less than 1 (most likely 0), delete the link
@@ -417,10 +481,9 @@ def update_game_player(
                 new_link = GamePlayerDrinkLink(
                     game_player_id=game_player.id,
                     drink_id=drink_link.drink_id,
-                    amount=drink_link.amount
+                    amount=drink_link.amount,
                 )
                 session.add(new_link)
-
 
     # update the game player
     game_player_data = game_player_in.model_dump(exclude_unset=True, exclude={"drinks"})
@@ -431,15 +494,16 @@ def update_game_player(
     return game_player
 
 
-
-@router.patch("/{game_session_id}/player/{game_player_id}/drink", response_model=GamePlayerPublic)
+@router.patch(
+    "/{game_session_id}/player/{game_player_id}/drink", response_model=GamePlayerPublic
+)
 def add_drink_to_player(
     background_tasks: BackgroundTasks,
-    session: SessionDep, 
-    game_session_id: str, 
-    game_player_id: str, 
+    session: SessionDep,
+    game_session_id: str,
+    game_player_id: str,
     drink_link_in: GamePlayerDrinkLinkCreate,
-    current_user: User = Security(get_current_user, scopes=["games:update"])
+    current_user: User = Security(get_current_user, scopes=["games:update"]),
 ):
     """
     Add a drink to a game player or update the amount if the drink link already exists.
@@ -450,39 +514,49 @@ def add_drink_to_player(
     # check valid uuid for game_session_id
     try:
         game_session = session.get(GameSession, game_session_id)
-    except Exception as e:
-        raise HTTPException(status_code=400, detail="Invalid UUID format for game_session_id")
-        
+    except Exception:
+        raise HTTPException(
+            status_code=400, detail="Invalid UUID format for game_session_id"
+        )
+
     if not game_session:
         raise HTTPException(status_code=404, detail="Game session not found")
 
     # check valid uuid for game_player_id
     try:
         game_player = session.get(GamePlayer, game_player_id)
-    except Exception as e:
-        raise HTTPException(status_code=400, detail="Invalid UUID format for game_player_id")
-        
+    except Exception:
+        raise HTTPException(
+            status_code=400, detail="Invalid UUID format for game_player_id"
+        )
+
     if not game_player:
         raise HTTPException(status_code=404, detail="Game player not found")
 
     if game_player.game_session_id != game_session.id:
-        raise HTTPException(status_code=403, detail="Game player not found in this game session")
-    
+        raise HTTPException(
+            status_code=403, detail="Game player not found in this game session"
+        )
+
     # Check if the drink itself exists
     drink = session.get(Drink, drink_link_in.drink_id)
     if not drink:
-        raise HTTPException(status_code=404, detail=f"Drink with id {drink_link_in.drink_id} not found")
+        raise HTTPException(
+            status_code=404, detail=f"Drink with id {drink_link_in.drink_id} not found"
+        )
 
     # Find if a link already exists between this player and this drink
     statement = select(GamePlayerDrinkLink).where(
         GamePlayerDrinkLink.game_player_id == game_player.id,
-        GamePlayerDrinkLink.drink_id == drink_link_in.drink_id
+        GamePlayerDrinkLink.drink_id == drink_link_in.drink_id,
     )
     existing_link = session.exec(statement).one_or_none()
 
     if existing_link:
         # If the link exists, update its amount
-        existing_link.amount += drink_link_in.amount  # Increment the existing amount by the new amount
+        existing_link.amount += (
+            drink_link_in.amount
+        )  # Increment the existing amount by the new amount
         if existing_link.amount < 1:
             # If the resulting amount is less than 1, delete the link
             session.delete(existing_link)
@@ -493,12 +567,12 @@ def add_drink_to_player(
         new_link = GamePlayerDrinkLink(
             game_player_id=game_player.id,
             drink_id=drink_link_in.drink_id,
-            amount=drink_link_in.amount
+            amount=drink_link_in.amount,
         )
         session.add(new_link)
-    
+
     session.commit()
-    
+
     # Refresh the game_player instance to load the updated/new drink_links
     session.refresh(game_player)
 
@@ -508,18 +582,12 @@ def add_drink_to_player(
     return game_player
 
 
-
-
-
-
-
-
 # @router.patch("/{game_session_id}/player/{game_player_id}/drink", response_model=GamePlayerPublic)
 # def temp_update_game_player(
-#     session: SessionDep, 
-#     game_session_id: str, 
-#     game_player_id: str, 
-#     current_user: CurrentUser, 
+#     session: SessionDep,
+#     game_session_id: str,
+#     game_player_id: str,
+#     current_user: CurrentUser,
 #     drink_link_in: GamePlayerDrinkLinkCreate # Renamed from test_in for clarity
 # ):
 #     """
@@ -534,7 +602,7 @@ def add_drink_to_player(
 #         raise HTTPException(status_code=400, detail="Invalid UUID format for game_session_id")
 #     except Exception: # Catch other potential errors from session.get if ID is malformed beyond simple UUID format
 #         raise HTTPException(status_code=400, detail="Error processing game_session_id")
-        
+
 #     if not game_session:
 #         raise HTTPException(status_code=404, detail="Game session not found")
 
@@ -545,13 +613,13 @@ def add_drink_to_player(
 #         raise HTTPException(status_code=400, detail="Invalid UUID format for game_player_id")
 #     except Exception:
 #         raise HTTPException(status_code=400, detail="Error processing game_player_id")
-        
+
 #     if not game_player:
 #         raise HTTPException(status_code=404, detail="Game player not found")
 
 #     if game_player.game_session_id != game_session.id:
 #         raise HTTPException(status_code=403, detail="Game player not found in this game session")
-    
+
 #     # Check if the drink itself exists
 #     drink = session.get(Drink, drink_link_in.drink_id)
 #     if not drink:
@@ -577,7 +645,7 @@ def add_drink_to_player(
 #             amount=drink_link_in.amount
 #         )
 #         session.add(new_link)
-    
+
 #     session.commit()
 #     # Refresh the game_player instance to load the updated/new drink_links
 #     # This is important for the response_model=GamePlayerPublic to serialize correctly
@@ -596,18 +664,18 @@ async def game_session_updates(game_session_id: str):
     Server-Sent Events endpoint that streams real-time updates for a game session.
     Clients can connect to this endpoint to receive notifications when drinks are added.
     """
-    
+
     async def event_generator():
         # Create a queue for this client
         queue = asyncio.Queue()
-        
+
         # Add this client's queue to the subscribers list
         game_session_subscribers[game_session_id].append(queue)
-        
+
         try:
             # Send initial connection message
             yield f"data: {json.dumps({'type': 'connected', 'game_session_id': game_session_id})}\n\n"
-            
+
             # Send periodic heartbeat and listen for updates
             while True:
                 try:
@@ -617,7 +685,7 @@ async def game_session_updates(game_session_id: str):
                 except asyncio.TimeoutError:
                     # Send heartbeat to keep connection alive
                     yield f"data: {json.dumps({'type': 'heartbeat', 'timestamp': datetime.now().isoformat()})}\n\n"
-                    
+
         except asyncio.CancelledError:
             # Client disconnected
             pass
@@ -625,11 +693,11 @@ async def game_session_updates(game_session_id: str):
             # Remove this client's queue from subscribers
             if queue in game_session_subscribers[game_session_id]:
                 game_session_subscribers[game_session_id].remove(queue)
-            
+
             # Clean up empty subscriber lists
             if not game_session_subscribers[game_session_id]:
                 del game_session_subscribers[game_session_id]
-    
+
     return StreamingResponse(
         event_generator(),
         media_type="text/event-stream",
@@ -637,5 +705,5 @@ async def game_session_updates(game_session_id: str):
             "Cache-Control": "no-cache",
             "Connection": "keep-alive",
             "X-Accel-Buffering": "no",  # Disable buffering in nginx
-        }
+        },
     )

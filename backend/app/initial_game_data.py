@@ -1,12 +1,10 @@
 import logging
-import os
 from sqlmodel import Session, select
 
 from app.db import (
     engine,
     init_db,
 )
-from app import db_crud
 from app.models import (
     GameSession,
     User,
@@ -14,7 +12,6 @@ from app.models import (
     GamePlayer,
     Drink,
     GamePlayerDrinkLink,
-    GamePlayerDrinkLinkCreate,
 )
 from app.config import settings
 
@@ -30,13 +27,13 @@ def init():
         create_game_session(session, session_name="Game Session 6")
         add_drinks_to_players(session)
 
+
 def create_drinks(session: Session):
     """
-        Create drinks that can be added to players later
-        (the drinks are cocktails)
+    Create drinks that can be added to players later
+    (the drinks are cocktails)
     """
     logger.info("Creating drinks")
-
 
     drinks = [
         Drink(name="Mojito"),
@@ -58,9 +55,7 @@ def create_drinks(session: Session):
     session.commit()
     session.refresh(drink)
 
-
     logger.info("Drinks created")
-
 
 
 def create_game_session(session: Session, session_name: str = "Game Session 1"):
@@ -81,7 +76,7 @@ def create_game_session(session: Session, session_name: str = "Game Session 1"):
 
     for i in range(3):
         team = GameTeam(
-            name=f"Team {i+1}",
+            name=f"Team {i + 1}",
             game_session_id=game_session.id,
         )
         session.add(team)
@@ -90,7 +85,7 @@ def create_game_session(session: Session, session_name: str = "Game Session 1"):
 
         for j in range(5):
             player = GamePlayer(
-                name=f"Player {j+1} (Team {i+1})",
+                name=f"Player {j + 1} (Team {i + 1})",
                 game_session_id=game_session.id,
                 team_id=team.id,
             )
@@ -99,12 +94,13 @@ def create_game_session(session: Session, session_name: str = "Game Session 1"):
 
         logger.info("Game session created")
 
+
 def add_drinks_to_players(session: Session):
     """
-        Add drinks to players with varied amounts for better chart visualization
+    Add drinks to players with varied amounts for better chart visualization
     """
     import random
-    
+
     logger.info("Adding drinks to players")
     game_session = session.exec(
         select(GameSession).where(GameSession.title == "Game Session 6")
@@ -117,36 +113,27 @@ def add_drinks_to_players(session: Session):
     assert players
 
     # get all drinks
-    drinks = session.exec(
-        select(Drink)
-    ).all()
+    drinks = session.exec(select(Drink)).all()
     assert drinks
 
     # Add varied drinks to first 10 players for better chart visualization
     for i in range(min(10, len(players))):
         player = players[i]
-        
+
         # Each player gets 1-5 different drinks with amounts 1-3
         num_drinks = random.randint(1, 5)
         selected_drinks = random.sample(drinks, min(num_drinks, len(drinks)))
-        
+
         for drink in selected_drinks:
             amount = random.randint(1, 3)
             drink_link = GamePlayerDrinkLink(
-                game_player=player,
-                drink=drink,
-                amount=amount
+                game_player=player, drink=drink, amount=amount
             )
             session.add(drink_link)
             logger.info(f"Added {amount} x {drink.name} to player {player.name}")
-    
+
     session.commit()
     logger.info("Enhanced drinks added to players for chart visualization")
-
-
-
-
-
 
 
 def main():
@@ -154,6 +141,6 @@ def main():
     init()
     logger.info("Initial game data created")
 
+
 if __name__ == "__main__":
     main()
-

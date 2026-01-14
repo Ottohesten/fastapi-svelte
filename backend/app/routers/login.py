@@ -24,7 +24,9 @@ router = APIRouter(tags=["login"])
 
 @router.post("/login/access-token")
 def login_access_token(
-    session: SessionDep, form_data: Annotated[OAuth2PasswordRequestForm, Depends()], response: Response
+    session: SessionDep,
+    form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
+    response: Response,
 ) -> Token:
     """
     OAuth2 compatible token login, get an access token for future requests
@@ -36,14 +38,15 @@ def login_access_token(
         raise HTTPException(status_code=400, detail="Incorrect email or password")
     elif not user.is_active:
         raise HTTPException(status_code=400, detail="Inactive user")
-    
+
     # Get user's effective scopes from roles + custom scopes
     user_scopes = list(get_user_effective_scopes(user))
-    
+
     access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
     refresh_token_expires = timedelta(days=settings.REFRESH_TOKEN_EXPIRE_DAYS)
     access_token = security.create_access_token(
-        data={"sub": user.email, "scopes": user_scopes}, expires_delta=access_token_expires
+        data={"sub": user.email, "scopes": user_scopes},
+        expires_delta=access_token_expires,
     )
     refresh_token = security.create_refresh_token(
         data={"sub": user.email}, expires_delta=refresh_token_expires
@@ -53,10 +56,11 @@ def login_access_token(
         session=session,
         user_id=user.id,
         token=refresh_token,
-        expires_at=(settings and (settings.ENVIRONMENT,)) and (  # placeholder to suppress static checks
+        expires_at=(settings and (settings.ENVIRONMENT,))
+        and (  # placeholder to suppress static checks
             # compute absolute expiry using timedelta relative to now on server side
             __import__("datetime").datetime.utcnow() + refresh_token_expires
-        )
+        ),
     )
     # HTTP-only cookie for refresh token (optional; primary flow uses body to rotate)
     response.set_cookie(
@@ -72,7 +76,9 @@ def login_access_token(
 
 
 @router.post("/login/refresh", response_model=Token)
-def refresh_access_token(response: Response, session: SessionDep, body: RefreshRequest) -> Token:
+def refresh_access_token(
+    response: Response, session: SessionDep, body: RefreshRequest
+) -> Token:
     """
     Issue a new access token using the refresh token from cookie (preferred) or body.
     """
@@ -80,17 +86,21 @@ def refresh_access_token(response: Response, session: SessionDep, body: RefreshR
     # FastAPI provides cookies through Request, but we can accept via dependency on Response? Simpler: use body param and document cookie usage in frontend.
     # We'll still try to read from cookie via a workaround in Request if needed; keeping minimal here.
     import jwt
+
     # Note: accept both locations to keep it simple for now
     # Retrieve from cookie if not provided
     # We expect the refresh token in the request body; cookie is maintained for browser storage convenience.
     # Decode and validate refresh token
     from jwt import InvalidTokenError
+
     try:
         token_to_use = body.refresh_token
         if token_to_use is None:
             # If not provided, raise clear 401
             raise HTTPException(status_code=401, detail="Missing refresh token")
-        payload = jwt.decode(token_to_use, settings.SECRET_KEY, algorithms=[security.ALGORITHM])
+        payload = jwt.decode(
+            token_to_use, settings.SECRET_KEY, algorithms=[security.ALGORITHM]
+        )
         if payload.get("type") != "refresh":
             raise HTTPException(status_code=401, detail="Invalid token type")
         sub = payload.get("sub")
@@ -103,7 +113,7 @@ def refresh_access_token(response: Response, session: SessionDep, body: RefreshR
         # expiry check (defense-in-depth beyond JWT exp)
         if rec.expires_at <= __import__("datetime").datetime.utcnow():
             raise HTTPException(status_code=401, detail="Refresh token expired")
-    except (InvalidTokenError, HTTPException) as e:
+    except (InvalidTokenError, HTTPException):
         raise
     # Load user and build scopes
     user = db_crud.get_user_by_email(session=session, email=sub)
@@ -112,17 +122,22 @@ def refresh_access_token(response: Response, session: SessionDep, body: RefreshR
     user_scopes = list(get_user_effective_scopes(user))
     access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
     new_access = security.create_access_token(
-        data={"sub": user.email, "scopes": user_scopes}, expires_delta=access_token_expires
+        data={"sub": user.email, "scopes": user_scopes},
+        expires_delta=access_token_expires,
     )
     # Optionally rotate refresh token
     refresh_token_expires = timedelta(days=settings.REFRESH_TOKEN_EXPIRE_DAYS)
-    new_refresh = security.create_refresh_token(data={"sub": user.email}, expires_delta=refresh_token_expires)
+    new_refresh = security.create_refresh_token(
+        data={"sub": user.email}, expires_delta=refresh_token_expires
+    )
     # rotate DB record
     db_crud.rotate_refresh_token(
         session=session,
         old_token=token_to_use,
         new_token=new_refresh,
-        new_expires_at=(__import__("datetime").datetime.utcnow() + refresh_token_expires)
+        new_expires_at=(
+            __import__("datetime").datetime.utcnow() + refresh_token_expires
+        ),
     )
     response.set_cookie(
         key="refresh_token",
@@ -137,7 +152,9 @@ def refresh_access_token(response: Response, session: SessionDep, body: RefreshR
 
 
 @router.post("/logout", response_model=Message)
-def logout(response: Response, session: SessionDep, body: RefreshRequest | None = None) -> Message:
+def logout(
+    response: Response, session: SessionDep, body: RefreshRequest | None = None
+) -> Message:
     """Clear refresh cookie (client should also clear access-token cookie)."""
     # If a refresh token is provided, revoke it
     if body and body.refresh_token:
@@ -209,9 +226,9 @@ def reset_password(session: SessionDep, body: NewPassword) -> Message:
     response_class=HTMLResponse,
 )
 def recover_password_html_content(
-    email: str, 
+    email: str,
     session: SessionDep,
-    current_user: User = Security(get_current_user, scopes=["users:update"])
+    current_user: User = Security(get_current_user, scopes=["users:update"]),
 ) -> Any:
     """
     HTML Content for Password Recovery

@@ -2,17 +2,14 @@ import secrets
 
 from pydantic_core import MultiHostUrl
 from pydantic_settings import BaseSettings, SettingsConfigDict
-from typing import Literal, Annotated, Any
-from functools import lru_cache
+from typing import Literal, Any
 
 from pydantic import (
-    AnyUrl,
-    BeforeValidator,
-    HttpUrl,
     PostgresDsn,
     computed_field,
     model_validator,
 )
+
 
 def parse_cors(v: Any) -> list[str] | str:
     if isinstance(v, str) and not v.startswith("["):
@@ -21,6 +18,7 @@ def parse_cors(v: Any) -> list[str] | str:
         return v
     raise ValueError(v)
 
+
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
         # Use top level .env file (one level above ./backend/)
@@ -28,7 +26,7 @@ class Settings(BaseSettings):
         env_ignore_empty=True,
         extra="ignore",
     )
-    
+
     SECRET_KEY: str = secrets.token_urlsafe(32)
     # ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 8
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 10
@@ -57,7 +55,7 @@ class Settings(BaseSettings):
     TEST_POSTGRES_PASSWORD: str
     TEST_POSTGRES_DB: str
 
-    @computed_field 
+    @computed_field
     @property
     def SQLALCHEMY_DATABASE_URI(self) -> PostgresDsn:
         return MultiHostUrl.build(
@@ -67,8 +65,8 @@ class Settings(BaseSettings):
             host=self.POSTGRES_SERVER,
             port=self.POSTGRES_PORT,
             path=self.POSTGRES_DB,
-        ) # type: ignore
-    
+        )  # type: ignore
+
     @computed_field
     @property
     def SQLALCHEMY_DATABASE_URI_TEST(self) -> PostgresDsn:
@@ -79,8 +77,8 @@ class Settings(BaseSettings):
             host=self.TEST_POSTGRES_SERVER,
             port=self.TEST_POSTGRES_PORT,
             path=self.TEST_POSTGRES_DB,
-        ) # type: ignore
-    
+        )  # type: ignore
+
     # print(str(SQLALCHEMY_DATABASE_URI))
     SMTP_TLS: bool = True
     SMTP_SSL: bool = False
@@ -113,16 +111,8 @@ class Settings(BaseSettings):
     FIRST_SUPERUSER_PASSWORD: str
 
 
-    
-
-    
-
-
-    
-
-
-
 settings = Settings()
+
 
 # @lru_cache
 def get_settings():

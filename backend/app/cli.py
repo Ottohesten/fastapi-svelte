@@ -2,14 +2,13 @@ import typer
 from sqlmodel import Session
 from app.db import engine
 from app.permissions import (
-    initialize_default_roles, 
-    ROLE_TEMPLATES, 
+    initialize_default_roles,
     AVAILABLE_SCOPES,
     assign_role_to_user,
-    get_user_effective_scopes
+    get_user_effective_scopes,
 )
 from app.db_crud import get_user_by_email
-from app.models import Role, User
+from app.models import Role
 from sqlmodel import select
 
 app = typer.Typer()
@@ -43,11 +42,11 @@ def list_roles():
     """List all roles and their scopes"""
     with Session(engine) as session:
         roles = session.exec(select(Role)).all()
-        
+
         if not roles:
             print("No roles found. Run 'init-roles' first.")
             return
-        
+
         for role in roles:
             print(f"\n🎭 {role.name}")
             print(f"   Description: {role.description}")
@@ -70,10 +69,11 @@ def delete_role(role_name: str):
         if not role:
             print(f"❌ Role '{role_name}' not found")
             return
-        
+
         session.delete(role)
         session.commit()
         print(f"✅ Deleted role '{role_name}'")
+
 
 @app.command()
 def delete_all_roles():
@@ -83,10 +83,10 @@ def delete_all_roles():
         if not roles:
             print("No roles to delete.")
             return
-        
+
         for role in roles:
             session.delete(role)
-        
+
         session.commit()
         print(f"✅ Deleted {len(roles)} roles")
 
@@ -99,7 +99,7 @@ def assign_role(email: str, role_name: str):
         if not user:
             print(f"❌ User with email '{email}' not found")
             return
-        
+
         success = assign_role_to_user(session, user, role_name)
         if success:
             print(f"✅ Assigned role '{role_name}' to user '{email}'")
@@ -115,19 +115,19 @@ def show_user_permissions(email: str):
         if not user:
             print(f"❌ User with email '{email}' not found")
             return
-        
+
         print(f"\n👤 User: {user.email}")
         print(f"   Superuser: {user.is_superuser}")
         print(f"   Active: {user.is_active}")
-        
+
         print(f"\n🎭 Roles ({len(user.roles)}):")
         for role in user.roles:
             print(f"  - {role.name}")
-        
+
         print(f"\n🔑 Custom Scopes ({len(user.custom_scopes)}):")
         for scope in user.custom_scopes:
             print(f"  - {scope}")
-        
+
         effective_scopes = get_user_effective_scopes(user)
         print(f"\n✅ Effective Permissions ({len(effective_scopes)}):")
         for scope in sorted(effective_scopes):

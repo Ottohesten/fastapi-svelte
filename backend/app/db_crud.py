@@ -6,7 +6,7 @@ from sqlmodel import Session, select
 from app.security import get_password_hash, verify_password
 from app.models import Item, ItemCreate, User, UserCreate, UserUpdate, RefreshToken
 from hashlib import sha256
-from datetime import datetime, timedelta
+from datetime import datetime
 
 
 def create_user(*, session: Session, user_create: UserCreate) -> User:
@@ -61,8 +61,12 @@ def hash_token(token: str) -> str:
     return sha256(token.encode("utf-8")).hexdigest()
 
 
-def store_refresh_token(*, session: Session, user_id: uuid.UUID, token: str, expires_at: datetime) -> RefreshToken:
-    rec = RefreshToken(user_id=user_id, token_hash=hash_token(token), expires_at=expires_at)
+def store_refresh_token(
+    *, session: Session, user_id: uuid.UUID, token: str, expires_at: datetime
+) -> RefreshToken:
+    rec = RefreshToken(
+        user_id=user_id, token_hash=hash_token(token), expires_at=expires_at
+    )
     session.add(rec)
     session.commit()
     session.refresh(rec)
@@ -83,7 +87,9 @@ def revoke_refresh_token(*, session: Session, token: str) -> None:
         session.commit()
 
 
-def rotate_refresh_token(*, session: Session, old_token: str, new_token: str, new_expires_at: datetime) -> RefreshToken:
+def rotate_refresh_token(
+    *, session: Session, old_token: str, new_token: str, new_expires_at: datetime
+) -> RefreshToken:
     # revoke old
     revoke_refresh_token(session=session, token=old_token)
     # store new
@@ -92,4 +98,6 @@ def rotate_refresh_token(*, session: Session, old_token: str, new_token: str, ne
     # If not found, cannot infer user; caller must handle
     if not old:
         raise ValueError("Old refresh token not found for rotation")
-    return store_refresh_token(session=session, user_id=old.user_id, token=new_token, expires_at=new_expires_at)
+    return store_refresh_token(
+        session=session, user_id=old.user_id, token=new_token, expires_at=new_expires_at
+    )

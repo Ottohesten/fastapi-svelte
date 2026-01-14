@@ -7,9 +7,12 @@ from datetime import datetime
 
 
 class UserRoleLink(SQLModel, table=True):
-    user_id: uuid.UUID | None = Field(default=None, foreign_key="user.id", primary_key=True)
-    role_id: uuid.UUID | None = Field(default=None, foreign_key="role.id", primary_key=True)
-
+    user_id: uuid.UUID | None = Field(
+        default=None, foreign_key="user.id", primary_key=True
+    )
+    role_id: uuid.UUID | None = Field(
+        default=None, foreign_key="role.id", primary_key=True
+    )
 
 
 class Role(SQLModel, table=True):
@@ -17,8 +20,11 @@ class Role(SQLModel, table=True):
     name: str
     description: str | None = None
     users: list["User"] = Relationship(back_populates="roles", link_model=UserRoleLink)
-    scopes: list[str] = Field(default_factory=list, description="List of scopes that this role has access to", sa_column=Column(JSON))
-
+    scopes: list[str] = Field(
+        default_factory=list,
+        description="List of scopes that this role has access to",
+        sa_column=Column(JSON),
+    )
 
 
 # Shared properties
@@ -28,6 +34,7 @@ class UserBase(SQLModel):
     is_superuser: bool = False
     full_name: str | None = Field(default=None, max_length=255)
 
+
 class User(UserBase, table=True):
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
     hashed_password: str
@@ -35,7 +42,10 @@ class User(UserBase, table=True):
     roles: list["Role"] = Relationship(back_populates="users", link_model=UserRoleLink)
     recipes: list["Recipe"] = Relationship(back_populates="owner")
     custom_scopes: list[str] = Field(
-        default_factory=list, description="List of custom scopes that this user has access to", sa_column=Column(JSON))
+        default_factory=list,
+        description="List of custom scopes that this user has access to",
+        sa_column=Column(JSON),
+    )
 
     # H.C game
     game_sessions: list["GameSession"] = Relationship(back_populates="owner")
@@ -67,8 +77,6 @@ class UserUpdateMe(SQLModel):
 class UpdatePassword(SQLModel):
     current_password: str = Field(min_length=8, max_length=40)
     new_password: str = Field(min_length=8, max_length=40)
-
-
 
 
 # Properties to return via API, id is always required
@@ -134,8 +142,6 @@ class NewPassword(SQLModel):
     new_password: str = Field(min_length=8, max_length=40)
 
 
-
-
 # Shared properties
 class ItemBase(SQLModel):
     title: str = Field(min_length=1, max_length=255)
@@ -173,59 +179,81 @@ class ItemsPublic(SQLModel):
     count: int
 
 
-
 #####################################################################################
 # link model
 
+
 class RecipeIngredientLink(SQLModel, table=True):
-    recipe_id: uuid.UUID | None = Field(default=None, foreign_key="recipe.id", primary_key=True)
-    ingredient_id: uuid.UUID | None = Field(default=None, foreign_key="ingredient.id", primary_key=True)
+    recipe_id: uuid.UUID | None = Field(
+        default=None, foreign_key="recipe.id", primary_key=True
+    )
+    ingredient_id: uuid.UUID | None = Field(
+        default=None, foreign_key="ingredient.id", primary_key=True
+    )
 
     # units enum
-    amount: float = Field(default=1.0, ge=0, description="Amount of the ingredient in the recipe")
-    unit: str = Field(default="g", max_length=10, description="Unit of the amount, e.g. g, ml, pcs, etc.")
+    amount: float = Field(
+        default=1.0, ge=0, description="Amount of the ingredient in the recipe"
+    )
+    unit: str = Field(
+        default="g",
+        max_length=10,
+        description="Unit of the amount, e.g. g, ml, pcs, etc.",
+    )
 
     recipe: "Recipe" = Relationship(back_populates="ingredient_links")
     ingredient: "Ingredient" = Relationship(back_populates="recipe_links")
-
-
 
 
 class RecipeIngredientLinkCreate(SQLModel):
     """
     Create a new recipe ingredient link.
     """
+
     ingredient_id: uuid.UUID
-    amount: float = Field(default=1.0, ge=0, description="Amount of the ingredient in the recipe")
-    unit: str = Field(default="g", max_length=10, description="Unit of the amount, e.g. g, ml, pcs, etc.")
+    amount: float = Field(
+        default=1.0, ge=0, description="Amount of the ingredient in the recipe"
+    )
+    unit: str = Field(
+        default="g",
+        max_length=10,
+        description="Unit of the amount, e.g. g, ml, pcs, etc.",
+    )
 
 
 class RecipeIngredientLinkPublic(SQLModel):
     """
     Public class for recipe ingredient link.
     """
+
     ingredient: "IngredientPublic"
     amount: float
-    unit: str = Field(default="g", max_length=10, description="Unit of the amount, e.g. g, ml, pcs, etc.")
+    unit: str = Field(
+        default="g",
+        max_length=10,
+        description="Unit of the amount, e.g. g, ml, pcs, etc.",
+    )
+
 
 #####################################################################################
 # Recipes
 
+
 class RecipeBase(SQLModel):
     title: str = Field(max_length=255, min_length=1)
-    instructions: Optional[str]  = Field(default=None, max_length=9999)
+    instructions: Optional[str] = Field(default=None, max_length=9999)
     servings: int = Field(default=1)
 
 
 class RecipeCreate(RecipeBase):
-    ingredients: list[RecipeIngredientLinkCreate] 
+    ingredients: list[RecipeIngredientLinkCreate]
 
 
 class RecipePublic(RecipeBase):
-    id: uuid.UUID 
+    id: uuid.UUID
     owner: UserPublic
     ingredient_links: list[RecipeIngredientLinkPublic]
-    
+
     @computed_field
     @property
     def total_calories(self) -> int:
@@ -244,13 +272,13 @@ class RecipePublic(RecipeBase):
             elif link.unit == "pcs":
                 # Use ingredient's weight_per_piece for calculation
                 amount_in_grams = link.amount * link.ingredient.weight_per_piece
-            
+
             # Calculate calories: (calories_per_100g * amount_in_grams) / 100
             ingredient_calories = (link.ingredient.calories * amount_in_grams) / 100
             total += ingredient_calories
-            
+
         return round(total)
-    
+
     @computed_field
     @property
     def calories_per_serving(self) -> int:
@@ -258,7 +286,6 @@ class RecipePublic(RecipeBase):
         if self.servings <= 0:
             return 0
         return round(self.total_calories / self.servings)
-    
 
     @computed_field
     @property
@@ -282,7 +309,6 @@ class RecipePublic(RecipeBase):
             total_weight += amount_in_grams
 
         return round(total_weight)
-    
 
     @computed_field
     @property
@@ -300,6 +326,7 @@ class Recipe(RecipeBase, table=True):
 
     Should have an owner and a list of ingredients. However a recipe for every ingredints, the ingredient should also have an amount of that ingredient and the unit of the amount
     """
+
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
     title: str = Field(max_length=255)
     instructions: Optional[str] = Field(default=None, max_length=9999)
@@ -313,27 +340,34 @@ class Recipe(RecipeBase, table=True):
     # image
     # image: str | None = Field(default=None, max_length=255)
 
-    ingredient_links: list[RecipeIngredientLink] = Relationship(back_populates="recipe", cascade_delete=True)
-    
-
+    ingredient_links: list[RecipeIngredientLink] = Relationship(
+        back_populates="recipe", cascade_delete=True
+    )
 
     # class Config:
     #     arbitrary_types_allowed = True
 
 
-
-
 #####################################################################################
 # Ingredients
 
+
 class IngredientBase(SQLModel):
     title: str = Field(max_length=255, min_length=1)
-    calories: int = Field(default=0, ge=0, description="Calories per 100g of the ingredient")
-    weight_per_piece: int = Field(default=100, ge=0, description="Average weight per piece in grams (used when unit is 'pcs')")
+    calories: int = Field(
+        default=0, ge=0, description="Calories per 100g of the ingredient"
+    )
+    weight_per_piece: int = Field(
+        default=100,
+        ge=0,
+        description="Average weight per piece in grams (used when unit is 'pcs')",
+    )
     # pass
+
 
 class IngredientCreate(IngredientBase):
     pass
+
 
 class IngredientPublic(IngredientBase):
     id: uuid.UUID
@@ -346,15 +380,23 @@ class Ingredient(IngredientBase, table=True):
 
     Should have a title (will later be the primary key) and a list of recipes that use this ingredient. Amount and unit of the amount will be handled in the RecipeIngredientLink model
     """
+
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
     title: str = Field(max_length=255, min_length=1)
-    calories: int = Field(default=0, ge=0, description="Calories per 100g of the ingredient")
-    weight_per_piece: int = Field(default=1, ge=0, description="Average weight per piece in grams (used when unit is 'pcs')", sa_column_kwargs={"server_default": "1"})
+    calories: int = Field(
+        default=0, ge=0, description="Calories per 100g of the ingredient"
+    )
+    weight_per_piece: int = Field(
+        default=1,
+        ge=0,
+        description="Average weight per piece in grams (used when unit is 'pcs')",
+        sa_column_kwargs={"server_default": "1"},
+    )
 
     # recipes: list["Recipe"] = Relationship(back_populates="ingredients", link_model=RecipeIngredientLink)
-    recipe_links: list["RecipeIngredientLink"] = Relationship(back_populates="ingredient", cascade_delete=True)
-
-    
+    recipe_links: list["RecipeIngredientLink"] = Relationship(
+        back_populates="ingredient", cascade_delete=True
+    )
 
 
 # for H.C game
@@ -364,10 +406,12 @@ The game has a session. Each session has a title, a list of players and these pl
 
 """
 
+
 class GameSessionBase(SQLModel):
     """
     Base class for game session. Should have a title and a list of players and their information (scores etc.)
     """
+
     title: str = Field(max_length=255, min_length=1)
 
 
@@ -381,10 +425,12 @@ class GameSessionPublic(GameSessionBase):
 
     Should have an owner (user) and a list of players and their information (scores etc.)
     """
+
     id: uuid.UUID
     owner: UserPublic
     players: list["GamePlayerPublic"]
     teams: list["GameTeamPublic"]
+
 
 class GameSessionUpdate(GameSessionBase):
     """
@@ -392,6 +438,7 @@ class GameSessionUpdate(GameSessionBase):
 
     Should have an owner (user) and a list of players and their information (scores etc.)
     """
+
     id: uuid.UUID | None = None
     players: list["GamePlayer"] | None = None
     teams: list["GameTeam"] | None = None
@@ -401,24 +448,34 @@ class GameSession(GameSessionBase, table=True):
     """
     A game session that has an id, a user that created it (admin) and a list of players and their information (scores etc.)
     """
+
     title: str = Field(max_length=255, min_length=1, nullable=True)
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
     owner_id: uuid.UUID = Field(foreign_key="user.id", nullable=False)
     owner: User = Relationship(back_populates="game_sessions")
 
-    teams: Optional[list["GameTeam"]] = Relationship(back_populates="game_session", cascade_delete=True)
-    players: Optional[list["GamePlayer"]] = Relationship(back_populates="game_session", cascade_delete=True)
-
-
+    teams: Optional[list["GameTeam"]] = Relationship(
+        back_populates="game_session", cascade_delete=True
+    )
+    players: Optional[list["GamePlayer"]] = Relationship(
+        back_populates="game_session", cascade_delete=True
+    )
 
 
 class GamePlayerDrinkLink(SQLModel, table=True):
     """
     Link model for the many to many relationship between GamePlayer and Drink, with amount field
     """
-    game_player_id: uuid.UUID | None = Field(default=None, foreign_key="gameplayer.id", primary_key=True)
-    drink_id: uuid.UUID | None = Field(default=None, foreign_key="drink.id", primary_key=True)
-    amount: int = Field(default=1, ge=1, description="How many of this drink the player has consumed")
+
+    game_player_id: uuid.UUID | None = Field(
+        default=None, foreign_key="gameplayer.id", primary_key=True
+    )
+    drink_id: uuid.UUID | None = Field(
+        default=None, foreign_key="drink.id", primary_key=True
+    )
+    amount: int = Field(
+        default=1, ge=1, description="How many of this drink the player has consumed"
+    )
 
     game_player: "GamePlayer" = Relationship(back_populates="drink_links")
     drink: "Drink" = Relationship(back_populates="player_links")
@@ -428,13 +485,18 @@ class GamePlayerDrinkLinkCreate(SQLModel):
     """
     Create class for GamePlayerDrinkLink
     """
+
     drink_id: uuid.UUID
-    amount: int = Field(default=1, ge=0, description="How many of this drink the player has consumed")
+    amount: int = Field(
+        default=1, ge=0, description="How many of this drink the player has consumed"
+    )
+
 
 class GamePlayerDrinkLinkPublic(SQLModel):
     """
     Public class for GamePlayerDrinkLink
     """
+
     amount: int
     drink: "DrinkPublic"
 
@@ -443,6 +505,7 @@ class GamePlayerBase(SQLModel):
     """
     Base class for game player
     """
+
     name: str = Field(max_length=255, min_length=1)
 
 
@@ -450,12 +513,15 @@ class GamePlayerCreate(GamePlayerBase):
     """
     Create class for game player
     """
+
     team_id: Optional[uuid.UUID] = None
+
 
 class GamePlayerUpdate(GamePlayerBase):
     """
     Update class for game player, can update name and team, can not change game session
     """
+
     name: Optional[str] = None
     team_id: Optional[uuid.UUID] = None
     drinks: Optional[list[GamePlayerDrinkLinkCreate]] = None
@@ -467,6 +533,7 @@ class GamePlayerPublic(GamePlayerBase):
     """
     Public class for game player
     """
+
     id: uuid.UUID
     # game_session: GameSessionPublic
     game_session_id: uuid.UUID
@@ -474,41 +541,48 @@ class GamePlayerPublic(GamePlayerBase):
     team: Optional["GameTeamPlayerPublic"] = None
     drink_links: list["GamePlayerDrinkLinkPublic"]
 
+
 class GamePlayer(GamePlayerBase, table=True):
     """
     Game player model
 
     Should have a name, a team and a list of drinks (many to many relationship)
     """
+
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
     name: str = Field(max_length=255, min_length=1)
 
     game_session_id: uuid.UUID = Field(foreign_key="gamesession.id", nullable=False)
     game_session: GameSession = Relationship(back_populates="players")
 
-    team_id: Optional[uuid.UUID] = Field(default=None, foreign_key="gameteam.id", nullable=True)
-    team: Optional["GameTeam"] = Relationship(back_populates="players")    # drinks: list["Drink"] = Relationship(back_populates="players", link_model=GamePlayerDrinkLink)
-    drink_links: list["GamePlayerDrinkLink"] = Relationship(back_populates="game_player", cascade_delete=True)
-
+    team_id: Optional[uuid.UUID] = Field(
+        default=None, foreign_key="gameteam.id", nullable=True
+    )
+    team: Optional["GameTeam"] = Relationship(
+        back_populates="players"
+    )  # drinks: list["Drink"] = Relationship(back_populates="players", link_model=GamePlayerDrinkLink)
+    drink_links: list["GamePlayerDrinkLink"] = Relationship(
+        back_populates="game_player", cascade_delete=True
+    )
 
 
 class GameTeamBase(SQLModel):
     """
     Base class for game team
     """
+
     name: str = Field(max_length=255, min_length=1)
-    
 
 
 class GameTeamCreate(GameTeamBase):
     pass
 
 
-
 class GameTeamPublic(GameTeamBase):
     """
     Public class for game team
     """
+
     id: uuid.UUID
     players: list["GamePlayer"]
     game_session_id: uuid.UUID
@@ -525,17 +599,20 @@ class GameTeam(GameTeamBase, table=True):
 
     Should have a name and a list of players. Each player can only be in one team.
     """
+
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
     name: str = Field(max_length=255, min_length=1)
     players: Optional[list["GamePlayer"]] = Relationship(back_populates="team")
 
-    game_session_id: uuid.UUID = Field(default=None, foreign_key="gamesession.id", nullable=False)
+    game_session_id: uuid.UUID = Field(
+        default=None, foreign_key="gamesession.id", nullable=False
+    )
     game_session: "GameSession" = Relationship(back_populates="teams")
-
 
 
 class DrinkBase(SQLModel):
     name: str = Field(max_length=255, min_length=1)
+
 
 class DrinkCreate(DrinkBase):
     pass
@@ -545,6 +622,7 @@ class DrinkPublic(DrinkBase):
     name: str
     id: uuid.UUID
 
+
 class Drink(DrinkBase, table=True):
     """
     Drink model
@@ -553,35 +631,22 @@ class Drink(DrinkBase, table=True):
     - name: str
     - players: list[GamePlayer] | None
     """
+
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
     name: str = Field(max_length=255, min_length=1)
-
 
     # players: list["GamePlayer"] | None = Relationship(back_populates="drinks", link_model=GamePlayerDrinkLink)
     player_links: list["GamePlayerDrinkLink"] = Relationship(back_populates="drink")
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 #####################################################################################
-# 
+#
 
 
 # Generic message
 class Message(BaseModel):
     message: str
+
 
 # HTTPException detail
 class HTTPExceptionDetail(BaseModel):
@@ -596,15 +661,15 @@ class RefreshRequest(BaseModel):
 class RefreshToken(SQLModel, table=True):
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
     user_id: uuid.UUID = Field(foreign_key="user.id", nullable=False)
-    token_hash: str = Field(index=True, max_length=128, description="SHA256 of the refresh token")
+    token_hash: str = Field(
+        index=True, max_length=128, description="SHA256 of the refresh token"
+    )
     jti: uuid.UUID = Field(default_factory=uuid.uuid4, index=True)
     created_at: datetime = Field(default_factory=datetime.utcnow)
     expires_at: datetime
     revoked_at: datetime | None = None
 
     user: Optional["User"] = Relationship(sa_relationship_kwargs={"lazy": "selectin"})
-
-
 
 
 # Team and Person models

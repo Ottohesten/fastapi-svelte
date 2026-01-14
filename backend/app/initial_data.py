@@ -3,8 +3,8 @@ import logging
 from sqlmodel import Session
 
 from app.db import (
-    engine, 
-    init_db, 
+    engine,
+    init_db,
     # create_ingredients_and_recipes
 )
 # from app.db import create_heroes
@@ -20,7 +20,6 @@ def init() -> None:
         # create_ingredients_and_recipes(session)
         # print("Creating start hero data")
         # create_heroes(session)
-
 
 
 def main() -> None:

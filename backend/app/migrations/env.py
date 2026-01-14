@@ -2,7 +2,6 @@ from logging.config import fileConfig
 
 from sqlalchemy import engine_from_config
 from sqlalchemy import pool
-import os
 
 from alembic import context
 
@@ -21,7 +20,8 @@ if config.config_file_name is not None:
 # target_metadata = mymodel.Base.metadata
 
 from app.models import SQLModel  # noqa
-from app.config import settings # noqa
+from app.config import settings  # noqa
+
 target_metadata = SQLModel.metadata
 
 # if os.getenv("TESTING") == "1":
@@ -77,9 +77,7 @@ def run_migrations_online() -> None:
     )
 
     with connectable.connect() as connection:
-        context.configure(
-            connection=connection, target_metadata=target_metadata
-        )
+        context.configure(connection=connection, target_metadata=target_metadata)
 
         with context.begin_transaction():
             context.run_migrations()

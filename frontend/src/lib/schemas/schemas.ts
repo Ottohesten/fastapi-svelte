@@ -122,4 +122,3 @@ export const GameSessionAddDrinkSchema = z.object({
     drink_id: z.string().min(1, "Drink is required"),
     amount: z.number().int().min(1, "Amount must be at least 1").default(1)
 })
-

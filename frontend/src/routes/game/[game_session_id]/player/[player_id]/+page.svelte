@@ -164,7 +164,7 @@
 </div>
 
 <!-- Original content commented out -->
-<!-- 
+<!--
 This is the main page for a player in a game. It will show the player's stats, achievements, and
 other relevant information.
 

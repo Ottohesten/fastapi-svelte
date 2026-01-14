@@ -26,6 +26,3 @@ export const load = async ({ fetch, locals }) => {
         scopes: locals.authenticatedUser?.scopes ?? []
     }
 }
-
-
-

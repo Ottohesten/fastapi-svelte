@@ -45,4 +45,3 @@ export const createFormApiClient = (customFetch: typeof fetch = fetch) => {
 
 // Export a default client for cases where we don't need SvelteKit's fetch
 export const { GET, POST, PATCH, PUT, DELETE, HEAD, TRACE } = createApiClient();
-

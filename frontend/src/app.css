@@ -177,4 +177,3 @@ input[type="checkbox"][aria-invalid="true"] {
 input[type="radio"][aria-invalid="true"] {
   @apply border-red-500 text-red-600 focus:ring-red-500/20;
 }
-

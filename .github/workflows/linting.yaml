@@ -1,0 +1,36 @@
+name: Code linting
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  format:
+    name: Check code formatting
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Setup uv
+        uses: astral-sh/setup-uv@v7
+        with:
+          python-version: ${{ matrix.python-version }}
+          enable-cache: true
+
+      - name: Install dependencies
+        run: |
+          uv sync --dev --locked
+
+      - name: ruff check
+        run: |
+          uv run ruff check .
+
+      - name: ruff format
+        run: |
+          uv run ruff format --check .

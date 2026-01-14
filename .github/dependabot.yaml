@@ -1,0 +1,22 @@
+version: 2
+updates:
+  # github actions
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+  # uv
+  - package-ecosystem: "uv"
+    directory: "/backend"
+    schedule:
+      interval: "weekly"
+  # npm
+  - package-ecosystem: npm
+    directory: /frontend
+    schedule:
+      interval: "weekly"
+    commit-message:
+      prefix: ⬆
+    labels: [dependencies, internal]
+    ignore:
+      - dependency-name: "@hey-api/openapi-ts"

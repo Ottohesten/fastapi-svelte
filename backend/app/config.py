@@ -1,4 +1,5 @@
 import secrets
+import os
 
 from pydantic_core import MultiHostUrl
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -21,8 +22,9 @@ def parse_cors(v: Any) -> list[str] | str:
 
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
-        # Use top level .env file (one level above ./backend/)
-        env_file="../.env",
+        env_file=os.path.join(
+            os.path.dirname(os.path.abspath(__file__)), "..", "..", ".env"
+        ),
         env_ignore_empty=True,
         extra="ignore",
     )

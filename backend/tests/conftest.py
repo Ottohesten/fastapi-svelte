@@ -2,7 +2,7 @@ from collections.abc import Generator
 
 import pytest
 from fastapi.testclient import TestClient
-from sqlmodel import Session
+from sqlmodel import Session, delete
 
 from app.config import settings
 from app.db import engine, init_db
@@ -10,6 +10,8 @@ from app.main import app
 
 from tests.utils.utils import get_superuser_token_headers
 from tests.utils.user import authentication_token_from_email
+
+from app.models import User
 
 
 @pytest.fixture(scope="session", autouse=True)
@@ -19,9 +21,9 @@ def db() -> Generator[Session, None, None]:
         yield session
         # statement = delete(Item)
         # session.execute(statement)
-        # statement = delete(User)
-        # session.exec(statement)
-        # session.commit()
+        statement = delete(User)
+        session.exec(statement)
+        session.commit()
 
 
 @pytest.fixture(scope="module")

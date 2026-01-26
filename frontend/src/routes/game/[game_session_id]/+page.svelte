@@ -1003,7 +1003,7 @@
 					<div class="rounded-lg border border-gray-200 p-6 shadow-sm dark:border-gray-800">
 						<div class="mb-4 flex items-start justify-between">
 							<div>
-								<h3 class="text-xl font-semibold text-gray-800 dark:text-gray-100">
+								<h3 class="font-semibold text-gray-800 dark:text-gray-100">
 									{player.name}
 								</h3>
 								<p class="text-sm" style="color: {colorScale(player.teamName)}">

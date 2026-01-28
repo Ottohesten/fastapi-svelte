@@ -60,6 +60,9 @@ export async function load({ fetch, params, locals, request, parent, url }) {
 
 export const actions = {
     default: async ({ fetch, request, cookies, params }) => {
+        const client = createApiClient(fetch);
+        const auth_token = cookies.get("auth_token");
+
         const form = await superValidate(request, zod(RecipeSchema));
         console.log(form)
         if (!form.valid) {
@@ -73,11 +76,29 @@ export const actions = {
             unit: ingredient.unit
         }));
 
+        let imageUrl = undefined;
+        if (form.data.image instanceof File && form.data.image.size > 0) {
+            const formData = new FormData();
+            formData.append("file", form.data.image);
+
+            // Upload image
+            const { data: uploadData, error: uploadError } = await client.POST("/recipes/upload-image", {
+                body: formData as any,
+                headers: {
+                    Authorization: `Bearer ${auth_token}`
+                }
+            });
+
+            if (uploadError) {
+                return fail(400, { form, error: "Failed to upload image" });
+            }
+
+            if (uploadData) {
+                imageUrl = (uploadData as { url: string }).url;
+            }
+        }
+
         // post form data to the API (when backend PATCH is implemented)
-        const client = createApiClient(fetch);
-        const auth_token = cookies.get("auth_token");
-
-
         const recipe_id = params.slug;
         const { data, error: apierror, response } = await client.PATCH("/recipes/{recipe_id}", {
             body: {
@@ -85,7 +106,7 @@ export const actions = {
                 instructions: form.data.instructions ?? null,
                 ingredients: ingredientsForBackend,
                 servings: form.data.servings,
-
+                image: imageUrl
             },
             params: {
                 path: { recipe_id }

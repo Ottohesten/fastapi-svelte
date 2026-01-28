@@ -6,6 +6,8 @@
 	import * as Dialog from '$lib/components/ui/dialog/index.js';
 	import InstructionsEditor from '$lib/components/InstructionsEditor.svelte';
 	import Select from '$lib/components/ui/select/select.svelte';
+	import { Input } from '$lib/components/ui/input';
+	import { Label } from '$lib/components/ui/label';
 	import { Combobox } from '$lib/components/ui/combobox';
 
 	interface Props {
@@ -94,6 +96,15 @@
 		emerald:
 			'bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 focus:ring-emerald-500'
 	};
+
+	let previewUrl = $state('');
+
+	onMount(() => {
+		if (data.recipe?.image) {
+			const baseUrl = data.backendUrl || 'http://127.0.0.1:8000';
+			previewUrl = `${baseUrl}${data.recipe.image}`;
+		}
+	});
 </script>
 
 <div
@@ -130,11 +141,65 @@
 			<div class="lg:col-span-2">
 				<div class="surface-2 rounded-xl p-6">
 					<form method="POST" action="" enctype="multipart/form-data" use:enhance class="space-y-6">
+						<!-- Image Upload -->
+						<div class="space-y-2">
+							<Label for="image">Recipe Image</Label>
+
+							{#if previewUrl}
+								<div class="relative mb-4 aspect-video w-full overflow-hidden rounded-lg border border-gray-200 dark:border-gray-700">
+									<img src={previewUrl} alt="Recipe preview" class="h-full w-full object-cover" />
+									<button
+										type="button"
+										aria-label="Remove image"
+										class="absolute top-2 right-2 rounded-full bg-red-600 p-1.5 text-white shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+										onclick={() => {
+											previewUrl = '';
+											$form.image = null;
+											// If we have a file input, reset it
+											const input = document.getElementById('image') as HTMLInputElement;
+											if (input) input.value = '';
+										}}
+									>
+										<svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+											<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+										</svg>
+									</button>
+								</div>
+							{/if}
+
+							<div class="flex items-center gap-4">
+								<Input
+									type="file"
+									name="image"
+									id="image"
+									accept="image/*"
+									class="cursor-pointer file:cursor-pointer"
+									onchange={(e) => {
+										const file = e.currentTarget.files?.[0];
+										if (file) {
+											$form.image = file;
+											previewUrl = URL.createObjectURL(file);
+										}
+									}}
+								/>
+							</div>
+							{#if $errors.image}
+								<span class="flex items-center gap-1 text-sm text-red-600">
+									<svg class="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+										<path
+											fill-rule="evenodd"
+											d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+											clip-rule="evenodd"
+										/>
+									</svg>
+									{$errors.image}
+								</span>
+							{/if}
+						</div>
+
 						<!-- Title Field -->
 						<div class="space-y-2">
-							<label class="text-sm font-semibold text-gray-700 dark:text-gray-200" for="title">
-								Recipe Title <span class="text-red-500">*</span>
-							</label>
+							<Label for="title">Recipe Title <span class="text-red-500">*</span></Label>
 							<input
 								class="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-gray-900 placeholder-gray-500 shadow-sm transition-colors focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 dark:border-gray-800 dark:bg-gray-900/40 dark:text-gray-100 dark:placeholder-gray-500 dark:focus:border-blue-400 dark:focus:ring-blue-400/20"
 								type="text"
@@ -161,9 +226,7 @@
 
 						<!-- Servings -->
 						<div class="space-y-2">
-							<label class="text-sm font-semibold text-gray-700 dark:text-gray-200" for="servings">
-								Servings <span class="text-red-500">*</span>
-							</label>
+							<Label for="servings">Servings <span class="text-red-500">*</span></Label>
 							<input
 								class="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-gray-900 placeholder-gray-500 shadow-sm transition-colors focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 dark:border-gray-800 dark:bg-gray-900/40 dark:text-gray-100 dark:placeholder-gray-500 dark:focus:border-blue-400 dark:focus:ring-blue-400/20"
 								type="number"
@@ -191,12 +254,7 @@
 
 						<!-- Instructions Field -->
 						<div class="space-y-2">
-							<label
-								class="text-sm font-semibold text-gray-700 dark:text-gray-200"
-								for="instructions"
-							>
-								Cooking Instructions <span class="text-red-500">*</span>
-							</label>
+							<Label for="instructions">Cooking Instructions <span class="text-red-500">*</span></Label>
 							<div
 								class="rounded-lg border border-gray-300 bg-white shadow-sm transition-colors focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-500/20 dark:border-gray-800 dark:bg-gray-900/40 dark:focus-within:border-blue-400 dark:focus-within:ring-blue-400/20"
 							>
@@ -219,12 +277,7 @@
 
 						<!-- Add Ingredient Section -->
 						<div class="space-y-2">
-							<label
-								class="text-sm font-semibold text-gray-700 dark:text-gray-200"
-								for="add-ingredient-trigger"
-							>
-								Ingredients
-							</label>
+							<Label for="add-ingredient-trigger">Ingredients</Label>
 							<Dialog.Root bind:open>
 								<Dialog.Trigger
 									id="add-ingredient-trigger"
@@ -255,12 +308,7 @@
 									</Dialog.Header>
 									<div class="space-y-4">
 										<div>
-											<label
-												class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-200"
-												for="ingredient-select"
-											>
-												Choose Ingredient
-											</label>
+											<Label for="ingredient-select" class="mb-2">Choose Ingredient</Label>
 											<Combobox
 												items={availableIngredients.map((i: any) => ({ label: i.title, value: i.id }))}
 												bind:value={selectedIngredientId}
@@ -275,12 +323,7 @@
 
 										<div class="grid grid-cols-2 gap-3">
 											<div>
-												<label
-													for="ingredient-amount"
-													class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-200"
-												>
-													Amount
-												</label>
+												<Label for="ingredient-amount" class="mb-2">Amount</Label>
 												<input
 													id="ingredient-amount"
 													type="number"
@@ -292,12 +335,7 @@
 												/>
 											</div>
 											<div>
-												<label
-													for="ingredient-unit"
-													class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-200"
-												>
-													Unit
-												</label>
+												<Label for="ingredient-unit" class="mb-2">Unit</Label>
 												<Select id="ingredient-unit" bind:value={ingredientUnit} class="h-11">
 													<option value="g">grams (g)</option>
 													<option value="kg">kilograms (kg)</option>

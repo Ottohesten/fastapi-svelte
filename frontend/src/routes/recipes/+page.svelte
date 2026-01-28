@@ -35,7 +35,11 @@
 
 	<div class="grid grid-cols-1 gap-4 sm:gap-6 md:grid-cols-2 xl:grid-cols-3">
 		{#each data.recipes as recipe}
-			<Recipe {recipe} authenticatedUser={data.authenticatedUser ?? undefined} />
+			<Recipe
+				{recipe}
+				authenticatedUser={data.authenticatedUser ?? undefined}
+				backendUrl={data.backendUrl}
+			/>
 		{/each}
 	</div>
 </div>

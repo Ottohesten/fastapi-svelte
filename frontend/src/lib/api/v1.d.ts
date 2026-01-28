@@ -144,6 +144,26 @@ export interface paths {
         patch: operations["update_user_users__user_id__patch"];
         trace?: never;
     };
+    "/recipes/upload-image": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Upload Recipe Image
+         * @description Upload an image for a recipe.
+         */
+        post: operations["upload_recipe_image_recipes_upload_image_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/recipes/": {
         parameters: {
             query?: never;
@@ -869,7 +889,10 @@ export interface components {
             grant_type?: string | null;
             /** Username */
             username: string;
-            /** Password */
+            /**
+             * Password
+             * Format: password
+             */
             password: string;
             /**
              * Scope
@@ -878,8 +901,19 @@ export interface components {
             scope: string;
             /** Client Id */
             client_id?: string | null;
-            /** Client Secret */
+            /**
+             * Client Secret
+             * Format: password
+             */
             client_secret?: string | null;
+        };
+        /** Body_upload_recipe_image_recipes_upload_image_post */
+        Body_upload_recipe_image_recipes_upload_image_post: {
+            /**
+             * File
+             * Format: binary
+             */
+            file: string;
         };
         /** DrinkCreate */
         DrinkCreate: {
@@ -1123,6 +1157,8 @@ export interface components {
              * @default 1
              */
             servings: number;
+            /** Image */
+            image?: string | null;
             /**
              * Id
              * Format: uuid
@@ -1145,6 +1181,8 @@ export interface components {
              * @default 1
              */
             servings: number;
+            /** Image */
+            image?: string | null;
             /** Ingredients */
             ingredients: components["schemas"]["RecipeIngredientLinkCreate"][];
         };
@@ -1197,6 +1235,8 @@ export interface components {
              * @default 1
              */
             servings: number;
+            /** Image */
+            image?: string | null;
             /**
              * Id
              * Format: uuid
@@ -1813,6 +1853,39 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["UserPublic"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    upload_recipe_image_recipes_upload_image_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": components["schemas"]["Body_upload_recipe_image_recipes_upload_image_post"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
                 };
             };
             /** @description Validation Error */
@@ -3055,7 +3128,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
         };
@@ -3106,7 +3181,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
         };

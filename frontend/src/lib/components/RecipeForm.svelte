@@ -1,4 +1,7 @@
 <script lang="ts">
+	import { page } from '$app/stores';
+	import { browser } from '$app/environment';
+	import { onMount } from 'svelte';
 	import { superForm } from 'sveltekit-superforms';
 	import * as Dialog from '$lib/components/ui/dialog/index.js';
 	import InstructionsEditor from '$lib/components/InstructionsEditor.svelte';
@@ -23,8 +26,53 @@
 		onSubmit
 	}: Props = $props();
 
-	const { form, errors, message, constraints, enhance } = superForm(data.form, {
-		dataType: 'json'
+	const { form, errors, message, constraints, enhance, reset } = superForm(data.form, {
+		dataType: 'json',
+		onUpdated({ form: f }) {
+			if (f.valid && browser) {
+				localStorage.removeItem(`recipe-snapshot-${$page.url.pathname}`);
+			}
+		}
+	});
+
+	// Derived state for available ingredients
+	let availableIngredients = $derived(
+		data.ingredients.filter(
+			(i: any) => !$form.ingredients.some((selected: any) => selected.id === i.id)
+		)
+	);
+
+	// Function to clear form and localStorage
+	function clearForm() {
+		if (confirm('Are you sure you want to clear the form? This action cannot be undone.')) {
+			// Clear localStorage
+			if (browser) {
+				localStorage.removeItem(`recipe-snapshot-${$page.url.pathname}`);
+			}
+
+			// Reset the form
+			reset();
+		}
+	}
+
+	onMount(() => {
+		if (browser) {
+			const stored = localStorage.getItem(`recipe-snapshot-${$page.url.pathname}`);
+			if (stored) {
+				try {
+					const snapshot = JSON.parse(stored);
+					$form = { ...$form, ...snapshot };
+				} catch (e) {
+					console.error('Failed to restore form', e);
+				}
+			}
+		}
+	});
+
+	$effect(() => {
+		if (browser && $form) {
+			localStorage.setItem(`recipe-snapshot-${$page.url.pathname}`, JSON.stringify($form));
+		}
 	});
 
 	// Ingredient dialog state
@@ -46,9 +94,18 @@
 >
 	<div class="container mx-auto max-w-7xl px-4">
 		<!-- Page Header -->
-		<div class="mb-8">
-			<h1 class="mb-2 text-3xl font-bold text-gray-900 dark:text-gray-100">{pageTitle}</h1>
-			<p class="text-gray-600 dark:text-gray-300">{pageDescription}</p>
+		<div class="mb-8 flex items-start justify-between">
+			<div>
+				<h1 class="mb-2 text-3xl font-bold text-gray-900 dark:text-gray-100">{pageTitle}</h1>
+				<p class="text-gray-600 dark:text-gray-300">{pageDescription}</p>
+			</div>
+			<button
+				onclick={clearForm}
+				class="rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm transition-colors hover:bg-red-50 hover:text-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 dark:border-gray-800 dark:bg-gray-900/40 dark:text-gray-200 dark:hover:bg-red-900/20 dark:hover:text-red-400"
+				type="button"
+			>
+				Clear Form
+			</button>
 		</div>
 
 		{#if $message}
@@ -198,7 +255,7 @@
 												Choose Ingredient
 											</label>
 											<Combobox
-												items={data.ingredients.map((i: any) => ({ label: i.title, value: i.id }))}
+												items={availableIngredients.map((i: any) => ({ label: i.title, value: i.id }))}
 												bind:value={selectedIngredientId}
 												placeholder="Select an ingredient..."
 												searchPlaceholder="Type to filter ingredients..."
@@ -284,9 +341,6 @@
 														amount: ingredientLink.amount,
 														unit: ingredientLink.unit
 													});
-													data.ingredients = data.ingredients.filter(
-														(i: any) => i.id !== selectedIngredientId
-													);
 													// Reset form
 													selectedIngredientId = '';
 													ingredientAmount = 1.0;
@@ -397,19 +451,6 @@
 											$form.ingredients = $form.ingredients.filter(
 												(i: any) => i.id !== ingredient.id
 											);
-											// Return the ingredient to the available list if it's not already there
-											const isAlreadyAvailable = data.ingredients.some(
-												(ing: any) => ing.id === ingredient.id
-											);
-											if (!isAlreadyAvailable) {
-												// Reconstruct the ingredient object for the available list
-												const originalIngredient = {
-													id: ingredient.id,
-													title: ingredient.title || 'Unknown Ingredient',
-													calories: 0 // Default calories since we don't store it in form
-												};
-												data.ingredients = data.ingredients.concat(originalIngredient);
-											}
 										}}
 										class="rounded-lg p-1.5 text-red-500 transition-colors hover:bg-red-50 hover:text-red-700 dark:hover:bg-red-900/20"
 										title="Remove ingredient"

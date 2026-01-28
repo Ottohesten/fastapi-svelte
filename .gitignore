@@ -201,3 +201,7 @@ symlink-from
 
 # temporary folder
 temp
+
+
+# static files
+static/

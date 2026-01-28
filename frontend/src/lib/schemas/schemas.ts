@@ -68,7 +68,7 @@ export const RecipeSchema = z.object({
     servings: z.number().int().min(1).default(1),
 
 
-    // image: z.instanceof(File).refine((f) => f.size < 1_000_000, 'Image must be less than 1MB').optional()
+    image: z.instanceof(File, { message: 'Image is required' }).nullable().optional()
 
 
 });

@@ -1,6 +1,7 @@
 import { createApiClient } from '$lib/api/api';
 import { error } from '@sveltejs/kit';
 import { redirect } from '@sveltejs/kit';
+import { env } from '$env/dynamic/private';
 
 export const load = async ({ fetch, params, locals }) => {
     const client = createApiClient(fetch);
@@ -17,9 +18,11 @@ export const load = async ({ fetch, params, locals }) => {
 
     return {
         recipe: data,
-        is_owner: locals.authenticatedUser ? data.owner.id === locals.authenticatedUser.id : false
+        is_owner: locals.authenticatedUser ? data.owner.id === locals.authenticatedUser.id : false,
+        backendUrl: env.BACKEND_HOST || 'http://127.0.0.1:8000'
     }
 }
+
 
 // export const actions = {
 //     delete: async ({ fetch, params, cookies, request }) => {

@@ -6,6 +6,7 @@ import { z } from 'zod';
 import { message, superValidate, fail } from 'sveltekit-superforms';
 import { error } from '@sveltejs/kit';
 import { RecipeSchema } from '$lib/schemas/schemas.js';
+import { env } from '$env/dynamic/private';
 
 
 export const load = async ({ fetch, parent }) => {
@@ -22,9 +23,12 @@ export const load = async ({ fetch, parent }) => {
     // const form = await superValidate({ ingredients: ingredients }, zod(RecipeSchema));
     return {
         ingredients: ingredients,
-        form
+        form,
+        backendUrl: env.BACKEND_HOST || 'http://127.0.0.1:8000'
     }
 }
+
+
 
 
 export const actions = {
@@ -48,12 +52,35 @@ export const actions = {
             unit: ingredient.unit
         }));
 
+        let imageUrl = null;
+        if (form.data.image instanceof File && form.data.image.size > 0) {
+            const formData = new FormData();
+            formData.append("file", form.data.image);
+
+            // Upload image
+            const { data: uploadData, error: uploadError } = await client.POST("/recipes/upload-image", {
+                body: formData as any, // Type cast might be needed if OpenAPI client doesn't support FormData directly yet or generated types are strict
+                headers: {
+                    Authorization: `Bearer ${auth_token}`
+                }
+            });
+
+            if (uploadError) {
+                return fail(400, { form, error: "Failed to upload image" });
+            }
+
+            if (uploadData) {
+                imageUrl = (uploadData as { url: string }).url;
+            }
+        }
+
         const { data, error: apierror, response } = await client.POST("/recipes/", {
             body: {
                 title: form.data.title,
                 instructions: form.data.instructions ?? null,
                 ingredients: ingredientsForBackend,
                 servings: form.data.servings,
+                image: imageUrl,
             },
             headers: {
                 Authorization: `Bearer ${auth_token}`

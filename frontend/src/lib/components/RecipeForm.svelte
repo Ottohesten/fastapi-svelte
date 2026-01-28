@@ -32,6 +32,13 @@
 			if (f.valid && browser) {
 				localStorage.removeItem(`recipe-snapshot-${$page.url.pathname}`);
 			}
+		},
+		onResult({ result }) {
+			if (result.type === 'redirect') {
+				if (browser) {
+					localStorage.removeItem(`recipe-snapshot-${$page.url.pathname}`);
+				}
+			}
 		}
 	});
 

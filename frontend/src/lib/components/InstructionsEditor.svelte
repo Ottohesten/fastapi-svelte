@@ -15,6 +15,27 @@
 	let editor = $state();
 	let editorState = $state(0); // Counter to force reactivity
 
+	$effect(() => {
+		if (editor && value !== undefined) {
+			const isEditorEmpty = editor.isEmpty;
+
+			// Simple logic:
+			// 1. If we are clearing the form (value is empty), clear the editor
+			// 2. If the editor is empty and we have a value (initial load/restore), set it
+			if (value === '' && !isEditorEmpty) {
+				editor.commands.setContent('', { emitUpdate: false });
+			} else if (isEditorEmpty && value !== '' && value !== '<p></p>') {
+				editor.commands.setContent(value, { emitUpdate: false });
+			}
+		}
+	});
+
+	onDestroy(() => {
+		if (editor) {
+			editor.destroy();
+		}
+	});
+
 	onMount(() => {
 		editor = new Editor({
 			element: element,

@@ -246,6 +246,7 @@ class RecipeBase(SQLModel):
     title: str = Field(max_length=255, min_length=1)
     instructions: Optional[str] = Field(default=None, max_length=9999)
     servings: int = Field(default=1)
+    image: Optional[str] = Field(default=None, max_length=1000)
 
 
 class RecipeCreate(RecipeBase):
@@ -339,9 +340,6 @@ class Recipe(RecipeBase, table=True):
 
     # we will use this field to be able to scale the recipe, can not be less than 1
     servings: int = Field(default=1)
-
-    # image
-    # image: str | None = Field(default=None, max_length=255)
 
     ingredient_links: list[RecipeIngredientLink] = Relationship(
         back_populates="recipe", cascade_delete=True

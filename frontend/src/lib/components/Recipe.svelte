@@ -22,7 +22,7 @@
 		<div class="h-48 w-full overflow-hidden bg-gray-100 dark:bg-gray-800">
 			{#if recipe.image}
 				<img
-					src="{backendUrl}{recipe.image}"
+					src={recipe.image.startsWith('http') ? recipe.image : `${backendUrl}${recipe.image}`}
 					alt={recipe.title}
 					class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
 				/>

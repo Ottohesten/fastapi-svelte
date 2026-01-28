@@ -1,7 +1,6 @@
 from fastapi.middleware.cors import CORSMiddleware
 
 from fastapi import FastAPI
-from fastapi.staticfiles import StaticFiles
 
 from app.deps import TokenDep
 from app.config import get_settings
@@ -43,7 +42,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.mount("/static", StaticFiles(directory="static"), name="static")
 
 # hero_1 = Hero(name="Deadpond", secret_name="Dive Wilson")
 # hero_2 = Hero(name="Spider-Boy", secret_name="Pedro Parqueador")

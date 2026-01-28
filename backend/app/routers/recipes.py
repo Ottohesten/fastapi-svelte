@@ -1,9 +1,9 @@
 from fastapi import APIRouter, UploadFile, File
 from fastapi import HTTPException, Security
 from sqlmodel import select
-import shutil
-import uuid
-import os
+import cloudinary
+import cloudinary.uploader
+from app.config import get_settings
 from app.deps import SessionDep, get_current_user
 from app.models import (
     Recipe,
@@ -29,22 +29,20 @@ def upload_recipe_image(
     if not file.content_type or not file.content_type.startswith("image/"):
         raise HTTPException(status_code=400, detail="File must be an image")
 
-    # Generate a unique filename
-    original_filename = file.filename or "image.jpg"
-    file_extension = os.path.splitext(original_filename)[1]
-    if not file_extension:
-        file_extension = ".jpg"
+    settings = get_settings()
+    cloudinary.config(
+        cloud_name=settings.CLOUDINARY_CLOUD_NAME,
+        api_key=settings.CLOUDINARY_API_KEY,
+        api_secret=settings.CLOUDINARY_API_SECRET,
+        secure=True,
+    )
 
-    filename = f"{uuid.uuid4()}{file_extension}"
-    file_path = f"static/images/{filename}"
+    # Upload the file to Cloudinary
+    # Use the environment to segregate uploads (e.g. "local/recipes", "production/recipes")
+    folder_path = f"{settings.ENVIRONMENT}/recipes"
+    upload_result = cloudinary.uploader.upload(file.file, folder=folder_path)
 
-    # Ensure the directory exists
-    os.makedirs(os.path.dirname(file_path), exist_ok=True)
-
-    with open(file_path, "wb") as buffer:
-        shutil.copyfileobj(file.file, buffer)
-
-    return {"url": f"/static/images/{filename}"}
+    return {"url": upload_result.get("secure_url")}
 
 
 @router.get("/", response_model=list[RecipePublic])

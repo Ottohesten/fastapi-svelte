@@ -1,6 +1,9 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, UploadFile, File
 from fastapi import HTTPException, Security
 from sqlmodel import select
+import shutil
+import uuid
+import os
 from app.deps import SessionDep, get_current_user
 from app.models import (
     Recipe,
@@ -13,6 +16,35 @@ from app.models import (
 
 
 router = APIRouter(prefix="/recipes", tags=["recipes"])
+
+
+@router.post("/upload-image")
+def upload_recipe_image(
+    file: UploadFile = File(...),
+    current_user: User = Security(get_current_user, scopes=["recipes:create"]),
+):
+    """
+    Upload an image for a recipe.
+    """
+    if not file.content_type or not file.content_type.startswith("image/"):
+        raise HTTPException(status_code=400, detail="File must be an image")
+
+    # Generate a unique filename
+    original_filename = file.filename or "image.jpg"
+    file_extension = os.path.splitext(original_filename)[1]
+    if not file_extension:
+        file_extension = ".jpg"
+
+    filename = f"{uuid.uuid4()}{file_extension}"
+    file_path = f"static/images/{filename}"
+
+    # Ensure the directory exists
+    os.makedirs(os.path.dirname(file_path), exist_ok=True)
+
+    with open(file_path, "wb") as buffer:
+        shutil.copyfileobj(file.file, buffer)
+
+    return {"url": f"/static/images/{filename}"}
 
 
 @router.get("/", response_model=list[RecipePublic])
@@ -65,6 +97,7 @@ def create_recipe(
         instructions=recipe_in.instructions,
         owner_id=current_user.id,
         servings=recipe_in.servings,
+        image=recipe_in.image,
     )
 
     # Save the recipe first to get a valid ID

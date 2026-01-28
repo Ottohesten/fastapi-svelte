@@ -8,7 +8,7 @@
 	});
 </script>
 
-<SuperDebug data={$form} />
+<!-- <SuperDebug data={$form} /> -->
 
 <div class="container">
 	<form method="POST" action="" enctype="multipart/form-data" use:enhance>

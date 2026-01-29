@@ -96,6 +96,8 @@ export const actions = {
             if (uploadData) {
                 imageUrl = (uploadData as { url: string }).url;
             }
+        } else if (form.data.clearImage) {
+            imageUrl = null;
         }
 
         // post form data to the API (when backend PATCH is implemented)

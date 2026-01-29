@@ -9,6 +9,7 @@
 	import { Input } from '$lib/components/ui/input';
 	import { Label } from '$lib/components/ui/label';
 	import { Combobox } from '$lib/components/ui/combobox';
+	import { Field, Control, Label as SnapLabel, FieldErrors } from 'formsnap';
 
 	interface Props {
 		data: any;
@@ -28,7 +29,7 @@
 		onSubmit
 	}: Props = $props();
 
-	const { form, errors, message, constraints, enhance, reset } = superForm(data.form, {
+	const superform = superForm(data.form, {
 		dataType: 'json',
 		onUpdated({ form: f }) {
 			if (f.valid && browser) {
@@ -43,6 +44,8 @@
 			}
 		}
 	});
+
+	const { form, errors, message, constraints, enhance, reset } = superform;
 
 	// Derived state for available ingredients
 	let availableIngredients = $derived(
@@ -145,139 +148,117 @@
 			<div class="lg:col-span-2">
 				<div class="surface-2 rounded-xl p-6">
 					<form method="POST" action="" enctype="multipart/form-data" use:enhance class="space-y-6">
+						<input type="hidden" name="clearImage" value={$form.clearImage} />
 						<!-- Image Upload -->
-						<div class="space-y-2">
-							<Label for="image">Recipe Image</Label>
+						<Field form={superform} name="image">
+							<Control>
+								{#snippet children({ props })}
+									<div class="space-y-2">
+										<SnapLabel>Recipe Image</SnapLabel>
 
-							{#if previewUrl}
-								<div class="relative mb-4 aspect-video w-full overflow-hidden rounded-lg border border-gray-200 dark:border-gray-700">
-									<img src={previewUrl} alt="Recipe preview" class="h-full w-full object-cover" />
-									<button
-										type="button"
-										aria-label="Remove image"
-										class="absolute top-2 right-2 rounded-full bg-red-600 p-1.5 text-white shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
-										onclick={() => {
-											previewUrl = '';
-											$form.image = null;
-											// If we have a file input, reset it
-											const input = document.getElementById('image') as HTMLInputElement;
-											if (input) input.value = '';
-										}}
-									>
-										<svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-											<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-										</svg>
-									</button>
-								</div>
-							{/if}
+										{#if previewUrl}
+											<div class="relative mb-4 aspect-video w-full overflow-hidden rounded-lg border border-gray-200 dark:border-gray-700">
+												<img src={previewUrl} alt="Recipe preview" class="h-full w-full object-cover" />
+												<button
+													type="button"
+													aria-label="Remove image"
+													class="absolute top-2 right-2 rounded-full bg-red-600 p-1.5 text-white shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+													onclick={() => {
+														previewUrl = '';
+														$form.image = null;
+														$form.clearImage = true;
+														// If we have a file input, reset it
+														const input = document.getElementById(props.id) as HTMLInputElement;
+														if (input) input.value = '';
+													}}
+												>
+													<svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+														<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+													</svg>
+												</button>
+											</div>
+										{/if}
 
-							<div class="flex items-center gap-4">
-								<Input
-									type="file"
-									name="image"
-									id="image"
-									accept="image/*"
-									class="cursor-pointer file:cursor-pointer"
-									onchange={(e) => {
-										const file = e.currentTarget.files?.[0];
-										if (file) {
-											$form.image = file;
-											previewUrl = URL.createObjectURL(file);
-										}
-									}}
-								/>
-							</div>
-							{#if $errors.image}
-								<span class="flex items-center gap-1 text-sm text-red-600">
-									<svg class="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
-										<path
-											fill-rule="evenodd"
-											d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
-											clip-rule="evenodd"
-										/>
-									</svg>
-									{$errors.image}
-								</span>
-							{/if}
-						</div>
+										<div class="flex items-center gap-4">
+											<Input
+												{...props}
+												type="file"
+												accept="image/*"
+												class="cursor-pointer file:cursor-pointer"
+												onchange={(e) => {
+													const file = e.currentTarget.files?.[0];
+													if (file) {
+														$form.image = file;
+														$form.clearImage = false;
+														previewUrl = URL.createObjectURL(file);
+													}
+												}}
+											/>
+										</div>
+									</div>
+								{/snippet}
+							</Control>
+							<FieldErrors />
+						</Field>
 
 						<!-- Title Field -->
-						<div class="space-y-2">
-							<Label for="title">Recipe Title <span class="text-red-500">*</span></Label>
-							<input
-								class="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-gray-900 placeholder-gray-500 shadow-sm transition-colors focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 dark:border-gray-800 dark:bg-gray-900/40 dark:text-gray-100 dark:placeholder-gray-500 dark:focus:border-blue-400 dark:focus:ring-blue-400/20"
-								type="text"
-								name="title"
-								placeholder="Enter a delicious recipe name..."
-								aria-invalid={$errors.title ? 'true' : undefined}
-								bind:value={$form.title}
-								{...$constraints.title}
-								required
-							/>
-							{#if $errors.title}
-								<span class="flex items-center gap-1 text-sm text-red-600">
-									<svg class="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
-										<path
-											fill-rule="evenodd"
-											d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
-											clip-rule="evenodd"
+						<Field form={superform} name="title">
+							<Control>
+								{#snippet children({ props })}
+									<div class="space-y-2">
+										<SnapLabel>Recipe Title <span class="text-red-500">*</span></SnapLabel>
+										<input
+											{...props}
+											{...$constraints.title}
+											class="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-gray-900 placeholder-gray-500 shadow-sm transition-colors focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 dark:border-gray-800 dark:bg-gray-900/40 dark:text-gray-100 dark:placeholder-gray-500 dark:focus:border-blue-400 dark:focus:ring-blue-400/20"
+											type="text"
+											placeholder="Enter a delicious recipe name..."
+											bind:value={$form.title}
 										/>
-									</svg>
-									{$errors.title}
-								</span>
-							{/if}
-						</div>
+									</div>
+								{/snippet}
+							</Control>
+							<FieldErrors />
+						</Field>
 
 						<!-- Servings -->
-						<div class="space-y-2">
-							<Label for="servings">Servings <span class="text-red-500">*</span></Label>
-							<input
-								class="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-gray-900 placeholder-gray-500 shadow-sm transition-colors focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 dark:border-gray-800 dark:bg-gray-900/40 dark:text-gray-100 dark:placeholder-gray-500 dark:focus:border-blue-400 dark:focus:ring-blue-400/20"
-								type="number"
-								name="servings"
-								min="1"
-								placeholder="Enter number of servings"
-								aria-invalid={$errors.servings ? 'true' : undefined}
-								bind:value={$form.servings}
-								{...$constraints.servings}
-								required
-							/>
-							{#if $errors.servings}
-								<span class="flex items-center gap-1 text-sm text-red-600">
-									<svg class="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
-										<path
-											fill-rule="evenodd"
-											d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
-											clip-rule="evenodd"
+						<Field form={superform} name="servings">
+							<Control>
+								{#snippet children({ props })}
+									<div class="space-y-2">
+										<SnapLabel>Servings <span class="text-red-500">*</span></SnapLabel>
+										<input
+											{...props}
+											{...$constraints.servings}
+											class="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-gray-900 placeholder-gray-500 shadow-sm transition-colors focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 dark:border-gray-800 dark:bg-gray-900/40 dark:text-gray-100 dark:placeholder-gray-500 dark:focus:border-blue-400 dark:focus:ring-blue-400/20"
+											type="number"
+											min="1"
+											placeholder="Enter number of servings"
+											bind:value={$form.servings}
 										/>
-									</svg>
-									{$errors.servings}
-								</span>
-							{/if}
-						</div>
+									</div>
+								{/snippet}
+							</Control>
+							<FieldErrors />
+						</Field>
 
 						<!-- Instructions Field -->
-						<div class="space-y-2">
-							<Label for="instructions">Cooking Instructions <span class="text-red-500">*</span></Label>
-							<div
-								class="rounded-lg border border-gray-300 bg-white shadow-sm transition-colors focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-500/20 dark:border-gray-800 dark:bg-gray-900/40 dark:focus-within:border-blue-400 dark:focus-within:ring-blue-400/20"
-							>
-								<InstructionsEditor bind:value={$form.instructions} />
-							</div>
-							<input type="hidden" name="instructions" bind:value={$form.instructions} />
-							{#if $errors.instructions}
-								<span class="flex items-center gap-1 text-sm text-red-600">
-									<svg class="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
-										<path
-											fill-rule="evenodd"
-											d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
-											clip-rule="evenodd"
-										/>
-									</svg>
-									{$errors.instructions}
-								</span>
-							{/if}
-						</div>
+						<Field form={superform} name="instructions">
+							<Control>
+								{#snippet children({ props })}
+									<div class="space-y-2">
+										<SnapLabel>Cooking Instructions <span class="text-red-500">*</span></SnapLabel>
+										<div
+											class="rounded-lg border border-gray-300 bg-white shadow-sm transition-colors focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-500/20 dark:border-gray-800 dark:bg-gray-900/40 dark:focus-within:border-blue-400 dark:focus-within:ring-blue-400/20"
+										>
+											<InstructionsEditor bind:value={$form.instructions} />
+										</div>
+										<input {...props} type="hidden" bind:value={$form.instructions} />
+									</div>
+								{/snippet}
+							</Control>
+							<FieldErrors />
+						</Field>
 
 						<!-- Add Ingredient Section -->
 						<div class="space-y-2">

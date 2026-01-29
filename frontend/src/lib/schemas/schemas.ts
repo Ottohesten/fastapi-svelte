@@ -68,8 +68,8 @@ export const RecipeSchema = z.object({
     servings: z.number().int().min(1).default(1),
 
 
-    image: z.instanceof(File, { message: 'Image is required' }).nullable().optional()
-
+    image: z.instanceof(File, { message: 'Image is required' }).nullable().optional(),
+    clearImage: z.boolean().default(false).optional()
 
 });
 

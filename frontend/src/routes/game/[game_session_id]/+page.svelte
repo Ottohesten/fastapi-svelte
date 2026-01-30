@@ -15,7 +15,7 @@
 	import { goto } from '$app/navigation';
 	import { browser } from '$app/environment';
 	import Button from '$lib/components/ui/button/button.svelte';
-	import { Select } from '$lib/components/ui/select';
+	import * as Select from '$lib/components/ui/select/index.js';
 	import { Pencil, Trash2 } from 'lucide-svelte';
 	import { enhance } from '$app/forms';
 	import {
@@ -98,6 +98,19 @@
 	let hoveredSegment: string | null = $state(null);
 	let open = $state(false);
 	let isDark = $state(false);
+
+	const viewModeOptions = [
+		{ value: 'overview', label: 'Overview' },
+		{ value: 'charts', label: 'Team Charts' },
+		{ value: 'players', label: 'Players Detail' },
+		{ value: 'teams', label: 'Teams Detail' }
+	];
+
+	let selectedViewModeLabel = $derived(
+		viewModeOptions.find((o) => o.value === viewMode)?.label ?? viewMode
+	);
+
+	let selectedTeamLabel = $derived(selectedTeam ?? 'All Teams');
 
 	// Watch for data prop changes and update gameSession
 	$effect(() => {
@@ -578,31 +591,39 @@
 				<label for="team-filter" class="font-semibold text-gray-700 dark:text-gray-300"
 					>Filter by Team:</label
 				>
-				<Select
-					id="team-filter"
-					value={selectedTeam || 'all'}
-					onchange={(e) =>
-						(selectedTeam =
-							(e.target as HTMLSelectElement).value === 'all'
-								? null
-								: (e.target as HTMLSelectElement).value)}
-					class="max-w-[14rem]"
+				<Select.Root
+					type="single"
+					value={selectedTeam ?? 'all'}
+					onValueChange={(v) => {
+						selectedTeam = v === 'all' ? null : v;
+					}}
 				>
-					<option value="all">All Teams</option>
-					{#each teams as team}
-						<option value={team}>{team}</option>
-					{/each}
-				</Select>
+					<Select.Trigger id="team-filter" class="max-w-[14rem]">
+						{selectedTeamLabel}
+					</Select.Trigger>
+					<Select.Content>
+						<Select.Item value="all" label="All Teams">All Teams</Select.Item>
+						{#each teams as team}
+							<Select.Item value={team} label={team}>{team}</Select.Item>
+						{/each}
+					</Select.Content>
+				</Select.Root>
 			</div>
 
 			<div class="flex flex-col gap-2 sm:flex-row sm:items-center">
 				<label for="view-mode" class="font-semibold text-gray-700 dark:text-gray-300">View:</label>
-				<Select id="view-mode" bind:value={viewMode} class="max-w-[14rem]">
-					<option value="overview">Overview</option>
-					<option value="charts">Team Charts</option>
-					<option value="players">Players Detail</option>
-					<option value="teams">Teams Detail</option>
-				</Select>
+				<Select.Root type="single" bind:value={viewMode}>
+					<Select.Trigger id="view-mode" class="max-w-[14rem]">
+						{selectedViewModeLabel}
+					</Select.Trigger>
+					<Select.Content>
+						{#each viewModeOptions as option}
+							<Select.Item value={option.value} label={option.label}>
+								{option.label}
+							</Select.Item>
+						{/each}
+					</Select.Content>
+				</Select.Root>
 			</div>
 		</div>
 

@@ -7,7 +7,7 @@
 	import { RecipeSchema } from '$lib/schemas/schemas';
 	import * as Dialog from '$lib/components/ui/dialog/index.js';
 	import InstructionsEditor from '$lib/components/InstructionsEditor.svelte';
-	import Select from '$lib/components/ui/select/select.svelte';
+	import * as Select from '$lib/components/ui/select/index.js';
 	import { Input } from '$lib/components/ui/input';
 	import { Label } from '$lib/components/ui/label';
 	import { Combobox } from '$lib/components/ui/combobox';
@@ -95,6 +95,18 @@
 	let ingredientAmount = $state<number>(1.0);
 	let ingredientUnit = $state<string>('g');
 	let open = $state(false);
+
+	const units = [
+		{ value: 'g', label: 'grams (g)' },
+		{ value: 'kg', label: 'kilograms (kg)' },
+		{ value: 'ml', label: 'milliliters (ml)' },
+		{ value: 'L', label: 'liters (L)' },
+		{ value: 'pcs', label: 'pieces (pcs)' }
+	];
+
+	let selectedUnitLabel = $derived(
+		units.find((u) => u.value === ingredientUnit)?.label ?? 'Select a unit'
+	);
 
 	// Color variations for submit button
 	const colorClasses = {
@@ -324,13 +336,18 @@
 											</div>
 											<div>
 												<Label for="ingredient-unit" class="mb-2">Unit</Label>
-												<Select id="ingredient-unit" bind:value={ingredientUnit} class="h-11">
-													<option value="g">grams (g)</option>
-													<option value="kg">kilograms (kg)</option>
-													<option value="ml">milliliters (ml)</option>
-													<option value="L">liters (L)</option>
-													<option value="pcs">pieces (pcs)</option>
-												</Select>
+												<Select.Root type="single" bind:value={ingredientUnit}>
+													<Select.Trigger id="ingredient-unit" class="h-11 w-full justify-between">
+														{selectedUnitLabel}
+													</Select.Trigger>
+													<Select.Content>
+														{#each units as unit}
+															<Select.Item value={unit.value} label={unit.label}>
+																{unit.label}
+															</Select.Item>
+														{/each}
+													</Select.Content>
+												</Select.Root>
 											</div>
 										</div>
 									</div>

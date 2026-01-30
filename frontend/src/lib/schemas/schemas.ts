@@ -79,6 +79,10 @@ export const IngredientSchema = z.object({
     weight_per_piece: z.number().int().positive("Weight per piece must be a positive integer").default(1)
 });
 
+export const IngredientUpdateSchema = IngredientSchema.extend({
+    id: z.string()
+});
+
 
 export const GameSessionSchema = z.object({
     title: z.string().min(2),
@@ -98,6 +102,11 @@ export const GameSessionTeamSchema = z.object({
     // game_session_id that will be a hidden field in the form
     // game_session_id: z.string().min(1),
 })
+
+export const LoginSchema = z.object({
+    email: z.string().email("Please enter a valid email"),
+    password: z.string().min(1, "Password is required")
+});
 
 export const GameSessionPlayerSchema = z.object({
     name: z.string().min(1),
@@ -122,3 +131,11 @@ export const GameSessionAddDrinkSchema = z.object({
     drink_id: z.string().min(1, "Drink is required"),
     amount: z.number().int().min(1, "Amount must be at least 1").default(1)
 })
+
+export const DrinkSchema = z.object({
+    name: z.string().min(1, "Name is required")
+});
+
+export const DrinkUpdateSchema = DrinkSchema.extend({
+    id: z.string()
+});

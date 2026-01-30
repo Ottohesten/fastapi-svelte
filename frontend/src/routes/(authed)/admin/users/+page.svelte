@@ -5,7 +5,7 @@
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { Button } from '$lib/components/ui/button';
 	import { superForm, type SuperValidated, type Infer } from 'sveltekit-superforms';
-
+	import { fade, fly } from 'svelte/transition';
 	import { zodClient } from 'sveltekit-superforms/adapters';
 	import SuperDebug from 'sveltekit-superforms';
 	import { Field, Control, Label, Description, FieldErrors } from 'formsnap';
@@ -26,13 +26,6 @@
 				dialogOpen = false;
 			}
 		}
-		// onResult: ({ result }) => {
-		// 	console.log('Form result:', result);
-		// 	if (result.type === 'success') {
-		// 		console.log('Success result, closing dialog');
-		// 		dialogOpen = false;
-		// 	}
-		// }
 	});
 
 	const updateForm = superForm(data.userUpdateForm, {
@@ -44,6 +37,24 @@
 				// Dialog close will be handled in user-actions.svelte
 				console.log('Update form valid:', form.message);
 			}
+		}
+	});
+
+	$effect(() => {
+		if ($message) {
+			const timer = setTimeout(() => {
+				$message = undefined;
+			}, 3000);
+			return () => clearTimeout(timer);
+		}
+	});
+
+	$effect(() => {
+		if ($updateMessage) {
+			const timer = setTimeout(() => {
+				$updateMessage = undefined;
+			}, 3000);
+			return () => clearTimeout(timer);
 		}
 	});
 
@@ -59,21 +70,11 @@
 	// Create columns with the update form
 	const columns = createColumns(updateForm, data.permissionsByEmail, data.roles);
 
-	// const { form, enhance } = superForm(data.form, {
-	// 	// resetForm: true,
-	// 	validators: zodClient(UserSchema)
-	// 	// onUpdated: ({ form }) => {
-	// 	// 	if (form.valid && form.message) {
-	// 	// 		dialogOpen = false;
-	// 	// 	}
-	// 	// }
-	// });
+
 </script>
 
-<!-- <SuperDebug data={$formData} /> -->
-<!-- <SuperDebug data={$errors} /> -->
-<!-- <SuperDebug data={$message} /> -->
-<!-- <SuperDebug data={$constraints} /> -->
+
+
 
 <div class="mx-auto max-w-7xl space-y-6">
 	<!-- Header with Add User Button -->
@@ -88,6 +89,7 @@
 		</div>
 		{#if $message}
 			<div
+				out:fade
 				class="rounded-md border border-green-200 bg-green-50 p-3 dark:border-green-900/50 dark:bg-green-900/20"
 			>
 				<p class="text-sm text-green-800 dark:text-green-300">{$message}</p>
@@ -96,6 +98,7 @@
 
 		{#if $updateMessage}
 			<div
+				out:fade
 				class="rounded-md border border-green-200 bg-green-50 p-3 dark:border-green-900/50 dark:bg-green-900/20"
 			>
 				<p class="text-sm text-green-800 dark:text-green-300">{$updateMessage}</p>

@@ -40,6 +40,16 @@ class UserPermissionsResponse(BaseModel):
     effective_scopes: List[str]
 
 
+@router.get("/scopes", response_model=List[str])
+def list_available_scopes(
+    current_user: User = Security(get_current_user, scopes=["roles:read"]),
+):
+    """List all available system scopes"""
+    from app.permissions import AVAILABLE_SCOPES
+
+    return sorted(list(AVAILABLE_SCOPES))
+
+
 # User role assignment endpoints
 @router.post("/assign-role", response_model=Message)
 def assign_role_to_user(

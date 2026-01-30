@@ -30,14 +30,13 @@ export const load = async ({ fetch, cookies }) => {
     });
 
     // Build lookup by email for quick access in the table
-    const byEmail: Record<string, components['schemas']['UserWithPermissionsPublic']> = {};
-    for (const u of permsData?.data ?? []) {
-        byEmail[u.email] = u;
-    }
+    // const byEmail: Record<string, components['schemas']['UserWithPermissionsPublic']> = {};
+    // for (const u of permsData?.data ?? []) {
+    //     byEmail[u.email] = u;
+    // }
 
     return {
-        users: { data: (permsData?.data ?? []).map(u => ({ id: u.id, email: u.email, is_active: u.is_active, is_superuser: u.is_superuser, full_name: u.full_name ?? null })), count: permsData?.count ?? 0 },
-        permissionsByEmail: byEmail,
+        users: { data: permsData?.data ?? [], count: permsData?.count ?? 0 },
         roles: rolesData ?? [],
         userCreateForm: await superValidate(zod(UserSchema), {
             id: "userCreateForm",

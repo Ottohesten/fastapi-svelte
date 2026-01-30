@@ -8,7 +8,7 @@ import type { SuperForm } from 'sveltekit-superforms';
 import type { UserUpdateSchema } from '$lib/schemas/schemas.js';
 import type { Infer } from 'sveltekit-superforms';
 
-export function createColumns(userUpdateForm: SuperForm<Infer<typeof UserUpdateSchema>>, permissionsByEmail?: Record<string, components['schemas']['UserWithPermissionsPublic']>, roles?: components['schemas']['RolePublic'][]): ColumnDef<components['schemas']["UserPublic"]>[] {
+export function createColumns(userUpdateForm: SuperForm<Infer<typeof UserUpdateSchema>>, roles?: components['schemas']['RolePublic'][]): ColumnDef<components['schemas']["UserWithPermissionsPublic"]>[] {
     return [
         {
             accessorKey: "email",
@@ -22,11 +22,9 @@ export function createColumns(userUpdateForm: SuperForm<Infer<typeof UserUpdateS
             id: "roles_scopes",
             header: "Roles / Scopes",
             cell: ({ row }) => {
-                const email = row.original.email;
-                const perms = permissionsByEmail?.[email];
-                if (!perms) return '—';
-                const roles = perms.roles.map(r => r.name).join(', ') || 'No roles';
-                const scopes = perms.effective_scopes.length;
+                const user = row.original;
+                const roles = user.roles?.map(r => r.name).join(', ') || 'No roles';
+                const scopes = user.effective_scopes?.length ?? 0;
                 return `${roles} • ${scopes} scopes`;
             }
         },
@@ -51,8 +49,8 @@ export function createColumns(userUpdateForm: SuperForm<Infer<typeof UserUpdateS
             enableHiding: false,
             cell: ({ row }) => {
                 const user = row.original;
-                const perms = permissionsByEmail?.[user.email];
-                return renderComponent(UserActions, { user, userUpdateForm, permissions: perms, roles });
+                // user is now UserWithPermissionsPublic, which is what we need
+                return renderComponent(UserActions, { user, userUpdateForm, permissions: user, roles });
             },
         }
     ];

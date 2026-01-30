@@ -23,7 +23,7 @@ class Role(SQLModel, table=True):
     scopes: list[str] = Field(
         default_factory=list,
         description="List of scopes that this role has access to",
-        sa_column=Column(JSON),
+        sa_column=Column(JSON, nullable=False, server_default="[]"),
     )
 
 

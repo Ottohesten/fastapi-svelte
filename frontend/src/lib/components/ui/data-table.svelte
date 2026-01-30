@@ -30,7 +30,10 @@
 		get data() {
 			return data;
 		},
-		columns,
+		// columns,
+		get columns() {
+			return columns;
+		},
 		getCoreRowModel: getCoreRowModel(),
 		getPaginationRowModel: getPaginationRowModel(),
 		getSortedRowModel: getSortedRowModel(),

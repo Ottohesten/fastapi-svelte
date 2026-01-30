@@ -68,7 +68,7 @@
 	} = updateForm;
 
 	// Create columns with the update form
-	const columns = createColumns(updateForm, data.permissionsByEmail, data.roles);
+	let columns = $derived(createColumns(updateForm, data.roles));
 
 
 </script>

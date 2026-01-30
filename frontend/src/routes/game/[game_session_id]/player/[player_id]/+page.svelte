@@ -1,35 +1,40 @@
 <script lang="ts">
 	import { superForm } from 'sveltekit-superforms/client';
 	import SuperDebug from 'sveltekit-superforms';
+	import { Field, Control, Label, FieldErrors } from 'formsnap';
+	import { Input } from '$lib/components/ui/input';
+	import { Button } from '$lib/components/ui/button';
 
 	let { data } = $props(); // data: { form, player, all_drinks }
 
-	const { form, errors, message, constraints, enhance } = superForm(data.form, {
+	const form = superForm(data.form, {
 		dataType: 'json'
 	});
+	const { form: formData, errors, message, constraints, enhance } = form;
+
 	function handleDrinkSelection(drinkId: string, isChecked: boolean) {
-		const existingDrinkIndex = $form.drinks.findIndex((d) => d.drink_id === drinkId);
+		const existingDrinkIndex = $formData.drinks.findIndex((d) => d.drink_id === drinkId);
 
 		// If the drink is checked, add it to the form if not already present
 		if (isChecked) {
 			if (existingDrinkIndex === -1) {
-				$form.drinks = [...$form.drinks, { drink_id: drinkId, amount: 1 }];
+				$formData.drinks = [...$formData.drinks, { drink_id: drinkId, amount: 1 }];
 			}
 
 			// If the drink is unchecked, remove it from the form if present
 		} else {
 			if (existingDrinkIndex !== -1) {
-				$form.drinks = $form.drinks.filter((_, index) => index !== existingDrinkIndex);
+				$formData.drinks = $formData.drinks.filter((_, index) => index !== existingDrinkIndex);
 			}
 		}
 	}
 	function handleAmountChange(drinkIndexInForm: number) {
-		if ($form.drinks[drinkIndexInForm]) {
-			let currentAmount = Number($form.drinks[drinkIndexInForm].amount);
+		if ($formData.drinks[drinkIndexInForm]) {
+			let currentAmount = Number($formData.drinks[drinkIndexInForm].amount);
 			if (isNaN(currentAmount) || currentAmount < 0) {
 				currentAmount = 0;
 			}
-			$form.drinks[drinkIndexInForm].amount = Math.floor(currentAmount);
+			$formData.drinks[drinkIndexInForm].amount = Math.floor(currentAmount);
 		}
 	}
 </script>
@@ -47,22 +52,22 @@
 	{/if}
 
 	<form method="POST" use:enhance class="space-y-6">
-		<div>
-			<label for="name" class="block text-sm font-medium">Player Name</label>
-			<input
-				type="text"
-				id="name"
-				name="name"
-				class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
-				bind:value={$form.name}
-				aria-invalid={$errors.name ? 'true' : undefined}
-				{...$constraints.name}
-				required
-			/>
-			{#if $errors.name}
-				<p class="mt-2 text-sm text-red-600">{$errors.name}</p>
-			{/if}
-		</div>
+		<Field form={form} name="name">
+			<Control>
+				{#snippet children({ props })}
+					<Label class="block text-sm font-medium">Player Name</Label>
+					<Input
+						{...props}
+						type="text"
+						class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
+						bind:value={$formData.name}
+						placeholder="Enter player name"
+						required
+					/>
+				{/snippet}
+			</Control>
+			<FieldErrors class="mt-2 text-sm text-red-600" />
+		</Field>
 
 		<div>
 			<h3 class="text-lg font-medium">Drinks</h3>
@@ -77,7 +82,7 @@
 				{#if data.drinks && data.drinks.length > 0}
 					{#each data.drinks as availableDrink (availableDrink.id)}
 						<!-- Check i the drink is already in the form. If it is, it will return an index, otherwise -1 -->
-						{@const currentSelectedDrinkIndex = $form.drinks.findIndex(
+						{@const currentSelectedDrinkIndex = $formData.drinks.findIndex(
 							(d) => d.drink_id === availableDrink.id
 						)}
 						<!-- If it is not -1 aka. exists in the list. we should check the box. -->
@@ -121,7 +126,7 @@
 										step="1"
 										id={`drink-amount-${availableDrink.id}`}
 										name={`drinks[${currentSelectedDrinkIndex}].amount`}
-										bind:value={$form.drinks[currentSelectedDrinkIndex].amount}
+										bind:value={$formData.drinks[currentSelectedDrinkIndex].amount}
 										oninput={() => handleAmountChange(currentSelectedDrinkIndex)}
 										class="w-20 rounded-md border border-gray-300 p-1.5 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
 										placeholder="Amount"
@@ -162,16 +167,3 @@
 		</div>
 	</form>
 </div>
-
-<!-- Original content commented out -->
-<!--
-This is the main page for a player in a game. It will show the player's stats, achievements, and
-other relevant information.
-
-<div class="contain">
-	<div class="grid grid-cols-1">
-		<div class="">
-		</div>
-	</div>
-</div>
--->

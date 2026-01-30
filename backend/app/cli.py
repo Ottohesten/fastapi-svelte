@@ -124,11 +124,12 @@ def show_user_permissions(email: str):
         for role in user.roles:
             print(f"  - {role.name}")
 
-        print(f"\n🔑 Custom Scopes ({len(user.custom_scopes)}):")
-        if not user.custom_scopes:
+        custom_scopes = user.custom_scopes or []
+        print(f"\n🔑 Custom Scopes ({len(custom_scopes)}):")
+        if not custom_scopes:
             print("  - None")
         else:
-            for scope in user.custom_scopes:
+            for scope in custom_scopes:
                 print(f"  - {scope}")
 
         effective_scopes = get_user_effective_scopes(user)
@@ -138,7 +139,7 @@ def show_user_permissions(email: str):
 
 
 @app.command()
-def set_superuser(email: str, is_superuser: bool = True):
+def set_superuser(email: str, superuser: bool = True):
     """Set a user as superuser"""
     with Session(engine) as session:
         user = get_user_by_email(session=session, email=email)
@@ -146,12 +147,12 @@ def set_superuser(email: str, is_superuser: bool = True):
             print(f"❌ User with email '{email}' not found")
             return
 
-        user.is_superuser = is_superuser
+        user.is_superuser = superuser
         session.add(user)
         session.commit()
         session.refresh(user)
 
-        status = "superuser" if is_superuser else "normal user"
+        status = "superuser" if superuser else "normal user"
         print(f"✅ User '{email}' is now a {status}")
 
 

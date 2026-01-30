@@ -188,12 +188,6 @@ def test_update_user_me(
     assert user_db.email == email
     assert user_db.full_name == full_name
 
-    # Revert to valid email for other tests
-    user_db.email = settings.EMAIL_TEST_USER
-    db.add(user_db)
-    db.commit()
-    db.refresh(user_db)
-
 
 def test_update_password_me(
     client: TestClient, superuser_token_headers: dict[str, str], db: Session
@@ -217,21 +211,6 @@ def test_update_password_me(
     assert user_db
     assert user_db.email == settings.FIRST_SUPERUSER
     assert verify_password(new_password, user_db.hashed_password)
-
-    # Revert to the old password to keep consistency in test
-    old_data = {
-        "current_password": new_password,
-        "new_password": settings.FIRST_SUPERUSER_PASSWORD,
-    }
-    r = client.patch(
-        "/users/me/password",
-        headers=superuser_token_headers,
-        json=old_data,
-    )
-    db.refresh(user_db)
-
-    assert r.status_code == 200
-    assert verify_password(settings.FIRST_SUPERUSER_PASSWORD, user_db.hashed_password)
 
 
 def test_update_password_me_incorrect_password(

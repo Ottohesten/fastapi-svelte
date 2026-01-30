@@ -210,8 +210,12 @@ def delete_user_me(session: SessionDep, current_user: CurrentUser) -> Message:
     """
     Delete own user.
     """
-    # Regular users can delete themselves, but we prevent deletion if the user
-    # is the only one with users:delete scope to avoid system lockout
+    # Prevent superusers from deleting themselves to avoid system lockout
+    if current_user.is_superuser:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Super users are not allowed to delete themselves",
+        )
     session.delete(current_user)
     session.commit()
     return Message(message="User deleted successfully")
@@ -237,7 +241,7 @@ def register_user(session: SessionDep, user_in: UserRegister):
 def read_user_by_id(
     user_id: uuid.UUID,
     session: SessionDep,
-    current_user: User = Security(get_current_user, scopes=["users:read"]),
+    current_user: CurrentUser,
 ) -> Any:
     """
     Get a specific user by id.
@@ -246,6 +250,11 @@ def read_user_by_id(
     if user == current_user:
         return user
     # Users with users:read scope can access any user
+    if "users:read" not in get_user_effective_scopes(current_user):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="The user doesn't have enough privileges",
+        )
     return user
 
 

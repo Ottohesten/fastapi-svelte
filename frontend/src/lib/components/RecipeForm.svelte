@@ -3,6 +3,8 @@
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
 	import { superForm } from 'sveltekit-superforms';
+	import { zodClient } from 'sveltekit-superforms/adapters';
+	import { RecipeSchema } from '$lib/schemas/schemas';
 	import * as Dialog from '$lib/components/ui/dialog/index.js';
 	import InstructionsEditor from '$lib/components/InstructionsEditor.svelte';
 	import Select from '$lib/components/ui/select/select.svelte';
@@ -29,7 +31,8 @@
 		onSubmit
 	}: Props = $props();
 
-	const superform = superForm(data.form, {
+	const form = superForm(data.form, {
+		validators: zodClient(RecipeSchema),
 		dataType: 'json',
 		onUpdated({ form: f }) {
 			if (f.valid && browser) {
@@ -45,12 +48,12 @@
 		}
 	});
 
-	const { form, errors, message, constraints, enhance, reset } = superform;
+	const { form: formData, errors, message, constraints, enhance, reset } = form;
 
 	// Derived state for available ingredients
 	let availableIngredients = $derived(
 		data.ingredients.filter(
-			(i: any) => !$form.ingredients.some((selected: any) => selected.id === i.id)
+			(i: any) => !$formData.ingredients.some((selected: any) => selected.id === i.id)
 		)
 	);
 
@@ -73,7 +76,7 @@
 			if (stored) {
 				try {
 					const snapshot = JSON.parse(stored);
-					$form = { ...$form, ...snapshot };
+					$formData = { ...$formData, ...snapshot };
 				} catch (e) {
 					console.error('Failed to restore form', e);
 				}
@@ -82,8 +85,8 @@
 	});
 
 	$effect(() => {
-		if (browser && $form) {
-			localStorage.setItem(`recipe-snapshot-${$page.url.pathname}`, JSON.stringify($form));
+		if (browser && $formData) {
+			localStorage.setItem(`recipe-snapshot-${$page.url.pathname}`, JSON.stringify($formData));
 		}
 	});
 
@@ -148,9 +151,9 @@
 			<div class="lg:col-span-2">
 				<div class="surface-2 rounded-xl p-6">
 					<form method="POST" action="" enctype="multipart/form-data" use:enhance class="space-y-6">
-						<input type="hidden" name="clearImage" value={$form.clearImage} />
+						<input type="hidden" name="clearImage" value={$formData.clearImage} />
 						<!-- Image Upload -->
-						<Field form={superform} name="image">
+						<Field {form} name="image">
 							<Control>
 								{#snippet children({ props })}
 									<div class="space-y-2">
@@ -165,8 +168,8 @@
 													class="absolute top-2 right-2 rounded-full bg-red-600 p-1.5 text-white shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
 													onclick={() => {
 														previewUrl = '';
-														$form.image = null;
-														$form.clearImage = true;
+														$formData.image = null;
+														$formData.clearImage = true;
 														// If we have a file input, reset it
 														const input = document.getElementById(props.id) as HTMLInputElement;
 														if (input) input.value = '';
@@ -188,8 +191,8 @@
 												onchange={(e) => {
 													const file = e.currentTarget.files?.[0];
 													if (file) {
-														$form.image = file;
-														$form.clearImage = false;
+														$formData.image = file;
+														$formData.clearImage = false;
 														previewUrl = URL.createObjectURL(file);
 													}
 												}}
@@ -202,7 +205,7 @@
 						</Field>
 
 						<!-- Title Field -->
-						<Field form={superform} name="title">
+						<Field {form} name="title">
 							<Control>
 								{#snippet children({ props })}
 									<div class="space-y-2">
@@ -213,7 +216,7 @@
 											class="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-gray-900 placeholder-gray-500 shadow-sm transition-colors focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 dark:border-gray-800 dark:bg-gray-900/40 dark:text-gray-100 dark:placeholder-gray-500 dark:focus:border-blue-400 dark:focus:ring-blue-400/20"
 											type="text"
 											placeholder="Enter a delicious recipe name..."
-											bind:value={$form.title}
+											bind:value={$formData.title}
 										/>
 									</div>
 								{/snippet}
@@ -222,7 +225,7 @@
 						</Field>
 
 						<!-- Servings -->
-						<Field form={superform} name="servings">
+						<Field {form} name="servings">
 							<Control>
 								{#snippet children({ props })}
 									<div class="space-y-2">
@@ -234,7 +237,7 @@
 											type="number"
 											min="1"
 											placeholder="Enter number of servings"
-											bind:value={$form.servings}
+											bind:value={$formData.servings}
 										/>
 									</div>
 								{/snippet}
@@ -243,7 +246,7 @@
 						</Field>
 
 						<!-- Instructions Field -->
-						<Field form={superform} name="instructions">
+						<Field {form} name="instructions">
 							<Control>
 								{#snippet children({ props })}
 									<div class="space-y-2">
@@ -251,9 +254,9 @@
 										<div
 											class="rounded-lg border border-gray-300 bg-white shadow-sm transition-colors focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-500/20 dark:border-gray-800 dark:bg-gray-900/40 dark:focus-within:border-blue-400 dark:focus-within:ring-blue-400/20"
 										>
-											<InstructionsEditor bind:value={$form.instructions} />
+											<InstructionsEditor bind:value={$formData.instructions} />
 										</div>
-										<input {...props} type="hidden" bind:value={$form.instructions} />
+										<input {...props} type="hidden" bind:value={$formData.instructions} />
 									</div>
 								{/snippet}
 							</Control>
@@ -365,7 +368,7 @@
 														amount: ingredientAmount,
 														unit: ingredientUnit as 'g' | 'kg' | 'ml' | 'L' | 'pcs'
 													};
-													$form.ingredients = $form.ingredients.concat({
+													$formData.ingredients = $formData.ingredients.concat({
 														id: ingredientLink.id,
 														title: ingredientLink.title, // Include title for display
 														amount: ingredientLink.amount,
@@ -428,7 +431,7 @@
 						</h2>
 					</div>
 
-					{#if $form.ingredients.length === 0}
+					{#if $formData.ingredients.length === 0}
 						<div class="py-8 text-center">
 							<div
 								class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gray-100 dark:bg-gray-800"
@@ -454,7 +457,7 @@
 						</div>
 					{:else}
 						<div class="space-y-3">
-							{#each $form.ingredients as ingredient, index}
+							{#each $formData.ingredients as ingredient, index}
 								<div
 									class="flex items-center justify-between rounded-lg border border-gray-200 bg-gray-50 p-3 transition-colors hover:bg-gray-100 dark:border-gray-800 dark:bg-gray-900/40 dark:hover:bg-gray-900/60"
 								>
@@ -478,7 +481,7 @@
 										type="button"
 										aria-label="Remove ingredient"
 										onclick={() => {
-											$form.ingredients = $form.ingredients.filter(
+											$formData.ingredients = $formData.ingredients.filter(
 												(i: any) => i.id !== ingredient.id
 											);
 										}}

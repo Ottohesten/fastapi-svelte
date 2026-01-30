@@ -108,6 +108,28 @@ def assign_role(email: str, role_name: str):
 
 
 @app.command()
+def remove_role(email: str, role_name: str):
+    """Remove a role from a user by email"""
+    with Session(engine) as session:
+        user = get_user_by_email(session=session, email=email)
+        if not user:
+            print(f"❌ User with email '{email}' not found")
+            return
+
+        role = next((r for r in user.roles if r.name == role_name), None)
+        if not role:
+            print(f"❌ User '{email}' does not have role '{role_name}'")
+            return
+
+        user.roles.remove(role)
+        session.add(user)
+        session.commit()
+        session.refresh(user)
+
+        print(f"✅ Removed role '{role_name}' from user '{email}'")
+
+
+@app.command()
 def show_user_permissions(email: str):
     """Show a user's effective permissions"""
     with Session(engine) as session:

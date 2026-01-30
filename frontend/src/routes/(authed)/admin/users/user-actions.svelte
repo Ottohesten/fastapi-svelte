@@ -4,6 +4,7 @@
 	import { enhance } from '$app/forms';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import * as Sheet from '$lib/components/ui/sheet';
+	import { Input } from '$lib/components/ui/input';
 	import { Field, Control, Label, FieldErrors } from 'formsnap';
 	import { zodClient } from 'sveltekit-superforms/adapters';
 	import { UserUpdateSchema } from '$lib/schemas/schemas.js';
@@ -168,12 +169,11 @@
 								<Control>
 									{#snippet children({ props })}
 										<Label class="mb-1 block text-sm font-medium text-gray-700">Email</Label>
-										<input
+										<Input
 											{...props}
 											type="email"
 											bind:value={$updateFormData!.email}
 											placeholder="Leave unchanged or enter new email"
-											class="w-full rounded-md border border-gray-300 p-2 transition-colors focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
 										/>
 									{/snippet}
 								</Control>
@@ -185,12 +185,11 @@
 								<Control>
 									{#snippet children({ props })}
 										<Label class="mb-1 block text-sm font-medium text-gray-700">Full Name</Label>
-										<input
+										<Input
 											{...props}
 											type="text"
 											bind:value={$updateFormData!.full_name}
 											placeholder="Leave unchanged or enter new full name"
-											class="w-full rounded-md border border-gray-300 p-2 transition-colors focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
 										/>
 									{/snippet}
 								</Control>
@@ -201,16 +200,13 @@
 							<Field form={userUpdateForm} name="password">
 								<Control>
 									{#snippet children({ props })}
-										<Label class="mb-1 block text-sm font-medium text-gray-700"
-											>New Password (optional)</Label
-										>
-										<input
+										<Label class="mb-1 block text-sm font-medium text-gray-700">New Password (optional)</Label>
+										<Input
 											{...props}
 											type="password"
 											bind:value={$updateFormData!.password}
 											placeholder="Leave empty to keep current password"
 											autocomplete="new-password"
-											class="w-full rounded-md border border-gray-300 p-2 transition-colors focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
 										/>
 									{/snippet}
 								</Control>
@@ -221,16 +217,13 @@
 							<Field form={userUpdateForm} name="confirm_password">
 								<Control>
 									{#snippet children({ props })}
-										<Label class="mb-1 block text-sm font-medium text-gray-700"
-											>Confirm New Password</Label
-										>
-										<input
+										<Label class="mb-1 block text-sm font-medium text-gray-700">Confirm New Password</Label>
+										<Input
 											{...props}
 											type="password"
 											bind:value={$updateFormData!.confirm_password}
 											placeholder="Confirm new password"
 											autocomplete="new-password"
-											class="w-full rounded-md border border-gray-300 p-2 transition-colors focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
 										/>
 									{/snippet}
 								</Control>

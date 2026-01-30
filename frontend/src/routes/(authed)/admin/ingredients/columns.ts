@@ -3,8 +3,11 @@ import type { components } from '$lib/api/v1';
 import { renderComponent, renderSnippet } from '$lib/components/ui/data-table/index.js';
 import IngredientActions from "./ingredient-actions.svelte";
 import { createRawSnippet } from "svelte";
+import type { SuperForm } from "sveltekit-superforms";
+import type { Infer } from "sveltekit-superforms";
+import type { IngredientUpdateSchema } from "$lib/schemas/schemas";
 
-export const columns: ColumnDef<components['schemas']["IngredientPublic"]>[] = [
+export const createColumns = (updateForm: SuperForm<Infer<typeof IngredientUpdateSchema>>): ColumnDef<components['schemas']["IngredientPublic"]>[] => [
     {
         accessorKey: "title",
         header: "Name",
@@ -38,7 +41,7 @@ export const columns: ColumnDef<components['schemas']["IngredientPublic"]>[] = [
         enableHiding: false,
         cell: ({ row }) => {
             const ingredient = row.original;
-            return renderComponent(IngredientActions, { ingredient });
+            return renderComponent(IngredientActions, { ingredient, updateForm });
         },
     }
 ]

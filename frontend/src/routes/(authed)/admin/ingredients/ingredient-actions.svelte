@@ -4,45 +4,51 @@
 	import { enhance } from '$app/forms';
 	import * as Dialog from '$lib/components/ui/dialog/index.js';
 	import { Input } from '$lib/components/ui/input';
-	import { invalidateAll } from '$app/navigation';
+	import { Field, Control, Label, FieldErrors } from 'formsnap';
 
 	import type { components } from '$lib/api/v1';
+	import type { SuperForm } from 'sveltekit-superforms';
+	import type { Infer } from 'sveltekit-superforms';
+	import type { IngredientUpdateSchema } from '$lib/schemas/schemas';
 
-	let { ingredient }: { ingredient: components['schemas']['IngredientPublic'] } = $props();
+	let {
+		ingredient,
+		updateForm
+	}: {
+		ingredient: components['schemas']['IngredientPublic'];
+		updateForm: SuperForm<Infer<typeof IngredientUpdateSchema>>;
+	} = $props();
+
+	const { form: formData, enhance: formEnhance, message } = updateForm;
 
 	let editOpen = $state(false);
-	let editTitle = $state('');
-	let editCalories = $state(0);
-	let editWeightPerPiece = $state(100);
-	let editError = $state('');
-	let isSubmitting = $state(false);
 
-	// Reset form when dialog opens/closes
-	$effect(() => {
-		if (editOpen) {
-			editTitle = ingredient.title;
-			editCalories = ingredient.calories;
-			editWeightPerPiece = ingredient.weight_per_piece;
-			editError = '';
-		} else {
-			editTitle = '';
-			editCalories = 0;
-			editWeightPerPiece = 1;
-			editError = '';
-		}
-	});
+	function openEdit() {
+		formData.update(($f) => ({
+			...$f,
+			id: ingredient.id,
+			title: ingredient.title,
+			calories: ingredient.calories,
+			weight_per_piece: ingredient.weight_per_piece
+		}));
+		editOpen = true;
+	}
 
-	// Clear error when user starts typing
 	$effect(() => {
-		if ((editTitle || editCalories || editWeightPerPiece) && editError) {
-			editError = '';
+		if ($message && editOpen) {
+			if ($message.includes('successfully')) {
+				editOpen = false;
+			}
 		}
 	});
 </script>
 
-<div class="flex items-center justify-end">
+<div class="flex items-center justify-end gap-2">
 	<Dialog.Root bind:open={editOpen}>
-		<Dialog.Trigger class={buttonVariants({ variant: 'ghost', size: 'sm', class: 'p-2' })}>
+		<Dialog.Trigger
+			class={buttonVariants({ variant: 'ghost', size: 'sm', class: 'p-2' })}
+			onclick={openEdit}
+		>
 			<Pencil class="" />
 		</Dialog.Trigger>
 		<Dialog.Content class="sm:max-w-[425px]">
@@ -50,80 +56,59 @@
 				<Dialog.Title>Edit Ingredient</Dialog.Title>
 				<Dialog.Description>Update the ingredient details below.</Dialog.Description>
 			</Dialog.Header>
-			<form
-				method="POST"
-				action="?/update"
-				use:enhance={() => {
-					isSubmitting = true;
-					editError = '';
+			<form method="POST" action="?/update" use:formEnhance class="space-y-4 py-4">
+				<input type="hidden" name="id" value={$formData.id} />
 
-					return async ({ result }) => {
-						isSubmitting = false;
-						if (result.type === 'success') {
-							editOpen = false;
-							editTitle = '';
-							editCalories = 0;
-							editWeightPerPiece = 1;
-							editError = '';
-							invalidateAll();
-						} else if (result.type === 'failure' && result.data) {
-							editError = (result.data as any)?.error || 'An error occurred';
-						}
-					};
-				}}
-			>
-				<input type="hidden" name="id" value={ingredient.id} />
-				<div class="space-y-4 py-4">
-					{#if editError}
-						<div class="rounded-md border border-red-200 bg-red-50 p-3">
-							<p class="text-sm text-red-600">{editError}</p>
-						</div>
-					{/if}
-					<div class="items-center">
-						<label for="edit-title" class="">Name</label>
-						<Input
-							id="edit-title"
-							name="title"
-							bind:value={editTitle}
-							class="mt-2"
-							placeholder="Enter ingredient name"
-							required
-							disabled={isSubmitting}
-						/>
+				{#if $message && !$message.includes('successfully')}
+					<div class="rounded-md border border-red-200 bg-red-50 p-3">
+						<p class="text-sm text-red-600">{$message}</p>
 					</div>
-					<div class="items-center">
-						<label for="edit-calories" class="">Calories (per 100g)</label>
-						<Input
-							id="edit-calories"
-							name="calories"
-							type="number"
-							bind:value={editCalories}
-							class="mt-2"
-							placeholder="Enter calories"
-							required
-							disabled={isSubmitting}
-							min="0"
-						/>
-					</div>
-					<div class="items-center">
-						<label for="edit-weight" class="">Weight per piece (g)</label>
-						<Input
-							id="edit-weight"
-							name="weight_per_piece"
-							type="number"
-							bind:value={editWeightPerPiece}
-							class="mt-2"
-							placeholder="Enter weight per piece"
-							required
-							disabled={isSubmitting}
-							min="1"
-						/>
-					</div>
-				</div>
+				{/if}
+
+				<Field form={updateForm} name="title">
+					<Control>
+						{#snippet children({ props })}
+							<Label>Name</Label>
+							<Input {...props} bind:value={$formData.title} placeholder="Enter ingredient name" />
+						{/snippet}
+					</Control>
+					<FieldErrors />
+				</Field>
+
+				<Field form={updateForm} name="calories">
+					<Control>
+						{#snippet children({ props })}
+							<Label>Calories (per 100g)</Label>
+							<Input
+								{...props}
+								type="number"
+								bind:value={$formData.calories}
+								placeholder="Enter calories"
+								min="0"
+							/>
+						{/snippet}
+					</Control>
+					<FieldErrors />
+				</Field>
+
+				<Field form={updateForm} name="weight_per_piece">
+					<Control>
+						{#snippet children({ props })}
+							<Label>Weight per piece (g)</Label>
+							<Input
+								{...props}
+								type="number"
+								bind:value={$formData.weight_per_piece}
+								placeholder="Enter weight per piece"
+								min="1"
+							/>
+						{/snippet}
+					</Control>
+					<FieldErrors />
+				</Field>
+
 				<Dialog.Footer>
-					<Button type="submit" disabled={isSubmitting}>
-						{isSubmitting ? 'Updating...' : 'Update Ingredient'}
-					</Button>
+					<Button type="submit">Update Ingredient</Button>
 				</Dialog.Footer>
 			</form>
 		</Dialog.Content>

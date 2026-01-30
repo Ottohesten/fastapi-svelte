@@ -139,3 +139,9 @@ export const DrinkSchema = z.object({
 export const DrinkUpdateSchema = DrinkSchema.extend({
     id: z.string()
 });
+
+
+export const UserAddRoleSchema = z.object({
+    user_id: z.string(),
+    role_id: z.string()
+});

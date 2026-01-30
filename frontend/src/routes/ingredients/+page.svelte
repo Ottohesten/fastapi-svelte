@@ -64,18 +64,11 @@
 								<Control>
 									{#snippet children({ props })}
 										<Label class="mb-1 block text-sm font-medium text-gray-700">Title *</Label>
-										<!-- <Input
+										<Input
 											{...props}
 											type="text"
 											bind:value={$formData.title}
 											placeholder="Enter ingredient title"
-										/> -->
-										<input
-											{...props}
-											type="text"
-											bind:value={$formData.title}
-											placeholder="Enter ingredient title"
-											class="w-full rounded-md border border-gray-300 p-2 transition-colors focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
 										/>
 									{/snippet}
 								</Control>
@@ -85,18 +78,11 @@
 								<Control>
 									{#snippet children({ props })}
 										<Label class="mb-1 block text-sm font-medium text-gray-700">Calories *</Label>
-										<!-- <Input
+										<Input
 											{...props}
 											type="number"
 											bind:value={$formData.calories}
 											placeholder="Calories per 100g"
-										/> -->
-										<input
-											{...props}
-											type="number"
-											bind:value={$formData.calories}
-											placeholder="Calories per 100g"
-											class="w-full rounded-md border border-gray-300 p-2 transition-colors focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
 										/>
 									{/snippet}
 								</Control>

@@ -14,8 +14,8 @@
 		"generate:sdk": "openapi-typescript http://127.0.0.1:8000/openapi.json --output src/lib/api/v1.d.ts"
 	},
 	"devDependencies": {
-		"@internationalized/date": "^3.8.2",
-		"@lucide/svelte": "^0.515.0",
+		"@internationalized/date": "^3.10.1",
+		"@lucide/svelte": "^0.561.0",
 		"@sveltejs/adapter-auto": "^3.0.0",
 		"@sveltejs/adapter-node": "^5.2.12",
 		"@sveltejs/kit": "^2.0.0",
@@ -24,7 +24,7 @@
 		"@types/d3": "^7.4.3",
 		"@types/jsonwebtoken": "^9.0.10",
 		"autoprefixer": "^10.4.20",
-		"bits-ui": "^2.8.8",
+		"bits-ui": "^2.15.5",
 		"clsx": "^2.1.1",
 		"lucide-svelte": "^0.469.0",
 		"openapi-typescript": "^7.4.4",

@@ -4,93 +4,76 @@
 	import { enhance } from '$app/forms';
 	import * as Dialog from '$lib/components/ui/dialog/index.js';
 	import { Input } from '$lib/components/ui/input';
-	import { invalidateAll } from '$app/navigation';
+	import { Field, Control, Label, FieldErrors } from 'formsnap';
 
 	import type { components } from '$lib/api/v1';
+	import type { SuperForm, Infer } from 'sveltekit-superforms';
+	import type { DrinkUpdateSchema } from '$lib/schemas/schemas';
 
-	let { drink }: { drink: components['schemas']['DrinkPublic'] } = $props();
+	let {
+		drink,
+		updateForm
+	}: {
+		drink: components['schemas']['DrinkPublic'];
+		updateForm: SuperForm<Infer<typeof DrinkUpdateSchema>>;
+	} = $props();
+
+	const { form: formData, enhance: formEnhance, message } = updateForm;
 
 	let editOpen = $state(false);
-	let editDrinkName = $state('');
-	let editError = $state('');
-	let isSubmitting = $state(false);
 
-	// Reset form when dialog opens/closes
-	$effect(() => {
-		if (editOpen) {
-			editDrinkName = drink.name;
-			editError = '';
-		} else {
-			editDrinkName = '';
-			editError = '';
-		}
-	});
+	function openEdit() {
+		formData.update(($f) => ({
+			...$f,
+			id: drink.id,
+			name: drink.name
+		}));
+		editOpen = true;
+	}
 
-	// Clear error when user starts typing
 	$effect(() => {
-		if (editDrinkName && editError) {
-			editError = '';
+		if ($message && editOpen) {
+			if ($message.includes('successfully')) {
+				editOpen = false;
+			}
 		}
 	});
 </script>
 
-<div class="flex items-center justify-end">
+<div class="flex items-center justify-end gap-2">
 	<Dialog.Root bind:open={editOpen}>
-		<Dialog.Trigger class={buttonVariants({ variant: 'ghost', size: 'sm', class: 'p-2' })}>
-			<!-- <Button variant="ghost" title="Edit drink" size="sm" class="p-2"> -->
+		<Dialog.Trigger
+			class={buttonVariants({ variant: 'ghost', size: 'sm', class: 'p-2' })}
+			onclick={openEdit}
+		>
 			<Pencil class="" />
-			<!-- </Button> -->
 		</Dialog.Trigger>
 		<Dialog.Content class="sm:max-w-[425px]">
 			<Dialog.Header>
 				<Dialog.Title>Edit Drink</Dialog.Title>
 				<Dialog.Description>Update the drink name below.</Dialog.Description>
 			</Dialog.Header>
-			<form
-				method="POST"
-				action="?/updateDrink"
-				use:enhance={() => {
-					isSubmitting = true;
-					editError = '';
+			<form method="POST" action="?/updateDrink" use:formEnhance class="space-y-4 py-4">
+				<input type="hidden" name="id" value={$formData.id} />
 
-					return async ({ result }) => {
-						isSubmitting = false;
-						if (result.type === 'success') {
-							editOpen = false;
-							editDrinkName = '';
-							editError = '';
-							// Refresh the data to show the updated drink
-							invalidateAll();
-						} else if (result.type === 'failure' && result.data) {
-							editError = (result.data as any)?.error || 'An error occurred';
-						}
-					};
-				}}
-			>
-				<input type="hidden" name="drink_id" value={drink.id} />
-				<div class="py-4">
-					{#if editError}
-						<div class="rounded-md border border-red-200 bg-red-50 p-3">
-							<p class="text-sm text-red-600">{editError}</p>
-						</div>
-					{/if}
-					<div class="items-center">
-						<label for="edit-name" class="">Name</label>
-						<Input
-							id="edit-name"
-							name="name"
-							bind:value={editDrinkName}
-							class="mt-2"
-							placeholder="Enter drink name"
-							required
-							disabled={isSubmitting}
-						/>
+				{#if $message && !$message.includes('successfully')}
+					<div class="rounded-md border border-red-200 bg-red-50 p-3">
+						<p class="text-sm text-red-600">{$message}</p>
 					</div>
-				</div>
+				{/if}
+
+				<Field form={updateForm} name="name">
+					<Control>
+						{#snippet children({ props })}
+							<Label>Name</Label>
+							<Input {...props} bind:value={$formData.name} placeholder="Enter drink name" />
+						{/snippet}
+					</Control>
+					<FieldErrors />
+				</Field>
+
 				<Dialog.Footer>
-					<Button type="submit" disabled={isSubmitting}>
-						{isSubmitting ? 'Updating...' : 'Update Drink'}
-					</Button>
+					<Button type="submit">Update Drink</Button>
 				</Dialog.Footer>
 			</form>
 		</Dialog.Content>

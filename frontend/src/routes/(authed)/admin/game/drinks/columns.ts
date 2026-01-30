@@ -3,9 +3,10 @@ import type { components } from '$lib/api/v1';
 import { renderComponent, renderSnippet } from '$lib/components/ui/data-table/index.js';
 import DrinkActions from "./drink-actions.svelte";
 import { createRawSnippet } from "svelte";
+import type { SuperForm, Infer } from "sveltekit-superforms";
+import type { DrinkUpdateSchema } from "$lib/schemas/schemas";
 
-
-export const columns: ColumnDef<components['schemas']["DrinkPublic"]>[] = [
+export const createColumns = (updateForm: SuperForm<Infer<typeof DrinkUpdateSchema>>): ColumnDef<components['schemas']["DrinkPublic"]>[] => [
     {
         accessorKey: "name",
         header: "Name",
@@ -22,7 +23,7 @@ export const columns: ColumnDef<components['schemas']["DrinkPublic"]>[] = [
         enableHiding: false,
         cell: ({ row }) => {
             const drink = row.original;
-            return renderComponent(DrinkActions, { drink });
+            return renderComponent(DrinkActions, { drink, updateForm });
         },
     }
 

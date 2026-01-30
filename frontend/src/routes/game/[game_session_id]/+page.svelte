@@ -1,5 +1,8 @@
 <script lang="ts">
-	import { superForm } from 'sveltekit-superforms/client';
+	import { superForm } from 'sveltekit-superforms';
+	import { zodClient } from 'sveltekit-superforms/adapters';
+	import { Field, Control, Label, FieldErrors } from 'formsnap';
+	import { GameSessionAddDrinkSchema } from '$lib/schemas/schemas';
 	import { Combobox } from '$lib/components/ui/combobox';
 	import type { PageData } from './$types';
 	let { data }: { data: PageData } = $props();
@@ -53,12 +56,8 @@
 		drinkBreakdown: DrinkAmount[];
 	};
 
-	const {
-		form: addDrinkForm,
-		errors: addDrinkErrors,
-		message: addDrinkMessage,
-		enhance: addDrinkEnhance
-	} = superForm(data.addDrinkForm, {
+	const addDrinkForm = superForm(data.addDrinkForm, {
+		validators: zodClient(GameSessionAddDrinkSchema),
 		dataType: 'json',
 		onResult: ({ result }) => {
 			if (result.type === 'success') {
@@ -66,6 +65,13 @@
 			}
 		}
 	});
+
+	const {
+		form: addDrinkFormData,
+		errors: addDrinkErrors,
+		message: addDrinkMessage,
+		enhance: addDrinkEnhance
+	} = addDrinkForm;
 
 	$effect(() => {
 		if ($addDrinkMessage) {
@@ -1187,62 +1193,73 @@
 						</DialogHeader>
 						<form action="?/addDrinkToPlayer" method="POST" use:addDrinkEnhance class="space-y-4">
 							<div class="space-y-2">
-								<label
-									for="player-select"
-									class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-									>Player</label
-								>
-								<Combobox
-									items={allPlayersData.map((p) => ({
-										label: `${p.name} (${p.teamName})`,
-										value: p.playerId
-									}))}
-									bind:value={$addDrinkForm.player_id}
-									placeholder="Select a player..."
-									searchPlaceholder="Search players..."
-									class="w-full"
-									buttonClass="w-full justify-between"
-								/>
-								{#if $addDrinkErrors.player_id}
-									<p class="text-sm text-red-500">{$addDrinkErrors.player_id}</p>
-								{/if}
+								<Field form={addDrinkForm} name="player_id">
+									<Control>
+										{#snippet children({ props })}
+											<Label
+												class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+											>
+												Player
+											</Label>
+											<Combobox
+												items={allPlayersData.map((p) => ({
+													label: `${p.name} (${p.teamName})`,
+													value: p.playerId
+												}))}
+												bind:value={$addDrinkFormData.player_id}
+												placeholder="Select a player..."
+												searchPlaceholder="Search players..."
+												class="w-full"
+												buttonClass="w-full justify-between"
+											/>
+										{/snippet}
+									</Control>
+									<FieldErrors class="text-sm text-red-500" />
+								</Field>
 							</div>
 
 							<div class="space-y-2">
-								<label
-									for="drink-select"
-									class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-									>Drink</label
-								>
-								<Combobox
-									items={data.drinks.map((d) => ({ label: d.name, value: d.id }))}
-									bind:value={$addDrinkForm.drink_id}
-									placeholder="Select a drink..."
-									searchPlaceholder="Search drinks..."
-									class="w-full"
-									buttonClass="w-full justify-between"
-								/>
-								{#if $addDrinkErrors.drink_id}
-									<p class="text-sm text-red-500">{$addDrinkErrors.drink_id}</p>
-								{/if}
+								<Field form={addDrinkForm} name="drink_id">
+									<Control>
+										{#snippet children({ props })}
+											<Label
+												class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+											>
+												Drink
+											</Label>
+											<Combobox
+												items={data.drinks.map((d) => ({ label: d.name, value: d.id }))}
+												bind:value={$addDrinkFormData.drink_id}
+												placeholder="Select a drink..."
+												searchPlaceholder="Search drinks..."
+												class="w-full"
+												buttonClass="w-full justify-between"
+											/>
+										{/snippet}
+									</Control>
+									<FieldErrors class="text-sm text-red-500" />
+								</Field>
 							</div>
 
 							<div class="space-y-2">
-								<label
-									for="drink-amount"
-									class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-									>Amount</label
-								>
-								<Input
-									type="number"
-									id="drink-amount"
-									name="amount"
-									min="1"
-									bind:value={$addDrinkForm.amount}
-								/>
-								{#if $addDrinkErrors.amount}
-									<p class="text-sm text-red-500">{$addDrinkErrors.amount}</p>
-								{/if}
+								<Field form={addDrinkForm} name="amount">
+									<Control>
+										{#snippet children({ props })}
+											<Label
+												class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+											>
+												Amount
+											</Label>
+											<Input
+												{...props}
+												type="number"
+												min="1"
+												bind:value={$addDrinkFormData.amount}
+											/>
+										{/snippet}
+									</Control>
+									<FieldErrors class="text-sm text-red-500" />
+								</Field>
 							</div>
 
 							<DialogFooter>

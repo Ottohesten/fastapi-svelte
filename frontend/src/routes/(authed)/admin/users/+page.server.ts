@@ -6,7 +6,7 @@ import { zod } from 'sveltekit-superforms/adapters';
 import type { Actions } from './$types.js';
 import type { components } from '$lib/api/v1';
 
-import { UserSchema, UserUpdateSchema } from '$lib/schemas/schemas.js';
+import { UserSchema, UserUpdateSchema, UserAddRoleSchema } from '$lib/schemas/schemas.js';
 
 
 export const load = async ({ fetch, cookies }) => {
@@ -29,7 +29,17 @@ export const load = async ({ fetch, cookies }) => {
         }
     });
 
+    // Fetch all available scopes
+    const { data: scopesData, error: scopesError } = await client.GET("/roles/scopes/available", {
+        headers: {
+            Authorization: `Bearer ${auth_token}`
+        }
+    });
+
+    const availableScopes = (scopesData as unknown as { scopes: string[] })?.scopes ?? [];
+
     // Build lookup by email for quick access in the table
+    // const byEmail: Record<string, components['schemas']['UserWithPermissionsPublic']> = {};
     // const byEmail: Record<string, components['schemas']['UserWithPermissionsPublic']> = {};
     // for (const u of permsData?.data ?? []) {
     //     byEmail[u.email] = u;
@@ -38,13 +48,16 @@ export const load = async ({ fetch, cookies }) => {
     return {
         users: { data: permsData?.data ?? [], count: permsData?.count ?? 0 },
         roles: rolesData ?? [],
+        availableScopes,
         userCreateForm: await superValidate(zod(UserSchema), {
             id: "userCreateForm",
         }),
         userUpdateForm: await superValidate(zod(UserUpdateSchema), {
             id: "userUpdateForm",
         }),
-
+        userAddRoleForm: await superValidate(zod(UserAddRoleSchema), {
+            id: "userAddRoleForm",
+        }),
     }
 
 }
@@ -230,52 +243,134 @@ export const actions = {
 
         return { success: true };
     },
-
     assignRole: async ({ fetch, cookies, request }) => {
         const client = createApiClient(fetch);
         const auth_token = cookies.get("auth_token");
-        if (!auth_token) redirect(302, "/auth/login");
 
-        const formData = await request.formData();
-        const user_email = formData.get("user_email") as string;
-        const role_name = formData.get("role_name") as string;
-
-        if (!user_email || !role_name) {
-            return fail(400, { error: "Missing user_email or role_name" });
+        if (!auth_token) {
+            redirect(302, "/auth/login");
+        }
+        const userAddRoleForm = await superValidate(request, zod(UserAddRoleSchema));
+        if (!userAddRoleForm.valid) {
+            return fail(400, { userAddRoleForm });
+        }
+        const { error: apierror, response } = await client.POST("/users/{user_id}/roles/{role_id}", {
+            params: {
+                path: {
+                    user_id: userAddRoleForm.data.user_id,
+                    role_id: userAddRoleForm.data.role_id
+                }
+            },
+            headers: {
+                Authorization: `Bearer ${auth_token}`
+            }
+        })
+        if (apierror) {
+            return fail(400, { userAddRoleForm, error: `Failed to assign role: ${JSON.stringify(apierror.detail)}` });
+        }
+        return message(userAddRoleForm, `Role assigned successfully!`);
+    },
+    removeRole: async ({ fetch, cookies, request }) => {
+        const client = createApiClient(fetch);
+        const auth_token = cookies.get("auth_token");
+        if (!auth_token) {
+            redirect(302, "/auth/login");
         }
 
-        const { error: apiError } = await client.POST("/user-permissions/assign-role", {
-            body: { user_email, role_name },
-            headers: { Authorization: `Bearer ${auth_token}` }
+        const formData = await request.formData();
+        const userId = formData.get('user_id') as string;
+        const roleId = formData.get('role_id') as string;
+
+        const { error: apierror } = await client.DELETE("/users/{user_id}/roles/{role_id}", {
+            params: {
+                path: {
+                    user_id: userId,
+                    role_id: roleId
+                }
+            },
+            headers: {
+                Authorization: `Bearer ${auth_token}`
+            }
         });
 
-        if (apiError) {
-            return fail(400, { error: `Failed to assign role: ${JSON.stringify(apiError.detail)}` });
+        if (apierror) {
+            return fail(400, { error: `Failed to remove role: ${JSON.stringify(apierror.detail)}` });
         }
         return { success: true };
     },
 
-    removeRole: async ({ fetch, cookies, request }) => {
+    addScope: async ({ fetch, cookies, request }) => {
         const client = createApiClient(fetch);
         const auth_token = cookies.get("auth_token");
-        if (!auth_token) redirect(302, "/auth/login");
-
-        const formData = await request.formData();
-        const user_email = formData.get("user_email") as string;
-        const role_name = formData.get("role_name") as string;
-
-        if (!user_email || !role_name) {
-            return fail(400, { error: "Missing user_email or role_name" });
+        if (!auth_token) {
+            redirect(302, "/auth/login");
         }
 
-        const { error: apiError } = await client.POST("/user-permissions/remove-role", {
-            body: { user_email, role_name },
-            headers: { Authorization: `Bearer ${auth_token}` }
+        const formData = await request.formData();
+        const userId = formData.get('user_id') as string;
+        const scope = formData.get('scope') as string;
+        console.log('Received scope to add:', scope);
+
+        if (!scope) {
+            return fail(400, { error: "Scope is required" });
+        }
+
+        // Split by comma if multiple are provided, though UI might send one
+        const scopesList = scope.split(',').map(s => s.trim()).filter(s => s.length > 0);
+
+        console.log('Adding scopes:', scopesList);
+
+        // Using any cast to bypass potential type mismatch if SDK is outdated
+        const { error: apierror } = await (client as any).POST("/users/{user_id}/scopes", {
+            params: {
+                path: {
+                    user_id: userId
+                }
+            },
+            body: scopesList,
+            headers: {
+                Authorization: `Bearer ${auth_token}`
+            }
         });
 
-        if (apiError) {
-            return fail(400, { error: `Failed to remove role: ${JSON.stringify(apiError.detail)}` });
+        if (apierror) {
+            return fail(400, { error: `Failed to add scope: ${JSON.stringify(apierror.detail)}` });
+        }
+        return { success: true };
+    },
+
+    removeScope: async ({ fetch, cookies, request }) => {
+        const client = createApiClient(fetch);
+        const auth_token = cookies.get("auth_token");
+        if (!auth_token) {
+            redirect(302, "/auth/login");
+        }
+
+        const formData = await request.formData();
+        const userId = formData.get('user_id') as string;
+        const scope = formData.get('scope') as string;
+
+
+        // Using any cast to bypass potential type mismatch if SDK is outdated
+        const { error: apierror } = await (client as any).DELETE("/users/{user_id}/scopes", {
+            params: {
+                path: {
+                    user_id: userId
+                }
+            },
+            body: [scope],
+            headers: {
+                Authorization: `Bearer ${auth_token}`
+            }
+        });
+
+        if (apierror) {
+            return fail(400, { error: `Failed to remove scope: ${JSON.stringify(apierror.detail)}` });
         }
         return { success: true };
     }
+
+
+
+
 } satisfies Actions;

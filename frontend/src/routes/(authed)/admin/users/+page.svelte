@@ -11,7 +11,7 @@
 	import { Field, Control, Label, Description, FieldErrors } from 'formsnap';
 	import { Input } from '$lib/components/ui/input/index.js';
 
-	import { UserSchema, UserUpdateSchema } from '$lib/schemas/schemas.js';
+	import { UserSchema, UserUpdateSchema, UserAddRoleSchema } from '$lib/schemas/schemas.js';
 	let { data } = $props();
 	// let { data }: { data: { form: SuperValidated<Infer<FormSchema>> } } = $props();
 	let dialogOpen = $state(false);
@@ -28,7 +28,7 @@
 		}
 	});
 
-	const updateForm = superForm(data.userUpdateForm, {
+	const userUpdateForm = superForm(data.userUpdateForm, {
 		id: 'userUpdateForm',
 		dataType: 'json',
 		validators: zodClient(UserUpdateSchema),
@@ -36,6 +36,17 @@
 			if (form.valid) {
 				// Dialog close will be handled in user-actions.svelte
 				console.log('Update form valid:', form.message);
+			}
+		}
+	});
+
+	const userAddRoleForm = superForm(data.userAddRoleForm, {
+		id: 'userAddRoleForm',
+		validators: zodClient(UserAddRoleSchema),
+		// dataType: 'json',
+		onUpdated: ({ form }) => {
+			if (form.valid) {
+				console.log('User Add Role form valid:', form.message);
 			}
 		}
 	});
@@ -50,9 +61,9 @@
 	});
 
 	$effect(() => {
-		if ($updateMessage) {
+		if ($userUpdateMessage) {
 			const timer = setTimeout(() => {
-				$updateMessage = undefined;
+				$userUpdateMessage = undefined;
 			}, 3000);
 			return () => clearTimeout(timer);
 		}
@@ -61,19 +72,16 @@
 	const { form: formData, enhance, errors, message } = form;
 
 	const {
-		form: updateFormData,
-		enhance: updateEnhance,
-		errors: updateErrors,
-		message: updateMessage
-	} = updateForm;
+		form: userUpdateFormData,
+		enhance: userUpdateEnhance,
+		errors: userUpdateErrors,
+		message: userUpdateMessage
+	} = userUpdateForm;
 
 	// Create columns with the update form
-	let columns = $derived(createColumns(updateForm, data.roles));
-
+	let columns = $derived(createColumns(userUpdateForm, userAddRoleForm, data.roles, data.availableScopes));
 
 </script>
-
-
 
 
 <div class="mx-auto max-w-7xl space-y-6">
@@ -96,12 +104,12 @@
 			</div>
 		{/if}
 
-		{#if $updateMessage}
+		{#if $userUpdateMessage}
 			<div
 				out:fade
 				class="rounded-md border border-green-200 bg-green-50 p-3 dark:border-green-900/50 dark:bg-green-900/20"
 			>
-				<p class="text-sm text-green-800 dark:text-green-300">{$updateMessage}</p>
+				<p class="text-sm text-green-800 dark:text-green-300">{$userUpdateMessage}</p>
 			</div>
 		{/if}
 
@@ -115,11 +123,11 @@
 			</div>
 		{/if}
 
-		{#if $updateErrors._errors}
+		{#if $userUpdateErrors._errors}
 			<div
 				class="rounded-md border border-red-200 bg-red-50 p-3 dark:border-red-900/50 dark:bg-red-900/20"
 			>
-				{#each $updateErrors._errors as error}
+				{#each $userUpdateErrors._errors as error}
 					<p class="text-sm text-red-800 dark:text-red-300">{error}</p>
 				{/each}
 			</div>

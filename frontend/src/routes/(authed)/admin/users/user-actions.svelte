@@ -1,6 +1,6 @@
 <script lang="ts">
 	import Button from '$lib/components/ui/button/button.svelte';
-	import { Pencil, Trash2, Shield, Plus, X } from 'lucide-svelte';
+	import { Pencil, Trash2, Shield, Plus, X, Award, Fingerprint, ListChecks } from 'lucide-svelte';
 	import { enhance } from '$app/forms';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import * as Sheet from '$lib/components/ui/sheet';
@@ -134,24 +134,30 @@
 				<Shield />
 			</Button>
 			<Sheet.Content side="right" class="w-full sm:max-w-xl">
-				<div class="space-y-4">
+				<div class="space-y-6">
 					<div>
-						<h2 class="text-lg font-semibold">User permissions</h2>
+						<h2 class="text-xl font-bold tracking-tight">User permissions</h2>
 						<p class="text-muted-foreground text-sm">{user.email}</p>
 					</div>
-					<div class="space-y-2">
-						<h3 class="text-sm font-medium">Roles</h3>
+
+					<!-- Roles Section -->
+					<div class="space-y-3 rounded-lg border p-4 shadow-sm bg-card">
+						<div class="flex items-center gap-2 pb-2 border-b">
+							<Award class="h-4 w-4 text-primary" />
+							<h3 class="text-sm font-semibold">Roles</h3>
+						</div>
+
 						{#if permissions.roles.length > 0}
-							<div class="flex flex-wrap gap-2">
+							<div class="flex flex-wrap gap-2 pt-2">
 								{#each permissions.roles as r}
 									<form action="?/removeRole" method="POST" use:enhance class="contents">
 										<input type="hidden" name="user_id" value={user.id} />
 										<input type="hidden" name="role_id" value={r.id} />
-										<div class="inline-flex items-center rounded-full border px-2 py-0.5 text-xs">
+										<div class="inline-flex items-center rounded-md border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80 group">
 											{r.name}
 											<button
 												type="submit"
-												class="ml-1 -mr-1 rounded-full p-0.5 hover:bg-slate-200 hover:text-red-500"
+												class="ml-2 rounded-full p-0.5 opacity-60 hover:bg-red-200 hover:text-red-700 hover:opacity-100 group-hover:opacity-100 transition-all"
 												aria-label="Remove role {r.name}"
 												title="Remove role"
 											>
@@ -162,54 +168,56 @@
 								{/each}
 							</div>
 						{:else}
-							<p class="text-muted-foreground text-sm">No roles</p>
+							<p class="text-muted-foreground text-sm pt-2 italic">No roles assigned</p>
 						{/if}
-					</div>
-					<!-- <SuperDebug data={$userAddRoleFormData} /> -->
-					<!-- Select for roles -->
-					<div class="space-y-2">
-						<div>
-							<h3 class="text-sm font-medium">Assign Role</h3>
-							<form action="?/assignRole" method="POST" use:userAddRoleEnhance>
+
+						<div class="pt-2">
+							<form action="?/assignRole" method="POST" use:userAddRoleEnhance class="flex items-center gap-2">
 								<input type="hidden" name="user_id" value={user.id} />
-								<Field form={userAddRoleForm} name="role_id">
-									<Control>
-										<Select.Root type="single" name="role_id" bind:value={$userAddRoleFormData.role_id}>
-											<Select.Trigger class="w-full">
-												{selectedRoleLabel}
-											</Select.Trigger>
-											<Select.Content>
-												{#each roles as role}
-													<Select.Item value={role.id.toString()} label={role.name}>
-														{role.name}
-													</Select.Item>
-												{/each}
-											</Select.Content>
-										</Select.Root>
-									</Control>
-									<FieldErrors />
-								</Field>
-								<Button type="submit" class="mt-2" size="sm" disabled={!$userAddRoleFormData.role_id}>
-									<Plus class="mr-2 h-4 w-4" /> Assign Role
+								<div class="flex-1"> <!-- Hide Field wrapper complexity from visual layout -->
+									<Field form={userAddRoleForm} name="role_id">
+										<Control>
+											<Select.Root type="single" name="role_id" bind:value={$userAddRoleFormData.role_id}>
+												<Select.Trigger class="h-9 w-full">
+													{selectedRoleLabel}
+												</Select.Trigger>
+												<Select.Content>
+													{#each roles as role}
+														<Select.Item value={role.id.toString()} label={role.name}>
+															{role.name}
+														</Select.Item>
+													{/each}
+												</Select.Content>
+											</Select.Root>
+										</Control>
+										<FieldErrors class="text-[10px]" />
+									</Field>
+								</div>
+								<Button type="submit" size="sm" class="h-9 px-3" disabled={!$userAddRoleFormData.role_id}>
+									<Plus class="mr-2 h-3.5 w-3.5" /> Add
 								</Button>
 							</form>
 						</div>
 					</div>
 
-					<!-- Custom scopes -->
-					<div class="space-y-2">
-						<h3 class="text-sm font-medium">Custom scopes</h3>
+					<!-- Custom Scopes Section -->
+					<div class="space-y-3 rounded-lg border p-4 shadow-sm bg-card">
+						<div class="flex items-center gap-2 pb-2 border-b">
+							<Fingerprint class="h-4 w-4 text-primary" />
+							<h3 class="text-sm font-semibold">Custom Scopes</h3>
+						</div>
+
 						{#if permissions.custom_scopes.length > 0}
-							<div class="flex max-h-24 flex-wrap gap-2 overflow-auto pr-1">
+							<div class="flex flex-wrap gap-2 pt-2">
 								{#each permissions.custom_scopes as s}
 									<form action="?/removeScope" method="POST" use:enhance class="contents">
 										<input type="hidden" name="user_id" value={user.id} />
 										<input type="hidden" name="scope" value={s} />
-										<div class="inline-flex items-center rounded-full border px-2 py-0.5 text-xs">
+										<div class="inline-flex items-center rounded-md border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80 group">
 											{s}
 											<button
 												type="submit"
-												class="ml-1 -mr-1 rounded-full p-0.5 hover:bg-slate-200 hover:text-red-500"
+												class="ml-2 rounded-full p-0.5 opacity-60 hover:bg-red-200 hover:text-red-700 hover:opacity-100 group-hover:opacity-100 transition-all"
 												title="Remove scope"
 											>
 												<X class="h-3 w-3" />
@@ -219,14 +227,14 @@
 								{/each}
 							</div>
 						{:else}
-							<p class="text-muted-foreground text-sm">No custom scopes</p>
+							<p class="text-muted-foreground text-sm pt-2 italic">No custom scopes</p>
 						{/if}
 
-						<form action="?/addScope" method="POST" use:enhance class="mt-2 flex w-full items-center space-x-2">
+						<form action="?/addScope" method="POST" use:enhance class="mt-2 flex w-full items-center gap-2">
 							<input type="hidden" name="user_id" value={user.id} />
 							<div class="flex-1">
 								<Select.Root type="single" name="scope" bind:value={selectedScope}>
-									<Select.Trigger class="h-8 text-xs w-full">
+									<Select.Trigger class="h-9 w-full">
 										{selectedScope || 'Select a scope'}
 									</Select.Trigger>
 									<Select.Content class="max-h-60 overflow-y-auto">
@@ -238,19 +246,27 @@
 									</Select.Content>
 								</Select.Root>
 							</div>
-							<Button type="submit" size="sm" variant="secondary" class="h-8 px-2" disabled={!selectedScope}>
+							<Button type="submit" size="sm" variant="secondary" class="h-9 px-3" disabled={!selectedScope}>
 								<Plus class="h-4 w-4" />
 							</Button>
 						</form>
 					</div>
-					<div class="space-y-2">
-						<h3 class="text-sm font-medium">
-							Effective scopes ({permissions.effective_scopes.length})
-						</h3>
-						<div class="max-h-64 overflow-auto rounded border p-2 text-xs leading-6">
-							{#each permissions.effective_scopes as s}
-								<div class="font-mono">{s}</div>
-							{/each}
+
+					<!-- Effective Scopes Section -->
+					<div class="space-y-3 pt-2">
+						<div class="flex items-center gap-2">
+							<ListChecks class="h-4 w-4 text-muted-foreground" />
+							<h3 class="text-sm font-medium">
+								Effective scopes <span class="text-muted-foreground ml-1 font-normal">({permissions.effective_scopes.length})</span>
+							</h3>
+						</div>
+
+						<div class="rounded-md border bg-muted/40 p-3">
+							<div class="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1 text-xs font-mono text-muted-foreground max-h-48 overflow-y-auto">
+								{#each permissions.effective_scopes as s}
+									<div class="truncate" title={s}>{s}</div>
+								{/each}
+							</div>
 						</div>
 					</div>
 				</div>

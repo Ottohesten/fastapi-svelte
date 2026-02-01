@@ -21,6 +21,7 @@ from app.models import (
     UserCreate,
     UserPublic,
     UserMePublic,
+    Role,
     RolePublic,
     UserWithPermissionsPublic,
     UsersWithPermissionsPublic,
@@ -320,3 +321,125 @@ def delete_user(
     session.delete(user)
     session.commit()
     return Message(message="User deleted successfully")
+
+
+##########################################################################
+# Roles segmentt
+
+# permissions_router = APIRouter(prefix="", tags=["user-permissions"])
+permissions_router = APIRouter(prefix="/{user_id}", tags=["user-permissions"])
+
+
+# @router.post("/{user_id}/roles/{role_id}", response_model=UserPublic)
+@permissions_router.post("/roles/{role_id}", response_model=UserPublic)
+def assign_role_to_user(
+    session: SessionDep,
+    user_id: uuid.UUID,
+    role_id: uuid.UUID,
+    current_user: User = Security(get_current_user, scopes=["users:update"]),
+):
+    """
+    Assign a role to a user.
+    """
+    user = session.get(User, user_id)
+    if not user:
+        raise HTTPException(
+            status_code=404,
+            detail="A user with this id does not exist",
+        )
+    role = session.get(Role, role_id)
+    if not role:
+        raise HTTPException(
+            status_code=404,
+            detail="A role with this id does not exist",
+        )
+    if role not in user.roles:
+        user.roles.append(role)
+        session.add(user)
+        session.commit()
+        session.refresh(user)
+    return user
+
+
+@permissions_router.delete("/roles/{role_id}", response_model=UserPublic)
+def remove_role_from_user(
+    session: SessionDep,
+    user_id: uuid.UUID,
+    role_id: uuid.UUID,
+    current_user: User = Security(get_current_user, scopes=["users:update"]),
+):
+    """
+    Remove a role from a user.
+    """
+    user = session.get(User, user_id)
+    if not user:
+        raise HTTPException(
+            status_code=404,
+            detail="A user with this id does not exist",
+        )
+    role = session.get(Role, role_id)
+    if not role:
+        raise HTTPException(
+            status_code=404,
+            detail="A role with this id does not exist",
+        )
+    if role in user.roles:
+        user.roles.remove(role)
+        session.add(user)
+        session.commit()
+        session.refresh(user)
+    return user
+
+
+@permissions_router.post("/scopes", response_model=UserPublic)
+def assign_scopes_to_user(
+    session: SessionDep,
+    user_id: uuid.UUID,
+    scopes: list[str],
+    current_user: User = Security(get_current_user, scopes=["users:update"]),
+):
+    """
+    Assign custom scopes to a user.
+    """
+    user = session.get(User, user_id)
+    if not user:
+        raise HTTPException(
+            status_code=404,
+            detail="A user with this id does not exist",
+        )
+    for scope in scopes:
+        if scope not in user.custom_scopes:
+            user.custom_scopes.append(scope)
+    session.add(user)
+    session.commit()
+    session.refresh(user)
+    return user
+
+
+@permissions_router.delete("/scopes", response_model=UserPublic)
+def remove_scopes_from_user(
+    session: SessionDep,
+    user_id: uuid.UUID,
+    scopes: list[str],
+    current_user: User = Security(get_current_user, scopes=["users:update"]),
+):
+    """
+    Remove custom scopes from a user.
+    """
+    user = session.get(User, user_id)
+    if not user:
+        raise HTTPException(
+            status_code=404,
+            detail="A user with this id does not exist",
+        )
+    for scope in scopes:
+        if scope in user.custom_scopes:
+            user.custom_scopes.remove(scope)
+    session.add(user)
+    session.commit()
+    session.refresh(user)
+    return user
+
+
+# This line should always be at the end of the file
+router.include_router(permissions_router)

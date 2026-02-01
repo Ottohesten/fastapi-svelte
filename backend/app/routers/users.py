@@ -50,7 +50,7 @@ def read_users(
     count_statement = select(func.count()).select_from(User)
     count = session.exec(count_statement).one()
 
-    statement = select(User).offset(skip).limit(limit)
+    statement = select(User).order_by(User.email).offset(skip).limit(limit)
     users = session.exec(statement).all()
 
     return UsersPublic(
@@ -77,7 +77,7 @@ def read_users_with_permissions(
     count_statement = select(func.count()).select_from(User)
     count = session.exec(count_statement).one()
 
-    statement = select(User).offset(skip).limit(limit)
+    statement = select(User).order_by(User.email).offset(skip).limit(limit)
     users = session.exec(statement).all()
 
     data: list[UserWithPermissionsPublic] = []
@@ -407,12 +407,21 @@ def assign_scopes_to_user(
             status_code=404,
             detail="A user with this id does not exist",
         )
+
+    # Create a copy of the list to ensure SQLAlchemy detects the change
+    current_scopes = list(user.custom_scopes) if user.custom_scopes else []
+    modified = False
+
     for scope in scopes:
-        if scope not in user.custom_scopes:
-            user.custom_scopes.append(scope)
-    session.add(user)
-    session.commit()
-    session.refresh(user)
+        if scope not in current_scopes:
+            current_scopes.append(scope)
+            modified = True
+
+    if modified:
+        user.custom_scopes = current_scopes
+        session.add(user)
+        session.commit()
+        session.refresh(user)
     return user
 
 
@@ -432,12 +441,21 @@ def remove_scopes_from_user(
             status_code=404,
             detail="A user with this id does not exist",
         )
+
+    # Create a copy of the list to ensure SQLAlchemy detects the change
+    current_scopes = list(user.custom_scopes) if user.custom_scopes else []
+    modified = False
+
     for scope in scopes:
-        if scope in user.custom_scopes:
-            user.custom_scopes.remove(scope)
-    session.add(user)
-    session.commit()
-    session.refresh(user)
+        if scope in current_scopes:
+            current_scopes.remove(scope)
+            modified = True
+
+    if modified:
+        user.custom_scopes = current_scopes
+        session.add(user)
+        session.commit()
+        session.refresh(user)
     return user
 
 

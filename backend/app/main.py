@@ -11,7 +11,6 @@ from app.routers import (
     ingredients,
     game,
     roles,
-    user_permissions,
 )
 
 # @asynccontextmanager
@@ -51,14 +50,13 @@ app.add_middleware(
 settings = get_settings()
 
 # print(settings.SQLALCHEMY_DATABASE_URI)
-
+# users.router.include_router(users.permissions_router)
 app.include_router(users.router)
 app.include_router(recipes.router)
 app.include_router(ingredients.router)
 app.include_router(game.router)
 app.include_router(login.router)
 app.include_router(roles.router)
-app.include_router(user_permissions.router)
 
 
 # security = HTTPBearer(

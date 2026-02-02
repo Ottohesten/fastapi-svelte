@@ -5,6 +5,7 @@
 	import * as Dialog from '$lib/components/ui/dialog/index.js';
 	import { Input } from '$lib/components/ui/input';
 	import { Field, Control, Label, FieldErrors } from 'formsnap';
+	import { untrack } from 'svelte';
 
 	import type { components } from '$lib/api/v1';
 	import type { SuperForm } from 'sveltekit-superforms';
@@ -19,7 +20,7 @@
 		updateForm: SuperForm<Infer<typeof IngredientUpdateSchema>>;
 	} = $props();
 
-	const { form: formData, enhance: formEnhance, message } = updateForm;
+	const { form: formData, enhance: formEnhance, message } = untrack(() => updateForm);
 
 	let editOpen = $state(false);
 

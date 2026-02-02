@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { superForm } from 'sveltekit-superforms/client';
+	import { untrack } from 'svelte';
 	import SuperDebug from 'sveltekit-superforms';
 	import { Field, Control, Label, FieldErrors } from 'formsnap';
 	import { Input } from '$lib/components/ui/input';
@@ -7,7 +8,7 @@
 
 	let { data } = $props(); // data: { form, player, all_drinks }
 
-	const form = superForm(data.form, {
+	const form = superForm(untrack(() => data.form), {
 		dataType: 'json'
 	});
 	const { form: formData, errors, message, constraints, enhance } = form;

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/stores';
 	import { browser } from '$app/environment';
-	import { onMount } from 'svelte';
+	import { onMount, untrack } from 'svelte';
 	import { superForm } from 'sveltekit-superforms';
 	import { zod4 as zodClient } from 'sveltekit-superforms/adapters';
 	import { RecipeSchema } from '$lib/schemas/schemas';
@@ -31,7 +31,7 @@
 		onSubmit
 	}: Props = $props();
 
-	const form = superForm(data.form, {
+	const form = superForm(untrack(() => data.form), {
 		validators: zodClient(RecipeSchema),
 		dataType: 'json',
 		onUpdated({ form: f }) {

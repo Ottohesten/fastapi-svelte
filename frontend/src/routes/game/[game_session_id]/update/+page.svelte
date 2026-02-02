@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { superForm, fileProxy } from 'sveltekit-superforms';
+	import { untrack } from 'svelte';
 	import SuperDebug from 'sveltekit-superforms';
 	import Team from '$lib/components/Team.svelte';
 	import Player from '$lib/components/Player.svelte';
@@ -10,12 +11,12 @@
 
 	let { data } = $props();
 
-	const teamForm = superForm(data.teamForm, {
+	const teamForm = superForm(untrack(() => data.teamForm), {
 		dataType: 'json'
 	});
 	const { form: teamFormData, errors, message, constraints, enhance } = teamForm;
 
-	const playerForm = superForm(data.playerForm, {
+	const playerForm = superForm(untrack(() => data.playerForm), {
 		dataType: 'json'
 	});
 	const {

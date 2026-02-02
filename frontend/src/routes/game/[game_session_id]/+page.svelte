@@ -10,7 +10,7 @@
 	import { scaleLinear, scaleBand, scaleOrdinal } from 'd3-scale';
 	import { max as d3Max } from 'd3-array';
 	import type { components } from '$lib/api/v1';
-	import { onMount, onDestroy } from 'svelte';
+	import { onMount, onDestroy, untrack } from 'svelte';
 	import { page } from '$app/stores';
 	import { goto } from '$app/navigation';
 	import { browser } from '$app/environment';
@@ -56,7 +56,7 @@
 		drinkBreakdown: DrinkAmount[];
 	};
 
-	const addDrinkForm = superForm(data.addDrinkForm, {
+	const addDrinkForm = superForm(untrack(() => data.addDrinkForm), {
 		validators: zodClient(GameSessionAddDrinkSchema),
 		dataType: 'json',
 		onResult: ({ result }) => {
@@ -87,7 +87,7 @@
 	const DEFAULT_CHART_TYPE: 'drinks' | 'players' = 'drinks';
 
 	// Make gameSession a state variable instead of derived so we can update it directly
-	let gameSession: GameSession | undefined = $state(data.game_session as GameSession | undefined);
+	let gameSession: GameSession | undefined = $state(untrack(() => data.game_session as GameSession | undefined));
 
 	// State for interactivity - initialize from URL parameters
 	let selectedTeam: string | null = $state(null);

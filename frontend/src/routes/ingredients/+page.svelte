@@ -6,6 +6,7 @@
 	import { superForm, type SuperValidated, type Infer } from 'sveltekit-superforms';
 	import { zod4 as zodClient } from 'sveltekit-superforms/adapters';
 	import SuperDebug from 'sveltekit-superforms';
+	import { untrack } from 'svelte';
 	import { Field, Control, Label, Description, FieldErrors } from 'formsnap';
 	import { Input } from '$lib/components/ui/input/index.js';
 	import { IngredientSchema } from '$lib/schemas/schemas.js';
@@ -14,7 +15,7 @@
 
 	let dialogOpen = $state(false);
 
-	const form = superForm(data.ingredientCreateForm, {
+	const form = superForm(untrack(() => data.ingredientCreateForm), {
 		validators: zodClient(IngredientSchema),
 		resetForm: true,
 		onUpdated: ({ form }) => {

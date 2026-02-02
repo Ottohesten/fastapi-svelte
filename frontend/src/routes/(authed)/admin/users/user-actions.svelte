@@ -10,6 +10,7 @@
 	import { zod4 as zodClient } from 'sveltekit-superforms/adapters';
 	import { UserUpdateSchema, UserAddRoleSchema } from '$lib/schemas/schemas.js';
 	import SuperDebug from 'sveltekit-superforms/SuperDebug.svelte';
+	import { untrack } from 'svelte';
 
 	import type { components } from '$lib/api/v1';
 	import type { SuperForm } from 'sveltekit-superforms';
@@ -37,14 +38,14 @@
 		enhance: userUpdateEnhance,
 		errors: userUpdateErrors,
 		message: userUpdateMessage
-	} = userUpdateForm;
+	} = untrack(() => userUpdateForm);
 
 	const {
 		form: userAddRoleFormData,
 		enhance: userAddRoleEnhance,
 		errors: userAddRoleErrors,
 		message: userAddRoleMessage
-	} = userAddRoleForm;
+	} = untrack(() => userAddRoleForm);
 
 	let editDialogOpen = $state(false);
 	let permsOpen = $state(false);

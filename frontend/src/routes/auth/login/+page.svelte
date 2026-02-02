@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { superForm } from 'sveltekit-superforms';
+	import { untrack } from 'svelte';
 	import { zod4 as zodClient } from 'sveltekit-superforms/adapters';
 	import { LoginSchema } from '$lib/schemas/schemas';
 	import { Field, Control, Label, FieldErrors } from 'formsnap';
@@ -8,7 +9,7 @@
 
 	let { data } = $props();
 
-	const form = superForm(data.form, {
+	const form = superForm(untrack(() => data.form), {
 		validators: zodClient(LoginSchema)
 	});
 

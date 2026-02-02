@@ -1,42 +1,45 @@
 <!doctype html>
 <html lang="en">
-
-<head>
-	<meta charset="utf-8" />
-	<link rel="icon" href="%sveltekit.assets%/favicon.png" />
-	<meta name="viewport" content="width=device-width, initial-scale=1" />
-	<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
-	<meta name="theme-color" content="#0b1220" media="(prefers-color-scheme: dark)">
-	<link rel="preconnect" href="https://fonts.googleapis.com">
-	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-	<script>
-		// Set theme class before app mounts to avoid FOUC
-		(function () {
-			try {
-				var ls = localStorage.getItem('theme');
-				var systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-				if (ls === 'dark' || (!ls && systemDark)) {
-					document.documentElement.classList.add('dark');
-				} else {
-					document.documentElement.classList.remove('dark');
+	<head>
+		<meta charset="utf-8" />
+		<link rel="icon" href="%sveltekit.assets%/favicon.png" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
+		<meta name="theme-color" content="#0b1220" media="(prefers-color-scheme: dark)" />
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link
+			href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+			rel="stylesheet"
+		/>
+		<script>
+			// Set theme class before app mounts to avoid FOUC
+			(function () {
+				try {
+					var ls = localStorage.getItem('theme');
+					var systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+					if (ls === 'dark' || (!ls && systemDark)) {
+						document.documentElement.classList.add('dark');
+					} else {
+						document.documentElement.classList.remove('dark');
+					}
+					// Sync meta theme-color after initial decision
+					var setThemeColor = function (dark) {
+						var metaLight = document.querySelector('meta[name="theme-color"][media*="light"]');
+						var metaDark = document.querySelector('meta[name="theme-color"][media*="dark"]');
+						if (metaLight) metaLight.setAttribute('content', '#ffffff');
+						if (metaDark) metaDark.setAttribute('content', '#0b1220');
+					};
+					setThemeColor(document.documentElement.classList.contains('dark'));
+				} catch (e) {
+					/* noop */
 				}
-				// Sync meta theme-color after initial decision
-				var setThemeColor = function (dark) {
-					var metaLight = document.querySelector('meta[name="theme-color"][media*="light"]');
-					var metaDark = document.querySelector('meta[name="theme-color"][media*="dark"]');
-					if (metaLight) metaLight.setAttribute('content', '#ffffff');
-					if (metaDark) metaDark.setAttribute('content', '#0b1220');
-				};
-				setThemeColor(document.documentElement.classList.contains('dark'));
-			} catch (e) { /* noop */ }
-		})();
-	</script>
-	%sveltekit.head%
-</head>
+			})();
+		</script>
+		%sveltekit.head%
+	</head>
 
-<body data-sveltekit-preload-data="hover">
-	<div style="display: contents">%sveltekit.body%</div>
-</body>
-
+	<body data-sveltekit-preload-data="hover">
+		<div style="display: contents">%sveltekit.body%</div>
+	</body>
 </html>

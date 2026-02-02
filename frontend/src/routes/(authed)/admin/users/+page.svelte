@@ -8,6 +8,7 @@
 	import { fade, fly } from 'svelte/transition';
 	import { zod4 as zodClient } from 'sveltekit-superforms/adapters';
 	import SuperDebug from 'sveltekit-superforms';
+	import { untrack } from 'svelte';
 	import { Field, Control, Label, Description, FieldErrors } from 'formsnap';
 	import { Input } from '$lib/components/ui/input/index.js';
 
@@ -16,7 +17,7 @@
 	// let { data }: { data: { form: SuperValidated<Infer<FormSchema>> } } = $props();
 	let dialogOpen = $state(false);
 
-	const form = superForm(data.userCreateForm, {
+	const form = superForm(untrack(() => data.userCreateForm), {
 		id: 'userCreateForm',
 		validators: zodClient(UserSchema),
 		onUpdated: ({ form }) => {
@@ -28,7 +29,7 @@
 		}
 	});
 
-	const userUpdateForm = superForm(data.userUpdateForm, {
+	const userUpdateForm = superForm(untrack(() => data.userUpdateForm), {
 		id: 'userUpdateForm',
 		dataType: 'json',
 		validators: zodClient(UserUpdateSchema),
@@ -40,7 +41,7 @@
 		}
 	});
 
-	const userAddRoleForm = superForm(data.userAddRoleForm, {
+	const userAddRoleForm = superForm(untrack(() => data.userAddRoleForm), {
 		id: 'userAddRoleForm',
 		validators: zodClient(UserAddRoleSchema),
 		// dataType: 'json',

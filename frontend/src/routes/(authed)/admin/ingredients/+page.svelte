@@ -10,12 +10,13 @@
 	import { superForm } from 'sveltekit-superforms';
 	import { zod4 as zodClient } from 'sveltekit-superforms/adapters';
 	import { fade } from 'svelte/transition';
+	import { untrack } from 'svelte';
 	import { IngredientSchema, IngredientUpdateSchema } from '$lib/schemas/schemas.js';
 	import { Field, Control, Label, FieldErrors } from 'formsnap';
 
 	let open = $state(false);
 
-	const form = superForm(data.ingredientCreateForm, {
+	const form = superForm(untrack(() => data.ingredientCreateForm), {
 		id: 'ingredientCreateForm',
 		validators: zodClient(IngredientSchema),
 		resetForm: true,
@@ -26,7 +27,7 @@
 		}
 	});
 
-	const updateForm = superForm(data.ingredientUpdateForm, {
+	const updateForm = superForm(untrack(() => data.ingredientUpdateForm), {
 		id: 'ingredientUpdateForm',
 		validators: zodClient(IngredientUpdateSchema),
 		resetForm: false,

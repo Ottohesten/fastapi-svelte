@@ -1,77 +1,81 @@
-import type { Actions, PageServerLoad } from "./$types";
-import { createApiClient } from "$lib/api/api";
-import { redirect, fail } from "@sveltejs/kit";
-import { superValidate, message } from "sveltekit-superforms";
-import { zod4 as zod } from "sveltekit-superforms/adapters";
-import { LoginSchema } from "$lib/schemas/schemas";
+import type { Actions, PageServerLoad } from './$types';
+import { createApiClient } from '$lib/api/api';
+import { redirect, fail } from '@sveltejs/kit';
+import { superValidate, message } from 'sveltekit-superforms';
+import { zod4 as zod } from 'sveltekit-superforms/adapters';
+import { LoginSchema } from '$lib/schemas/schemas';
 
 export const load: PageServerLoad = async () => {
-    return {
-        form: await superValidate(zod(LoginSchema))
-    };
+	return {
+		form: await superValidate(zod(LoginSchema))
+	};
 };
 
 export const actions = {
-    default: async ({ fetch, cookies, request, url }) => {
-        const form = await superValidate(request, zod(LoginSchema));
+	default: async ({ fetch, cookies, request, url }) => {
+		const form = await superValidate(request, zod(LoginSchema));
 
-        if (!form.valid) {
-            return fail(400, { form });
-        }
+		if (!form.valid) {
+			return fail(400, { form });
+		}
 
-        const client = createApiClient(fetch);
+		const client = createApiClient(fetch);
 
-        const { data, error: apierror, response } = await client.POST("/login/access-token", {
-            body: {
-                username: form.data.email,
-                password: form.data.password,
-                scope: "",
-                grant_type: "password"
-            },
-            headers: {
-                "Content-Type": "application/x-www-form-urlencoded"
-            },
-            bodySerializer(body) {
-                return body ? new URLSearchParams(body as Record<string, string>) : new URLSearchParams();
-            }
-        })
+		const {
+			data,
+			error: apierror,
+			response
+		} = await client.POST('/login/access-token', {
+			body: {
+				username: form.data.email,
+				password: form.data.password,
+				scope: '',
+				grant_type: 'password'
+			},
+			headers: {
+				'Content-Type': 'application/x-www-form-urlencoded'
+			},
+			bodySerializer(body) {
+				return body ? new URLSearchParams(body as Record<string, string>) : new URLSearchParams();
+			}
+		});
 
-        if (apierror) {
-            console.log(apierror);
-            return message(form, typeof apierror.detail === 'string' ? apierror.detail : "Login failed", {
-                status: (response.status || 400) as any
-            });
-        }
+		if (apierror) {
+			console.log(apierror);
+			return message(form, typeof apierror.detail === 'string' ? apierror.detail : 'Login failed', {
+				status: (response.status || 400) as any
+			});
+		}
 
-        cookies.set("auth_token", data.access_token, {
-            httpOnly: true,
-            path: '/',
-            secure: true,
-            sameSite: "strict",
-            maxAge: 60 * 60 * 24
-        })
+		cookies.set('auth_token', data.access_token, {
+			httpOnly: true,
+			path: '/',
+			secure: true,
+			sameSite: 'strict',
+			maxAge: 60 * 60 * 24
+		});
 
-        if (data.refresh_token) {
-            cookies.set("refresh_token", data.refresh_token, {
-                httpOnly: true,
-                path: '/',
-                secure: true,
-                sameSite: "lax",
-                maxAge: 60 * 60 * 24 * 7
-            })
-        }
+		if (data.refresh_token) {
+			cookies.set('refresh_token', data.refresh_token, {
+				httpOnly: true,
+				path: '/',
+				secure: true,
+				sameSite: 'lax',
+				maxAge: 60 * 60 * 24 * 7
+			});
+		}
 
-        const { error: userError } = await client.GET("/users/me", {
-            headers: {
-                Authorization: `Bearer ${cookies.get("auth_token")}`
-            }
-        })
+		const { error: userError } = await client.GET('/users/me', {
+			headers: {
+				Authorization: `Bearer ${cookies.get('auth_token')}`
+			}
+		});
 
-        if (userError) {
-             return fail(500, { form, message: "Login succeeded but user verification failed." });
-        }
+		if (userError) {
+			return fail(500, { form, message: 'Login succeeded but user verification failed.' });
+		}
 
-        const redirectTo = url.searchParams.get("redirectTo") || "/";
-        return redirect(303, redirectTo);
-    }
+		const redirectTo = url.searchParams.get('redirectTo') || '/';
+		return redirect(303, redirectTo);
+	}
 } satisfies Actions;

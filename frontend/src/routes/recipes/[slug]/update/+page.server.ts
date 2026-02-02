@@ -2,7 +2,7 @@ import { redirect } from '@sveltejs/kit';
 import { error } from '@sveltejs/kit';
 import { createApiClient } from '$lib/api/api.js';
 // import { createApiClient } from '$lib/api/api';
-import { zod } from 'sveltekit-superforms/adapters'
+import { zod4 as zod } from 'sveltekit-superforms/adapters'
 import { z } from 'zod';
 import { message, superValidate, fail } from 'sveltekit-superforms';
 import type { Actions } from './$types.js';

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { superForm } from 'sveltekit-superforms';
-	import { zodClient } from 'sveltekit-superforms/adapters';
+	import { zod4 as zodClient } from 'sveltekit-superforms/adapters';
 	import { Field, Control, Label, FieldErrors } from 'formsnap';
 	import { GameSessionAddDrinkSchema } from '$lib/schemas/schemas';
 	import { Combobox } from '$lib/components/ui/combobox';

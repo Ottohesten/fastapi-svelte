@@ -3,7 +3,7 @@
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
 	import { superForm } from 'sveltekit-superforms';
-	import { zodClient } from 'sveltekit-superforms/adapters';
+	import { zod4 as zodClient } from 'sveltekit-superforms/adapters';
 	import { RecipeSchema } from '$lib/schemas/schemas';
 	import * as Dialog from '$lib/components/ui/dialog/index.js';
 	import InstructionsEditor from '$lib/components/InstructionsEditor.svelte';

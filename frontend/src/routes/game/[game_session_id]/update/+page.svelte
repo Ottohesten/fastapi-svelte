@@ -5,6 +5,7 @@
 	import Player from '$lib/components/Player.svelte';
 	import { Input } from '$lib/components/ui/input';
 	import { Button } from '$lib/components/ui/button';
+	import * as Select from "$lib/components/ui/select/index.js";
 	import { Field, Control, Label, FieldErrors, Description } from 'formsnap';
 
 	let { data } = $props();

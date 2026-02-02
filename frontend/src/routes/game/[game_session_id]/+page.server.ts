@@ -2,7 +2,7 @@ import { createApiClient } from '$lib/api/api';
 import { error } from '@sveltejs/kit';
 import { redirect } from '@sveltejs/kit';
 import type { Actions } from './$types.js';
-import { zod } from 'sveltekit-superforms/adapters'
+import { zod4 as zod } from 'sveltekit-superforms/adapters'
 import { z } from 'zod';
 import { message, superValidate, fail } from 'sveltekit-superforms';
 import { GameSessionTeamSchema, GameSessionPlayerSchema, GameSessionAddDrinkSchema } from '$lib/schemas/schemas.js';

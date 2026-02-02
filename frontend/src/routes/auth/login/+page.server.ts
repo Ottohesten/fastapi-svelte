@@ -2,7 +2,7 @@ import type { Actions, PageServerLoad } from "./$types";
 import { createApiClient } from "$lib/api/api";
 import { redirect, fail } from "@sveltejs/kit";
 import { superValidate, message } from "sveltekit-superforms";
-import { zod } from "sveltekit-superforms/adapters";
+import { zod4 as zod } from "sveltekit-superforms/adapters";
 import { LoginSchema } from "$lib/schemas/schemas";
 
 export const load: PageServerLoad = async () => {

@@ -2,16 +2,16 @@ import { createApiClient } from '$lib/api/api';
 import { error } from '@sveltejs/kit';
 import { redirect } from '@sveltejs/kit';
 import type { Actions } from './$types.js';
-import { zod } from 'sveltekit-superforms/adapters'
+import { zod4 } from 'sveltekit-superforms/adapters'
 import { z } from 'zod';
 import { message, superValidate, fail } from 'sveltekit-superforms';
 import { GameSessionTeamSchema, GameSessionPlayerSchema } from '$lib/schemas/schemas.js';
 
 export const load = async ({ }) => {
-    const teamForm = await superValidate(zod(GameSessionTeamSchema), {
+    const teamForm = await superValidate(zod4(GameSessionTeamSchema), {
         id: "teamForm",
     });
-    const playerForm = await superValidate(zod(GameSessionPlayerSchema), {
+    const playerForm = await superValidate(zod4(GameSessionPlayerSchema), {
         id: "playerForm",
     });
 
@@ -26,7 +26,7 @@ export const load = async ({ }) => {
 export const actions = {
     addTeam: async ({ fetch, params, cookies, request }) => {
         const auth_token = cookies.get("auth_token");
-        const teamForm = await superValidate(request, zod(GameSessionTeamSchema));
+        const teamForm = await superValidate(request, zod4(GameSessionTeamSchema));
         if (!auth_token) {
             redirect(302, "/auth/login");
         }
@@ -59,7 +59,7 @@ export const actions = {
     },
     addPlayer: async ({ fetch, params, cookies, request }) => {
         const auth_token = cookies.get("auth_token");
-        const playerForm = await superValidate(request, zod(GameSessionPlayerSchema));
+        const playerForm = await superValidate(request, zod4(GameSessionPlayerSchema));
         if (!auth_token) {
             redirect(302, "/auth/login");
         }

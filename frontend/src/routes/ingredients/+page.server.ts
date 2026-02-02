@@ -1,7 +1,7 @@
 import { createApiClient } from '$lib/api/api';
 import { error } from '@sveltejs/kit';
 import { message, superValidate, fail } from 'sveltekit-superforms';
-import { zod } from 'sveltekit-superforms/adapters';
+import { zod4 as zod } from 'sveltekit-superforms/adapters';
 import type { Actions } from './$types.js';
 import { IngredientSchema } from '$lib/schemas/schemas.js';
 

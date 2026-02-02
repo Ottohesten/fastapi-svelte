@@ -7,7 +7,7 @@
 	import * as Select from "$lib/components/ui/select/index.js";
 	import { Input } from '$lib/components/ui/input/index.js';
 	import { Field, Control, Label, FieldErrors } from 'formsnap';
-	import { zodClient } from 'sveltekit-superforms/adapters';
+	import { zod4 as zodClient } from 'sveltekit-superforms/adapters';
 	import { UserUpdateSchema, UserAddRoleSchema } from '$lib/schemas/schemas.js';
 	import SuperDebug from 'sveltekit-superforms/SuperDebug.svelte';
 

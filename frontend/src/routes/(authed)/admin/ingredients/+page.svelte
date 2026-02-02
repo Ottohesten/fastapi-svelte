@@ -8,7 +8,7 @@
 	import * as Dialog from '$lib/components/ui/dialog/index.js';
 	import { Input } from '$lib/components/ui/input';
 	import { superForm } from 'sveltekit-superforms';
-	import { zodClient } from 'sveltekit-superforms/adapters';
+	import { zod4 as zodClient } from 'sveltekit-superforms/adapters';
 	import { fade } from 'svelte/transition';
 	import { IngredientSchema, IngredientUpdateSchema } from '$lib/schemas/schemas.js';
 	import { Field, Control, Label, FieldErrors } from 'formsnap';

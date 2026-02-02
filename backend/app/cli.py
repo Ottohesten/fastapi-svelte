@@ -108,6 +108,28 @@ def assign_role(email: str, role_name: str):
 
 
 @app.command()
+def remove_role(email: str, role_name: str):
+    """Remove a role from a user by email"""
+    with Session(engine) as session:
+        user = get_user_by_email(session=session, email=email)
+        if not user:
+            print(f"❌ User with email '{email}' not found")
+            return
+
+        role = next((r for r in user.roles if r.name == role_name), None)
+        if not role:
+            print(f"❌ User '{email}' does not have role '{role_name}'")
+            return
+
+        user.roles.remove(role)
+        session.add(user)
+        session.commit()
+        session.refresh(user)
+
+        print(f"✅ Removed role '{role_name}' from user '{email}'")
+
+
+@app.command()
 def show_user_permissions(email: str):
     """Show a user's effective permissions"""
     with Session(engine) as session:
@@ -124,14 +146,36 @@ def show_user_permissions(email: str):
         for role in user.roles:
             print(f"  - {role.name}")
 
-        print(f"\n🔑 Custom Scopes ({len(user.custom_scopes)}):")
-        for scope in user.custom_scopes:
-            print(f"  - {scope}")
+        custom_scopes = user.custom_scopes or []
+        print(f"\n🔑 Custom Scopes ({len(custom_scopes)}):")
+        if not custom_scopes:
+            print("  - None")
+        else:
+            for scope in custom_scopes:
+                print(f"  - {scope}")
 
         effective_scopes = get_user_effective_scopes(user)
         print(f"\n✅ Effective Permissions ({len(effective_scopes)}):")
         for scope in sorted(effective_scopes):
             print(f"  - {scope}")
+
+
+@app.command()
+def set_superuser(email: str, superuser: bool = True):
+    """Set a user as superuser"""
+    with Session(engine) as session:
+        user = get_user_by_email(session=session, email=email)
+        if not user:
+            print(f"❌ User with email '{email}' not found")
+            return
+
+        user.is_superuser = superuser
+        session.add(user)
+        session.commit()
+        session.refresh(user)
+
+        status = "superuser" if superuser else "normal user"
+        print(f"✅ User '{email}' is now a {status}")
 
 
 if __name__ == "__main__":

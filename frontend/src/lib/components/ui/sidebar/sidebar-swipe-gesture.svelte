@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { onMount, onDestroy } from 'svelte';
-	import { useSidebar } from './context.svelte.js';
+	import { onMount, onDestroy } from "svelte";
+	import { useSidebar } from "./context.svelte.js";
 
 	const sidebar = useSidebar();
 
@@ -70,17 +70,17 @@
 	}
 
 	onMount(() => {
-		if (typeof window === 'undefined') return;
-		window.addEventListener('touchstart', onTouchStart, { passive: true });
-		window.addEventListener('touchmove', onTouchMove, { passive: true });
-		window.addEventListener('touchend', onTouchEnd, { passive: true });
+		if (typeof window === "undefined") return;
+		window.addEventListener("touchstart", onTouchStart, { passive: true });
+		window.addEventListener("touchmove", onTouchMove, { passive: true });
+		window.addEventListener("touchend", onTouchEnd, { passive: true });
 	});
 
 	onDestroy(() => {
-		if (typeof window === 'undefined') return;
-		window.removeEventListener('touchstart', onTouchStart as any);
-		window.removeEventListener('touchmove', onTouchMove as any);
-		window.removeEventListener('touchend', onTouchEnd as any);
+		if (typeof window === "undefined") return;
+		window.removeEventListener("touchstart", onTouchStart as any);
+		window.removeEventListener("touchmove", onTouchMove as any);
+		window.removeEventListener("touchend", onTouchEnd as any);
 	});
 </script>
 

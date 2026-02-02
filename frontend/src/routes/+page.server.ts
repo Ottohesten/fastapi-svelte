@@ -1,8 +1,7 @@
-import { createApiClient } from '$lib/api/api';
-import { error } from '@sveltejs/kit';
+import { createApiClient } from "$lib/api/api";
+import { error } from "@sveltejs/kit";
 import type { Actions } from "./$types";
 // import { PASSPHRASE } from '$env/static/private';
-
 
 // import { GET } from '$lib/api/api';
 
@@ -22,7 +21,6 @@ import type { Actions } from "./$types";
 //         error(404, apierror);
 //     }
 
-
 //     return {
 //         items: data,
 //         // user: locals.user
@@ -31,4 +29,3 @@ import type { Actions } from "./$types";
 //     //     items: [data]
 //     // }
 // };
-

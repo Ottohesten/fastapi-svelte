@@ -1,6 +1,9 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, UploadFile, File
 from fastapi import HTTPException, Security
 from sqlmodel import select
+import cloudinary
+import cloudinary.uploader
+from app.config import get_settings
 from app.deps import SessionDep, get_current_user
 from app.models import (
     Recipe,
@@ -13,6 +16,33 @@ from app.models import (
 
 
 router = APIRouter(prefix="/recipes", tags=["recipes"])
+
+
+@router.post("/upload-image")
+def upload_recipe_image(
+    file: UploadFile = File(...),
+    current_user: User = Security(get_current_user, scopes=["recipes:create"]),
+):
+    """
+    Upload an image for a recipe.
+    """
+    if not file.content_type or not file.content_type.startswith("image/"):
+        raise HTTPException(status_code=400, detail="File must be an image")
+
+    settings = get_settings()
+    cloudinary.config(
+        cloud_name=settings.CLOUDINARY_CLOUD_NAME,
+        api_key=settings.CLOUDINARY_API_KEY,
+        api_secret=settings.CLOUDINARY_API_SECRET,
+        secure=True,
+    )
+
+    # Upload the file to Cloudinary
+    # Use the environment to segregate uploads (e.g. "local/recipes", "production/recipes")
+    folder_path = f"{settings.ENVIRONMENT}/recipes"
+    upload_result = cloudinary.uploader.upload(file.file, folder=folder_path)
+
+    return {"url": upload_result.get("secure_url")}
 
 
 @router.get("/", response_model=list[RecipePublic])
@@ -65,6 +95,7 @@ def create_recipe(
         instructions=recipe_in.instructions,
         owner_id=current_user.id,
         servings=recipe_in.servings,
+        image=recipe_in.image,
     )
 
     # Save the recipe first to get a valid ID

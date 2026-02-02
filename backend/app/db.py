@@ -5,29 +5,7 @@ from app.config import settings
 from app.models import User, UserCreate
 
 
-# if we actually want to use SQLite, we can use the following line
-# engine = create_engine("sqlite:///database.db")
-
-# if os.getenv("TESTING") == "1":
-#     print("TESTING")
-#     # if we are testing, we use a different database
-#     # engine = create_engine(settings.TEST_DATABASE_URL, connect_args={"check_same_thread": False})
-#     engine = create_engine(str(settings.SQLALCHEMY_DATABASE_URI_TEST))
-# else:
-#     print("NOT TESTING")
-#     # if we are not testing, we use the default database
-#     # engine = create_engine(settings.SQLALCHEMY_DATABASE_URI, connect_args={"check_same_thread": False})
-#     engine = create_engine(str(settings.SQLALCHEMY_DATABASE_URI))
-
 engine = create_engine(str(settings.SQLALCHEMY_DATABASE_URI))
-# Make sure to actually create the database
-# engine = create_engine(str(settings.SQLALCHEMY_DATABASE_URI))
-# print(engine)
-
-
-# make sure all SQLModel models are imported (app.models) before initializing DB
-# otherwise, SQLModel might fail to initialize relationships properly
-# for more details: https://github.com/fastapi/full-stack-fastapi-template/issues/28
 
 
 def init_db(session: Session) -> None:
@@ -55,43 +33,3 @@ def init_db(session: Session) -> None:
         print("Superuser already exists")
 
     # check if there already are heroes in the database
-
-
-# def create_ingredients_and_recipes(session: Session):
-#     ingredient_1 = Ingredient(title="Tomato")
-#     ingredient_2 = Ingredient(title="Onion")
-#     session.add(ingredient_1)
-#     session.add(ingredient_2)
-#     session.commit()
-#     session.refresh(ingredient_1)
-#     session.refresh(ingredient_2)
-
-#     print("Ingredient created")
-
-#     # recipe_1 = Recipe(title="Tomato Soup", owner_id=user.id)
-#     recipe_1 = Recipe(title="Tomato Soup", owner_id="9d4b9156-f5a7-4181-ac0f-4628de0cd551", ingredients=[ingredient_1, ingredient_2])
-#     recipe_2 = Recipe(title="Onion Soup", owner_id="9d4b9156-f5a7-4181-ac0f-4628de0cd551", ingredients=[ingredient_2])
-
-#     session.add(recipe_1)
-#     session.add(recipe_2)
-#     session.commit()
-#     session.refresh(recipe_1)
-#     session.refresh(recipe_2)
-
-#     print("Recipe created")
-
-# def create_heroes(session: Session):
-#     print("checking if heroes exist")
-#     heroes = session.exec(select(Hero).where(Hero.name == "Deadpond")).first()
-#     print(f"Heroes: {heroes}")
-#     if not heroes:
-#         print("creating heroes")
-#         # create heroes initial data
-#         hero_1 = Hero(name="Deadpond", secret_name="Dive Wilson")
-#         hero_2 = Hero(name="Spider-Boy", secret_name="Pedro Parqueador")
-#         hero_3 = Hero(name="Rusty-Man", secret_name="Tommy Sharp", age=48)
-
-#         session.add(hero_1)
-#         session.add(hero_2)
-#         session.add(hero_3)
-#         session.commit()

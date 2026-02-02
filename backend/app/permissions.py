@@ -18,10 +18,6 @@ AVAILABLE_SCOPES = {
     "ingredients:create",
     "ingredients:update",
     "ingredients:delete",
-    "items:read",
-    "items:create",
-    "items:update",
-    "items:delete",
     # Game permissions
     "games:read",
     "games:create",

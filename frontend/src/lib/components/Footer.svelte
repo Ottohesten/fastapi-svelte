@@ -25,7 +25,7 @@
 		</div>
 		<div class="grid grid-cols-2 gap-6 md:grid-cols-3">
 			<div>
-				<h4 class="mb-2 text-xs font-semibold uppercase tracking-wide text-gray-500">Product</h4>
+				<h4 class="mb-2 text-xs font-semibold tracking-wide text-gray-500 uppercase">Product</h4>
 				<ul class="space-y-1">
 					<li><a class="hover:underline" href="/recipes">Recipes</a></li>
 					<li><a class="hover:underline" href="/ingredients">Ingredients</a></li>
@@ -33,7 +33,7 @@
 				</ul>
 			</div>
 			<div>
-				<h4 class="mb-2 text-xs font-semibold uppercase tracking-wide text-gray-500">Resources</h4>
+				<h4 class="mb-2 text-xs font-semibold tracking-wide text-gray-500 uppercase">Resources</h4>
 				<ul class="space-y-1">
 					<li><a class="hover:underline" href="/blog">Blog</a></li>
 					<li><a class="hover:underline" href="/tiptap">Editor</a></li>
@@ -41,7 +41,7 @@
 				</ul>
 			</div>
 			<div>
-				<h4 class="mb-2 text-xs font-semibold uppercase tracking-wide text-gray-500">Account</h4>
+				<h4 class="mb-2 text-xs font-semibold tracking-wide text-gray-500 uppercase">Account</h4>
 				<ul class="space-y-1">
 					<li><a class="hover:underline" href="/auth/login">Login</a></li>
 					<li><a class="hover:underline" href="/auth/logout">Logout</a></li>

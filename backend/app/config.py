@@ -1,4 +1,5 @@
 import secrets
+import os
 
 from pydantic_core import MultiHostUrl
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -21,8 +22,9 @@ def parse_cors(v: Any) -> list[str] | str:
 
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
-        # Use top level .env file (one level above ./backend/)
-        env_file="../.env",
+        env_file=os.path.join(
+            os.path.dirname(os.path.abspath(__file__)), "..", "..", ".env"
+        ),
         env_ignore_empty=True,
         extra="ignore",
     )
@@ -48,12 +50,9 @@ class Settings(BaseSettings):
     POSTGRES_USER: str
     POSTGRES_PASSWORD: str
     POSTGRES_DB: str
-
-    TEST_POSTGRES_SERVER: str
-    TEST_POSTGRES_PORT: int = 5432
-    TEST_POSTGRES_USER: str
-    TEST_POSTGRES_PASSWORD: str
-    TEST_POSTGRES_DB: str
+    CLOUDINARY_CLOUD_NAME: str
+    CLOUDINARY_API_KEY: str
+    CLOUDINARY_API_SECRET: str
 
     @computed_field
     @property
@@ -65,18 +64,6 @@ class Settings(BaseSettings):
             host=self.POSTGRES_SERVER,
             port=self.POSTGRES_PORT,
             path=self.POSTGRES_DB,
-        )  # type: ignore
-
-    @computed_field
-    @property
-    def SQLALCHEMY_DATABASE_URI_TEST(self) -> PostgresDsn:
-        return MultiHostUrl.build(
-            scheme="postgresql+psycopg",
-            username=self.TEST_POSTGRES_USER,
-            password=self.TEST_POSTGRES_PASSWORD,
-            host=self.TEST_POSTGRES_SERVER,
-            port=self.TEST_POSTGRES_PORT,
-            path=self.TEST_POSTGRES_DB,
         )  # type: ignore
 
     # print(str(SQLALCHEMY_DATABASE_URI))

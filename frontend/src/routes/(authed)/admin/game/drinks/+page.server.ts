@@ -1,133 +1,95 @@
-import { createApiClient } from '$lib/api/api';
-import { error } from '@sveltejs/kit';
-import { redirect } from '@sveltejs/kit';
-import type { Actions } from './$types.js';
+import { createApiClient } from "$lib/api/api";
+import { error, fail, redirect } from "@sveltejs/kit";
+import { message, superValidate } from "sveltekit-superforms";
+import { zod4 as zod } from "sveltekit-superforms/adapters";
+import type { Actions } from "./$types.js";
+import { DrinkSchema, DrinkUpdateSchema } from "$lib/schemas/schemas";
 
+export const load = async ({ fetch }) => {
+	const client = createApiClient(fetch);
+	const {
+		data: drinks,
+		error: drinksError,
+		response: drinksResponse
+	} = await client.GET("/game/drinks");
 
-export const load = async ({ fetch, params, locals }) => {
-    const client = createApiClient(fetch);
+	if (drinksError) {
+		error(drinksResponse.status, drinksError.detail?.toString());
+	}
 
-
-
-
-    const { data: drinks, error: drinksError, response: drinksResponse } = await client.GET("/game/drinks",)
-
-    if (drinksError) {
-        error(drinksResponse.status, drinksError.detail?.toString());
-    }
-    return {
-        drinks: drinks
-    }
-}
-
+	return {
+		drinks: drinks,
+		drinkCreateForm: await superValidate(zod(DrinkSchema), { id: "drinkCreateForm" }),
+		drinkUpdateForm: await superValidate(zod(DrinkUpdateSchema), { id: "drinkUpdateForm" })
+	};
+};
 
 export const actions = {
-    addDrink: async ({ fetch, cookies, request }) => {
-        const client = createApiClient(fetch);
-        const auth_token = cookies.get("auth_token");
+	addDrink: async ({ fetch, cookies, request }) => {
+		const client = createApiClient(fetch);
+		const auth_token = cookies.get("auth_token");
 
-        if (!auth_token) {
-            redirect(302, "/auth/login");
-        }
+		if (!auth_token) redirect(302, "/auth/login");
 
-        const formData = await request.formData();
-        const name = formData.get('name') as string;
+		const form = await superValidate(request, zod(DrinkSchema));
+		if (!form.valid) return fail(400, { form });
 
-        if (!name || name.trim() === '') {
-            return {
-                error: 'Drink name is required'
-            };
-        }
+		const { error: apierror } = await client.POST("/game/drinks", {
+			body: form.data,
+			headers: { Authorization: `Bearer ${auth_token}` }
+		});
 
-        const { error: apierror, response } = await client.POST("/game/drinks", {
-            body: {
-                name: name.trim()
-            },
-            headers: {
-                Authorization: `Bearer ${auth_token}`
-            }
-        });
+		if (apierror) {
+			return message(form, apierror.detail?.toString() || "Failed to add drink", { status: 400 });
+		}
 
-        if (apierror) {
-            return {
-                error: apierror.detail?.toString() || 'Failed to add drink'
-            };
-        }
+		return message(form, "Drink added successfully");
+	},
 
-        return {
-            success: true
-        };
-    },
+	updateDrink: async ({ fetch, cookies, request }) => {
+		const client = createApiClient(fetch);
+		const auth_token = cookies.get("auth_token");
 
-    updateDrink: async ({ fetch, cookies, request }) => {
-        const client = createApiClient(fetch);
-        const auth_token = cookies.get("auth_token");
+		if (!auth_token) redirect(302, "/auth/login");
 
-        if (!auth_token) {
-            redirect(302, "/auth/login");
-        }
+		const form = await superValidate(request, zod(DrinkUpdateSchema));
+		if (!form.valid) return fail(400, { form });
 
-        const formData = await request.formData();
-        const drinkId = formData.get('drink_id') as string;
-        const name = formData.get('name') as string;
+		const { id, name } = form.data;
 
-        if (!name || name.trim() === '') {
-            return {
-                error: 'Drink name is required'
-            };
-        }
+		const { error: apierror } = await client.PATCH("/game/drinks/{drink_id}", {
+			params: { path: { drink_id: id } },
+			body: { name },
+			headers: { Authorization: `Bearer ${auth_token}` }
+		});
 
-        const { error: apierror, response } = await client.PATCH("/game/drinks/{drink_id}", {
-            params: {
-                path: { drink_id: drinkId }
-            },
-            body: {
-                name: name.trim()
-            },
-            headers: {
-                Authorization: `Bearer ${auth_token}`
-            }
-        });
+		if (apierror) {
+			return message(form, apierror.detail?.toString() || "Failed to update drink", {
+				status: 400
+			});
+		}
 
-        if (apierror) {
-            return {
-                error: apierror.detail?.toString() || 'Failed to update drink'
-            };
-        }
+		return message(form, "Drink updated successfully");
+	},
 
-        return {
-            success: true
-        };
-    },
+	deleteDrink: async ({ fetch, cookies, request }) => {
+		const client = createApiClient(fetch);
+		const auth_token = cookies.get("auth_token");
 
-    deleteDrink: async ({ fetch, cookies, request }) => {
-        const client = createApiClient(fetch);
-        const auth_token = cookies.get("auth_token");
+		if (!auth_token) redirect(302, "/auth/login");
 
-        if (!auth_token) {
-            redirect(302, "/auth/login");
-        }
+		const formData = await request.formData();
+		const drinkId = formData.get("drink_id") as string;
 
-        const formData = await request.formData();
-        const drinkId = formData.get('drink_id') as string;
+		const { error: apierror } = await client.DELETE("/game/drinks/{drink_id}", {
+			params: { path: { drink_id: drinkId } },
+			headers: { Authorization: `Bearer ${auth_token}` }
+		});
 
-        const { error: apierror, response } = await client.DELETE("/game/drinks/{drink_id}", {
-            params: {
-                path: { drink_id: drinkId }
-            },
-            headers: {
-                Authorization: `Bearer ${auth_token}`
-            }
-        });
+		if (apierror) {
+			return fail(400, { error: apierror.detail?.toString() || "Failed to delete drink" });
+		}
 
-        if (apierror) {
-            return {
-                error: apierror.detail?.toString() || 'Failed to delete drink'
-            };
-        }
-
-        return {
-            success: true
-        };
-    }
+		return { success: true };
+	}
 } satisfies Actions;

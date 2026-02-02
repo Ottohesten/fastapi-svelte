@@ -1,5 +1,5 @@
 <script lang="ts">
-	import GameSession from '$lib/components/GameSession.svelte';
+	import GameSession from "$lib/components/GameSession.svelte";
 	let { data } = $props();
 	// console.log(data);
 </script>

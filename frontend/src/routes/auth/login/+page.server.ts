@@ -1,101 +1,81 @@
-import type { Actions } from "./$types";
-import { createApiClient, createFormApiClient } from "$lib/api/api";
-import { error, redirect } from "@sveltejs/kit";
+import type { Actions, PageServerLoad } from "./$types";
+import { createApiClient } from "$lib/api/api";
+import { redirect, fail } from "@sveltejs/kit";
+import { superValidate, message } from "sveltekit-superforms";
+import { zod4 as zod } from "sveltekit-superforms/adapters";
+import { LoginSchema } from "$lib/schemas/schemas";
+
+export const load: PageServerLoad = async () => {
+	return {
+		form: await superValidate(zod(LoginSchema))
+	};
+};
 
 export const actions = {
-    default: async ({ fetch, cookies, request, params, url }) => {
-        const client = createApiClient(fetch);
-        // console.log(url)
-        const formData = await request.formData();
-        // console.log(formData.get("username"));
-        // post request to login
-        // const temp = await fetch("http://127.0.0.1:8000/login/access-token", {
-        //     method: "POST",
-        //     headers: {
-        //         "Content-Type": "application/x-www-form-urlencoded"
-        //     },
-        //     body: new URLSearchParams({
-        //         username: formData.get("username") as string,
-        //         password: formData.get("password") as string,
-        //         scope: "",
-        //         grant_type: "password"
-        //     })
-        // })
-        // get access token
-        // const data = await temp.json();
-        // console.log(formData)
-        // console.log(params)
+	default: async ({ fetch, cookies, request, url }) => {
+		const form = await superValidate(request, zod(LoginSchema));
 
-        const { data, error: apierror, response } = await client.POST("/login/access-token", {
-            body: {
-                username: formData.get("email") as string,
-                password: formData.get("password") as string,
-                scope: "",
-                grant_type: "password"
-            },
-            headers: {
-                "Content-Type": "application/x-www-form-urlencoded"
-            },
+		if (!form.valid) {
+			return fail(400, { form });
+		}
 
-            // required as the api expects the body to be in x-www-form-urlencoded format (not json)
-            bodySerializer(body) {
-                return body ? new URLSearchParams(body as Record<string, string>) : new URLSearchParams();
-            }
-        })
-        if (apierror) {
-            console.log(apierror);
-            error(response.status, apierror.detail?.toString());
-        }
-        // console.log(data)
-        // set access token in httpOnly cookie
-        cookies.set("auth_token", data.access_token, {
-            httpOnly: true,
-            path: '/',
-            secure: true,
-            sameSite: "strict",
-            // set to 1 day
-            maxAge: 60 * 60 * 24
-            // maxAge: 60 * 5 // 5 minutes
-        })
+		const client = createApiClient(fetch);
 
-        // also set refresh token cookie (rotated by backend on refresh)
-        const anyData: any = data as any;
-        if (anyData.refresh_token) {
-            cookies.set("refresh_token", anyData.refresh_token, {
-                httpOnly: true,
-                path: '/',
-                secure: true,
-                sameSite: "lax",
-                // align with backend default (7 days)
-                maxAge: 60 * 60 * 24 * 7
-            })
-        }
+		const {
+			data,
+			error: apierror,
+			response
+		} = await client.POST("/login/access-token", {
+			body: {
+				username: form.data.email,
+				password: form.data.password,
+				scope: "",
+				grant_type: "password"
+			},
+			headers: {
+				"Content-Type": "application/x-www-form-urlencoded"
+			},
+			bodySerializer(body) {
+				return body ? new URLSearchParams(body as Record<string, string>) : new URLSearchParams();
+			}
+		});
 
-        // store access token in local storage
-        // localStorage.setItem("auth_token", data.access_token);
+		if (apierror) {
+			console.log(apierror);
+			return message(form, typeof apierror.detail === "string" ? apierror.detail : "Login failed", {
+				status: (response.status || 400) as any
+			});
+		}
 
-        // get user info
-        const { data: user, error: userError, response: userResponse } = await client.GET("/users/me", {
-            headers: {
-                Authorization: `Bearer ${cookies.get("auth_token")}`
-            }
-        })
-        if (userError) {
-            error(404, userError.detail?.toString());
-        }
-        // console.log(user)
+		cookies.set("auth_token", data.access_token, {
+			httpOnly: true,
+			path: "/",
+			secure: true,
+			sameSite: "strict",
+			maxAge: 60 * 60 * 24
+		});
 
+		if (data.refresh_token) {
+			cookies.set("refresh_token", data.refresh_token, {
+				httpOnly: true,
+				path: "/",
+				secure: true,
+				sameSite: "lax",
+				maxAge: 60 * 60 * 24 * 7
+			});
+		}
 
+		const { error: userError } = await client.GET("/users/me", {
+			headers: {
+				Authorization: `Bearer ${cookies.get("auth_token")}`
+			}
+		});
 
-        // redirect to home
-        // const redirectTo = formData.get("redirectTo") as string || "/";
-        const redirectTo = url.searchParams.get("redirectTo") || "/";
-        // console.log(redirectTo);
-        return redirect(303, redirectTo);
+		if (userError) {
+			return fail(500, { form, message: "Login succeeded but user verification failed." });
+		}
 
-
-
-
-
-    }
+		const redirectTo = url.searchParams.get("redirectTo") || "/";
+		return redirect(303, redirectTo);
+	}
 } satisfies Actions;

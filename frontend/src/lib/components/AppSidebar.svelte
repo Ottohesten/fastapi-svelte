@@ -1,17 +1,17 @@
 <script lang="ts">
-	import * as Sidebar from '$lib/components/ui/sidebar/index.js';
-	import { Collapsible } from 'bits-ui';
+	import * as Sidebar from "$lib/components/ui/sidebar/index.js";
+	import { Collapsible } from "bits-ui";
 	// import { Calendar } from 'bits-ui';
-	import Calendar from 'lucide-svelte/icons/calendar';
-	import ChefHat from 'lucide-svelte/icons/chef-hat';
-	import ChevronDown from 'lucide-svelte/icons/chevron-down';
-	import House from 'lucide-svelte/icons/house';
-	import Inbox from 'lucide-svelte/icons/inbox';
-	import Search from 'lucide-svelte/icons/search';
-	import Settings from 'lucide-svelte/icons/settings';
-	import User from 'lucide-svelte/icons/user';
-	import UtensilsCrossed from 'lucide-svelte/icons/utensils-crossed';
-	import BookOpen from 'lucide-svelte/icons/book-open';
+	import Calendar from "lucide-svelte/icons/calendar";
+	import ChefHat from "lucide-svelte/icons/chef-hat";
+	import ChevronDown from "lucide-svelte/icons/chevron-down";
+	import House from "lucide-svelte/icons/house";
+	import Inbox from "lucide-svelte/icons/inbox";
+	import Search from "lucide-svelte/icons/search";
+	import Settings from "lucide-svelte/icons/settings";
+	import User from "lucide-svelte/icons/user";
+	import UtensilsCrossed from "lucide-svelte/icons/utensils-crossed";
+	import BookOpen from "lucide-svelte/icons/book-open";
 
 	const items = [
 		// {
@@ -20,56 +20,56 @@
 		// 	icon: House
 		// },
 		{
-			title: 'Users',
-			url: '/admin/users',
+			title: "Users",
+			url: "/admin/users",
 			icon: User
 		},
 		{
-			title: 'Game',
-			url: '#',
+			title: "Game",
+			url: "#",
 			icon: Inbox,
 			collapsible: true,
 			// submenus
 			children: [
 				{
-					title: 'Sessions',
-					url: '/admin/game/sessions',
+					title: "Sessions",
+					url: "/admin/game/sessions",
 					icon: Inbox
 				},
 				{
-					title: 'Drinks',
-					url: '/admin/game/drinks',
+					title: "Drinks",
+					url: "/admin/game/drinks",
 					icon: Inbox
 				},
 				{
-					title: 'Players',
-					url: '/admin/game/players',
+					title: "Players",
+					url: "/admin/game/players",
 					icon: Calendar
 				}
 			]
 		},
 		{
-			title: 'Kitchen',
-			url: '#',
+			title: "Kitchen",
+			url: "#",
 			icon: ChefHat,
 			collapsible: true,
 			// submenus
 			children: [
 				{
-					title: 'Ingredients',
-					url: '/admin/ingredients',
+					title: "Ingredients",
+					url: "/admin/ingredients",
 					icon: UtensilsCrossed
 				},
 				{
-					title: 'Recipes',
-					url: '/admin/recipes',
+					title: "Recipes",
+					url: "/admin/recipes",
 					icon: BookOpen
 				}
 			]
 		},
 		{
-			title: 'Calendar',
-			url: '#',
+			title: "Calendar",
+			url: "#",
 			icon: Calendar
 			// children: [
 			// 	{
@@ -85,13 +85,13 @@
 			// ]
 		},
 		{
-			title: 'Search',
-			url: '#',
+			title: "Search",
+			url: "#",
 			icon: Search
 		},
 		{
-			title: 'Settings',
-			url: '#',
+			title: "Settings",
+			url: "#",
 			icon: Settings
 		}
 	];

@@ -1,20 +1,23 @@
 <script lang="ts">
-	import { superForm } from 'sveltekit-superforms/client';
-	import { Combobox } from '$lib/components/ui/combobox';
-	import type { PageData } from './$types';
+	import { superForm } from "sveltekit-superforms";
+	import { zod4 as zodClient } from "sveltekit-superforms/adapters";
+	import { Field, Control, Label, FieldErrors } from "formsnap";
+	import { GameSessionAddDrinkSchema } from "$lib/schemas/schemas";
+	import { Combobox } from "$lib/components/ui/combobox";
+	import type { PageData } from "./$types";
 	let { data }: { data: PageData } = $props();
-	import { schemeCategory10, schemeSet3 } from 'd3-scale-chromatic';
-	import { scaleLinear, scaleBand, scaleOrdinal } from 'd3-scale';
-	import { max as d3Max } from 'd3-array';
-	import type { components } from '$lib/api/v1';
-	import { onMount, onDestroy } from 'svelte';
-	import { page } from '$app/stores';
-	import { goto } from '$app/navigation';
-	import { browser } from '$app/environment';
-	import Button from '$lib/components/ui/button/button.svelte';
-	import { Select } from '$lib/components/ui/select';
-	import { Pencil, Trash2 } from 'lucide-svelte';
-	import { enhance } from '$app/forms';
+	import { schemeCategory10, schemeSet3 } from "d3-scale-chromatic";
+	import { scaleLinear, scaleBand, scaleOrdinal } from "d3-scale";
+	import { max as d3Max } from "d3-array";
+	import type { components } from "$lib/api/v1";
+	import { onMount, onDestroy, untrack } from "svelte";
+	import { page } from "$app/stores";
+	import { goto } from "$app/navigation";
+	import { browser } from "$app/environment";
+	import Button from "$lib/components/ui/button/button.svelte";
+	import * as Select from "$lib/components/ui/select/index.js";
+	import { Pencil, Trash2 } from "lucide-svelte";
+	import { enhance } from "$app/forms";
 	import {
 		Dialog,
 		DialogClose,
@@ -24,15 +27,15 @@
 		DialogHeader,
 		DialogTitle,
 		DialogTrigger
-	} from '$lib/components/ui/dialog';
+	} from "$lib/components/ui/dialog";
 	// import * as Dialog from '$lib/components/ui/dialog/index.js';
-	import { Input } from '$lib/components/ui/input';
-	import { fade } from 'svelte/transition';
+	import { Input } from "$lib/components/ui/input";
+	import { fade } from "svelte/transition";
 	// Use the actual API types instead of custom interfaces
-	type GameSession = components['schemas']['GameSessionPublic'];
-	type Team = components['schemas']['GameTeamPublic'];
-	type Player = components['schemas']['GamePlayerPublic'];
-	type DrinkLink = components['schemas']['GamePlayerDrinkLinkPublic'];
+	type GameSession = components["schemas"]["GameSessionPublic"];
+	type Team = components["schemas"]["GameTeamPublic"];
+	type Player = components["schemas"]["GamePlayerPublic"];
+	type DrinkLink = components["schemas"]["GamePlayerDrinkLinkPublic"];
 
 	// Local view models to power charts/UI
 	type DrinkAmount = { name: string; amount: number };
@@ -53,19 +56,25 @@
 		drinkBreakdown: DrinkAmount[];
 	};
 
+	const addDrinkForm = superForm(
+		untrack(() => data.addDrinkForm),
+		{
+			validators: zodClient(GameSessionAddDrinkSchema),
+			dataType: "json",
+			onResult: ({ result }) => {
+				if (result.type === "success") {
+					open = false;
+				}
+			}
+		}
+	);
+
 	const {
-		form: addDrinkForm,
+		form: addDrinkFormData,
 		errors: addDrinkErrors,
 		message: addDrinkMessage,
 		enhance: addDrinkEnhance
-	} = superForm(data.addDrinkForm, {
-		dataType: 'json',
-		onResult: ({ result }) => {
-			if (result.type === 'success') {
-				open = false;
-			}
-		}
-	});
+	} = addDrinkForm;
 
 	$effect(() => {
 		if ($addDrinkMessage) {
@@ -77,21 +86,36 @@
 	});
 
 	// Default values for dashboard state
-	const DEFAULT_VIEW_MODE: 'overview' | 'charts' | 'players' | 'teams' = 'charts';
-	const DEFAULT_CHART_TYPE: 'drinks' | 'players' = 'drinks';
+	const DEFAULT_VIEW_MODE: "overview" | "charts" | "players" | "teams" = "charts";
+	const DEFAULT_CHART_TYPE: "drinks" | "players" = "drinks";
 
 	// Make gameSession a state variable instead of derived so we can update it directly
-	let gameSession: GameSession | undefined = $state(data.game_session as GameSession | undefined);
+	let gameSession: GameSession | undefined = $state(
+		untrack(() => data.game_session as GameSession | undefined)
+	);
 
 	// State for interactivity - initialize from URL parameters
 	let selectedTeam: string | null = $state(null);
 	let selectedPlayer: string | null = $state(null);
 	let showAnimation = $state(false);
-	let viewMode: 'overview' | 'charts' | 'players' | 'teams' = $state(DEFAULT_VIEW_MODE);
-	let chartType: 'drinks' | 'players' = $state(DEFAULT_CHART_TYPE);
+	let viewMode: "overview" | "charts" | "players" | "teams" = $state(DEFAULT_VIEW_MODE);
+	let chartType: "drinks" | "players" = $state(DEFAULT_CHART_TYPE);
 	let hoveredSegment: string | null = $state(null);
 	let open = $state(false);
 	let isDark = $state(false);
+
+	const viewModeOptions = [
+		{ value: "overview", label: "Overview" },
+		{ value: "charts", label: "Team Charts" },
+		{ value: "players", label: "Players Detail" },
+		{ value: "teams", label: "Teams Detail" }
+	];
+
+	let selectedViewModeLabel = $derived(
+		viewModeOptions.find((o) => o.value === viewMode)?.label ?? viewMode
+	);
+
+	let selectedTeamLabel = $derived(selectedTeam ?? "All Teams");
 
 	// Watch for data prop changes and update gameSession
 	$effect(() => {
@@ -106,21 +130,21 @@
 
 		const searchParams = new URLSearchParams();
 
-		if (selectedTeam && selectedTeam !== 'all') {
-			searchParams.set('team', selectedTeam);
+		if (selectedTeam && selectedTeam !== "all") {
+			searchParams.set("team", selectedTeam);
 			// console.log(`Selected team: ${selectedTeam}`);
 		}
 		if (selectedPlayer) {
-			searchParams.set('player', selectedPlayer);
+			searchParams.set("player", selectedPlayer);
 		}
 		if (viewMode !== DEFAULT_VIEW_MODE) {
-			searchParams.set('view', viewMode);
+			searchParams.set("view", viewMode);
 		}
 		if (chartType !== DEFAULT_CHART_TYPE) {
-			searchParams.set('chart', chartType);
+			searchParams.set("chart", chartType);
 		}
 
-		const newUrl = `${window.location.pathname}${searchParams.toString() ? '?' + searchParams.toString() : ''}`;
+		const newUrl = `${window.location.pathname}${searchParams.toString() ? "?" + searchParams.toString() : ""}`;
 		if (newUrl !== window.location.pathname + window.location.search) {
 			goto(newUrl, { replaceState: true, noScroll: true });
 		}
@@ -130,11 +154,11 @@
 		if (!browser) return;
 
 		const urlParams = new URLSearchParams(window.location.search);
-		const teamParam = urlParams.get('team');
-		selectedTeam = teamParam === 'all' || !teamParam ? null : teamParam;
-		selectedPlayer = urlParams.get('player') || null;
-		viewMode = (urlParams.get('view') as typeof viewMode) || DEFAULT_VIEW_MODE;
-		chartType = (urlParams.get('chart') as typeof chartType) || DEFAULT_CHART_TYPE;
+		const teamParam = urlParams.get("team");
+		selectedTeam = teamParam === "all" || !teamParam ? null : teamParam;
+		selectedPlayer = urlParams.get("player") || null;
+		viewMode = (urlParams.get("view") as typeof viewMode) || DEFAULT_VIEW_MODE;
+		chartType = (urlParams.get("chart") as typeof chartType) || DEFAULT_CHART_TYPE;
 	}
 	// Tooltip state
 	let tooltip = $state({
@@ -142,11 +166,11 @@
 		x: 0,
 		y: 0,
 		content: {
-			title: '',
-			subtitle: '',
+			title: "",
+			subtitle: "",
 			amount: 0,
 			percentage: 0,
-			color: '',
+			color: "",
 			details: [] as { name: string; value: number }[]
 		}
 	});
@@ -157,7 +181,7 @@
 			const drinkBreakdown = new Map<string, { name: string; amount: number }>();
 
 			player.drink_links?.forEach((drinkLink: DrinkLink) => {
-				const drinkName = drinkLink.drink?.name || 'Unknown Drink';
+				const drinkName = drinkLink.drink?.name || "Unknown Drink";
 				if (drinkBreakdown.has(drinkName)) {
 					drinkBreakdown.get(drinkName)!.amount += drinkLink.amount;
 				} else {
@@ -168,7 +192,7 @@
 			return {
 				name: player.name,
 				playerId: player.id,
-				teamName: player.team?.name || 'No Team',
+				teamName: player.team?.name || "No Team",
 				teamId: (player.team_id ?? null) as string | null,
 				totalDrinks:
 					player.drink_links?.reduce(
@@ -222,7 +246,7 @@
 
 	// Filter data based on selected team
 	let filteredPlayersData: PlayerView[] = $derived(
-		selectedTeam && selectedTeam !== 'all'
+		selectedTeam && selectedTeam !== "all"
 			? allPlayersData.filter((p: PlayerView) => p.teamName === selectedTeam)
 			: allPlayersData
 	);
@@ -316,7 +340,7 @@
 				gameSession = updatedGameSession;
 			}
 		} catch (error) {
-			console.error('Error refreshing game data:', error);
+			console.error("Error refreshing game data:", error);
 		}
 	}
 
@@ -327,11 +351,11 @@
 
 		// Track theme for chart colors
 		const updateTheme = () => {
-			isDark = document.documentElement.classList.contains('dark');
+			isDark = document.documentElement.classList.contains("dark");
 		};
 		updateTheme();
 		const observer = new MutationObserver(updateTheme);
-		observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+		observer.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
 
 		setTimeout(() => {
 			showAnimation = true;
@@ -346,16 +370,16 @@
 				try {
 					const eventData = JSON.parse(event.data);
 
-					if (eventData.type === 'drink_added') {
+					if (eventData.type === "drink_added") {
 						refreshGameData();
 					}
 				} catch (error) {
-					console.error('Error parsing SSE message:', error);
+					console.error("Error parsing SSE message:", error);
 				}
 			};
 
 			eventSource.onerror = (error) => {
-				console.error('SSE connection error:', error);
+				console.error("SSE connection error:", error);
 			};
 		}
 
@@ -385,7 +409,7 @@
 	}
 
 	function formatPercentage(value: number, total: number): string {
-		return total > 0 ? `${Math.round((value / total) * 100)}%` : '0%';
+		return total > 0 ? `${Math.round((value / total) * 100)}%` : "0%";
 	}
 
 	// Get top players for a specific drink within a team
@@ -418,7 +442,7 @@
 	function showTooltip(event: MouseEvent, segment: any, teamTotal: number) {
 		// Only update tooltip if it's not already showing the same segment
 		const segmentKey =
-			chartType === 'drinks'
+			chartType === "drinks"
 				? `${segment.team}-${segment.drink}`
 				: `${segment.team}-${segment.player}`;
 
@@ -429,7 +453,7 @@
 		hoveredSegment = segmentKey;
 
 		const containerRect = (event.target as SVGElement)
-			.closest('.chart-container')
+			.closest(".chart-container")
 			?.getBoundingClientRect();
 		if (containerRect) {
 			// Get the center of the hovered bar segment for stable positioning
@@ -468,7 +492,7 @@
 			tooltip.visible = true;
 			tooltip.x = adjustedX;
 			tooltip.y = adjustedY;
-			if (chartType === 'drinks') {
+			if (chartType === "drinks") {
 				const topPlayers = getTopPlayersForDrink(segment.team, segment.drink, 3);
 				tooltip.content = {
 					title: segment.drink,
@@ -572,44 +596,52 @@
 				<label for="team-filter" class="font-semibold text-gray-700 dark:text-gray-300"
 					>Filter by Team:</label
 				>
-				<Select
-					id="team-filter"
-					value={selectedTeam || 'all'}
-					onchange={(e) =>
-						(selectedTeam =
-							(e.target as HTMLSelectElement).value === 'all'
-								? null
-								: (e.target as HTMLSelectElement).value)}
-					class="max-w-[14rem]"
+				<Select.Root
+					type="single"
+					value={selectedTeam ?? "all"}
+					onValueChange={(v) => {
+						selectedTeam = v === "all" ? null : v;
+					}}
 				>
-					<option value="all">All Teams</option>
-					{#each teams as team}
-						<option value={team}>{team}</option>
-					{/each}
-				</Select>
+					<Select.Trigger id="team-filter" class="max-w-[14rem]">
+						{selectedTeamLabel}
+					</Select.Trigger>
+					<Select.Content>
+						<Select.Item value="all" label="All Teams">All Teams</Select.Item>
+						{#each teams as team}
+							<Select.Item value={team} label={team}>{team}</Select.Item>
+						{/each}
+					</Select.Content>
+				</Select.Root>
 			</div>
 
 			<div class="flex flex-col gap-2 sm:flex-row sm:items-center">
 				<label for="view-mode" class="font-semibold text-gray-700 dark:text-gray-300">View:</label>
-				<Select id="view-mode" bind:value={viewMode} class="max-w-[14rem]">
-					<option value="overview">Overview</option>
-					<option value="charts">Team Charts</option>
-					<option value="players">Players Detail</option>
-					<option value="teams">Teams Detail</option>
-				</Select>
+				<Select.Root type="single" bind:value={viewMode}>
+					<Select.Trigger id="view-mode" class="max-w-[14rem]">
+						{selectedViewModeLabel}
+					</Select.Trigger>
+					<Select.Content>
+						{#each viewModeOptions as option}
+							<Select.Item value={option.value} label={option.label}>
+								{option.label}
+							</Select.Item>
+						{/each}
+					</Select.Content>
+				</Select.Root>
 			</div>
 		</div>
 
 		<!-- Summary Stats -->
 		<div class="grid grid-cols-1 gap-4 sm:grid-cols-3 sm:gap-6">
 			<div
-				class="bg-linear-to-br rounded-xl from-indigo-500 to-purple-600 px-4 py-4 text-center text-white shadow-lg sm:px-6"
+				class="rounded-xl bg-linear-to-br from-indigo-500 to-purple-600 px-4 py-4 text-center text-white shadow-lg sm:px-6"
 			>
 				<div class="text-xl font-bold sm:text-2xl">{filteredPlayersData.length}</div>
 				<div class="mt-1 text-sm opacity-90">Players</div>
 			</div>
 			<div
-				class="bg-linear-to-br rounded-xl from-indigo-500 to-purple-600 px-4 py-4 text-center text-white shadow-lg sm:px-6"
+				class="rounded-xl bg-linear-to-br from-indigo-500 to-purple-600 px-4 py-4 text-center text-white shadow-lg sm:px-6"
 			>
 				<div class="text-xl font-bold sm:text-2xl">
 					{filteredPlayersData.reduce((sum, p) => sum + p.totalDrinks, 0)}
@@ -617,7 +649,7 @@
 				<div class="mt-1 text-sm opacity-90">Total Drinks</div>
 			</div>
 			<div
-				class="bg-linear-to-br rounded-xl from-indigo-500 to-purple-600 px-4 py-4 text-center text-white shadow-lg sm:px-6"
+				class="rounded-xl bg-linear-to-br from-indigo-500 to-purple-600 px-4 py-4 text-center text-white shadow-lg sm:px-6"
 			>
 				<div class="text-xl font-bold sm:text-2xl">{teams.length}</div>
 				<div class="mt-1 text-sm opacity-90">Teams</div>
@@ -626,7 +658,7 @@
 	</div>
 
 	<!-- Main Content -->
-	{#if viewMode === 'overview'}
+	{#if viewMode === "overview"}
 		<!-- Overview Mode -->
 		<div class="space-y-8">
 			<!-- Teams Overview -->
@@ -647,7 +679,7 @@
 							tabindex="0"
 							onclick={() => (selectedTeam = selectedTeam === team.name ? null : team.name)}
 							onkeydown={(e) => {
-								if (e.key === 'Enter' || e.key === ' ') {
+								if (e.key === "Enter" || e.key === " ") {
 									e.preventDefault();
 									selectedTeam = selectedTeam === team.name ? null : team.name;
 								}
@@ -704,7 +736,7 @@
 							tabindex="0"
 							onclick={() => (selectedPlayer = selectedPlayer === player.name ? null : player.name)}
 							onkeydown={(e) => {
-								if (e.key === 'Enter' || e.key === ' ') {
+								if (e.key === "Enter" || e.key === " ") {
 									e.preventDefault();
 									selectedPlayer = selectedPlayer === player.name ? null : player.name;
 								}
@@ -728,7 +760,7 @@
 				</div>
 			</div>
 		</div>
-	{:else if viewMode === 'charts'}
+	{:else if viewMode === "charts"}
 		<!-- Charts Mode -->
 		<div class="space-y-8">
 			<!-- Chart Controls -->
@@ -746,7 +778,7 @@
 						<select
 							id="chart-type"
 							bind:value={chartType}
-							class="cursor-pointer rounded-lg border-2 border-gray-300 bg-white px-4 py-2 text-base transition-colors hover:border-blue-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100 dark:focus:ring-blue-900/40"
+							class="cursor-pointer rounded-lg border-2 border-gray-300 bg-white px-4 py-2 text-base transition-colors hover:border-blue-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 focus:outline-none dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100 dark:focus:ring-blue-900/40"
 						>
 							<option value="drinks">By Drink Type</option>
 							<option value="players">By Player Contribution</option>
@@ -768,7 +800,7 @@
 										x2={Math.max(chartWidth, 600) - chartMargin.right}
 										y1={yScale(tick)}
 										y2={yScale(tick)}
-										stroke={isDark ? '#1f2937' : '#f0f0f0'}
+										stroke={isDark ? "#1f2937" : "#f0f0f0"}
 										stroke-width="1"
 									/>
 								{/each}
@@ -776,7 +808,7 @@
 
 							<!-- Stacked Bars -->
 							<g class="bars">
-								{#if chartType === 'drinks'}
+								{#if chartType === "drinks"}
 									{#each stackedDrinkData as teamData}
 										{#each teamData.segments as segment}
 											<rect
@@ -785,7 +817,7 @@
 												width={xScale.bandwidth()}
 												height={showAnimation ? yScale(segment.y0) - yScale(segment.y1) : 0}
 												fill={segment.color}
-												stroke={isDark ? 'rgba(255,255,255,0.15)' : 'white'}
+												stroke={isDark ? "rgba(255,255,255,0.15)" : "white"}
 												stroke-width="1"
 												opacity={hoveredSegment &&
 												hoveredSegment !== `${segment.team}-${segment.drink}`
@@ -811,7 +843,7 @@
 												width={xScale.bandwidth()}
 												height={showAnimation ? yScale(segment.y0) - yScale(segment.y1) : 0}
 												fill={segment.color}
-												stroke={isDark ? 'rgba(255,255,255,0.15)' : 'white'}
+												stroke={isDark ? "rgba(255,255,255,0.15)" : "white"}
 												stroke-width="1"
 												opacity={hoveredSegment &&
 												hoveredSegment !== `${segment.team}-${segment.player}`
@@ -838,12 +870,12 @@
 									x2={chartMargin.left}
 									y1={chartMargin.top}
 									y2={chartHeight - chartMargin.bottom}
-									stroke={isDark ? '#4b5563' : '#333'}
+									stroke={isDark ? "#4b5563" : "#333"}
 									stroke-width="2"
 								/>
 								{#each yTicks as tick}
 									<g transform="translate({chartMargin.left}, {yScale(tick)})">
-										<line x1="-6" x2="0" stroke={isDark ? '#4b5563' : '#333'} stroke-width="1" />
+										<line x1="-6" x2="0" stroke={isDark ? "#4b5563" : "#333"} stroke-width="1" />
 										<text
 											dy="0.32em"
 											x="-10"
@@ -870,7 +902,7 @@
 									x2={chartWidth - chartMargin.right}
 									y1={chartHeight - chartMargin.bottom}
 									y2={chartHeight - chartMargin.bottom}
-									stroke={isDark ? '#4b5563' : '#333'}
+									stroke={isDark ? "#4b5563" : "#333"}
 									stroke-width="2"
 								/>
 								{#each teamsData() as team}
@@ -878,7 +910,7 @@
 										transform="translate({(xScale(team.name) || 0) +
 											xScale.bandwidth() / 2}, {chartHeight - chartMargin.bottom})"
 									>
-										<line y1="0" y2="6" stroke={isDark ? '#4b5563' : '#333'} stroke-width="1" />
+										<line y1="0" y2="6" stroke={isDark ? "#4b5563" : "#333"} stroke-width="1" />
 										<text y="20" text-anchor="middle" class="text-sm font-medium">
 											{team.name}
 										</text>
@@ -911,7 +943,7 @@
 								<div
 									class="rounded-full bg-gray-100 px-2 py-1 text-xs text-gray-600 dark:bg-gray-800 dark:text-gray-300"
 								>
-									{chartType === 'drinks' ? '🍹' : '👤'}
+									{chartType === "drinks" ? "🍹" : "👤"}
 								</div>
 							</div>
 							<div class="mb-2 text-sm text-gray-600 dark:text-gray-300">
@@ -932,7 +964,7 @@
 									<div
 										class="mb-2 flex items-center gap-1 text-xs font-semibold text-gray-500 dark:text-gray-400"
 									>
-										{#if chartType === 'drinks'}
+										{#if chartType === "drinks"}
 											👥 Top Players:
 										{:else}
 											🍹 Top Drinks:
@@ -959,10 +991,10 @@
 				<!-- Legend -->
 				<div class="mt-6 border-t border-gray-200 pt-4 dark:border-gray-800">
 					<h4 class="mb-3 text-sm font-semibold text-gray-700 dark:text-gray-300">
-						{chartType === 'drinks' ? 'Drink Types' : 'Players'}
+						{chartType === "drinks" ? "Drink Types" : "Players"}
 					</h4>
 					<div class="flex flex-wrap gap-3">
-						{#if chartType === 'drinks'}
+						{#if chartType === "drinks"}
 							{#each allDrinks() as drink}
 								<div class="flex items-center gap-2 text-sm">
 									<div
@@ -992,7 +1024,7 @@
 				</div>
 			</div>
 		</div>
-	{:else if viewMode === 'players'}
+	{:else if viewMode === "players"}
 		<!-- Players Detail Mode -->
 		<div
 			class="rounded-2xl border border-gray-200 bg-white p-6 shadow-xl dark:border-gray-800 dark:bg-gray-900/50"
@@ -1003,7 +1035,7 @@
 					<div class="rounded-lg border border-gray-200 p-6 shadow-sm dark:border-gray-800">
 						<div class="mb-4 flex items-start justify-between">
 							<div>
-								<h3 class="text-xl font-semibold text-gray-800 dark:text-gray-100">
+								<h3 class="font-semibold text-gray-800 dark:text-gray-100">
 									{player.name}
 								</h3>
 								<p class="text-sm" style="color: {colorScale(player.teamName)}">
@@ -1048,7 +1080,7 @@
 				{/each}
 			</div>
 		</div>
-	{:else if viewMode === 'teams'}
+	{:else if viewMode === "teams"}
 		<!-- Teams Detail Mode -->
 		<div
 			class="rounded-2xl border border-gray-200 bg-white p-6 shadow-xl dark:border-gray-800 dark:bg-gray-900/50"
@@ -1166,7 +1198,7 @@
 		</div>
 	{/if}
 	<!-- update button, go to {gamesessionid/update} -->
-	{#if data.authenticatedUser && data.authenticatedUser.scopes && data.authenticatedUser.scopes.includes('games:update')}
+	{#if data.authenticatedUser && data.authenticatedUser.scopes && data.authenticatedUser.scopes.includes("games:update")}
 		<!-- {#if data.authenticatedUser} -->
 		<div class="mt-6">
 			<div class="flex flex-col gap-4 sm:flex-row">
@@ -1174,7 +1206,7 @@
 					<DialogTrigger>
 						<!-- Styled like Button variant="primary" size="default" -->
 						<span
-							class="ring-offset-background inline-flex h-10 w-full cursor-pointer items-center justify-center gap-2 whitespace-nowrap rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors hover:bg-blue-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 sm:w-auto dark:bg-blue-500 dark:text-white dark:hover:bg-blue-400 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0"
+							class="ring-offset-background inline-flex h-10 w-full cursor-pointer items-center justify-center gap-2 rounded-md bg-blue-600 px-4 py-2 text-sm font-medium whitespace-nowrap text-white shadow-sm transition-colors hover:bg-blue-500 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 sm:w-auto dark:bg-blue-500 dark:text-white dark:hover:bg-blue-400 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0"
 						>
 							Add Drink to Player
 						</span>
@@ -1187,62 +1219,73 @@
 						</DialogHeader>
 						<form action="?/addDrinkToPlayer" method="POST" use:addDrinkEnhance class="space-y-4">
 							<div class="space-y-2">
-								<label
-									for="player-select"
-									class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-									>Player</label
-								>
-								<Combobox
-									items={allPlayersData.map((p) => ({
-										label: `${p.name} (${p.teamName})`,
-										value: p.playerId
-									}))}
-									bind:value={$addDrinkForm.player_id}
-									placeholder="Select a player..."
-									searchPlaceholder="Search players..."
-									class="w-full"
-									buttonClass="w-full justify-between"
-								/>
-								{#if $addDrinkErrors.player_id}
-									<p class="text-sm text-red-500">{$addDrinkErrors.player_id}</p>
-								{/if}
+								<Field form={addDrinkForm} name="player_id">
+									<Control>
+										{#snippet children({ props })}
+											<Label
+												class="text-sm leading-none font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+											>
+												Player
+											</Label>
+											<Combobox
+												items={allPlayersData.map((p) => ({
+													label: `${p.name} (${p.teamName})`,
+													value: p.playerId
+												}))}
+												bind:value={$addDrinkFormData.player_id}
+												placeholder="Select a player..."
+												searchPlaceholder="Search players..."
+												class="w-full"
+												buttonClass="w-full justify-between"
+											/>
+										{/snippet}
+									</Control>
+									<FieldErrors class="text-sm text-red-500" />
+								</Field>
 							</div>
 
 							<div class="space-y-2">
-								<label
-									for="drink-select"
-									class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-									>Drink</label
-								>
-								<Combobox
-									items={data.drinks.map((d) => ({ label: d.name, value: d.id }))}
-									bind:value={$addDrinkForm.drink_id}
-									placeholder="Select a drink..."
-									searchPlaceholder="Search drinks..."
-									class="w-full"
-									buttonClass="w-full justify-between"
-								/>
-								{#if $addDrinkErrors.drink_id}
-									<p class="text-sm text-red-500">{$addDrinkErrors.drink_id}</p>
-								{/if}
+								<Field form={addDrinkForm} name="drink_id">
+									<Control>
+										{#snippet children({ props })}
+											<Label
+												class="text-sm leading-none font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+											>
+												Drink
+											</Label>
+											<Combobox
+												items={data.drinks.map((d) => ({ label: d.name, value: d.id }))}
+												bind:value={$addDrinkFormData.drink_id}
+												placeholder="Select a drink..."
+												searchPlaceholder="Search drinks..."
+												class="w-full"
+												buttonClass="w-full justify-between"
+											/>
+										{/snippet}
+									</Control>
+									<FieldErrors class="text-sm text-red-500" />
+								</Field>
 							</div>
 
 							<div class="space-y-2">
-								<label
-									for="drink-amount"
-									class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-									>Amount</label
-								>
-								<Input
-									type="number"
-									id="drink-amount"
-									name="amount"
-									min="1"
-									bind:value={$addDrinkForm.amount}
-								/>
-								{#if $addDrinkErrors.amount}
-									<p class="text-sm text-red-500">{$addDrinkErrors.amount}</p>
-								{/if}
+								<Field form={addDrinkForm} name="amount">
+									<Control>
+										{#snippet children({ props })}
+											<Label
+												class="text-sm leading-none font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+											>
+												Amount
+											</Label>
+											<Input
+												{...props}
+												type="number"
+												min="1"
+												bind:value={$addDrinkFormData.amount}
+											/>
+										{/snippet}
+									</Control>
+									<FieldErrors class="text-sm text-red-500" />
+								</Field>
 							</div>
 
 							<DialogFooter>

@@ -7,12 +7,14 @@ requires-python = ">=3.13"
 dependencies = [
     "alembic>=1.17.2",
     "bcrypt==4.0.1",
+    "cloudinary>=1.44.1",
     "emails>=0.6",
     "fastapi[standard]>=0.128.0",
     "passlib>=1.7.4",
     "psycopg[binary]>=3.3.2",
     "pwdlib[argon2]>=0.3.0",
     "pyjwt>=2.10.1",
+    "pytest-cov>=7.0.0",
     "python-dotenv>=1.2.1",
     "sqlalchemy>=2.0.45",
     "sqlmodel>=0.0.31",
@@ -22,8 +24,11 @@ dependencies = [
 
 [dependency-groups]
 dev = [
+    "coverage>=7.13.1",
     "pre-commit>=4.5.1",
+    "pytest>=9.0.2",
     "ruff>=0.14.10",
+    "ty>=0.0.11",
 ]
 
 [build-system]

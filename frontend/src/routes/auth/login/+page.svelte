@@ -1,50 +1,69 @@
 <script lang="ts">
+	import { superForm } from "sveltekit-superforms";
+	import { untrack } from "svelte";
+	import { zod4 as zodClient } from "sveltekit-superforms/adapters";
+	import { LoginSchema } from "$lib/schemas/schemas";
+	import { Field, Control, Label, FieldErrors } from "formsnap";
+	import { Input } from "$lib/components/ui/input";
+	import { Button } from "$lib/components/ui/button";
+
 	let { data } = $props();
-	import { enhance } from '$app/forms';
 
-	// get redirect url
-	import { page } from '$app/state';
+	const form = superForm(
+		untrack(() => data.form),
+		{
+			validators: zodClient(LoginSchema)
+		}
+	);
 
-	// get the redirect url
-	// const redirectTo = page.url.searchParams.get('redirectTo');
-	// console.log('Redirect: ', redirectTo);
+	const { form: formData, enhance, message } = form;
 </script>
 
-<!-- <h1>This is the login page</h1> -->
+<div class="container mt-10 flex h-screen w-screen flex-col items-center justify-start">
+	<div class="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]">
+		<div class="flex flex-col space-y-2 text-center">
+			<h1 class="text-2xl font-semibold tracking-tight">Login</h1>
+			<p class="text-muted-foreground text-sm">Enter your email and password below to login</p>
+		</div>
 
-<!-- login form , takes username and password -->
-<div>
-	<!-- <form method="POST" action="?/login"> -->
-	<form class="mx-auto max-w-xs" method="POST" action="" use:enhance>
-		<div class="mb-5">
-			<label class="mb-2 block font-medium" for="email">Your email</label>
-			<input
-				class="w-full appearance-none rounded-md border bg-gray-50 p-2 text-gray-700 shadow"
-				type="text"
-				name="email"
-				id="email"
-				placeholder="user@example.com"
-				autocomplete="off"
-				required
-			/>
-		</div>
-		<div class="mb-5">
-			<label class="mb-2 block font-medium" for="password">Password</label>
-			<input
-				class="w-full appearance-none rounded-md border bg-gray-50 p-2 text-gray-700 shadow"
-				type="password"
-				name="password"
-				placeholder="password"
-				autocomplete="off"
-				required
-			/>
-		</div>
-		<!-- <input type="hidden" name="redirectTo" value={redirectTo} /> -->
-		<div>
-			<button
-				class="rounded-md bg-blue-600 px-4 py-2 font-medium text-white hover:bg-blue-800"
-				type="submit">Login</button
-			>
-		</div>
-	</form>
+		{#if $message}
+			<div class="rounded bg-red-100 p-3 text-sm text-red-700">
+				{$message}
+			</div>
+		{/if}
+
+		<form method="POST" use:enhance class="grid gap-4">
+			<Field {form} name="email">
+				<Control>
+					{#snippet children({ props })}
+						<Label>Email</Label>
+						<Input
+							{...props}
+							type="email"
+							bind:value={$formData.email}
+							placeholder="name@example.com"
+						/>
+					{/snippet}
+				</Control>
+				<FieldErrors />
+			</Field>
+
+			<Field {form} name="password">
+				<Control>
+					{#snippet children({ props })}
+						<Label>Password</Label>
+						<Input
+							{...props}
+							type="password"
+							bind:value={$formData.password}
+							placeholder="Password"
+						/>
+					{/snippet}
+				</Control>
+				<FieldErrors />
+			</Field>
+
+			<Button type="submit">Login</Button>
+		</form>
+	</div>
 </div>

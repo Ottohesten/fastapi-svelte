@@ -1,19 +1,40 @@
 <script lang="ts">
 	// @ts-nocheck
-	import './styles.scss';
+	import "./styles.scss";
 
-	import { Color } from '@tiptap/extension-text-style';
-	import { BulletList, ListItem } from '@tiptap/extension-list';
-	import { TextStyle } from '@tiptap/extension-text-style';
-	import StarterKit from '@tiptap/starter-kit';
-	import { Editor } from '@tiptap/core';
-	import { onMount, onDestroy } from 'svelte';
+	import { Color } from "@tiptap/extension-text-style";
+	import { BulletList, ListItem } from "@tiptap/extension-list";
+	import { TextStyle } from "@tiptap/extension-text-style";
+	import StarterKit from "@tiptap/starter-kit";
+	import { Editor } from "@tiptap/core";
+	import { onMount, onDestroy } from "svelte";
 
-	let { value = $bindable('') } = $props();
+	let { value = $bindable("") } = $props();
 
 	let element;
 	let editor = $state();
 	let editorState = $state(0); // Counter to force reactivity
+
+	$effect(() => {
+		if (editor && value !== undefined) {
+			const isEditorEmpty = editor.isEmpty;
+
+			// Simple logic:
+			// 1. If we are clearing the form (value is empty), clear the editor
+			// 2. If the editor is empty and we have a value (initial load/restore), set it
+			if (value === "" && !isEditorEmpty) {
+				editor.commands.setContent("", { emitUpdate: false });
+			} else if (isEditorEmpty && value !== "" && value !== "<p></p>") {
+				editor.commands.setContent(value, { emitUpdate: false });
+			}
+		}
+	});
+
+	onDestroy(() => {
+		if (editor) {
+			editor.destroy();
+		}
+	});
 
 	onMount(() => {
 		editor = new Editor({
@@ -23,11 +44,11 @@
 				TextStyle.configure({ types: [ListItem.name] }),
 				StarterKit
 			],
-			content: value || '',
+			content: value || "",
 			editorProps: {
 				attributes: {
 					class:
-						'prose dark:prose-invert focus:outline-none min-h-[200px] p-4 border border-gray-300 rounded-lg bg-white text-gray-900 w-full max-w-none dark:border-gray-800 dark:bg-gray-900/40 dark:text-gray-100'
+						"prose dark:prose-invert focus:outline-none min-h-[200px] p-4 border border-gray-300 rounded-lg bg-white text-gray-900 w-full max-w-none dark:border-gray-800 dark:bg-gray-900/40 dark:text-gray-100"
 				}
 			},
 			onTransaction: () => {
@@ -54,13 +75,13 @@
 		if (!editor) return false;
 
 		switch (action) {
-			case 'toggleBold':
+			case "toggleBold":
 				return editor.can().chain().focus().toggleBold().run();
-			case 'toggleItalic':
+			case "toggleItalic":
 				return editor.can().chain().focus().toggleItalic().run();
-			case 'undo':
+			case "undo":
 				return editor.can().chain().focus().undo().run();
-			case 'redo':
+			case "redo":
 				return editor.can().chain().focus().redo().run();
 			default:
 				return false;
@@ -74,7 +95,7 @@
 			<button
 				type="button"
 				onclick={() => editor.chain().focus().toggleBold().run()}
-				disabled={!canPerformAction('toggleBold')}
+				disabled={!canPerformAction("toggleBold")}
 				class="rounded border border-gray-300 px-2 py-1 text-xs {isActive('bold')
 					? 'bg-gray-800 text-white'
 					: 'bg-white text-gray-700 dark:bg-gray-900/40 dark:text-gray-200'} hover:bg-gray-100 disabled:opacity-50 dark:border-gray-800 dark:hover:bg-gray-800"
@@ -84,7 +105,7 @@
 			<button
 				type="button"
 				onclick={() => editor.chain().focus().toggleItalic().run()}
-				disabled={!canPerformAction('toggleItalic')}
+				disabled={!canPerformAction("toggleItalic")}
 				class="rounded border border-gray-300 px-2 py-1 text-xs {isActive('italic')
 					? 'bg-gray-800 text-white'
 					: 'bg-white text-gray-700 dark:bg-gray-900/40 dark:text-gray-200'} hover:bg-gray-100 disabled:opacity-50 dark:border-gray-800 dark:hover:bg-gray-800"
@@ -130,7 +151,7 @@
 			<button
 				type="button"
 				onclick={() => editor.chain().focus().undo().run()}
-				disabled={!canPerformAction('undo')}
+				disabled={!canPerformAction("undo")}
 				class="rounded border border-gray-300 bg-white px-2 py-1 text-xs text-gray-700 hover:bg-gray-100 disabled:opacity-50 dark:border-gray-800 dark:bg-gray-900/40 dark:text-gray-200 dark:hover:bg-gray-800"
 			>
 				↶
@@ -138,7 +159,7 @@
 			<button
 				type="button"
 				onclick={() => editor.chain().focus().redo().run()}
-				disabled={!canPerformAction('redo')}
+				disabled={!canPerformAction("redo")}
 				class="rounded border border-gray-300 bg-white px-2 py-1 text-xs text-gray-700 hover:bg-gray-100 disabled:opacity-50 dark:border-gray-800 dark:bg-gray-900/40 dark:text-gray-200 dark:hover:bg-gray-800"
 			>
 				↷

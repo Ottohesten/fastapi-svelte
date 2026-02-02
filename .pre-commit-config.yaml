@@ -7,9 +7,11 @@ repos:
         # run the ruff linter
     -   id: ruff-check
         args: [--fix]
+        files: ^backend/
         # run the ruff formatter
     -   id: ruff-format
         types_or: [ python, pyi ]
+        files: ^backend/
 -   repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v6.0.0
     hooks:

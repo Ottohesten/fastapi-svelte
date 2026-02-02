@@ -21,6 +21,7 @@ from app.models import (
     UserCreate,
     UserPublic,
     UserMePublic,
+    Role,
     RolePublic,
     UserWithPermissionsPublic,
     UsersWithPermissionsPublic,
@@ -49,7 +50,7 @@ def read_users(
     count_statement = select(func.count()).select_from(User)
     count = session.exec(count_statement).one()
 
-    statement = select(User).offset(skip).limit(limit)
+    statement = select(User).order_by(User.email).offset(skip).limit(limit)
     users = session.exec(statement).all()
 
     return UsersPublic(
@@ -76,7 +77,7 @@ def read_users_with_permissions(
     count_statement = select(func.count()).select_from(User)
     count = session.exec(count_statement).one()
 
-    statement = select(User).offset(skip).limit(limit)
+    statement = select(User).order_by(User.email).offset(skip).limit(limit)
     users = session.exec(statement).all()
 
     data: list[UserWithPermissionsPublic] = []
@@ -210,8 +211,12 @@ def delete_user_me(session: SessionDep, current_user: CurrentUser) -> Message:
     """
     Delete own user.
     """
-    # Regular users can delete themselves, but we prevent deletion if the user
-    # is the only one with users:delete scope to avoid system lockout
+    # Prevent superusers from deleting themselves to avoid system lockout
+    if current_user.is_superuser:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Super users are not allowed to delete themselves",
+        )
     session.delete(current_user)
     session.commit()
     return Message(message="User deleted successfully")
@@ -237,7 +242,7 @@ def register_user(session: SessionDep, user_in: UserRegister):
 def read_user_by_id(
     user_id: uuid.UUID,
     session: SessionDep,
-    current_user: User = Security(get_current_user, scopes=["users:read"]),
+    current_user: CurrentUser,
 ) -> Any:
     """
     Get a specific user by id.
@@ -246,6 +251,11 @@ def read_user_by_id(
     if user == current_user:
         return user
     # Users with users:read scope can access any user
+    if "users:read" not in get_user_effective_scopes(current_user):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="The user doesn't have enough privileges",
+        )
     return user
 
 
@@ -311,3 +321,143 @@ def delete_user(
     session.delete(user)
     session.commit()
     return Message(message="User deleted successfully")
+
+
+##########################################################################
+# Roles segmentt
+
+# permissions_router = APIRouter(prefix="", tags=["user-permissions"])
+permissions_router = APIRouter(prefix="/{user_id}", tags=["user-permissions"])
+
+
+# @router.post("/{user_id}/roles/{role_id}", response_model=UserPublic)
+@permissions_router.post("/roles/{role_id}", response_model=UserPublic)
+def assign_role_to_user(
+    session: SessionDep,
+    user_id: uuid.UUID,
+    role_id: uuid.UUID,
+    current_user: User = Security(get_current_user, scopes=["users:update"]),
+):
+    """
+    Assign a role to a user.
+    """
+    user = session.get(User, user_id)
+    if not user:
+        raise HTTPException(
+            status_code=404,
+            detail="A user with this id does not exist",
+        )
+    role = session.get(Role, role_id)
+    if not role:
+        raise HTTPException(
+            status_code=404,
+            detail="A role with this id does not exist",
+        )
+    if role not in user.roles:
+        user.roles.append(role)
+        session.add(user)
+        session.commit()
+        session.refresh(user)
+    return user
+
+
+@permissions_router.delete("/roles/{role_id}", response_model=UserPublic)
+def remove_role_from_user(
+    session: SessionDep,
+    user_id: uuid.UUID,
+    role_id: uuid.UUID,
+    current_user: User = Security(get_current_user, scopes=["users:update"]),
+):
+    """
+    Remove a role from a user.
+    """
+    user = session.get(User, user_id)
+    if not user:
+        raise HTTPException(
+            status_code=404,
+            detail="A user with this id does not exist",
+        )
+    role = session.get(Role, role_id)
+    if not role:
+        raise HTTPException(
+            status_code=404,
+            detail="A role with this id does not exist",
+        )
+    if role in user.roles:
+        user.roles.remove(role)
+        session.add(user)
+        session.commit()
+        session.refresh(user)
+    return user
+
+
+@permissions_router.post("/scopes", response_model=UserPublic)
+def assign_scopes_to_user(
+    session: SessionDep,
+    user_id: uuid.UUID,
+    scopes: list[str],
+    current_user: User = Security(get_current_user, scopes=["users:update"]),
+):
+    """
+    Assign custom scopes to a user.
+    """
+    user = session.get(User, user_id)
+    if not user:
+        raise HTTPException(
+            status_code=404,
+            detail="A user with this id does not exist",
+        )
+
+    # Create a copy of the list to ensure SQLAlchemy detects the change
+    current_scopes = list(user.custom_scopes) if user.custom_scopes else []
+    modified = False
+
+    for scope in scopes:
+        if scope not in current_scopes:
+            current_scopes.append(scope)
+            modified = True
+
+    if modified:
+        user.custom_scopes = current_scopes
+        session.add(user)
+        session.commit()
+        session.refresh(user)
+    return user
+
+
+@permissions_router.delete("/scopes", response_model=UserPublic)
+def remove_scopes_from_user(
+    session: SessionDep,
+    user_id: uuid.UUID,
+    scopes: list[str],
+    current_user: User = Security(get_current_user, scopes=["users:update"]),
+):
+    """
+    Remove custom scopes from a user.
+    """
+    user = session.get(User, user_id)
+    if not user:
+        raise HTTPException(
+            status_code=404,
+            detail="A user with this id does not exist",
+        )
+
+    # Create a copy of the list to ensure SQLAlchemy detects the change
+    current_scopes = list(user.custom_scopes) if user.custom_scopes else []
+    modified = False
+
+    for scope in scopes:
+        if scope in current_scopes:
+            current_scopes.remove(scope)
+            modified = True
+
+    if modified:
+        user.custom_scopes = current_scopes
+        session.add(user)
+        session.commit()
+        session.refresh(user)
+    return user
+
+
+# This line should always be at the end of the file
+router.include_router(permissions_router)

@@ -1,23 +1,37 @@
 <script lang="ts">
-	import { superForm, fileProxy } from 'sveltekit-superforms';
-	import SuperDebug from 'sveltekit-superforms';
-	import Team from '$lib/components/Team.svelte';
-	import Player from '$lib/components/Player.svelte';
-	import { Input } from '$lib/components/ui/input';
-	let { data } = $props();
-	const { form, errors, message, constraints, enhance } = superForm(data.teamForm, {
-		dataType: 'json'
-	});
+	import { superForm, fileProxy } from "sveltekit-superforms";
+	import { untrack } from "svelte";
+	import SuperDebug from "sveltekit-superforms";
+	import Team from "$lib/components/Team.svelte";
+	import Player from "$lib/components/Player.svelte";
+	import { Input } from "$lib/components/ui/input";
+	import { Button } from "$lib/components/ui/button";
+	import * as Select from "$lib/components/ui/select/index.js";
+	import { Field, Control, Label, FieldErrors, Description } from "formsnap";
 
+	let { data } = $props();
+
+	const teamForm = superForm(
+		untrack(() => data.teamForm),
+		{
+			dataType: "json"
+		}
+	);
+	const { form: teamFormData, errors, message, constraints, enhance } = teamForm;
+
+	const playerForm = superForm(
+		untrack(() => data.playerForm),
+		{
+			dataType: "json"
+		}
+	);
 	const {
-		form: playerForm,
+		form: playerFormData,
 		errors: playerErrors,
 		message: playerMessage,
 		constraints: playerConstraints,
 		enhance: playerEnhance
-	} = superForm(data.playerForm, {
-		dataType: 'json'
-	});
+	} = playerForm;
 </script>
 
 <!-- <SuperDebug data={$form} /> -->
@@ -33,7 +47,7 @@
 				Game Management
 			</h1>
 			<p class="mt-2 text-sm text-gray-600 sm:text-base dark:text-gray-300">
-				Manage teams and players for {data.game_session.title || 'your game session'}
+				Manage teams and players for {data.game_session.title || "your game session"}
 			</p>
 		</div>
 
@@ -103,30 +117,24 @@
 						</h3>
 					</div>
 				{/if}
-				<div class="space-y-2">
-					<label
-						class="text-sm font-semibold text-gray-700 sm:text-base dark:text-gray-200"
-						for="name">Team Name</label
-					>
-					<Input
-						type="text"
-						name="team_name"
-						aria-invalid={$errors.name ? 'true' : undefined}
-						bind:value={$form.name}
-						{...$constraints.name}
-						required
-						placeholder="Enter team name"
-					/>
-					{#if $errors.name}
-						<span class="text-sm text-red-600 dark:text-red-400">{$errors.name}</span>
-					{/if}
-				</div>
-				<button
-					type="submit"
-					class="w-full rounded-lg bg-blue-600 px-4 py-2 font-medium text-white transition-colors hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-500/20 sm:w-auto sm:px-6 sm:py-3 dark:focus:ring-blue-400/30"
-				>
-					Add Team
-				</button>
+				<Field form={teamForm} name="name">
+					<Control>
+						{#snippet children({ props })}
+							<Label class="text-sm font-semibold text-gray-700 sm:text-base dark:text-gray-200">
+								Team Name
+							</Label>
+							<Input
+								{...props}
+								type="text"
+								placeholder="Enter team name"
+								bind:value={$teamFormData.name}
+								required
+							/>
+						{/snippet}
+					</Control>
+					<FieldErrors class="text-sm text-red-600 dark:text-red-400" />
+				</Field>
+				<Button type="submit" class="w-full sm:w-auto">Add Team</Button>
 			</form>
 		</div>
 
@@ -153,50 +161,44 @@
 						</h3>
 					</div>
 				{/if}
-				<div class="space-y-2">
-					<label
-						class="text-sm font-semibold text-gray-700 sm:text-base dark:text-gray-200"
-						for="name">Player Name</label
-					>
-					<Input
-						type="text"
-						name="player_name"
-						aria-invalid={$playerErrors.name ? 'true' : undefined}
-						bind:value={$playerForm.name}
-						{...$playerConstraints.name}
-						required
-						placeholder="Enter player name"
-					/>
-					{#if $playerErrors.name}
-						<span class="text-sm text-red-600 dark:text-red-400">{$playerErrors.name}</span>
-					{/if}
-				</div>
-				<div class="space-y-2">
-					<label
-						class="text-sm font-semibold text-gray-700 sm:text-base dark:text-gray-200"
-						for="team_id">Team (Optional)</label
-					>
-					<select
-						class="w-full cursor-pointer rounded-lg border-2 border-gray-300 bg-white px-4 py-2 text-base transition-colors hover:border-blue-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100 sm:py-3 dark:border-gray-800 dark:bg-gray-900/40 dark:text-gray-100"
-						name="team_id"
-						bind:value={$playerForm.team_id}
-						aria-invalid={$playerErrors.team_id ? 'true' : undefined}
-					>
-						<option value="">No Team</option>
-						{#each data.game_session.teams as team}
-							<option value={team.id}>{team.name}</option>
-						{/each}
-					</select>
-					{#if $playerErrors.team_id}
-						<span class="text-sm text-red-600 dark:text-red-400">{$playerErrors.team_id}</span>
-					{/if}
-				</div>
-				<button
-					type="submit"
-					class="w-full rounded-lg bg-blue-600 px-4 py-2 font-medium text-white transition-colors hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-500/20 sm:w-auto sm:px-6 sm:py-3 dark:focus:ring-blue-400/30"
-				>
-					Add Player
-				</button>
+				<Field form={playerForm} name="name">
+					<Control>
+						{#snippet children({ props })}
+							<Label class="text-sm font-semibold text-gray-700 sm:text-base dark:text-gray-200">
+								Player Name
+							</Label>
+							<Input
+								{...props}
+								type="text"
+								placeholder="Enter player name"
+								bind:value={$playerFormData.name}
+								required
+							/>
+						{/snippet}
+					</Control>
+					<FieldErrors class="text-sm text-red-600 dark:text-red-400" />
+				</Field>
+				<Field form={playerForm} name="team_id">
+					<Control>
+						{#snippet children({ props })}
+							<Label class="text-sm font-semibold text-gray-700 sm:text-base dark:text-gray-200">
+								Team (Optional)
+							</Label>
+							<select
+								{...props}
+								class="w-full cursor-pointer rounded-lg border-2 border-gray-300 bg-white px-4 py-2 text-base transition-colors hover:border-blue-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 focus:outline-none sm:py-3 dark:border-gray-800 dark:bg-gray-900/40 dark:text-gray-100"
+								bind:value={$playerFormData.team_id}
+							>
+								<option value="">No Team</option>
+								{#each data.game_session.teams as team}
+									<option value={team.id}>{team.name}</option>
+								{/each}
+							</select>
+						{/snippet}
+					</Control>
+					<FieldErrors class="text-sm text-red-600 dark:text-red-400" />
+				</Field>
+				<Button type="submit" class="w-full sm:w-auto">Add Player</Button>
 			</form>
 		</div>
 	</div>

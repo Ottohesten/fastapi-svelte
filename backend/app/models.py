@@ -2,7 +2,7 @@ import uuid
 from pydantic import BaseModel, EmailStr, computed_field
 from sqlmodel import Field, SQLModel, Relationship, Column, JSON
 from typing import Optional
-from datetime import datetime
+from datetime import datetime, timezone
 # from permissions.roles import Role
 
 
@@ -23,7 +23,7 @@ class Role(SQLModel, table=True):
     scopes: list[str] = Field(
         default_factory=list,
         description="List of scopes that this role has access to",
-        sa_column=Column(JSON),
+        sa_column=Column(JSON, nullable=False, server_default="[]"),
     )
 
 
@@ -49,6 +49,9 @@ class User(UserBase, table=True):
 
     # H.C game
     game_sessions: list["GameSession"] = Relationship(back_populates="owner")
+    refresh_tokens: list["RefreshToken"] = Relationship(
+        back_populates="user", cascade_delete=True
+    )
 
 
 # Properties to receive via API on creation
@@ -243,6 +246,7 @@ class RecipeBase(SQLModel):
     title: str = Field(max_length=255, min_length=1)
     instructions: Optional[str] = Field(default=None, max_length=9999)
     servings: int = Field(default=1)
+    image: Optional[str] = Field(default=None, max_length=1000)
 
 
 class RecipeCreate(RecipeBase):
@@ -336,9 +340,6 @@ class Recipe(RecipeBase, table=True):
 
     # we will use this field to be able to scale the recipe, can not be less than 1
     servings: int = Field(default=1)
-
-    # image
-    # image: str | None = Field(default=None, max_length=255)
 
     ingredient_links: list[RecipeIngredientLink] = Relationship(
         back_populates="recipe", cascade_delete=True
@@ -660,16 +661,22 @@ class RefreshRequest(BaseModel):
 # Refresh token persistence for revocation/rotation
 class RefreshToken(SQLModel, table=True):
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
-    user_id: uuid.UUID = Field(foreign_key="user.id", nullable=False)
+    user_id: uuid.UUID = Field(
+        foreign_key="user.id", nullable=False, ondelete="CASCADE"
+    )
     token_hash: str = Field(
         index=True, max_length=128, description="SHA256 of the refresh token"
     )
     jti: uuid.UUID = Field(default_factory=uuid.uuid4, index=True)
-    created_at: datetime = Field(default_factory=datetime.utcnow)
+    created_at: datetime = Field(
+        default_factory=lambda: datetime.now(timezone.utc).replace(tzinfo=None)
+    )
     expires_at: datetime
     revoked_at: datetime | None = None
 
-    user: Optional["User"] = Relationship(sa_relationship_kwargs={"lazy": "selectin"})
+    user: Optional["User"] = Relationship(
+        back_populates="refresh_tokens", sa_relationship_kwargs={"lazy": "selectin"}
+    )
 
 
 # Team and Person models

@@ -1,22 +1,45 @@
 <script lang="ts">
 	// let stuff = $props();
 	// let { user, recipe } = $props();
-	import { enhance } from '$app/forms';
+	import { enhance } from "$app/forms";
 
-	import type { components } from '$lib/api/v1';
+	import type { components } from "$lib/api/v1";
 
 	type Props = {
-		recipe: components['schemas']['RecipePublic'];
-		authenticatedUser?: components['schemas']['UserPublic'];
+		recipe: components["schemas"]["RecipePublic"];
+		authenticatedUser?: components["schemas"]["UserPublic"];
+		backendUrl?: string;
 	};
 
-	let { recipe, authenticatedUser }: Props = $props();
+	let { recipe, authenticatedUser, backendUrl }: Props = $props();
 </script>
 
 <div
 	class="group relative overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm transition-all duration-300 hover:border-gray-300 hover:shadow-lg dark:border-gray-800 dark:bg-gray-900/50 dark:shadow-none dark:hover:border-gray-700 dark:hover:bg-gray-900/60"
 >
 	<a href="/recipes/{recipe.id}" class="block">
+		<!-- Recipe Image -->
+		<div class="h-48 w-full overflow-hidden bg-gray-100 dark:bg-gray-800">
+			{#if recipe.image}
+				<img
+					src={recipe.image.startsWith("http") ? recipe.image : `${backendUrl}${recipe.image}`}
+					alt={recipe.title}
+					class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+				/>
+			{:else}
+				<div class="flex h-full items-center justify-center text-gray-400 dark:text-gray-500">
+					<svg class="h-12 w-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+						<path
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							stroke-width="1.5"
+							d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+						/>
+					</svg>
+				</div>
+			{/if}
+		</div>
+
 		<div class="p-6">
 			<!-- Recipe Header -->
 			<div class="mb-4">
@@ -124,7 +147,7 @@
 						{/if}
 					</div>
 				{:else}
-					<p class="text-sm italic text-gray-500 dark:text-gray-400">No ingredients listed</p>
+					<p class="text-sm text-gray-500 italic dark:text-gray-400">No ingredients listed</p>
 				{/if}
 			</div>
 
@@ -184,7 +207,7 @@
 				<div class="flex items-center gap-2">
 					<a
 						href="/recipes/{recipe.id}/update"
-						class="inline-flex items-center gap-1.5 rounded-lg border border-blue-200 bg-blue-50 px-3 py-1.5 text-xs font-medium text-blue-700 no-underline transition-colors hover:border-blue-300 hover:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 dark:border-blue-900/50 dark:bg-blue-900/30 dark:text-blue-300 dark:hover:border-blue-800 dark:hover:bg-blue-900/40"
+						class="inline-flex items-center gap-1.5 rounded-lg border border-blue-200 bg-blue-50 px-3 py-1.5 text-xs font-medium text-blue-700 no-underline transition-colors hover:border-blue-300 hover:bg-blue-100 focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:outline-none dark:border-blue-900/50 dark:bg-blue-900/30 dark:text-blue-300 dark:hover:border-blue-800 dark:hover:bg-blue-900/40"
 					>
 						<svg class="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 							<path
@@ -200,11 +223,11 @@
 						<input type="hidden" name="recipe_id" value={recipe.id} />
 						<button
 							type="submit"
-							class="inline-flex items-center gap-1.5 rounded-lg border border-red-200 bg-red-50 px-3 py-1.5 text-xs font-medium text-red-700 transition-colors hover:border-red-300 hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-1 dark:border-red-900/50 dark:bg-red-900/40 dark:text-red-300 dark:hover:border-red-800 dark:hover:bg-red-900/50"
+							class="inline-flex items-center gap-1.5 rounded-lg border border-red-200 bg-red-50 px-3 py-1.5 text-xs font-medium text-red-700 transition-colors hover:border-red-300 hover:bg-red-100 focus:ring-2 focus:ring-red-500 focus:ring-offset-1 focus:outline-none dark:border-red-900/50 dark:bg-red-900/40 dark:text-red-300 dark:hover:border-red-800 dark:hover:bg-red-900/50"
 							onclick={(e) => {
 								if (
 									!confirm(
-										'Are you sure you want to delete this recipe? This action cannot be undone.'
+										"Are you sure you want to delete this recipe? This action cannot be undone."
 									)
 								) {
 									e.preventDefault();

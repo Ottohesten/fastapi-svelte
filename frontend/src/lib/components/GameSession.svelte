@@ -1,16 +1,16 @@
 <script lang="ts">
-	import type { components } from '$lib/api/v1';
+	import type { components } from "$lib/api/v1";
 	type Props = {
-		session: components['schemas']['GameSessionPublic'];
-		authenticatedUser?: components['schemas']['UserPublic'];
+		session: components["schemas"]["GameSessionPublic"];
+		authenticatedUser?: components["schemas"]["UserPublic"];
 	};
 	let { session, authenticatedUser }: Props = $props();
 </script>
 
 <a
 	href="/game/{session.id}"
-	aria-label={'Open game session “' + session.title + '”'}
-	class="group my-4 block rounded-xl border border-gray-300 bg-white p-5 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500/20 dark:border-gray-800 dark:bg-gray-900/40"
+	aria-label={"Open game session “" + session.title + "”"}
+	class="group my-4 block rounded-xl border border-gray-300 bg-white p-5 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md focus:ring-2 focus:ring-blue-500/20 focus:outline-none dark:border-gray-800 dark:bg-gray-900/40"
 >
 	<div class="flex items-start gap-4">
 		<div class="flex-1">

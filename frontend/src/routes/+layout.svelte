@@ -1,9 +1,9 @@
 <script lang="ts">
-	import '../app.css';
-	import Footer from '$lib/components/Footer.svelte';
-	import ThemeToggle from '$lib/components/ThemeToggle.svelte';
-	import { page } from '$app/stores';
-	import { slide } from 'svelte/transition';
+	import "../app.css";
+	import Footer from "$lib/components/Footer.svelte";
+	import ThemeToggle from "$lib/components/ThemeToggle.svelte";
+	import { page } from "$app/stores";
+	import { slide } from "svelte/transition";
 
 	let { children, data } = $props();
 
@@ -13,9 +13,9 @@
 	type NavItem = { href: string; label: string; requiredScopes?: string | string[] };
 	const linksAuthConfig: NavItem[] = [
 		// { href: '/tiptap', label: 'Tiptap' },
-		{ href: '/recipes', label: 'Recipes', requiredScopes: 'recipes:read' },
-		{ href: '/ingredients', label: 'Ingredients', requiredScopes: 'ingredients:read' },
-		{ href: '/game', label: 'Game' } // no scope required
+		{ href: "/recipes", label: "Recipes", requiredScopes: "recipes:read" },
+		{ href: "/ingredients", label: "Ingredients", requiredScopes: "ingredients:read" },
+		{ href: "/game", label: "Game" } // no scope required
 	];
 
 	function hasRequiredScopes(item: NavItem, scopes: string[] | undefined) {
@@ -32,12 +32,12 @@
 	);
 
 	const linksAnon = [
-		{ href: '/', label: 'Home' },
-		{ href: '/game', label: 'Game' }
+		{ href: "/", label: "Home" },
+		{ href: "/game", label: "Game" }
 	];
 
 	const isActive = (href: string) =>
-		$page.url.pathname === href || $page.url.pathname.startsWith(href + '/');
+		$page.url.pathname === href || $page.url.pathname.startsWith(href + "/");
 </script>
 
 <header
@@ -97,7 +97,7 @@
 			<!-- Mobile menu toggle -->
 			<button
 				type="button"
-				class="inline-flex items-center justify-center rounded-md p-2 text-gray-600 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 md:hidden dark:text-gray-300 dark:hover:bg-gray-800"
+				class="inline-flex items-center justify-center rounded-md p-2 text-gray-600 hover:bg-gray-100 focus:ring-2 focus:ring-blue-500 focus:outline-none md:hidden dark:text-gray-300 dark:hover:bg-gray-800"
 				aria-label="Toggle menu"
 				aria-expanded={mobileOpen}
 				onclick={() => (mobileOpen = !mobileOpen)}

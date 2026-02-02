@@ -1,5 +1,5 @@
 <script lang="ts">
-	import Recipe from '$lib/components/Recipe.svelte';
+	import Recipe from "$lib/components/Recipe.svelte";
 	let { data } = $props();
 </script>
 
@@ -10,10 +10,10 @@
 <div class="container mx-auto px-4 py-4 sm:px-6 sm:py-6 lg:px-8">
 	<div class="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between">
 		<h1 class="mb-4 text-2xl font-bold sm:mb-0 sm:text-3xl lg:text-4xl">Recipes</h1>
-		{#if data.authenticatedUser && data.scopes?.includes('recipes:create')}
+		{#if data.authenticatedUser && data.scopes?.includes("recipes:create")}
 			<a
 				href="/recipes/create"
-				class="inline-flex items-center justify-center rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-medium text-white shadow-sm transition-colors hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 sm:px-6 sm:py-3 sm:text-base"
+				class="inline-flex items-center justify-center rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-medium text-white shadow-sm transition-colors hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none sm:px-6 sm:py-3 sm:text-base"
 			>
 				<svg
 					class="mr-2 h-4 w-4 sm:h-5 sm:w-5"

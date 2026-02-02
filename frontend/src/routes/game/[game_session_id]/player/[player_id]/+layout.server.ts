@@ -1,6 +1,6 @@
-import { createApiClient } from '$lib/api/api';
-import { error } from '@sveltejs/kit';
-import { redirect } from '@sveltejs/kit';
+import { createApiClient } from "$lib/api/api";
+import { error } from "@sveltejs/kit";
+import { redirect } from "@sveltejs/kit";
 
 // export const load = async ({ fetch, params, locals, parent }) => {
 //     const client = createApiClient(fetch);

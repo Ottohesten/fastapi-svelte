@@ -1,27 +1,31 @@
 <script lang="ts">
-	import { superForm } from 'sveltekit-superforms';
-	import { Field, Control, Label, FieldErrors } from 'formsnap';
-	import { Input } from '$lib/components/ui/input';
-	import { Button } from '$lib/components/ui/button';
+	import { superForm } from "sveltekit-superforms";
+	import { untrack } from "svelte";
+	import { Field, Control, Label, FieldErrors } from "formsnap";
+	import { Input } from "$lib/components/ui/input";
+	import { Button } from "$lib/components/ui/button";
 
 	let { data } = $props();
 
-	const form = superForm(data.form, {
-		dataType: 'json'
-	});
+	const form = superForm(
+		untrack(() => data.form),
+		{
+			dataType: "json"
+		}
+	);
 
 	const { form: formData, errors, message, constraints, enhance } = form;
 </script>
 
 <!-- <SuperDebug data={$form} /> -->
 
-<div class="container mx-auto p-4 max-w-2xl">
+<div class="container mx-auto max-w-2xl p-4">
 	<form method="POST" action="" enctype="multipart/form-data" use:enhance class="space-y-6">
 		{#if $message}
 			<h3 class="text-center text-2xl text-red-500">{$message}</h3>
 		{/if}
 
-		<Field form={form} name="title">
+		<Field {form} name="title">
 			<Control>
 				{#snippet children({ props })}
 					<Label>Title</Label>
@@ -32,17 +36,23 @@
 		</Field>
 
 		<div>
-			<h1 class="text-xl font-semibold mt-6 mb-2">Teams</h1>
+			<h1 class="mt-6 mb-2 text-xl font-semibold">Teams</h1>
 			<hr class="border-gray-200 dark:border-gray-800" />
 		</div>
 
 		{#each $formData.teams as _, i}
-			<div class="bg-gray-50 dark:bg-gray-800/50 p-4 rounded-lg border border-gray-100 dark:border-gray-800">
-				<Field form={form} name="teams[{i}].name">
+			<div
+				class="rounded-lg border border-gray-100 bg-gray-50 p-4 dark:border-gray-800 dark:bg-gray-800/50"
+			>
+				<Field {form} name="teams[{i}].name">
 					<Control>
 						{#snippet children({ props })}
 							<Label>Team Name</Label>
-							<Input {...props} bind:value={$formData.teams[i].name} placeholder="Enter team name" />
+							<Input
+								{...props}
+								bind:value={$formData.teams[i].name}
+								placeholder="Enter team name"
+							/>
 						{/snippet}
 					</Control>
 					<FieldErrors />
@@ -54,7 +64,7 @@
 			<Button
 				variant="secondary"
 				type="button"
-				onclick={() => ($formData.teams = [...($formData.teams ?? []), { name: '', players: [] }])}
+				onclick={() => ($formData.teams = [...($formData.teams ?? []), { name: "", players: [] }])}
 			>
 				Add Team
 			</Button>

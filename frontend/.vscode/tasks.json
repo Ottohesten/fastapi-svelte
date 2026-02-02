@@ -5,14 +5,9 @@
 			"label": "svelte-check",
 			"type": "shell",
 			"command": "npm",
-			"args": [
-				"run",
-				"check"
-			],
+			"args": ["run", "check"],
 			"isBackground": false,
-			"problemMatcher": [
-				"$tsc"
-			],
+			"problemMatcher": ["$tsc"],
 			"group": "build"
 		}
 	]

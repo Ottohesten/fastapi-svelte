@@ -1,41 +1,48 @@
 <script lang="ts">
 	let { data } = $props();
-	import DataTable from '$lib/components/ui/data-table.svelte';
-	import Button, { buttonVariants } from '$lib/components/ui/button/button.svelte';
-	import { enhance } from '$app/forms';
-	import { createColumns } from './columns.js';
-	import { invalidateAll } from '$app/navigation';
-	import * as Dialog from '$lib/components/ui/dialog/index.js';
-	import { Input } from '$lib/components/ui/input';
-	import { superForm } from 'sveltekit-superforms';
-	import { zodClient } from 'sveltekit-superforms/adapters';
-	import { fade } from 'svelte/transition';
-	import { IngredientSchema, IngredientUpdateSchema } from '$lib/schemas/schemas.js';
-	import { Field, Control, Label, FieldErrors } from 'formsnap';
+	import DataTable from "$lib/components/ui/data-table.svelte";
+	import Button, { buttonVariants } from "$lib/components/ui/button/button.svelte";
+	import { enhance } from "$app/forms";
+	import { createColumns } from "./columns.js";
+	import { invalidateAll } from "$app/navigation";
+	import * as Dialog from "$lib/components/ui/dialog/index.js";
+	import { Input } from "$lib/components/ui/input";
+	import { superForm } from "sveltekit-superforms";
+	import { zod4 as zodClient } from "sveltekit-superforms/adapters";
+	import { fade } from "svelte/transition";
+	import { untrack } from "svelte";
+	import { IngredientSchema, IngredientUpdateSchema } from "$lib/schemas/schemas.js";
+	import { Field, Control, Label, FieldErrors } from "formsnap";
 
 	let open = $state(false);
 
-	const form = superForm(data.ingredientCreateForm, {
-		id: 'ingredientCreateForm',
-		validators: zodClient(IngredientSchema),
-		resetForm: true,
-		onUpdated: ({ form }) => {
-			if (form.valid && form.message) {
-				open = false;
+	const form = superForm(
+		untrack(() => data.ingredientCreateForm),
+		{
+			id: "ingredientCreateForm",
+			validators: zodClient(IngredientSchema),
+			resetForm: true,
+			onUpdated: ({ form }) => {
+				if (form.valid && form.message) {
+					open = false;
+				}
 			}
 		}
-	});
+	);
 
-	const updateForm = superForm(data.ingredientUpdateForm, {
-		id: 'ingredientUpdateForm',
-		validators: zodClient(IngredientUpdateSchema),
-		resetForm: false,
-		onUpdated: ({ form }) => {
-			if (form.valid && form.message) {
-				console.log('Update form valid:', form.message);
+	const updateForm = superForm(
+		untrack(() => data.ingredientUpdateForm),
+		{
+			id: "ingredientUpdateForm",
+			validators: zodClient(IngredientUpdateSchema),
+			resetForm: false,
+			onUpdated: ({ form }) => {
+				if (form.valid && form.message) {
+					console.log("Update form valid:", form.message);
+				}
 			}
 		}
-	});
+	);
 
 	const { form: formData, enhance: formEnhance, errors, message } = form;
 	const { message: updateMessage } = updateForm;
@@ -70,7 +77,7 @@
 			</p>
 		</div>
 
-		{#if $message && $message.includes('successfully')}
+		{#if $message && $message.includes("successfully")}
 			<div
 				out:fade
 				class="rounded-md border border-green-200 bg-green-50 p-3 dark:border-green-900/50 dark:bg-green-900/20"
@@ -79,7 +86,7 @@
 			</div>
 		{/if}
 
-		{#if $updateMessage && $updateMessage.includes('successfully')}
+		{#if $updateMessage && $updateMessage.includes("successfully")}
 			<div
 				out:fade
 				class="rounded-md border border-green-200 bg-green-50 p-3 dark:border-green-900/50 dark:bg-green-900/20"
@@ -96,7 +103,7 @@
 					<Dialog.Description>Add a new ingredient to the database.</Dialog.Description>
 				</Dialog.Header>
 				<form method="POST" action="?/create" use:formEnhance class="space-y-4">
-					{#if $message && !$message.includes('successfully')}
+					{#if $message && !$message.includes("successfully")}
 						<div class="rounded-md border border-red-200 bg-red-50 p-3">
 							<p class="text-sm text-red-600">
 								{$message}

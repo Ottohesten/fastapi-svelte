@@ -4,3266 +4,3266 @@
  */
 
 export interface paths {
-    "/users/": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Read Users
-         * @description Retrieve users.
-         */
-        get: operations["read_users_users__get"];
-        put?: never;
-        /**
-         * Create User
-         * @description Create new user.
-         */
-        post: operations["create_user_users__post"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/users/with-permissions": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Read Users With Permissions
-         * @description Retrieve users including their roles, custom_scopes and computed effective_scopes.
-         */
-        get: operations["read_users_with_permissions_users_with_permissions_get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/users/me": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Read User Me
-         * @description Get current user.
-         */
-        get: operations["read_user_me_users_me_get"];
-        put?: never;
-        post?: never;
-        /**
-         * Delete User Me
-         * @description Delete own user.
-         */
-        delete: operations["delete_user_me_users_me_delete"];
-        options?: never;
-        head?: never;
-        /**
-         * Update User Me
-         * @description Update own user.
-         */
-        patch: operations["update_user_me_users_me_patch"];
-        trace?: never;
-    };
-    "/users/me/password": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        /**
-         * Update Password Me
-         * @description Update own password.
-         */
-        patch: operations["update_password_me_users_me_password_patch"];
-        trace?: never;
-    };
-    "/users/signup": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Register User
-         * @description Create new user without the need to be logged in.
-         */
-        post: operations["register_user_users_signup_post"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/users/{user_id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Read User By Id
-         * @description Get a specific user by id.
-         */
-        get: operations["read_user_by_id_users__user_id__get"];
-        put?: never;
-        post?: never;
-        /**
-         * Delete User
-         * @description Delete a user.
-         */
-        delete: operations["delete_user_users__user_id__delete"];
-        options?: never;
-        head?: never;
-        /**
-         * Update User
-         * @description Update a user.
-         */
-        patch: operations["update_user_users__user_id__patch"];
-        trace?: never;
-    };
-    "/users/{user_id}/roles/{role_id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Assign Role To User
-         * @description Assign a role to a user.
-         */
-        post: operations["assign_role_to_user_users__user_id__roles__role_id__post"];
-        /**
-         * Remove Role From User
-         * @description Remove a role from a user.
-         */
-        delete: operations["remove_role_from_user_users__user_id__roles__role_id__delete"];
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/users/{user_id}/scopes": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Assign Scopes To User
-         * @description Assign custom scopes to a user.
-         */
-        post: operations["assign_scopes_to_user_users__user_id__scopes_post"];
-        /**
-         * Remove Scopes From User
-         * @description Remove custom scopes from a user.
-         */
-        delete: operations["remove_scopes_from_user_users__user_id__scopes_delete"];
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/recipes/upload-image": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Upload Recipe Image
-         * @description Upload an image for a recipe.
-         */
-        post: operations["upload_recipe_image_recipes_upload_image_post"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/recipes/": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Read Recipes
-         * @description Retrieve recipes.
-         */
-        get: operations["read_recipes_recipes__get"];
-        put?: never;
-        /**
-         * Create Recipe
-         * @description Create a new recipe.
-         */
-        post: operations["create_recipe_recipes__post"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/recipes/{recipe_id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Read Recipe
-         * @description Retrieve a recipe.
-         */
-        get: operations["read_recipe_recipes__recipe_id__get"];
-        put?: never;
-        post?: never;
-        /**
-         * Delete Recipe
-         * @description Delete a recipe.
-         */
-        delete: operations["delete_recipe_recipes__recipe_id__delete"];
-        options?: never;
-        head?: never;
-        /**
-         * Update Recipe
-         * @description Update a recipe.
-         */
-        patch: operations["update_recipe_recipes__recipe_id__patch"];
-        trace?: never;
-    };
-    "/ingredients/": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Read Ingredients
-         * @description Retrieve ingredients.
-         */
-        get: operations["read_ingredients_ingredients__get"];
-        put?: never;
-        /**
-         * Create Ingredient
-         * @description Create a new ingredient.
-         */
-        post: operations["create_ingredient_ingredients__post"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/ingredients/{ingredient_id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Read Ingredient
-         * @description Retrieve a ingredient.
-         */
-        get: operations["read_ingredient_ingredients__ingredient_id__get"];
-        put?: never;
-        post?: never;
-        /**
-         * Delete Ingredient
-         * @description Delete a ingredient.
-         */
-        delete: operations["delete_ingredient_ingredients__ingredient_id__delete"];
-        options?: never;
-        head?: never;
-        /**
-         * Update Ingredient
-         * @description Update an ingredient.
-         */
-        patch: operations["update_ingredient_ingredients__ingredient_id__patch"];
-        trace?: never;
-    };
-    "/game/": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Read Game Sessions
-         * @description Retrieve game sessions.
-         */
-        get: operations["read_game_sessions_game__get"];
-        put?: never;
-        /**
-         * Create Game Session
-         * @description Create a new game session.
-         */
-        post: operations["create_game_session_game__post"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/game/drinks": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Read Drinks
-         * @description Retrieve drinks.
-         */
-        get: operations["read_drinks_game_drinks_get"];
-        put?: never;
-        /**
-         * Create Drink
-         * @description Create a new drink.
-         */
-        post: operations["create_drink_game_drinks_post"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/game/drinks/{drink_id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post?: never;
-        /**
-         * Delete Drink
-         * @description Delete a drink.
-         */
-        delete: operations["delete_drink_game_drinks__drink_id__delete"];
-        options?: never;
-        head?: never;
-        /**
-         * Update Drink
-         * @description Update a drink.
-         */
-        patch: operations["update_drink_game_drinks__drink_id__patch"];
-        trace?: never;
-    };
-    "/game/{game_session_id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Read Game Session
-         * @description Retrieve a game session.
-         */
-        get: operations["read_game_session_game__game_session_id__get"];
-        put?: never;
-        post?: never;
-        /**
-         * Delete Game Session
-         * @description Delete a game session. Users can delete their own game sessions.
-         */
-        delete: operations["delete_game_session_game__game_session_id__delete"];
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/game/{game_session_id}/admin": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post?: never;
-        /**
-         * Delete Game Session Admin
-         * @description Delete any game session (admin only).
-         */
-        delete: operations["delete_game_session_admin_game__game_session_id__admin_delete"];
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/game/{game_session_id}/player": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Create Game Player
-         * @description Create a new game player.
-         */
-        post: operations["create_game_player_game__game_session_id__player_post"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/game/{game_session_id}/team": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Create Game Team
-         * @description Create a new game team.
-         */
-        post: operations["create_game_team_game__game_session_id__team_post"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/game/{game_session_id}/player/{game_player_id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post?: never;
-        /**
-         * Delete Game Player
-         * @description Delete a game player.
-         */
-        delete: operations["delete_game_player_game__game_session_id__player__game_player_id__delete"];
-        options?: never;
-        head?: never;
-        /**
-         * Update Game Player
-         * @description Update a game player (e.g., change name).
-         */
-        patch: operations["update_game_player_game__game_session_id__player__game_player_id__patch"];
-        trace?: never;
-    };
-    "/game/{game_session_id}/team/{game_team_id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post?: never;
-        /**
-         * Delete Game Team
-         * @description Delete a game team.
-         */
-        delete: operations["delete_game_team_game__game_session_id__team__game_team_id__delete"];
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/game/{game_session_id}/player/{game_player_id}/drink": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        /**
-         * Add Drink To Player
-         * @description Add a drink to a game player or update the amount if the drink link already exists.
-         *     The amount provided in drink_link_in will be set as the new total amount for that drink.
-         */
-        patch: operations["add_drink_to_player_game__game_session_id__player__game_player_id__drink_patch"];
-        trace?: never;
-    };
-    "/game/{game_session_id}/updates": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Game Session Updates
-         * @description Server-Sent Events endpoint that streams real-time updates for a game session.
-         *     Clients can connect to this endpoint to receive notifications when drinks are added.
-         */
-        get: operations["game_session_updates_game__game_session_id__updates_get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/login/access-token": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Login Access Token
-         * @description OAuth2 compatible token login, get an access token for future requests
-         */
-        post: operations["login_access_token_login_access_token_post"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/login/refresh": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Refresh Access Token
-         * @description Issue a new access token using the refresh token from cookie (preferred) or body.
-         */
-        post: operations["refresh_access_token_login_refresh_post"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/logout": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Logout
-         * @description Clear refresh cookie (client should also clear access-token cookie).
-         */
-        post: operations["logout_logout_post"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/login/test-token": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Test Token
-         * @description Test access token
-         */
-        post: operations["test_token_login_test_token_post"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/password-recovery/{email}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Recover Password
-         * @description Password Recovery
-         */
-        post: operations["recover_password_password_recovery__email__post"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/reset-password/": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Reset Password
-         * @description Reset password
-         */
-        post: operations["reset_password_reset_password__post"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/password-recovery-html-content/{email}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Recover Password Html Content
-         * @description HTML Content for Password Recovery
-         */
-        post: operations["recover_password_html_content_password_recovery_html_content__email__post"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/roles/": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * List Roles
-         * @description List all roles
-         */
-        get: operations["list_roles_roles__get"];
-        put?: never;
-        /**
-         * Create Role
-         * @description Create a new role
-         */
-        post: operations["create_role_roles__post"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/roles/{role_id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Get Role
-         * @description Get a specific role
-         */
-        get: operations["get_role_roles__role_id__get"];
-        /**
-         * Update Role
-         * @description Update a role
-         */
-        put: operations["update_role_roles__role_id__put"];
-        post?: never;
-        /**
-         * Delete Role
-         * @description Delete a role
-         */
-        delete: operations["delete_role_roles__role_id__delete"];
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/roles/templates/": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * List Role Templates
-         * @description List available role templates
-         */
-        get: operations["list_role_templates_roles_templates__get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/roles/from-template/{template_key}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Create Role From Template Endpoint
-         * @description Create a role from a predefined template
-         */
-        post: operations["create_role_from_template_endpoint_roles_from_template__template_key__post"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/roles/scopes/available": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * List Available Scopes
-         * @description List all available scopes
-         */
-        get: operations["list_available_scopes_roles_scopes_available_get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Read Root */
-        get: operations["read_root__get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
+	"/users/": {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		/**
+		 * Read Users
+		 * @description Retrieve users.
+		 */
+		get: operations["read_users_users__get"];
+		put?: never;
+		/**
+		 * Create User
+		 * @description Create new user.
+		 */
+		post: operations["create_user_users__post"];
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
+	"/users/with-permissions": {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		/**
+		 * Read Users With Permissions
+		 * @description Retrieve users including their roles, custom_scopes and computed effective_scopes.
+		 */
+		get: operations["read_users_with_permissions_users_with_permissions_get"];
+		put?: never;
+		post?: never;
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
+	"/users/me": {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		/**
+		 * Read User Me
+		 * @description Get current user.
+		 */
+		get: operations["read_user_me_users_me_get"];
+		put?: never;
+		post?: never;
+		/**
+		 * Delete User Me
+		 * @description Delete own user.
+		 */
+		delete: operations["delete_user_me_users_me_delete"];
+		options?: never;
+		head?: never;
+		/**
+		 * Update User Me
+		 * @description Update own user.
+		 */
+		patch: operations["update_user_me_users_me_patch"];
+		trace?: never;
+	};
+	"/users/me/password": {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		get?: never;
+		put?: never;
+		post?: never;
+		delete?: never;
+		options?: never;
+		head?: never;
+		/**
+		 * Update Password Me
+		 * @description Update own password.
+		 */
+		patch: operations["update_password_me_users_me_password_patch"];
+		trace?: never;
+	};
+	"/users/signup": {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		get?: never;
+		put?: never;
+		/**
+		 * Register User
+		 * @description Create new user without the need to be logged in.
+		 */
+		post: operations["register_user_users_signup_post"];
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
+	"/users/{user_id}": {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		/**
+		 * Read User By Id
+		 * @description Get a specific user by id.
+		 */
+		get: operations["read_user_by_id_users__user_id__get"];
+		put?: never;
+		post?: never;
+		/**
+		 * Delete User
+		 * @description Delete a user.
+		 */
+		delete: operations["delete_user_users__user_id__delete"];
+		options?: never;
+		head?: never;
+		/**
+		 * Update User
+		 * @description Update a user.
+		 */
+		patch: operations["update_user_users__user_id__patch"];
+		trace?: never;
+	};
+	"/users/{user_id}/roles/{role_id}": {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		get?: never;
+		put?: never;
+		/**
+		 * Assign Role To User
+		 * @description Assign a role to a user.
+		 */
+		post: operations["assign_role_to_user_users__user_id__roles__role_id__post"];
+		/**
+		 * Remove Role From User
+		 * @description Remove a role from a user.
+		 */
+		delete: operations["remove_role_from_user_users__user_id__roles__role_id__delete"];
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
+	"/users/{user_id}/scopes": {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		get?: never;
+		put?: never;
+		/**
+		 * Assign Scopes To User
+		 * @description Assign custom scopes to a user.
+		 */
+		post: operations["assign_scopes_to_user_users__user_id__scopes_post"];
+		/**
+		 * Remove Scopes From User
+		 * @description Remove custom scopes from a user.
+		 */
+		delete: operations["remove_scopes_from_user_users__user_id__scopes_delete"];
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
+	"/recipes/upload-image": {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		get?: never;
+		put?: never;
+		/**
+		 * Upload Recipe Image
+		 * @description Upload an image for a recipe.
+		 */
+		post: operations["upload_recipe_image_recipes_upload_image_post"];
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
+	"/recipes/": {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		/**
+		 * Read Recipes
+		 * @description Retrieve recipes.
+		 */
+		get: operations["read_recipes_recipes__get"];
+		put?: never;
+		/**
+		 * Create Recipe
+		 * @description Create a new recipe.
+		 */
+		post: operations["create_recipe_recipes__post"];
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
+	"/recipes/{recipe_id}": {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		/**
+		 * Read Recipe
+		 * @description Retrieve a recipe.
+		 */
+		get: operations["read_recipe_recipes__recipe_id__get"];
+		put?: never;
+		post?: never;
+		/**
+		 * Delete Recipe
+		 * @description Delete a recipe.
+		 */
+		delete: operations["delete_recipe_recipes__recipe_id__delete"];
+		options?: never;
+		head?: never;
+		/**
+		 * Update Recipe
+		 * @description Update a recipe.
+		 */
+		patch: operations["update_recipe_recipes__recipe_id__patch"];
+		trace?: never;
+	};
+	"/ingredients/": {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		/**
+		 * Read Ingredients
+		 * @description Retrieve ingredients.
+		 */
+		get: operations["read_ingredients_ingredients__get"];
+		put?: never;
+		/**
+		 * Create Ingredient
+		 * @description Create a new ingredient.
+		 */
+		post: operations["create_ingredient_ingredients__post"];
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
+	"/ingredients/{ingredient_id}": {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		/**
+		 * Read Ingredient
+		 * @description Retrieve a ingredient.
+		 */
+		get: operations["read_ingredient_ingredients__ingredient_id__get"];
+		put?: never;
+		post?: never;
+		/**
+		 * Delete Ingredient
+		 * @description Delete a ingredient.
+		 */
+		delete: operations["delete_ingredient_ingredients__ingredient_id__delete"];
+		options?: never;
+		head?: never;
+		/**
+		 * Update Ingredient
+		 * @description Update an ingredient.
+		 */
+		patch: operations["update_ingredient_ingredients__ingredient_id__patch"];
+		trace?: never;
+	};
+	"/game/": {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		/**
+		 * Read Game Sessions
+		 * @description Retrieve game sessions.
+		 */
+		get: operations["read_game_sessions_game__get"];
+		put?: never;
+		/**
+		 * Create Game Session
+		 * @description Create a new game session.
+		 */
+		post: operations["create_game_session_game__post"];
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
+	"/game/drinks": {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		/**
+		 * Read Drinks
+		 * @description Retrieve drinks.
+		 */
+		get: operations["read_drinks_game_drinks_get"];
+		put?: never;
+		/**
+		 * Create Drink
+		 * @description Create a new drink.
+		 */
+		post: operations["create_drink_game_drinks_post"];
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
+	"/game/drinks/{drink_id}": {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		get?: never;
+		put?: never;
+		post?: never;
+		/**
+		 * Delete Drink
+		 * @description Delete a drink.
+		 */
+		delete: operations["delete_drink_game_drinks__drink_id__delete"];
+		options?: never;
+		head?: never;
+		/**
+		 * Update Drink
+		 * @description Update a drink.
+		 */
+		patch: operations["update_drink_game_drinks__drink_id__patch"];
+		trace?: never;
+	};
+	"/game/{game_session_id}": {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		/**
+		 * Read Game Session
+		 * @description Retrieve a game session.
+		 */
+		get: operations["read_game_session_game__game_session_id__get"];
+		put?: never;
+		post?: never;
+		/**
+		 * Delete Game Session
+		 * @description Delete a game session. Users can delete their own game sessions.
+		 */
+		delete: operations["delete_game_session_game__game_session_id__delete"];
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
+	"/game/{game_session_id}/admin": {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		get?: never;
+		put?: never;
+		post?: never;
+		/**
+		 * Delete Game Session Admin
+		 * @description Delete any game session (admin only).
+		 */
+		delete: operations["delete_game_session_admin_game__game_session_id__admin_delete"];
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
+	"/game/{game_session_id}/player": {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		get?: never;
+		put?: never;
+		/**
+		 * Create Game Player
+		 * @description Create a new game player.
+		 */
+		post: operations["create_game_player_game__game_session_id__player_post"];
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
+	"/game/{game_session_id}/team": {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		get?: never;
+		put?: never;
+		/**
+		 * Create Game Team
+		 * @description Create a new game team.
+		 */
+		post: operations["create_game_team_game__game_session_id__team_post"];
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
+	"/game/{game_session_id}/player/{game_player_id}": {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		get?: never;
+		put?: never;
+		post?: never;
+		/**
+		 * Delete Game Player
+		 * @description Delete a game player.
+		 */
+		delete: operations["delete_game_player_game__game_session_id__player__game_player_id__delete"];
+		options?: never;
+		head?: never;
+		/**
+		 * Update Game Player
+		 * @description Update a game player (e.g., change name).
+		 */
+		patch: operations["update_game_player_game__game_session_id__player__game_player_id__patch"];
+		trace?: never;
+	};
+	"/game/{game_session_id}/team/{game_team_id}": {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		get?: never;
+		put?: never;
+		post?: never;
+		/**
+		 * Delete Game Team
+		 * @description Delete a game team.
+		 */
+		delete: operations["delete_game_team_game__game_session_id__team__game_team_id__delete"];
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
+	"/game/{game_session_id}/player/{game_player_id}/drink": {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		get?: never;
+		put?: never;
+		post?: never;
+		delete?: never;
+		options?: never;
+		head?: never;
+		/**
+		 * Add Drink To Player
+		 * @description Add a drink to a game player or update the amount if the drink link already exists.
+		 *     The amount provided in drink_link_in will be set as the new total amount for that drink.
+		 */
+		patch: operations["add_drink_to_player_game__game_session_id__player__game_player_id__drink_patch"];
+		trace?: never;
+	};
+	"/game/{game_session_id}/updates": {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		/**
+		 * Game Session Updates
+		 * @description Server-Sent Events endpoint that streams real-time updates for a game session.
+		 *     Clients can connect to this endpoint to receive notifications when drinks are added.
+		 */
+		get: operations["game_session_updates_game__game_session_id__updates_get"];
+		put?: never;
+		post?: never;
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
+	"/login/access-token": {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		get?: never;
+		put?: never;
+		/**
+		 * Login Access Token
+		 * @description OAuth2 compatible token login, get an access token for future requests
+		 */
+		post: operations["login_access_token_login_access_token_post"];
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
+	"/login/refresh": {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		get?: never;
+		put?: never;
+		/**
+		 * Refresh Access Token
+		 * @description Issue a new access token using the refresh token from cookie (preferred) or body.
+		 */
+		post: operations["refresh_access_token_login_refresh_post"];
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
+	"/logout": {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		get?: never;
+		put?: never;
+		/**
+		 * Logout
+		 * @description Clear refresh cookie (client should also clear access-token cookie).
+		 */
+		post: operations["logout_logout_post"];
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
+	"/login/test-token": {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		get?: never;
+		put?: never;
+		/**
+		 * Test Token
+		 * @description Test access token
+		 */
+		post: operations["test_token_login_test_token_post"];
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
+	"/password-recovery/{email}": {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		get?: never;
+		put?: never;
+		/**
+		 * Recover Password
+		 * @description Password Recovery
+		 */
+		post: operations["recover_password_password_recovery__email__post"];
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
+	"/reset-password/": {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		get?: never;
+		put?: never;
+		/**
+		 * Reset Password
+		 * @description Reset password
+		 */
+		post: operations["reset_password_reset_password__post"];
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
+	"/password-recovery-html-content/{email}": {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		get?: never;
+		put?: never;
+		/**
+		 * Recover Password Html Content
+		 * @description HTML Content for Password Recovery
+		 */
+		post: operations["recover_password_html_content_password_recovery_html_content__email__post"];
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
+	"/roles/": {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		/**
+		 * List Roles
+		 * @description List all roles
+		 */
+		get: operations["list_roles_roles__get"];
+		put?: never;
+		/**
+		 * Create Role
+		 * @description Create a new role
+		 */
+		post: operations["create_role_roles__post"];
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
+	"/roles/{role_id}": {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		/**
+		 * Get Role
+		 * @description Get a specific role
+		 */
+		get: operations["get_role_roles__role_id__get"];
+		/**
+		 * Update Role
+		 * @description Update a role
+		 */
+		put: operations["update_role_roles__role_id__put"];
+		post?: never;
+		/**
+		 * Delete Role
+		 * @description Delete a role
+		 */
+		delete: operations["delete_role_roles__role_id__delete"];
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
+	"/roles/templates/": {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		/**
+		 * List Role Templates
+		 * @description List available role templates
+		 */
+		get: operations["list_role_templates_roles_templates__get"];
+		put?: never;
+		post?: never;
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
+	"/roles/from-template/{template_key}": {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		get?: never;
+		put?: never;
+		/**
+		 * Create Role From Template Endpoint
+		 * @description Create a role from a predefined template
+		 */
+		post: operations["create_role_from_template_endpoint_roles_from_template__template_key__post"];
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
+	"/roles/scopes/available": {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		/**
+		 * List Available Scopes
+		 * @description List all available scopes
+		 */
+		get: operations["list_available_scopes_roles_scopes_available_get"];
+		put?: never;
+		post?: never;
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
+	"/": {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		/** Read Root */
+		get: operations["read_root__get"];
+		put?: never;
+		post?: never;
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
 }
 export type webhooks = Record<string, never>;
 export interface components {
-    schemas: {
-        /** Body_login_access_token_login_access_token_post */
-        Body_login_access_token_login_access_token_post: {
-            /** Grant Type */
-            grant_type?: string | null;
-            /** Username */
-            username: string;
-            /**
-             * Password
-             * Format: password
-             */
-            password: string;
-            /**
-             * Scope
-             * @default
-             */
-            scope: string;
-            /** Client Id */
-            client_id?: string | null;
-            /**
-             * Client Secret
-             * Format: password
-             */
-            client_secret?: string | null;
-        };
-        /** Body_upload_recipe_image_recipes_upload_image_post */
-        Body_upload_recipe_image_recipes_upload_image_post: {
-            /**
-             * File
-             * Format: binary
-             */
-            file: string;
-        };
-        /** DrinkCreate */
-        DrinkCreate: {
-            /** Name */
-            name: string;
-        };
-        /** DrinkPublic */
-        DrinkPublic: {
-            /** Name */
-            name: string;
-            /**
-             * Id
-             * Format: uuid
-             */
-            id: string;
-        };
-        /**
-         * GamePlayer
-         * @description Game player model
-         *
-         *     Should have a name, a team and a list of drinks (many to many relationship)
-         */
-        GamePlayer: {
-            /** Name */
-            name: string;
-            /**
-             * Id
-             * Format: uuid
-             */
-            id?: string;
-            /**
-             * Game Session Id
-             * Format: uuid
-             */
-            game_session_id: string;
-            /** Team Id */
-            team_id?: string | null;
-        };
-        /**
-         * GamePlayerCreate
-         * @description Create class for game player
-         */
-        GamePlayerCreate: {
-            /** Name */
-            name: string;
-            /** Team Id */
-            team_id?: string | null;
-        };
-        /**
-         * GamePlayerDrinkLinkCreate
-         * @description Create class for GamePlayerDrinkLink
-         */
-        GamePlayerDrinkLinkCreate: {
-            /**
-             * Drink Id
-             * Format: uuid
-             */
-            drink_id: string;
-            /**
-             * Amount
-             * @description How many of this drink the player has consumed
-             * @default 1
-             */
-            amount: number;
-        };
-        /**
-         * GamePlayerDrinkLinkPublic
-         * @description Public class for GamePlayerDrinkLink
-         */
-        GamePlayerDrinkLinkPublic: {
-            /** Amount */
-            amount: number;
-            drink: components["schemas"]["DrinkPublic"];
-        };
-        /**
-         * GamePlayerPublic
-         * @description Public class for game player
-         */
-        GamePlayerPublic: {
-            /** Name */
-            name: string;
-            /**
-             * Id
-             * Format: uuid
-             */
-            id: string;
-            /**
-             * Game Session Id
-             * Format: uuid
-             */
-            game_session_id: string;
-            /** Team Id */
-            team_id?: string | null;
-            team?: components["schemas"]["GameTeamPlayerPublic"] | null;
-            /** Drink Links */
-            drink_links: components["schemas"]["GamePlayerDrinkLinkPublic"][];
-        };
-        /**
-         * GamePlayerUpdate
-         * @description Update class for game player, can update name and team, can not change game session
-         */
-        GamePlayerUpdate: {
-            /** Name */
-            name?: string | null;
-            /** Team Id */
-            team_id?: string | null;
-            /** Drinks */
-            drinks?: components["schemas"]["GamePlayerDrinkLinkCreate"][] | null;
-        };
-        /** GameSessionCreate */
-        GameSessionCreate: {
-            /** Title */
-            title: string;
-            /** Teams */
-            teams?: components["schemas"]["GameTeamCreate"][] | null;
-        };
-        /**
-         * GameSessionPublic
-         * @description Game session model
-         *
-         *     Should have an owner (user) and a list of players and their information (scores etc.)
-         */
-        GameSessionPublic: {
-            /** Title */
-            title: string;
-            /**
-             * Id
-             * Format: uuid
-             */
-            id: string;
-            owner: components["schemas"]["UserPublic"];
-            /** Players */
-            players: components["schemas"]["GamePlayerPublic"][];
-            /** Teams */
-            teams: components["schemas"]["GameTeamPublic"][];
-        };
-        /** GameTeamCreate */
-        GameTeamCreate: {
-            /** Name */
-            name: string;
-        };
-        /** GameTeamPlayerPublic */
-        GameTeamPlayerPublic: {
-            /** Name */
-            name: string;
-        };
-        /**
-         * GameTeamPublic
-         * @description Public class for game team
-         */
-        GameTeamPublic: {
-            /** Name */
-            name: string;
-            /**
-             * Id
-             * Format: uuid
-             */
-            id: string;
-            /** Players */
-            players: components["schemas"]["GamePlayer"][];
-            /**
-             * Game Session Id
-             * Format: uuid
-             */
-            game_session_id: string;
-        };
-        /** HTTPExceptionDetail */
-        HTTPExceptionDetail: {
-            /** Detail */
-            detail: string;
-        };
-        /** HTTPValidationError */
-        HTTPValidationError: {
-            /** Detail */
-            detail?: components["schemas"]["ValidationError"][];
-        };
-        /** IngredientCreate */
-        IngredientCreate: {
-            /** Title */
-            title: string;
-            /**
-             * Calories
-             * @description Calories per 100g of the ingredient
-             * @default 0
-             */
-            calories: number;
-            /**
-             * Weight Per Piece
-             * @description Average weight per piece in grams (used when unit is 'pcs')
-             * @default 100
-             */
-            weight_per_piece: number;
-        };
-        /** IngredientPublic */
-        IngredientPublic: {
-            /** Title */
-            title: string;
-            /**
-             * Calories
-             * @description Calories per 100g of the ingredient
-             * @default 0
-             */
-            calories: number;
-            /**
-             * Weight Per Piece
-             * @description Average weight per piece in grams (used when unit is 'pcs')
-             * @default 100
-             */
-            weight_per_piece: number;
-            /**
-             * Id
-             * Format: uuid
-             */
-            id: string;
-        };
-        /** Message */
-        Message: {
-            /** Message */
-            message: string;
-        };
-        /** NewPassword */
-        NewPassword: {
-            /** Token */
-            token: string;
-            /** New Password */
-            new_password: string;
-        };
-        /**
-         * Recipe
-         * @description Recipe model
-         *
-         *     Should have an owner and a list of ingredients. However a recipe for every ingredints, the ingredient should also have an amount of that ingredient and the unit of the amount
-         */
-        Recipe: {
-            /** Title */
-            title: string;
-            /** Instructions */
-            instructions?: string | null;
-            /**
-             * Servings
-             * @default 1
-             */
-            servings: number;
-            /** Image */
-            image?: string | null;
-            /**
-             * Id
-             * Format: uuid
-             */
-            id?: string;
-            /**
-             * Owner Id
-             * Format: uuid
-             */
-            owner_id: string;
-        };
-        /** RecipeCreate */
-        RecipeCreate: {
-            /** Title */
-            title: string;
-            /** Instructions */
-            instructions?: string | null;
-            /**
-             * Servings
-             * @default 1
-             */
-            servings: number;
-            /** Image */
-            image?: string | null;
-            /** Ingredients */
-            ingredients: components["schemas"]["RecipeIngredientLinkCreate"][];
-        };
-        /**
-         * RecipeIngredientLinkCreate
-         * @description Create a new recipe ingredient link.
-         */
-        RecipeIngredientLinkCreate: {
-            /**
-             * Ingredient Id
-             * Format: uuid
-             */
-            ingredient_id: string;
-            /**
-             * Amount
-             * @description Amount of the ingredient in the recipe
-             * @default 1
-             */
-            amount: number;
-            /**
-             * Unit
-             * @description Unit of the amount, e.g. g, ml, pcs, etc.
-             * @default g
-             */
-            unit: string;
-        };
-        /**
-         * RecipeIngredientLinkPublic
-         * @description Public class for recipe ingredient link.
-         */
-        RecipeIngredientLinkPublic: {
-            ingredient: components["schemas"]["IngredientPublic"];
-            /** Amount */
-            amount: number;
-            /**
-             * Unit
-             * @description Unit of the amount, e.g. g, ml, pcs, etc.
-             * @default g
-             */
-            unit: string;
-        };
-        /** RecipePublic */
-        RecipePublic: {
-            /** Title */
-            title: string;
-            /** Instructions */
-            instructions?: string | null;
-            /**
-             * Servings
-             * @default 1
-             */
-            servings: number;
-            /** Image */
-            image?: string | null;
-            /**
-             * Id
-             * Format: uuid
-             */
-            id: string;
-            owner: components["schemas"]["UserPublic"];
-            /** Ingredient Links */
-            ingredient_links: components["schemas"]["RecipeIngredientLinkPublic"][];
-            /**
-             * Total Calories
-             * @description Calculate total calories for the entire recipe based on ingredients and their amounts.
-             */
-            readonly total_calories: number;
-            /**
-             * Calories Per Serving
-             * @description Calculate calories per serving.
-             */
-            readonly calories_per_serving: number;
-            /**
-             * Calculated Weight
-             * @description The calculated weight of the recipe based on the ingredients and their amounts. Returns the total weight in grams.
-             */
-            readonly calculated_weight: number;
-            /**
-             * Calories Per 100G
-             * @description Calculate calories per 100g of the recipe.
-             */
-            readonly calories_per_100g: number;
-        };
-        /** RefreshRequest */
-        RefreshRequest: {
-            /** Refresh Token */
-            refresh_token: string;
-        };
-        /** RoleCreate */
-        RoleCreate: {
-            /** Name */
-            name: string;
-            /** Description */
-            description?: string | null;
-            /**
-             * Scopes
-             * @default []
-             */
-            scopes: string[];
-        };
-        /** RolePublic */
-        RolePublic: {
-            /**
-             * Id
-             * Format: uuid
-             */
-            id: string;
-            /** Name */
-            name: string;
-            /** Description */
-            description?: string | null;
-            /** Scopes */
-            scopes: string[];
-        };
-        /** RoleUpdate */
-        RoleUpdate: {
-            /** Name */
-            name?: string | null;
-            /** Description */
-            description?: string | null;
-            /** Scopes */
-            scopes?: string[] | null;
-        };
-        /** Token */
-        Token: {
-            /** Access Token */
-            access_token: string;
-            /**
-             * Token Type
-             * @default Bearer
-             */
-            token_type: string;
-            /** Refresh Token */
-            refresh_token?: string | null;
-        };
-        /** UpdatePassword */
-        UpdatePassword: {
-            /** Current Password */
-            current_password: string;
-            /** New Password */
-            new_password: string;
-        };
-        /** UserCreate */
-        UserCreate: {
-            /**
-             * Email
-             * Format: email
-             */
-            email: string;
-            /**
-             * Is Active
-             * @default true
-             */
-            is_active: boolean;
-            /**
-             * Is Superuser
-             * @default false
-             */
-            is_superuser: boolean;
-            /** Full Name */
-            full_name?: string | null;
-            /** Password */
-            password: string;
-        };
-        /** UserMePublic */
-        UserMePublic: {
-            /**
-             * Email
-             * Format: email
-             */
-            email: string;
-            /**
-             * Is Active
-             * @default true
-             */
-            is_active: boolean;
-            /**
-             * Is Superuser
-             * @default false
-             */
-            is_superuser: boolean;
-            /** Full Name */
-            full_name?: string | null;
-            /**
-             * Id
-             * Format: uuid
-             */
-            id: string;
-            /** Scopes */
-            scopes: string[];
-        };
-        /** UserPublic */
-        UserPublic: {
-            /**
-             * Email
-             * Format: email
-             */
-            email: string;
-            /**
-             * Is Active
-             * @default true
-             */
-            is_active: boolean;
-            /**
-             * Is Superuser
-             * @default false
-             */
-            is_superuser: boolean;
-            /** Full Name */
-            full_name?: string | null;
-            /**
-             * Id
-             * Format: uuid
-             */
-            id: string;
-        };
-        /** UserRegister */
-        UserRegister: {
-            /**
-             * Email
-             * Format: email
-             */
-            email: string;
-            /** Password */
-            password: string;
-            /** Full Name */
-            full_name?: string | null;
-        };
-        /** UserUpdate */
-        UserUpdate: {
-            /** Email */
-            email?: string | null;
-            /**
-             * Is Active
-             * @default true
-             */
-            is_active: boolean;
-            /**
-             * Is Superuser
-             * @default false
-             */
-            is_superuser: boolean;
-            /** Full Name */
-            full_name?: string | null;
-            /** Password */
-            password?: string | null;
-        };
-        /** UserUpdateMe */
-        UserUpdateMe: {
-            /** Full Name */
-            full_name?: string | null;
-            /** Email */
-            email?: string | null;
-        };
-        /** UserWithPermissionsPublic */
-        UserWithPermissionsPublic: {
-            /**
-             * Email
-             * Format: email
-             */
-            email: string;
-            /**
-             * Is Active
-             * @default true
-             */
-            is_active: boolean;
-            /**
-             * Is Superuser
-             * @default false
-             */
-            is_superuser: boolean;
-            /** Full Name */
-            full_name?: string | null;
-            /**
-             * Id
-             * Format: uuid
-             */
-            id: string;
-            /** Roles */
-            roles: components["schemas"]["RolePublic"][];
-            /** Custom Scopes */
-            custom_scopes: string[];
-            /** Effective Scopes */
-            effective_scopes: string[];
-        };
-        /** UsersPublic */
-        UsersPublic: {
-            /** Data */
-            data: components["schemas"]["UserPublic"][];
-            /** Count */
-            count: number;
-        };
-        /** UsersWithPermissionsPublic */
-        UsersWithPermissionsPublic: {
-            /** Data */
-            data: components["schemas"]["UserWithPermissionsPublic"][];
-            /** Count */
-            count: number;
-        };
-        /** ValidationError */
-        ValidationError: {
-            /** Location */
-            loc: (string | number)[];
-            /** Message */
-            msg: string;
-            /** Error Type */
-            type: string;
-        };
-    };
-    responses: never;
-    parameters: never;
-    requestBodies: never;
-    headers: never;
-    pathItems: never;
+	schemas: {
+		/** Body_login_access_token_login_access_token_post */
+		Body_login_access_token_login_access_token_post: {
+			/** Grant Type */
+			grant_type?: string | null;
+			/** Username */
+			username: string;
+			/**
+			 * Password
+			 * Format: password
+			 */
+			password: string;
+			/**
+			 * Scope
+			 * @default
+			 */
+			scope: string;
+			/** Client Id */
+			client_id?: string | null;
+			/**
+			 * Client Secret
+			 * Format: password
+			 */
+			client_secret?: string | null;
+		};
+		/** Body_upload_recipe_image_recipes_upload_image_post */
+		Body_upload_recipe_image_recipes_upload_image_post: {
+			/**
+			 * File
+			 * Format: binary
+			 */
+			file: string;
+		};
+		/** DrinkCreate */
+		DrinkCreate: {
+			/** Name */
+			name: string;
+		};
+		/** DrinkPublic */
+		DrinkPublic: {
+			/** Name */
+			name: string;
+			/**
+			 * Id
+			 * Format: uuid
+			 */
+			id: string;
+		};
+		/**
+		 * GamePlayer
+		 * @description Game player model
+		 *
+		 *     Should have a name, a team and a list of drinks (many to many relationship)
+		 */
+		GamePlayer: {
+			/** Name */
+			name: string;
+			/**
+			 * Id
+			 * Format: uuid
+			 */
+			id?: string;
+			/**
+			 * Game Session Id
+			 * Format: uuid
+			 */
+			game_session_id: string;
+			/** Team Id */
+			team_id?: string | null;
+		};
+		/**
+		 * GamePlayerCreate
+		 * @description Create class for game player
+		 */
+		GamePlayerCreate: {
+			/** Name */
+			name: string;
+			/** Team Id */
+			team_id?: string | null;
+		};
+		/**
+		 * GamePlayerDrinkLinkCreate
+		 * @description Create class for GamePlayerDrinkLink
+		 */
+		GamePlayerDrinkLinkCreate: {
+			/**
+			 * Drink Id
+			 * Format: uuid
+			 */
+			drink_id: string;
+			/**
+			 * Amount
+			 * @description How many of this drink the player has consumed
+			 * @default 1
+			 */
+			amount: number;
+		};
+		/**
+		 * GamePlayerDrinkLinkPublic
+		 * @description Public class for GamePlayerDrinkLink
+		 */
+		GamePlayerDrinkLinkPublic: {
+			/** Amount */
+			amount: number;
+			drink: components["schemas"]["DrinkPublic"];
+		};
+		/**
+		 * GamePlayerPublic
+		 * @description Public class for game player
+		 */
+		GamePlayerPublic: {
+			/** Name */
+			name: string;
+			/**
+			 * Id
+			 * Format: uuid
+			 */
+			id: string;
+			/**
+			 * Game Session Id
+			 * Format: uuid
+			 */
+			game_session_id: string;
+			/** Team Id */
+			team_id?: string | null;
+			team?: components["schemas"]["GameTeamPlayerPublic"] | null;
+			/** Drink Links */
+			drink_links: components["schemas"]["GamePlayerDrinkLinkPublic"][];
+		};
+		/**
+		 * GamePlayerUpdate
+		 * @description Update class for game player, can update name and team, can not change game session
+		 */
+		GamePlayerUpdate: {
+			/** Name */
+			name?: string | null;
+			/** Team Id */
+			team_id?: string | null;
+			/** Drinks */
+			drinks?: components["schemas"]["GamePlayerDrinkLinkCreate"][] | null;
+		};
+		/** GameSessionCreate */
+		GameSessionCreate: {
+			/** Title */
+			title: string;
+			/** Teams */
+			teams?: components["schemas"]["GameTeamCreate"][] | null;
+		};
+		/**
+		 * GameSessionPublic
+		 * @description Game session model
+		 *
+		 *     Should have an owner (user) and a list of players and their information (scores etc.)
+		 */
+		GameSessionPublic: {
+			/** Title */
+			title: string;
+			/**
+			 * Id
+			 * Format: uuid
+			 */
+			id: string;
+			owner: components["schemas"]["UserPublic"];
+			/** Players */
+			players: components["schemas"]["GamePlayerPublic"][];
+			/** Teams */
+			teams: components["schemas"]["GameTeamPublic"][];
+		};
+		/** GameTeamCreate */
+		GameTeamCreate: {
+			/** Name */
+			name: string;
+		};
+		/** GameTeamPlayerPublic */
+		GameTeamPlayerPublic: {
+			/** Name */
+			name: string;
+		};
+		/**
+		 * GameTeamPublic
+		 * @description Public class for game team
+		 */
+		GameTeamPublic: {
+			/** Name */
+			name: string;
+			/**
+			 * Id
+			 * Format: uuid
+			 */
+			id: string;
+			/** Players */
+			players: components["schemas"]["GamePlayer"][];
+			/**
+			 * Game Session Id
+			 * Format: uuid
+			 */
+			game_session_id: string;
+		};
+		/** HTTPExceptionDetail */
+		HTTPExceptionDetail: {
+			/** Detail */
+			detail: string;
+		};
+		/** HTTPValidationError */
+		HTTPValidationError: {
+			/** Detail */
+			detail?: components["schemas"]["ValidationError"][];
+		};
+		/** IngredientCreate */
+		IngredientCreate: {
+			/** Title */
+			title: string;
+			/**
+			 * Calories
+			 * @description Calories per 100g of the ingredient
+			 * @default 0
+			 */
+			calories: number;
+			/**
+			 * Weight Per Piece
+			 * @description Average weight per piece in grams (used when unit is 'pcs')
+			 * @default 100
+			 */
+			weight_per_piece: number;
+		};
+		/** IngredientPublic */
+		IngredientPublic: {
+			/** Title */
+			title: string;
+			/**
+			 * Calories
+			 * @description Calories per 100g of the ingredient
+			 * @default 0
+			 */
+			calories: number;
+			/**
+			 * Weight Per Piece
+			 * @description Average weight per piece in grams (used when unit is 'pcs')
+			 * @default 100
+			 */
+			weight_per_piece: number;
+			/**
+			 * Id
+			 * Format: uuid
+			 */
+			id: string;
+		};
+		/** Message */
+		Message: {
+			/** Message */
+			message: string;
+		};
+		/** NewPassword */
+		NewPassword: {
+			/** Token */
+			token: string;
+			/** New Password */
+			new_password: string;
+		};
+		/**
+		 * Recipe
+		 * @description Recipe model
+		 *
+		 *     Should have an owner and a list of ingredients. However a recipe for every ingredints, the ingredient should also have an amount of that ingredient and the unit of the amount
+		 */
+		Recipe: {
+			/** Title */
+			title: string;
+			/** Instructions */
+			instructions?: string | null;
+			/**
+			 * Servings
+			 * @default 1
+			 */
+			servings: number;
+			/** Image */
+			image?: string | null;
+			/**
+			 * Id
+			 * Format: uuid
+			 */
+			id?: string;
+			/**
+			 * Owner Id
+			 * Format: uuid
+			 */
+			owner_id: string;
+		};
+		/** RecipeCreate */
+		RecipeCreate: {
+			/** Title */
+			title: string;
+			/** Instructions */
+			instructions?: string | null;
+			/**
+			 * Servings
+			 * @default 1
+			 */
+			servings: number;
+			/** Image */
+			image?: string | null;
+			/** Ingredients */
+			ingredients: components["schemas"]["RecipeIngredientLinkCreate"][];
+		};
+		/**
+		 * RecipeIngredientLinkCreate
+		 * @description Create a new recipe ingredient link.
+		 */
+		RecipeIngredientLinkCreate: {
+			/**
+			 * Ingredient Id
+			 * Format: uuid
+			 */
+			ingredient_id: string;
+			/**
+			 * Amount
+			 * @description Amount of the ingredient in the recipe
+			 * @default 1
+			 */
+			amount: number;
+			/**
+			 * Unit
+			 * @description Unit of the amount, e.g. g, ml, pcs, etc.
+			 * @default g
+			 */
+			unit: string;
+		};
+		/**
+		 * RecipeIngredientLinkPublic
+		 * @description Public class for recipe ingredient link.
+		 */
+		RecipeIngredientLinkPublic: {
+			ingredient: components["schemas"]["IngredientPublic"];
+			/** Amount */
+			amount: number;
+			/**
+			 * Unit
+			 * @description Unit of the amount, e.g. g, ml, pcs, etc.
+			 * @default g
+			 */
+			unit: string;
+		};
+		/** RecipePublic */
+		RecipePublic: {
+			/** Title */
+			title: string;
+			/** Instructions */
+			instructions?: string | null;
+			/**
+			 * Servings
+			 * @default 1
+			 */
+			servings: number;
+			/** Image */
+			image?: string | null;
+			/**
+			 * Id
+			 * Format: uuid
+			 */
+			id: string;
+			owner: components["schemas"]["UserPublic"];
+			/** Ingredient Links */
+			ingredient_links: components["schemas"]["RecipeIngredientLinkPublic"][];
+			/**
+			 * Total Calories
+			 * @description Calculate total calories for the entire recipe based on ingredients and their amounts.
+			 */
+			readonly total_calories: number;
+			/**
+			 * Calories Per Serving
+			 * @description Calculate calories per serving.
+			 */
+			readonly calories_per_serving: number;
+			/**
+			 * Calculated Weight
+			 * @description The calculated weight of the recipe based on the ingredients and their amounts. Returns the total weight in grams.
+			 */
+			readonly calculated_weight: number;
+			/**
+			 * Calories Per 100G
+			 * @description Calculate calories per 100g of the recipe.
+			 */
+			readonly calories_per_100g: number;
+		};
+		/** RefreshRequest */
+		RefreshRequest: {
+			/** Refresh Token */
+			refresh_token: string;
+		};
+		/** RoleCreate */
+		RoleCreate: {
+			/** Name */
+			name: string;
+			/** Description */
+			description?: string | null;
+			/**
+			 * Scopes
+			 * @default []
+			 */
+			scopes: string[];
+		};
+		/** RolePublic */
+		RolePublic: {
+			/**
+			 * Id
+			 * Format: uuid
+			 */
+			id: string;
+			/** Name */
+			name: string;
+			/** Description */
+			description?: string | null;
+			/** Scopes */
+			scopes: string[];
+		};
+		/** RoleUpdate */
+		RoleUpdate: {
+			/** Name */
+			name?: string | null;
+			/** Description */
+			description?: string | null;
+			/** Scopes */
+			scopes?: string[] | null;
+		};
+		/** Token */
+		Token: {
+			/** Access Token */
+			access_token: string;
+			/**
+			 * Token Type
+			 * @default Bearer
+			 */
+			token_type: string;
+			/** Refresh Token */
+			refresh_token?: string | null;
+		};
+		/** UpdatePassword */
+		UpdatePassword: {
+			/** Current Password */
+			current_password: string;
+			/** New Password */
+			new_password: string;
+		};
+		/** UserCreate */
+		UserCreate: {
+			/**
+			 * Email
+			 * Format: email
+			 */
+			email: string;
+			/**
+			 * Is Active
+			 * @default true
+			 */
+			is_active: boolean;
+			/**
+			 * Is Superuser
+			 * @default false
+			 */
+			is_superuser: boolean;
+			/** Full Name */
+			full_name?: string | null;
+			/** Password */
+			password: string;
+		};
+		/** UserMePublic */
+		UserMePublic: {
+			/**
+			 * Email
+			 * Format: email
+			 */
+			email: string;
+			/**
+			 * Is Active
+			 * @default true
+			 */
+			is_active: boolean;
+			/**
+			 * Is Superuser
+			 * @default false
+			 */
+			is_superuser: boolean;
+			/** Full Name */
+			full_name?: string | null;
+			/**
+			 * Id
+			 * Format: uuid
+			 */
+			id: string;
+			/** Scopes */
+			scopes: string[];
+		};
+		/** UserPublic */
+		UserPublic: {
+			/**
+			 * Email
+			 * Format: email
+			 */
+			email: string;
+			/**
+			 * Is Active
+			 * @default true
+			 */
+			is_active: boolean;
+			/**
+			 * Is Superuser
+			 * @default false
+			 */
+			is_superuser: boolean;
+			/** Full Name */
+			full_name?: string | null;
+			/**
+			 * Id
+			 * Format: uuid
+			 */
+			id: string;
+		};
+		/** UserRegister */
+		UserRegister: {
+			/**
+			 * Email
+			 * Format: email
+			 */
+			email: string;
+			/** Password */
+			password: string;
+			/** Full Name */
+			full_name?: string | null;
+		};
+		/** UserUpdate */
+		UserUpdate: {
+			/** Email */
+			email?: string | null;
+			/**
+			 * Is Active
+			 * @default true
+			 */
+			is_active: boolean;
+			/**
+			 * Is Superuser
+			 * @default false
+			 */
+			is_superuser: boolean;
+			/** Full Name */
+			full_name?: string | null;
+			/** Password */
+			password?: string | null;
+		};
+		/** UserUpdateMe */
+		UserUpdateMe: {
+			/** Full Name */
+			full_name?: string | null;
+			/** Email */
+			email?: string | null;
+		};
+		/** UserWithPermissionsPublic */
+		UserWithPermissionsPublic: {
+			/**
+			 * Email
+			 * Format: email
+			 */
+			email: string;
+			/**
+			 * Is Active
+			 * @default true
+			 */
+			is_active: boolean;
+			/**
+			 * Is Superuser
+			 * @default false
+			 */
+			is_superuser: boolean;
+			/** Full Name */
+			full_name?: string | null;
+			/**
+			 * Id
+			 * Format: uuid
+			 */
+			id: string;
+			/** Roles */
+			roles: components["schemas"]["RolePublic"][];
+			/** Custom Scopes */
+			custom_scopes: string[];
+			/** Effective Scopes */
+			effective_scopes: string[];
+		};
+		/** UsersPublic */
+		UsersPublic: {
+			/** Data */
+			data: components["schemas"]["UserPublic"][];
+			/** Count */
+			count: number;
+		};
+		/** UsersWithPermissionsPublic */
+		UsersWithPermissionsPublic: {
+			/** Data */
+			data: components["schemas"]["UserWithPermissionsPublic"][];
+			/** Count */
+			count: number;
+		};
+		/** ValidationError */
+		ValidationError: {
+			/** Location */
+			loc: (string | number)[];
+			/** Message */
+			msg: string;
+			/** Error Type */
+			type: string;
+		};
+	};
+	responses: never;
+	parameters: never;
+	requestBodies: never;
+	headers: never;
+	pathItems: never;
 }
 export type $defs = Record<string, never>;
 export interface operations {
-    read_users_users__get: {
-        parameters: {
-            query?: {
-                skip?: number;
-                limit?: number;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["UsersPublic"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    create_user_users__post: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["UserCreate"];
-            };
-        };
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["UserPublic"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    read_users_with_permissions_users_with_permissions_get: {
-        parameters: {
-            query?: {
-                skip?: number;
-                limit?: number;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["UsersWithPermissionsPublic"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    read_user_me_users_me_get: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["UserMePublic"];
-                };
-            };
-            /** @description Unauthorized */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPExceptionDetail"];
-                };
-            };
-        };
-    };
-    delete_user_me_users_me_delete: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Message"];
-                };
-            };
-        };
-    };
-    update_user_me_users_me_patch: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["UserUpdateMe"];
-            };
-        };
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["UserPublic"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    update_password_me_users_me_password_patch: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["UpdatePassword"];
-            };
-        };
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Message"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    register_user_users_signup_post: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["UserRegister"];
-            };
-        };
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["UserPublic"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    read_user_by_id_users__user_id__get: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                user_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["UserPublic"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    delete_user_users__user_id__delete: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                user_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Message"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    update_user_users__user_id__patch: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                user_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["UserUpdate"];
-            };
-        };
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["UserPublic"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    assign_role_to_user_users__user_id__roles__role_id__post: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                user_id: string;
-                role_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["UserPublic"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    remove_role_from_user_users__user_id__roles__role_id__delete: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                user_id: string;
-                role_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["UserPublic"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    assign_scopes_to_user_users__user_id__scopes_post: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                user_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": string[];
-            };
-        };
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["UserPublic"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    remove_scopes_from_user_users__user_id__scopes_delete: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                user_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": string[];
-            };
-        };
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["UserPublic"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    upload_recipe_image_recipes_upload_image_post: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "multipart/form-data": components["schemas"]["Body_upload_recipe_image_recipes_upload_image_post"];
-            };
-        };
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": unknown;
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    read_recipes_recipes__get: {
-        parameters: {
-            query?: {
-                skip?: number;
-                limit?: number;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["RecipePublic"][];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    create_recipe_recipes__post: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["RecipeCreate"];
-            };
-        };
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["RecipePublic"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    read_recipe_recipes__recipe_id__get: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                recipe_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["RecipePublic"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    delete_recipe_recipes__recipe_id__delete: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                recipe_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Recipe"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    update_recipe_recipes__recipe_id__patch: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                recipe_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["RecipeCreate"];
-            };
-        };
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["RecipePublic"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    read_ingredients_ingredients__get: {
-        parameters: {
-            query?: {
-                skip?: number;
-                limit?: number;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["IngredientPublic"][];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    create_ingredient_ingredients__post: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["IngredientCreate"];
-            };
-        };
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["IngredientPublic"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    read_ingredient_ingredients__ingredient_id__get: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                ingredient_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["IngredientPublic"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    delete_ingredient_ingredients__ingredient_id__delete: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                ingredient_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["IngredientPublic"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    update_ingredient_ingredients__ingredient_id__patch: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                ingredient_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["IngredientCreate"];
-            };
-        };
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["IngredientPublic"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    read_game_sessions_game__get: {
-        parameters: {
-            query?: {
-                skip?: number;
-                limit?: number;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["GameSessionPublic"][];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    create_game_session_game__post: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["GameSessionCreate"];
-            };
-        };
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["GameSessionPublic"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    read_drinks_game_drinks_get: {
-        parameters: {
-            query?: {
-                skip?: number;
-                limit?: number;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["DrinkPublic"][];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    create_drink_game_drinks_post: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["DrinkCreate"];
-            };
-        };
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["DrinkPublic"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    delete_drink_game_drinks__drink_id__delete: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                drink_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": unknown;
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    update_drink_game_drinks__drink_id__patch: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                drink_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["DrinkCreate"];
-            };
-        };
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["DrinkPublic"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    read_game_session_game__game_session_id__get: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                game_session_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["GameSessionPublic"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    delete_game_session_game__game_session_id__delete: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                game_session_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": unknown;
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    delete_game_session_admin_game__game_session_id__admin_delete: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                game_session_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": unknown;
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    create_game_player_game__game_session_id__player_post: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                game_session_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["GamePlayerCreate"];
-            };
-        };
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["GamePlayerPublic"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    create_game_team_game__game_session_id__team_post: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                game_session_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["GameTeamCreate"];
-            };
-        };
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["GameTeamPublic"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    delete_game_player_game__game_session_id__player__game_player_id__delete: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                game_session_id: string;
-                game_player_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": unknown;
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    update_game_player_game__game_session_id__player__game_player_id__patch: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                game_session_id: string;
-                game_player_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["GamePlayerUpdate"];
-            };
-        };
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["GamePlayerPublic"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    delete_game_team_game__game_session_id__team__game_team_id__delete: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                game_session_id: string;
-                game_team_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": unknown;
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    add_drink_to_player_game__game_session_id__player__game_player_id__drink_patch: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                game_session_id: string;
-                game_player_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["GamePlayerDrinkLinkCreate"];
-            };
-        };
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["GamePlayerPublic"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    game_session_updates_game__game_session_id__updates_get: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                game_session_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": unknown;
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    login_access_token_login_access_token_post: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/x-www-form-urlencoded": components["schemas"]["Body_login_access_token_login_access_token_post"];
-            };
-        };
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Token"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    refresh_access_token_login_refresh_post: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["RefreshRequest"];
-            };
-        };
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Token"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    logout_logout_post: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: {
-            content: {
-                "application/json": components["schemas"]["RefreshRequest"] | null;
-            };
-        };
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Message"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    test_token_login_test_token_post: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["UserPublic"];
-                };
-            };
-        };
-    };
-    recover_password_password_recovery__email__post: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                email: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Message"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    reset_password_reset_password__post: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["NewPassword"];
-            };
-        };
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Message"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    recover_password_html_content_password_recovery_html_content__email__post: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                email: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/html": string;
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    list_roles_roles__get: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["RolePublic"][];
-                };
-            };
-        };
-    };
-    create_role_roles__post: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["RoleCreate"];
-            };
-        };
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["RolePublic"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    get_role_roles__role_id__get: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                role_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["RolePublic"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    update_role_roles__role_id__put: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                role_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["RoleUpdate"];
-            };
-        };
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["RolePublic"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    delete_role_roles__role_id__delete: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                role_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Message"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    list_role_templates_roles_templates__get: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
-                };
-            };
-        };
-    };
-    create_role_from_template_endpoint_roles_from_template__template_key__post: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                template_key: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["RolePublic"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    list_available_scopes_roles_scopes_available_get: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
-                };
-            };
-        };
-    };
-    read_root__get: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": unknown;
-                };
-            };
-        };
-    };
+	read_users_users__get: {
+		parameters: {
+			query?: {
+				skip?: number;
+				limit?: number;
+			};
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		requestBody?: never;
+		responses: {
+			/** @description Successful Response */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": components["schemas"]["UsersPublic"];
+				};
+			};
+			/** @description Validation Error */
+			422: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": components["schemas"]["HTTPValidationError"];
+				};
+			};
+		};
+	};
+	create_user_users__post: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		requestBody: {
+			content: {
+				"application/json": components["schemas"]["UserCreate"];
+			};
+		};
+		responses: {
+			/** @description Successful Response */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": components["schemas"]["UserPublic"];
+				};
+			};
+			/** @description Validation Error */
+			422: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": components["schemas"]["HTTPValidationError"];
+				};
+			};
+		};
+	};
+	read_users_with_permissions_users_with_permissions_get: {
+		parameters: {
+			query?: {
+				skip?: number;
+				limit?: number;
+			};
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		requestBody?: never;
+		responses: {
+			/** @description Successful Response */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": components["schemas"]["UsersWithPermissionsPublic"];
+				};
+			};
+			/** @description Validation Error */
+			422: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": components["schemas"]["HTTPValidationError"];
+				};
+			};
+		};
+	};
+	read_user_me_users_me_get: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		requestBody?: never;
+		responses: {
+			/** @description Successful Response */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": components["schemas"]["UserMePublic"];
+				};
+			};
+			/** @description Unauthorized */
+			401: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": components["schemas"]["HTTPExceptionDetail"];
+				};
+			};
+		};
+	};
+	delete_user_me_users_me_delete: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		requestBody?: never;
+		responses: {
+			/** @description Successful Response */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": components["schemas"]["Message"];
+				};
+			};
+		};
+	};
+	update_user_me_users_me_patch: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		requestBody: {
+			content: {
+				"application/json": components["schemas"]["UserUpdateMe"];
+			};
+		};
+		responses: {
+			/** @description Successful Response */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": components["schemas"]["UserPublic"];
+				};
+			};
+			/** @description Validation Error */
+			422: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": components["schemas"]["HTTPValidationError"];
+				};
+			};
+		};
+	};
+	update_password_me_users_me_password_patch: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		requestBody: {
+			content: {
+				"application/json": components["schemas"]["UpdatePassword"];
+			};
+		};
+		responses: {
+			/** @description Successful Response */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": components["schemas"]["Message"];
+				};
+			};
+			/** @description Validation Error */
+			422: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": components["schemas"]["HTTPValidationError"];
+				};
+			};
+		};
+	};
+	register_user_users_signup_post: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		requestBody: {
+			content: {
+				"application/json": components["schemas"]["UserRegister"];
+			};
+		};
+		responses: {
+			/** @description Successful Response */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": components["schemas"]["UserPublic"];
+				};
+			};
+			/** @description Validation Error */
+			422: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": components["schemas"]["HTTPValidationError"];
+				};
+			};
+		};
+	};
+	read_user_by_id_users__user_id__get: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path: {
+				user_id: string;
+			};
+			cookie?: never;
+		};
+		requestBody?: never;
+		responses: {
+			/** @description Successful Response */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": components["schemas"]["UserPublic"];
+				};
+			};
+			/** @description Validation Error */
+			422: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": components["schemas"]["HTTPValidationError"];
+				};
+			};
+		};
+	};
+	delete_user_users__user_id__delete: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path: {
+				user_id: string;
+			};
+			cookie?: never;
+		};
+		requestBody?: never;
+		responses: {
+			/** @description Successful Response */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": components["schemas"]["Message"];
+				};
+			};
+			/** @description Validation Error */
+			422: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": components["schemas"]["HTTPValidationError"];
+				};
+			};
+		};
+	};
+	update_user_users__user_id__patch: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path: {
+				user_id: string;
+			};
+			cookie?: never;
+		};
+		requestBody: {
+			content: {
+				"application/json": components["schemas"]["UserUpdate"];
+			};
+		};
+		responses: {
+			/** @description Successful Response */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": components["schemas"]["UserPublic"];
+				};
+			};
+			/** @description Validation Error */
+			422: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": components["schemas"]["HTTPValidationError"];
+				};
+			};
+		};
+	};
+	assign_role_to_user_users__user_id__roles__role_id__post: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path: {
+				user_id: string;
+				role_id: string;
+			};
+			cookie?: never;
+		};
+		requestBody?: never;
+		responses: {
+			/** @description Successful Response */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": components["schemas"]["UserPublic"];
+				};
+			};
+			/** @description Validation Error */
+			422: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": components["schemas"]["HTTPValidationError"];
+				};
+			};
+		};
+	};
+	remove_role_from_user_users__user_id__roles__role_id__delete: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path: {
+				user_id: string;
+				role_id: string;
+			};
+			cookie?: never;
+		};
+		requestBody?: never;
+		responses: {
+			/** @description Successful Response */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": components["schemas"]["UserPublic"];
+				};
+			};
+			/** @description Validation Error */
+			422: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": components["schemas"]["HTTPValidationError"];
+				};
+			};
+		};
+	};
+	assign_scopes_to_user_users__user_id__scopes_post: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path: {
+				user_id: string;
+			};
+			cookie?: never;
+		};
+		requestBody: {
+			content: {
+				"application/json": string[];
+			};
+		};
+		responses: {
+			/** @description Successful Response */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": components["schemas"]["UserPublic"];
+				};
+			};
+			/** @description Validation Error */
+			422: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": components["schemas"]["HTTPValidationError"];
+				};
+			};
+		};
+	};
+	remove_scopes_from_user_users__user_id__scopes_delete: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path: {
+				user_id: string;
+			};
+			cookie?: never;
+		};
+		requestBody: {
+			content: {
+				"application/json": string[];
+			};
+		};
+		responses: {
+			/** @description Successful Response */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": components["schemas"]["UserPublic"];
+				};
+			};
+			/** @description Validation Error */
+			422: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": components["schemas"]["HTTPValidationError"];
+				};
+			};
+		};
+	};
+	upload_recipe_image_recipes_upload_image_post: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		requestBody: {
+			content: {
+				"multipart/form-data": components["schemas"]["Body_upload_recipe_image_recipes_upload_image_post"];
+			};
+		};
+		responses: {
+			/** @description Successful Response */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": unknown;
+				};
+			};
+			/** @description Validation Error */
+			422: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": components["schemas"]["HTTPValidationError"];
+				};
+			};
+		};
+	};
+	read_recipes_recipes__get: {
+		parameters: {
+			query?: {
+				skip?: number;
+				limit?: number;
+			};
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		requestBody?: never;
+		responses: {
+			/** @description Successful Response */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": components["schemas"]["RecipePublic"][];
+				};
+			};
+			/** @description Validation Error */
+			422: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": components["schemas"]["HTTPValidationError"];
+				};
+			};
+		};
+	};
+	create_recipe_recipes__post: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		requestBody: {
+			content: {
+				"application/json": components["schemas"]["RecipeCreate"];
+			};
+		};
+		responses: {
+			/** @description Successful Response */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": components["schemas"]["RecipePublic"];
+				};
+			};
+			/** @description Validation Error */
+			422: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": components["schemas"]["HTTPValidationError"];
+				};
+			};
+		};
+	};
+	read_recipe_recipes__recipe_id__get: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path: {
+				recipe_id: string;
+			};
+			cookie?: never;
+		};
+		requestBody?: never;
+		responses: {
+			/** @description Successful Response */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": components["schemas"]["RecipePublic"];
+				};
+			};
+			/** @description Validation Error */
+			422: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": components["schemas"]["HTTPValidationError"];
+				};
+			};
+		};
+	};
+	delete_recipe_recipes__recipe_id__delete: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path: {
+				recipe_id: string;
+			};
+			cookie?: never;
+		};
+		requestBody?: never;
+		responses: {
+			/** @description Successful Response */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": components["schemas"]["Recipe"];
+				};
+			};
+			/** @description Validation Error */
+			422: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": components["schemas"]["HTTPValidationError"];
+				};
+			};
+		};
+	};
+	update_recipe_recipes__recipe_id__patch: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path: {
+				recipe_id: string;
+			};
+			cookie?: never;
+		};
+		requestBody: {
+			content: {
+				"application/json": components["schemas"]["RecipeCreate"];
+			};
+		};
+		responses: {
+			/** @description Successful Response */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": components["schemas"]["RecipePublic"];
+				};
+			};
+			/** @description Validation Error */
+			422: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": components["schemas"]["HTTPValidationError"];
+				};
+			};
+		};
+	};
+	read_ingredients_ingredients__get: {
+		parameters: {
+			query?: {
+				skip?: number;
+				limit?: number;
+			};
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		requestBody?: never;
+		responses: {
+			/** @description Successful Response */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": components["schemas"]["IngredientPublic"][];
+				};
+			};
+			/** @description Validation Error */
+			422: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": components["schemas"]["HTTPValidationError"];
+				};
+			};
+		};
+	};
+	create_ingredient_ingredients__post: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		requestBody: {
+			content: {
+				"application/json": components["schemas"]["IngredientCreate"];
+			};
+		};
+		responses: {
+			/** @description Successful Response */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": components["schemas"]["IngredientPublic"];
+				};
+			};
+			/** @description Validation Error */
+			422: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": components["schemas"]["HTTPValidationError"];
+				};
+			};
+		};
+	};
+	read_ingredient_ingredients__ingredient_id__get: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path: {
+				ingredient_id: string;
+			};
+			cookie?: never;
+		};
+		requestBody?: never;
+		responses: {
+			/** @description Successful Response */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": components["schemas"]["IngredientPublic"];
+				};
+			};
+			/** @description Validation Error */
+			422: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": components["schemas"]["HTTPValidationError"];
+				};
+			};
+		};
+	};
+	delete_ingredient_ingredients__ingredient_id__delete: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path: {
+				ingredient_id: string;
+			};
+			cookie?: never;
+		};
+		requestBody?: never;
+		responses: {
+			/** @description Successful Response */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": components["schemas"]["IngredientPublic"];
+				};
+			};
+			/** @description Validation Error */
+			422: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": components["schemas"]["HTTPValidationError"];
+				};
+			};
+		};
+	};
+	update_ingredient_ingredients__ingredient_id__patch: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path: {
+				ingredient_id: string;
+			};
+			cookie?: never;
+		};
+		requestBody: {
+			content: {
+				"application/json": components["schemas"]["IngredientCreate"];
+			};
+		};
+		responses: {
+			/** @description Successful Response */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": components["schemas"]["IngredientPublic"];
+				};
+			};
+			/** @description Validation Error */
+			422: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": components["schemas"]["HTTPValidationError"];
+				};
+			};
+		};
+	};
+	read_game_sessions_game__get: {
+		parameters: {
+			query?: {
+				skip?: number;
+				limit?: number;
+			};
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		requestBody?: never;
+		responses: {
+			/** @description Successful Response */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": components["schemas"]["GameSessionPublic"][];
+				};
+			};
+			/** @description Validation Error */
+			422: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": components["schemas"]["HTTPValidationError"];
+				};
+			};
+		};
+	};
+	create_game_session_game__post: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		requestBody: {
+			content: {
+				"application/json": components["schemas"]["GameSessionCreate"];
+			};
+		};
+		responses: {
+			/** @description Successful Response */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": components["schemas"]["GameSessionPublic"];
+				};
+			};
+			/** @description Validation Error */
+			422: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": components["schemas"]["HTTPValidationError"];
+				};
+			};
+		};
+	};
+	read_drinks_game_drinks_get: {
+		parameters: {
+			query?: {
+				skip?: number;
+				limit?: number;
+			};
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		requestBody?: never;
+		responses: {
+			/** @description Successful Response */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": components["schemas"]["DrinkPublic"][];
+				};
+			};
+			/** @description Validation Error */
+			422: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": components["schemas"]["HTTPValidationError"];
+				};
+			};
+		};
+	};
+	create_drink_game_drinks_post: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		requestBody: {
+			content: {
+				"application/json": components["schemas"]["DrinkCreate"];
+			};
+		};
+		responses: {
+			/** @description Successful Response */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": components["schemas"]["DrinkPublic"];
+				};
+			};
+			/** @description Validation Error */
+			422: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": components["schemas"]["HTTPValidationError"];
+				};
+			};
+		};
+	};
+	delete_drink_game_drinks__drink_id__delete: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path: {
+				drink_id: string;
+			};
+			cookie?: never;
+		};
+		requestBody?: never;
+		responses: {
+			/** @description Successful Response */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": unknown;
+				};
+			};
+			/** @description Validation Error */
+			422: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": components["schemas"]["HTTPValidationError"];
+				};
+			};
+		};
+	};
+	update_drink_game_drinks__drink_id__patch: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path: {
+				drink_id: string;
+			};
+			cookie?: never;
+		};
+		requestBody: {
+			content: {
+				"application/json": components["schemas"]["DrinkCreate"];
+			};
+		};
+		responses: {
+			/** @description Successful Response */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": components["schemas"]["DrinkPublic"];
+				};
+			};
+			/** @description Validation Error */
+			422: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": components["schemas"]["HTTPValidationError"];
+				};
+			};
+		};
+	};
+	read_game_session_game__game_session_id__get: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path: {
+				game_session_id: string;
+			};
+			cookie?: never;
+		};
+		requestBody?: never;
+		responses: {
+			/** @description Successful Response */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": components["schemas"]["GameSessionPublic"];
+				};
+			};
+			/** @description Validation Error */
+			422: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": components["schemas"]["HTTPValidationError"];
+				};
+			};
+		};
+	};
+	delete_game_session_game__game_session_id__delete: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path: {
+				game_session_id: string;
+			};
+			cookie?: never;
+		};
+		requestBody?: never;
+		responses: {
+			/** @description Successful Response */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": unknown;
+				};
+			};
+			/** @description Validation Error */
+			422: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": components["schemas"]["HTTPValidationError"];
+				};
+			};
+		};
+	};
+	delete_game_session_admin_game__game_session_id__admin_delete: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path: {
+				game_session_id: string;
+			};
+			cookie?: never;
+		};
+		requestBody?: never;
+		responses: {
+			/** @description Successful Response */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": unknown;
+				};
+			};
+			/** @description Validation Error */
+			422: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": components["schemas"]["HTTPValidationError"];
+				};
+			};
+		};
+	};
+	create_game_player_game__game_session_id__player_post: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path: {
+				game_session_id: string;
+			};
+			cookie?: never;
+		};
+		requestBody: {
+			content: {
+				"application/json": components["schemas"]["GamePlayerCreate"];
+			};
+		};
+		responses: {
+			/** @description Successful Response */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": components["schemas"]["GamePlayerPublic"];
+				};
+			};
+			/** @description Validation Error */
+			422: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": components["schemas"]["HTTPValidationError"];
+				};
+			};
+		};
+	};
+	create_game_team_game__game_session_id__team_post: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path: {
+				game_session_id: string;
+			};
+			cookie?: never;
+		};
+		requestBody: {
+			content: {
+				"application/json": components["schemas"]["GameTeamCreate"];
+			};
+		};
+		responses: {
+			/** @description Successful Response */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": components["schemas"]["GameTeamPublic"];
+				};
+			};
+			/** @description Validation Error */
+			422: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": components["schemas"]["HTTPValidationError"];
+				};
+			};
+		};
+	};
+	delete_game_player_game__game_session_id__player__game_player_id__delete: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path: {
+				game_session_id: string;
+				game_player_id: string;
+			};
+			cookie?: never;
+		};
+		requestBody?: never;
+		responses: {
+			/** @description Successful Response */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": unknown;
+				};
+			};
+			/** @description Validation Error */
+			422: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": components["schemas"]["HTTPValidationError"];
+				};
+			};
+		};
+	};
+	update_game_player_game__game_session_id__player__game_player_id__patch: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path: {
+				game_session_id: string;
+				game_player_id: string;
+			};
+			cookie?: never;
+		};
+		requestBody: {
+			content: {
+				"application/json": components["schemas"]["GamePlayerUpdate"];
+			};
+		};
+		responses: {
+			/** @description Successful Response */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": components["schemas"]["GamePlayerPublic"];
+				};
+			};
+			/** @description Validation Error */
+			422: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": components["schemas"]["HTTPValidationError"];
+				};
+			};
+		};
+	};
+	delete_game_team_game__game_session_id__team__game_team_id__delete: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path: {
+				game_session_id: string;
+				game_team_id: string;
+			};
+			cookie?: never;
+		};
+		requestBody?: never;
+		responses: {
+			/** @description Successful Response */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": unknown;
+				};
+			};
+			/** @description Validation Error */
+			422: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": components["schemas"]["HTTPValidationError"];
+				};
+			};
+		};
+	};
+	add_drink_to_player_game__game_session_id__player__game_player_id__drink_patch: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path: {
+				game_session_id: string;
+				game_player_id: string;
+			};
+			cookie?: never;
+		};
+		requestBody: {
+			content: {
+				"application/json": components["schemas"]["GamePlayerDrinkLinkCreate"];
+			};
+		};
+		responses: {
+			/** @description Successful Response */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": components["schemas"]["GamePlayerPublic"];
+				};
+			};
+			/** @description Validation Error */
+			422: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": components["schemas"]["HTTPValidationError"];
+				};
+			};
+		};
+	};
+	game_session_updates_game__game_session_id__updates_get: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path: {
+				game_session_id: string;
+			};
+			cookie?: never;
+		};
+		requestBody?: never;
+		responses: {
+			/** @description Successful Response */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": unknown;
+				};
+			};
+			/** @description Validation Error */
+			422: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": components["schemas"]["HTTPValidationError"];
+				};
+			};
+		};
+	};
+	login_access_token_login_access_token_post: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		requestBody: {
+			content: {
+				"application/x-www-form-urlencoded": components["schemas"]["Body_login_access_token_login_access_token_post"];
+			};
+		};
+		responses: {
+			/** @description Successful Response */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": components["schemas"]["Token"];
+				};
+			};
+			/** @description Validation Error */
+			422: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": components["schemas"]["HTTPValidationError"];
+				};
+			};
+		};
+	};
+	refresh_access_token_login_refresh_post: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		requestBody: {
+			content: {
+				"application/json": components["schemas"]["RefreshRequest"];
+			};
+		};
+		responses: {
+			/** @description Successful Response */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": components["schemas"]["Token"];
+				};
+			};
+			/** @description Validation Error */
+			422: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": components["schemas"]["HTTPValidationError"];
+				};
+			};
+		};
+	};
+	logout_logout_post: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		requestBody?: {
+			content: {
+				"application/json": components["schemas"]["RefreshRequest"] | null;
+			};
+		};
+		responses: {
+			/** @description Successful Response */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": components["schemas"]["Message"];
+				};
+			};
+			/** @description Validation Error */
+			422: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": components["schemas"]["HTTPValidationError"];
+				};
+			};
+		};
+	};
+	test_token_login_test_token_post: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		requestBody?: never;
+		responses: {
+			/** @description Successful Response */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": components["schemas"]["UserPublic"];
+				};
+			};
+		};
+	};
+	recover_password_password_recovery__email__post: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path: {
+				email: string;
+			};
+			cookie?: never;
+		};
+		requestBody?: never;
+		responses: {
+			/** @description Successful Response */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": components["schemas"]["Message"];
+				};
+			};
+			/** @description Validation Error */
+			422: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": components["schemas"]["HTTPValidationError"];
+				};
+			};
+		};
+	};
+	reset_password_reset_password__post: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		requestBody: {
+			content: {
+				"application/json": components["schemas"]["NewPassword"];
+			};
+		};
+		responses: {
+			/** @description Successful Response */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": components["schemas"]["Message"];
+				};
+			};
+			/** @description Validation Error */
+			422: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": components["schemas"]["HTTPValidationError"];
+				};
+			};
+		};
+	};
+	recover_password_html_content_password_recovery_html_content__email__post: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path: {
+				email: string;
+			};
+			cookie?: never;
+		};
+		requestBody?: never;
+		responses: {
+			/** @description Successful Response */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"text/html": string;
+				};
+			};
+			/** @description Validation Error */
+			422: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": components["schemas"]["HTTPValidationError"];
+				};
+			};
+		};
+	};
+	list_roles_roles__get: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		requestBody?: never;
+		responses: {
+			/** @description Successful Response */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": components["schemas"]["RolePublic"][];
+				};
+			};
+		};
+	};
+	create_role_roles__post: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		requestBody: {
+			content: {
+				"application/json": components["schemas"]["RoleCreate"];
+			};
+		};
+		responses: {
+			/** @description Successful Response */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": components["schemas"]["RolePublic"];
+				};
+			};
+			/** @description Validation Error */
+			422: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": components["schemas"]["HTTPValidationError"];
+				};
+			};
+		};
+	};
+	get_role_roles__role_id__get: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path: {
+				role_id: string;
+			};
+			cookie?: never;
+		};
+		requestBody?: never;
+		responses: {
+			/** @description Successful Response */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": components["schemas"]["RolePublic"];
+				};
+			};
+			/** @description Validation Error */
+			422: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": components["schemas"]["HTTPValidationError"];
+				};
+			};
+		};
+	};
+	update_role_roles__role_id__put: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path: {
+				role_id: string;
+			};
+			cookie?: never;
+		};
+		requestBody: {
+			content: {
+				"application/json": components["schemas"]["RoleUpdate"];
+			};
+		};
+		responses: {
+			/** @description Successful Response */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": components["schemas"]["RolePublic"];
+				};
+			};
+			/** @description Validation Error */
+			422: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": components["schemas"]["HTTPValidationError"];
+				};
+			};
+		};
+	};
+	delete_role_roles__role_id__delete: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path: {
+				role_id: string;
+			};
+			cookie?: never;
+		};
+		requestBody?: never;
+		responses: {
+			/** @description Successful Response */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": components["schemas"]["Message"];
+				};
+			};
+			/** @description Validation Error */
+			422: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": components["schemas"]["HTTPValidationError"];
+				};
+			};
+		};
+	};
+	list_role_templates_roles_templates__get: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		requestBody?: never;
+		responses: {
+			/** @description Successful Response */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						[key: string]: unknown;
+					};
+				};
+			};
+		};
+	};
+	create_role_from_template_endpoint_roles_from_template__template_key__post: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path: {
+				template_key: string;
+			};
+			cookie?: never;
+		};
+		requestBody?: never;
+		responses: {
+			/** @description Successful Response */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": components["schemas"]["RolePublic"];
+				};
+			};
+			/** @description Validation Error */
+			422: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": components["schemas"]["HTTPValidationError"];
+				};
+			};
+		};
+	};
+	list_available_scopes_roles_scopes_available_get: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		requestBody?: never;
+		responses: {
+			/** @description Successful Response */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						[key: string]: unknown;
+					};
+				};
+			};
+		};
+	};
+	read_root__get: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		requestBody?: never;
+		responses: {
+			/** @description Successful Response */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": unknown;
+				};
+			};
+		};
+	};
 }

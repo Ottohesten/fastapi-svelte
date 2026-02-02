@@ -1,25 +1,29 @@
 <script lang="ts">
-	import { superForm } from 'sveltekit-superforms';
-	import { zodClient } from 'sveltekit-superforms/adapters';
-	import { LoginSchema } from '$lib/schemas/schemas';
-	import { Field, Control, Label, FieldErrors } from 'formsnap';
-	import { Input } from '$lib/components/ui/input';
-	import { Button } from '$lib/components/ui/button';
+	import { superForm } from "sveltekit-superforms";
+	import { untrack } from "svelte";
+	import { zod4 as zodClient } from "sveltekit-superforms/adapters";
+	import { LoginSchema } from "$lib/schemas/schemas";
+	import { Field, Control, Label, FieldErrors } from "formsnap";
+	import { Input } from "$lib/components/ui/input";
+	import { Button } from "$lib/components/ui/button";
 
 	let { data } = $props();
 
-	const form = superForm(data.form, {
-		validators: zodClient(LoginSchema)
-	});
+	const form = superForm(
+		untrack(() => data.form),
+		{
+			validators: zodClient(LoginSchema)
+		}
+	);
 
 	const { form: formData, enhance, message } = form;
 </script>
 
-<div class="container flex h-screen w-screen flex-col items-center justify-start mt-10">
+<div class="container mt-10 flex h-screen w-screen flex-col items-center justify-start">
 	<div class="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]">
 		<div class="flex flex-col space-y-2 text-center">
 			<h1 class="text-2xl font-semibold tracking-tight">Login</h1>
-			<p class="text-sm text-muted-foreground">Enter your email and password below to login</p>
+			<p class="text-muted-foreground text-sm">Enter your email and password below to login</p>
 		</div>
 
 		{#if $message}

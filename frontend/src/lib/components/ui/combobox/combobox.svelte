@@ -1,11 +1,11 @@
 <script lang="ts">
-	import CheckIcon from '@lucide/svelte/icons/check';
-	import ChevronsUpDownIcon from '@lucide/svelte/icons/chevrons-up-down';
-	import { tick } from 'svelte';
-	import * as Command from '$lib/components/ui/command/index.js';
-	import * as Popover from '$lib/components/ui/popover/index.js';
-	import { Button } from '$lib/components/ui/button/index.js';
-	import { cn } from '$lib/utils.js';
+	import CheckIcon from "@lucide/svelte/icons/check";
+	import ChevronsUpDownIcon from "@lucide/svelte/icons/chevrons-up-down";
+	import { tick } from "svelte";
+	import * as Command from "$lib/components/ui/command/index.js";
+	import * as Popover from "$lib/components/ui/popover/index.js";
+	import { Button } from "$lib/components/ui/button/index.js";
+	import { cn } from "$lib/utils.js";
 
 	export interface ComboboxItem {
 		value: string;
@@ -29,21 +29,21 @@
 
 	let {
 		items = [],
-		value = $bindable(''),
-		placeholder = 'Select...',
-		searchPlaceholder = 'Search...',
-		emptyMessage = 'No results.',
-		ariaLabel = 'Combobox',
-		class: className = '',
+		value = $bindable(""),
+		placeholder = "Select...",
+		searchPlaceholder = "Search...",
+		emptyMessage = "No results.",
+		ariaLabel = "Combobox",
+		class: className = "",
 		onSelect,
-		buttonClass = 'w-[200px] justify-between',
-		popoverClass = 'w-[240px]',
+		buttonClass = "w-[200px] justify-between",
+		popoverClass = "w-[240px]",
 		disabled = false
 	}: Props = $props();
 
 	let open = $state(false);
 	let triggerRef = $state<HTMLButtonElement>(null!);
-	const selectedLabel = $derived(items.find((i) => i.value === value)?.label || '');
+	const selectedLabel = $derived(items.find((i) => i.value === value)?.label || "");
 
 	function select(val: string) {
 		if (val === value) {
@@ -71,7 +71,7 @@
 				<Button
 					{...props}
 					variant="outline"
-					class={cn(buttonClass, 'relative', !selectedLabel && 'text-muted-foreground')}
+					class={cn(buttonClass, "relative", !selectedLabel && "text-muted-foreground")}
 					role="combobox"
 					aria-expanded={open}
 					aria-label={ariaLabel}
@@ -82,7 +82,7 @@
 				</Button>
 			{/snippet}
 		</Popover.Trigger>
-		<Popover.Content class={cn(popoverClass, 'p-0')} align="start">
+		<Popover.Content class={cn(popoverClass, "p-0")} align="start">
 			<Command.Root>
 				<Command.Input placeholder={searchPlaceholder} />
 				<Command.List>
@@ -95,7 +95,7 @@
 								disabled={item.disabled}
 								onSelect={() => select(item.value)}
 							>
-								<CheckIcon class={cn('mr-2 h-4 w-4', value !== item.value && 'text-transparent')} />
+								<CheckIcon class={cn("mr-2 h-4 w-4", value !== item.value && "text-transparent")} />
 								{item.label}
 							</Command.Item>
 						{/each}

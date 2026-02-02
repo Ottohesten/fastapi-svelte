@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Shield, User } from 'lucide-svelte';
+	import { Shield, User } from "lucide-svelte";
 
 	let { isSuperuser }: { isSuperuser: boolean } = $props();
 </script>

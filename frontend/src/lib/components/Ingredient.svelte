@@ -1,7 +1,7 @@
 <script lang="ts">
 	// let stuff = $props();
 	let { user, ingredient } = $props();
-	import { enhance } from '$app/forms';
+	import { enhance } from "$app/forms";
 </script>
 
 <div
@@ -91,7 +91,7 @@
 				<div class="flex items-center gap-2">
 					<a
 						href="/ingredients/{ingredient.id}/update"
-						class="inline-flex items-center gap-1.5 rounded-lg border border-blue-200 bg-blue-50 px-3 py-1.5 text-xs font-medium text-blue-700 transition-colors hover:border-blue-300 hover:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 dark:border-blue-900/50 dark:bg-blue-900/30 dark:text-blue-300 dark:hover:border-blue-800 dark:hover:bg-blue-900/40"
+						class="inline-flex items-center gap-1.5 rounded-lg border border-blue-200 bg-blue-50 px-3 py-1.5 text-xs font-medium text-blue-700 transition-colors hover:border-blue-300 hover:bg-blue-100 focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:outline-none dark:border-blue-900/50 dark:bg-blue-900/30 dark:text-blue-300 dark:hover:border-blue-800 dark:hover:bg-blue-900/40"
 					>
 						<svg class="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 							<path
@@ -107,11 +107,11 @@
 						<input type="hidden" name="ingredient_id" value={ingredient.id} />
 						<button
 							type="submit"
-							class="inline-flex items-center gap-1.5 rounded-lg border border-red-200 bg-red-50 px-3 py-1.5 text-xs font-medium text-red-700 transition-colors hover:border-red-300 hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-1 dark:border-red-900/50 dark:bg-red-900/40 dark:text-red-300 dark:hover:border-red-800 dark:hover:bg-red-900/50"
+							class="inline-flex items-center gap-1.5 rounded-lg border border-red-200 bg-red-50 px-3 py-1.5 text-xs font-medium text-red-700 transition-colors hover:border-red-300 hover:bg-red-100 focus:ring-2 focus:ring-red-500 focus:ring-offset-1 focus:outline-none dark:border-red-900/50 dark:bg-red-900/40 dark:text-red-300 dark:hover:border-red-800 dark:hover:bg-red-900/50"
 							onclick={(e) => {
 								if (
 									!confirm(
-										'Are you sure you want to delete this ingredient? This action cannot be undone.'
+										"Are you sure you want to delete this ingredient? This action cannot be undone."
 									)
 								) {
 									e.preventDefault();

@@ -1,15 +1,19 @@
 <script lang="ts">
-	import { superForm } from 'sveltekit-superforms/client';
-	import SuperDebug from 'sveltekit-superforms';
-	import { Field, Control, Label, FieldErrors } from 'formsnap';
-	import { Input } from '$lib/components/ui/input';
-	import { Button } from '$lib/components/ui/button';
+	import { superForm } from "sveltekit-superforms/client";
+	import { untrack } from "svelte";
+	import SuperDebug from "sveltekit-superforms";
+	import { Field, Control, Label, FieldErrors } from "formsnap";
+	import { Input } from "$lib/components/ui/input";
+	import { Button } from "$lib/components/ui/button";
 
 	let { data } = $props(); // data: { form, player, all_drinks }
 
-	const form = superForm(data.form, {
-		dataType: 'json'
-	});
+	const form = superForm(
+		untrack(() => data.form),
+		{
+			dataType: "json"
+		}
+	);
 	const { form: formData, errors, message, constraints, enhance } = form;
 
 	function handleDrinkSelection(drinkId: string, isChecked: boolean) {
@@ -52,14 +56,14 @@
 	{/if}
 
 	<form method="POST" use:enhance class="space-y-6">
-		<Field form={form} name="name">
+		<Field {form} name="name">
 			<Control>
 				{#snippet children({ props })}
 					<Label class="block text-sm font-medium">Player Name</Label>
 					<Input
 						{...props}
 						type="text"
-						class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
+						class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 focus:outline-none sm:text-sm"
 						bind:value={$formData.name}
 						placeholder="Enter player name"
 						required
@@ -74,7 +78,7 @@
 			<p class="mb-2 text-sm text-gray-500 dark:text-gray-400">
 				Select the drinks and specify amounts for this player.
 			</p>
-			{#if typeof $errors.drinks === 'string'}
+			{#if typeof $errors.drinks === "string"}
 				<p class="mt-2 text-sm text-red-600">{$errors.drinks}</p>
 			{/if}
 
@@ -139,13 +143,13 @@
 							{@const drinkError = $errors.drinks[currentSelectedDrinkIndex]}
 							{#if drinkError}
 								<div class="-mt-1 mb-1 pl-8 text-xs text-red-600">
-									{#if typeof drinkError === 'string'}
+									{#if typeof drinkError === "string"}
 										<p>{drinkError}</p>
 									{:else if drinkError.amount}
-										<p>Amount: {drinkError.amount.join(' ')}</p>
+										<p>Amount: {drinkError.amount.join(" ")}</p>
 									{:else if drinkError.drink_id}
 										<!-- In case drink_id was also part of the sub-schema and had errors -->
-										<p>Drink ID: {drinkError.drink_id.join(' ')}</p>
+										<p>Drink ID: {drinkError.drink_id.join(" ")}</p>
 									{/if}
 								</div>
 							{/if}
@@ -160,7 +164,7 @@
 		<div>
 			<button
 				type="submit"
-				class="flex w-full justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+				class="flex w-full justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:outline-none"
 			>
 				Update Player
 			</button>

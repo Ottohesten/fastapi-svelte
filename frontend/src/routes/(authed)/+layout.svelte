@@ -1,8 +1,8 @@
 <script lang="ts">
-	import * as Sidebar from '$lib/components/ui/sidebar/index.js';
-	import AppSidebar from '$lib/components/AppSidebar.svelte';
-	import { Trigger as SidebarTrigger } from '$lib/components/ui/sidebar/index.js';
-	import SidebarSwipeGesture from '$lib/components/ui/sidebar/sidebar-swipe-gesture.svelte';
+	import * as Sidebar from "$lib/components/ui/sidebar/index.js";
+	import AppSidebar from "$lib/components/AppSidebar.svelte";
+	import { Trigger as SidebarTrigger } from "$lib/components/ui/sidebar/index.js";
+	import SidebarSwipeGesture from "$lib/components/ui/sidebar/sidebar-swipe-gesture.svelte";
 
 	let { children } = $props();
 </script>

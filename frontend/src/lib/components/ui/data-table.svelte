@@ -8,10 +8,10 @@
 		getPaginationRowModel,
 		getSortedRowModel,
 		getFilteredRowModel
-	} from '@tanstack/table-core';
-	import { createSvelteTable, FlexRender } from '$lib/components/ui/data-table/index.js';
-	import * as Table from '$lib/components/ui/table/index.js';
-	import { Input } from '$lib/components/ui/input/index.js';
+	} from "@tanstack/table-core";
+	import { createSvelteTable, FlexRender } from "$lib/components/ui/data-table/index.js";
+	import * as Table from "$lib/components/ui/table/index.js";
+	import { Input } from "$lib/components/ui/input/index.js";
 
 	type DataTableProps<TData, TValue> = {
 		columns: ColumnDef<TData, TValue>[];
@@ -39,21 +39,21 @@
 		getSortedRowModel: getSortedRowModel(),
 		getFilteredRowModel: getFilteredRowModel(),
 		onPaginationChange: (updater) => {
-			if (typeof updater === 'function') {
+			if (typeof updater === "function") {
 				pagination = updater(pagination);
 			} else {
 				pagination = updater;
 			}
 		},
 		onSortingChange: (updater) => {
-			if (typeof updater === 'function') {
+			if (typeof updater === "function") {
 				sorting = updater(sorting);
 			} else {
 				sorting = updater;
 			}
 		},
 		onColumnFiltersChange: (updater) => {
-			if (typeof updater === 'function') {
+			if (typeof updater === "function") {
 				columnFilters = updater(columnFilters);
 			} else {
 				columnFilters = updater;
@@ -77,8 +77,8 @@
 	{#if searchColumn}
 		<div class="flex items-center py-4">
 			<Input
-				placeholder={searchPlaceholder ?? 'Filter...'}
-				value={(table.getColumn(searchColumn)?.getFilterValue() as string) ?? ''}
+				placeholder={searchPlaceholder ?? "Filter..."}
+				value={(table.getColumn(searchColumn)?.getFilterValue() as string) ?? ""}
 				onchange={(e) => {
 					table.getColumn(searchColumn)?.setFilterValue(e.currentTarget.value);
 				}}
@@ -109,7 +109,7 @@
 			</Table.Header>
 			<Table.Body>
 				{#each table.getRowModel().rows as row (row.id)}
-					<Table.Row data-state={row.getIsSelected() && 'selected'}>
+					<Table.Row data-state={row.getIsSelected() && "selected"}>
 						{#each row.getVisibleCells() as cell (cell.id)}
 							<Table.Cell>
 								<FlexRender content={cell.column.columnDef.cell} context={cell.getContext()} />

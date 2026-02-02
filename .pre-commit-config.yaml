@@ -21,3 +21,13 @@ repos:
     -   id: check-added-large-files
     -   id: check-json
         exclude: .devcontainer/devcontainer.json
+-   repo: local
+    hooks:
+    -   id: frontend-format
+        name: frontend format
+        entry: bash -c 'cd frontend && npm run format'
+        language: system
+        files: ^frontend/
+        pass_filenames: false
+
+

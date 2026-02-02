@@ -1,18 +1,18 @@
-import { createApiClient } from '$lib/api/api';
-import { error } from '@sveltejs/kit';
-import { redirect } from '@sveltejs/kit';
-import type { Actions } from './$types.js';
-import { zod4 } from 'sveltekit-superforms/adapters';
-import { z } from 'zod';
-import { message, superValidate, fail } from 'sveltekit-superforms';
-import { GameSessionTeamSchema, GameSessionPlayerSchema } from '$lib/schemas/schemas.js';
+import { createApiClient } from "$lib/api/api";
+import { error } from "@sveltejs/kit";
+import { redirect } from "@sveltejs/kit";
+import type { Actions } from "./$types.js";
+import { zod4 } from "sveltekit-superforms/adapters";
+import { z } from "zod";
+import { message, superValidate, fail } from "sveltekit-superforms";
+import { GameSessionTeamSchema, GameSessionPlayerSchema } from "$lib/schemas/schemas.js";
 
 export const load = async ({}) => {
 	const teamForm = await superValidate(zod4(GameSessionTeamSchema), {
-		id: 'teamForm'
+		id: "teamForm"
 	});
 	const playerForm = await superValidate(zod4(GameSessionPlayerSchema), {
-		id: 'playerForm'
+		id: "playerForm"
 	});
 
 	return {
@@ -23,10 +23,10 @@ export const load = async ({}) => {
 
 export const actions = {
 	addTeam: async ({ fetch, params, cookies, request }) => {
-		const auth_token = cookies.get('auth_token');
+		const auth_token = cookies.get("auth_token");
 		const teamForm = await superValidate(request, zod4(GameSessionTeamSchema));
 		if (!auth_token) {
-			redirect(302, '/auth/login');
+			redirect(302, "/auth/login");
 		}
 		if (!teamForm.valid) {
 			return fail(400, { teamForm });
@@ -34,7 +34,7 @@ export const actions = {
 
 		const client = createApiClient(fetch);
 
-		const { error: apierror, response } = await client.POST('/game/{game_session_id}/team', {
+		const { error: apierror, response } = await client.POST("/game/{game_session_id}/team", {
 			body: {
 				name: teamForm.data.name
 			},
@@ -48,7 +48,7 @@ export const actions = {
 
 		if (apierror) {
 			// log with file name
-			console.log('apierror in game/+page.server.ts', apierror);
+			console.log("apierror in game/+page.server.ts", apierror);
 			return message(teamForm, `Error: ${apierror.detail}`);
 			// error(404, JSON.stringify(apierror.detail));
 		}
@@ -56,10 +56,10 @@ export const actions = {
 		// return message(teamForm, "Team added successfully!");
 	},
 	addPlayer: async ({ fetch, params, cookies, request }) => {
-		const auth_token = cookies.get('auth_token');
+		const auth_token = cookies.get("auth_token");
 		const playerForm = await superValidate(request, zod4(GameSessionPlayerSchema));
 		if (!auth_token) {
-			redirect(302, '/auth/login');
+			redirect(302, "/auth/login");
 		}
 		if (!playerForm.valid) {
 			return fail(400, { playerForm });
@@ -67,7 +67,7 @@ export const actions = {
 
 		const client = createApiClient(fetch);
 
-		const { error: apierror, response } = await client.POST('/game/{game_session_id}/player', {
+		const { error: apierror, response } = await client.POST("/game/{game_session_id}/player", {
 			body: {
 				name: playerForm.data.name,
 				team_id: playerForm.data.team_id || null
@@ -91,18 +91,18 @@ export const actions = {
 	},
 	deleteTeam: async ({ fetch, params, cookies, request }) => {
 		const client = createApiClient(fetch);
-		const auth_token = cookies.get('auth_token');
+		const auth_token = cookies.get("auth_token");
 
 		if (!auth_token) {
-			redirect(302, '/auth/login');
+			redirect(302, "/auth/login");
 		}
 
 		const formData = await request.formData();
-		const game_session_id = formData.get('game_session_id') as string;
-		const team_id = formData.get('team_id') as string;
+		const game_session_id = formData.get("game_session_id") as string;
+		const team_id = formData.get("team_id") as string;
 
 		const { error: apierror, response } = await client.DELETE(
-			'/game/{game_session_id}/team/{game_team_id}',
+			"/game/{game_session_id}/team/{game_team_id}",
 			{
 				params: {
 					path: { game_session_id: game_session_id, game_team_id: team_id }
@@ -121,18 +121,18 @@ export const actions = {
 	},
 	deletePlayer: async ({ fetch, params, cookies, request }) => {
 		const client = createApiClient(fetch);
-		const auth_token = cookies.get('auth_token');
+		const auth_token = cookies.get("auth_token");
 
 		if (!auth_token) {
-			redirect(302, '/auth/login');
+			redirect(302, "/auth/login");
 		}
 
 		const formData = await request.formData();
-		const game_session_id = formData.get('game_session_id') as string;
-		const player_id = formData.get('player_id') as string;
+		const game_session_id = formData.get("game_session_id") as string;
+		const player_id = formData.get("player_id") as string;
 
 		const { error: apierror, response } = await client.DELETE(
-			'/game/{game_session_id}/player/{game_player_id}',
+			"/game/{game_session_id}/player/{game_player_id}",
 			{
 				params: {
 					path: { game_session_id: game_session_id, game_player_id: player_id }

@@ -1,20 +1,20 @@
 <script lang="ts">
-	import Button from '$lib/components/ui/button/button.svelte';
-	import { Pencil, Trash2, Shield, Plus, X, Award, Fingerprint, ListChecks } from 'lucide-svelte';
-	import { enhance } from '$app/forms';
-	import * as Dialog from '$lib/components/ui/dialog';
-	import * as Sheet from '$lib/components/ui/sheet';
+	import Button from "$lib/components/ui/button/button.svelte";
+	import { Pencil, Trash2, Shield, Plus, X, Award, Fingerprint, ListChecks } from "lucide-svelte";
+	import { enhance } from "$app/forms";
+	import * as Dialog from "$lib/components/ui/dialog";
+	import * as Sheet from "$lib/components/ui/sheet";
 	import * as Select from "$lib/components/ui/select/index.js";
-	import { Input } from '$lib/components/ui/input/index.js';
-	import { Field, Control, Label, FieldErrors } from 'formsnap';
-	import { zod4 as zodClient } from 'sveltekit-superforms/adapters';
-	import { UserUpdateSchema, UserAddRoleSchema } from '$lib/schemas/schemas.js';
-	import SuperDebug from 'sveltekit-superforms/SuperDebug.svelte';
-	import { untrack } from 'svelte';
+	import { Input } from "$lib/components/ui/input/index.js";
+	import { Field, Control, Label, FieldErrors } from "formsnap";
+	import { zod4 as zodClient } from "sveltekit-superforms/adapters";
+	import { UserUpdateSchema, UserAddRoleSchema } from "$lib/schemas/schemas.js";
+	import SuperDebug from "sveltekit-superforms/SuperDebug.svelte";
+	import { untrack } from "svelte";
 
-	import type { components } from '$lib/api/v1';
-	import type { SuperForm } from 'sveltekit-superforms';
-	import type { Infer } from 'sveltekit-superforms';
+	import type { components } from "$lib/api/v1";
+	import type { SuperForm } from "sveltekit-superforms";
+	import type { Infer } from "sveltekit-superforms";
 
 	let {
 		user,
@@ -24,11 +24,11 @@
 		roles,
 		availableScopes = []
 	}: {
-		user: components['schemas']['UserPublic'];
+		user: components["schemas"]["UserPublic"];
 		userUpdateForm: SuperForm<Infer<typeof UserUpdateSchema>>;
-		permissions: components['schemas']['UserWithPermissionsPublic'];
+		permissions: components["schemas"]["UserWithPermissionsPublic"];
 		userAddRoleForm: SuperForm<Infer<typeof UserAddRoleSchema>>;
-		roles: components['schemas']['RolePublic'][];
+		roles: components["schemas"]["RolePublic"][];
 		availableScopes?: string[];
 	} = $props();
 
@@ -49,22 +49,21 @@
 
 	let editDialogOpen = $state(false);
 	let permsOpen = $state(false);
-	let selectedScope = $state(''); // For the add scope select
+	let selectedScope = $state(""); // For the add scope select
 
 	function openPermissions() {
 		$userAddRoleFormData.user_id = user.id;
-		$userAddRoleFormData.role_id = ''; // Reset selected role
-		selectedScope = ''; // Reset selected scope
+		$userAddRoleFormData.role_id = ""; // Reset selected role
+		selectedScope = ""; // Reset selected scope
 		permsOpen = true;
 	}
 
 	let selectedRoleLabel = $derived(
-		roles.find((r) => r.id.toString() === $userAddRoleFormData.role_id)?.name || 'Select a role'
+		roles.find((r) => r.id.toString() === $userAddRoleFormData.role_id)?.name || "Select a role"
 	);
 
 	// $inspect($userAddRoleFormData);
 	// $inspect($userUpdateFormData);
-
 
 	// Watch for form message changes to close dialog on success
 	$effect(() => {
@@ -73,7 +72,7 @@
 			const currentErrors = $userUpdateErrors;
 
 			// If there's a success message and no errors, close the dialog
-			if (currentMessage && typeof currentMessage === 'string' && currentMessage.length > 0) {
+			if (currentMessage && typeof currentMessage === "string" && currentMessage.length > 0) {
 				// Check if there are no form errors (success condition)
 				const hasErrors =
 					currentErrors &&
@@ -96,16 +95,16 @@
 	function openEditDialog() {
 		if (userUpdateForm && userUpdateFormData && userUpdateMessage) {
 			// Clear any previous form messages
-			userUpdateMessage.set('');
+			userUpdateMessage.set("");
 
 			// Pre-fill the form with current user data (all fields can be modified)
 			userUpdateFormData.update(($form) => ({
 				...$form,
 				user_id: user.id,
 				email: user.email,
-				full_name: user.full_name || '',
-				password: '', // Always start empty for security
-				confirm_password: '', // Always start empty for security
+				full_name: user.full_name || "",
+				password: "", // Always start empty for security
+				confirm_password: "", // Always start empty for security
 				is_active: user.is_active,
 				is_superuser: user.is_superuser
 			}));
@@ -120,7 +119,6 @@
 </script>
 
 <!-- <SuperDebug {userUpdateForm} /> -->
-
 
 <div class="flex items-center justify-end space-x-0">
 	{#if permissions}
@@ -142,9 +140,9 @@
 					</div>
 
 					<!-- Roles Section -->
-					<div class="space-y-3 rounded-lg border p-4 shadow-sm bg-card">
-						<div class="flex items-center gap-2 pb-2 border-b">
-							<Award class="h-4 w-4 text-primary" />
+					<div class="bg-card space-y-3 rounded-lg border p-4 shadow-sm">
+						<div class="flex items-center gap-2 border-b pb-2">
+							<Award class="text-primary h-4 w-4" />
 							<h3 class="text-sm font-semibold">Roles</h3>
 						</div>
 
@@ -154,11 +152,13 @@
 									<form action="?/removeRole" method="POST" use:enhance class="contents">
 										<input type="hidden" name="user_id" value={user.id} />
 										<input type="hidden" name="role_id" value={r.id} />
-										<div class="inline-flex items-center rounded-md border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80 group">
+										<div
+											class="focus:ring-ring bg-secondary text-secondary-foreground hover:bg-secondary/80 group inline-flex items-center rounded-md border border-transparent px-2.5 py-0.5 text-xs font-semibold transition-colors focus:ring-2 focus:ring-offset-2 focus:outline-none"
+										>
 											{r.name}
 											<button
 												type="submit"
-												class="ml-2 rounded-full p-0.5 opacity-60 hover:bg-red-200 hover:text-red-700 hover:opacity-100 group-hover:opacity-100 transition-all"
+												class="ml-2 rounded-full p-0.5 opacity-60 transition-all group-hover:opacity-100 hover:bg-red-200 hover:text-red-700 hover:opacity-100"
 												aria-label="Remove role {r.name}"
 												title="Remove role"
 											>
@@ -169,16 +169,26 @@
 								{/each}
 							</div>
 						{:else}
-							<p class="text-muted-foreground text-sm pt-2 italic">No roles assigned</p>
+							<p class="text-muted-foreground pt-2 text-sm italic">No roles assigned</p>
 						{/if}
 
 						<div class="pt-2">
-							<form action="?/assignRole" method="POST" use:userAddRoleEnhance class="flex items-center gap-2">
+							<form
+								action="?/assignRole"
+								method="POST"
+								use:userAddRoleEnhance
+								class="flex items-center gap-2"
+							>
 								<input type="hidden" name="user_id" value={user.id} />
-								<div class="flex-1"> <!-- Hide Field wrapper complexity from visual layout -->
+								<div class="flex-1">
+									<!-- Hide Field wrapper complexity from visual layout -->
 									<Field form={userAddRoleForm} name="role_id">
 										<Control>
-											<Select.Root type="single" name="role_id" bind:value={$userAddRoleFormData.role_id}>
+											<Select.Root
+												type="single"
+												name="role_id"
+												bind:value={$userAddRoleFormData.role_id}
+											>
 												<Select.Trigger class="h-9 w-full">
 													{selectedRoleLabel}
 												</Select.Trigger>
@@ -194,7 +204,12 @@
 										<FieldErrors class="text-[10px]" />
 									</Field>
 								</div>
-								<Button type="submit" size="sm" class="h-9 px-3" disabled={!$userAddRoleFormData.role_id}>
+								<Button
+									type="submit"
+									size="sm"
+									class="h-9 px-3"
+									disabled={!$userAddRoleFormData.role_id}
+								>
 									<Plus class="mr-2 h-3.5 w-3.5" /> Add
 								</Button>
 							</form>
@@ -202,9 +217,9 @@
 					</div>
 
 					<!-- Custom Scopes Section -->
-					<div class="space-y-3 rounded-lg border p-4 shadow-sm bg-card">
-						<div class="flex items-center gap-2 pb-2 border-b">
-							<Fingerprint class="h-4 w-4 text-primary" />
+					<div class="bg-card space-y-3 rounded-lg border p-4 shadow-sm">
+						<div class="flex items-center gap-2 border-b pb-2">
+							<Fingerprint class="text-primary h-4 w-4" />
 							<h3 class="text-sm font-semibold">Custom Scopes</h3>
 						</div>
 
@@ -214,11 +229,13 @@
 									<form action="?/removeScope" method="POST" use:enhance class="contents">
 										<input type="hidden" name="user_id" value={user.id} />
 										<input type="hidden" name="scope" value={s} />
-										<div class="inline-flex items-center rounded-md border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80 group">
+										<div
+											class="focus:ring-ring bg-secondary text-secondary-foreground hover:bg-secondary/80 group inline-flex items-center rounded-md border border-transparent px-2.5 py-0.5 text-xs font-semibold transition-colors focus:ring-2 focus:ring-offset-2 focus:outline-none"
+										>
 											{s}
 											<button
 												type="submit"
-												class="ml-2 rounded-full p-0.5 opacity-60 hover:bg-red-200 hover:text-red-700 hover:opacity-100 group-hover:opacity-100 transition-all"
+												class="ml-2 rounded-full p-0.5 opacity-60 transition-all group-hover:opacity-100 hover:bg-red-200 hover:text-red-700 hover:opacity-100"
 												title="Remove scope"
 											>
 												<X class="h-3 w-3" />
@@ -228,15 +245,20 @@
 								{/each}
 							</div>
 						{:else}
-							<p class="text-muted-foreground text-sm pt-2 italic">No custom scopes</p>
+							<p class="text-muted-foreground pt-2 text-sm italic">No custom scopes</p>
 						{/if}
 
-						<form action="?/addScope" method="POST" use:enhance class="mt-2 flex w-full items-center gap-2">
+						<form
+							action="?/addScope"
+							method="POST"
+							use:enhance
+							class="mt-2 flex w-full items-center gap-2"
+						>
 							<input type="hidden" name="user_id" value={user.id} />
 							<div class="flex-1">
 								<Select.Root type="single" name="scope" bind:value={selectedScope}>
 									<Select.Trigger class="h-9 w-full">
-										{selectedScope || 'Select a scope'}
+										{selectedScope || "Select a scope"}
 									</Select.Trigger>
 									<Select.Content class="max-h-60 overflow-y-auto">
 										{#each availableScopes as scope}
@@ -247,7 +269,13 @@
 									</Select.Content>
 								</Select.Root>
 							</div>
-							<Button type="submit" size="sm" variant="secondary" class="h-9 px-3" disabled={!selectedScope}>
+							<Button
+								type="submit"
+								size="sm"
+								variant="secondary"
+								class="h-9 px-3"
+								disabled={!selectedScope}
+							>
 								<Plus class="h-4 w-4" />
 							</Button>
 						</form>
@@ -256,14 +284,18 @@
 					<!-- Effective Scopes Section -->
 					<div class="space-y-3 pt-2">
 						<div class="flex items-center gap-2">
-							<ListChecks class="h-4 w-4 text-muted-foreground" />
+							<ListChecks class="text-muted-foreground h-4 w-4" />
 							<h3 class="text-sm font-medium">
-								Effective scopes <span class="text-muted-foreground ml-1 font-normal">({permissions.effective_scopes.length})</span>
+								Effective scopes <span class="text-muted-foreground ml-1 font-normal"
+									>({permissions.effective_scopes.length})</span
+								>
 							</h3>
 						</div>
 
-						<div class="rounded-md border bg-muted/40 p-3">
-							<div class="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1 text-xs font-mono text-muted-foreground max-h-48 overflow-y-auto">
+						<div class="bg-muted/40 rounded-md border p-3">
+							<div
+								class="text-muted-foreground grid max-h-48 grid-cols-1 gap-x-4 gap-y-1 overflow-y-auto font-mono text-xs sm:grid-cols-2"
+							>
 								{#each permissions.effective_scopes as s}
 									<div class="truncate" title={s}>{s}</div>
 								{/each}
@@ -329,7 +361,9 @@
 							<Field form={userUpdateForm} name="password">
 								<Control>
 									{#snippet children({ props })}
-										<Label class="mb-1 block text-sm font-medium text-gray-700">New Password (optional)</Label>
+										<Label class="mb-1 block text-sm font-medium text-gray-700"
+											>New Password (optional)</Label
+										>
 										<Input
 											{...props}
 											type="password"
@@ -346,7 +380,9 @@
 							<Field form={userUpdateForm} name="confirm_password">
 								<Control>
 									{#snippet children({ props })}
-										<Label class="mb-1 block text-sm font-medium text-gray-700">Confirm New Password</Label>
+										<Label class="mb-1 block text-sm font-medium text-gray-700"
+											>Confirm New Password</Label
+										>
 										<Input
 											{...props}
 											type="password"

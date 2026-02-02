@@ -1,11 +1,11 @@
-import { createApiClient } from '$lib/api/api';
-import { redirect } from '@sveltejs/kit';
-import type { Actions } from './$types.js';
-import { zod4 as zod } from 'sveltekit-superforms/adapters';
-import { z } from 'zod';
-import { message, superValidate, fail } from 'sveltekit-superforms';
-import { error } from '@sveltejs/kit';
-import { GameSessionSchema } from '$lib/schemas/schemas.js';
+import { createApiClient } from "$lib/api/api";
+import { redirect } from "@sveltejs/kit";
+import type { Actions } from "./$types.js";
+import { zod4 as zod } from "sveltekit-superforms/adapters";
+import { z } from "zod";
+import { message, superValidate, fail } from "sveltekit-superforms";
+import { error } from "@sveltejs/kit";
+import { GameSessionSchema } from "$lib/schemas/schemas.js";
 
 export const load = async ({ fetch, parent }) => {
 	// const client = createApiClient(fetch);
@@ -19,11 +19,11 @@ export const load = async ({ fetch, parent }) => {
 
 export const actions = {
 	default: async ({ fetch, request, cookies }) => {
-		const auth_token = cookies.get('auth_token');
+		const auth_token = cookies.get("auth_token");
 		const form = await superValidate(request, zod(GameSessionSchema));
 		// console.log(form)
 		if (!auth_token) {
-			redirect(302, '/auth/login');
+			redirect(302, "/auth/login");
 		}
 
 		if (!form.valid) {
@@ -36,7 +36,7 @@ export const actions = {
 			data,
 			error: apierror,
 			response
-		} = await client.POST('/game/', {
+		} = await client.POST("/game/", {
 			body: {
 				title: form.data.title,
 				teams: form.data.teams.map((team) => {
@@ -62,6 +62,6 @@ export const actions = {
 		}
 
 		// return redirect(302, `/game/${data.id}`);
-		return redirect(302, '/game/');
+		return redirect(302, "/game/");
 	}
 } satisfies Actions;

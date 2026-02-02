@@ -4,7 +4,7 @@
  */
 
 export interface paths {
-	'/users/': {
+	"/users/": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -15,20 +15,20 @@ export interface paths {
 		 * Read Users
 		 * @description Retrieve users.
 		 */
-		get: operations['read_users_users__get'];
+		get: operations["read_users_users__get"];
 		put?: never;
 		/**
 		 * Create User
 		 * @description Create new user.
 		 */
-		post: operations['create_user_users__post'];
+		post: operations["create_user_users__post"];
 		delete?: never;
 		options?: never;
 		head?: never;
 		patch?: never;
 		trace?: never;
 	};
-	'/users/with-permissions': {
+	"/users/with-permissions": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -39,7 +39,7 @@ export interface paths {
 		 * Read Users With Permissions
 		 * @description Retrieve users including their roles, custom_scopes and computed effective_scopes.
 		 */
-		get: operations['read_users_with_permissions_users_with_permissions_get'];
+		get: operations["read_users_with_permissions_users_with_permissions_get"];
 		put?: never;
 		post?: never;
 		delete?: never;
@@ -48,7 +48,7 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
-	'/users/me': {
+	"/users/me": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -59,24 +59,24 @@ export interface paths {
 		 * Read User Me
 		 * @description Get current user.
 		 */
-		get: operations['read_user_me_users_me_get'];
+		get: operations["read_user_me_users_me_get"];
 		put?: never;
 		post?: never;
 		/**
 		 * Delete User Me
 		 * @description Delete own user.
 		 */
-		delete: operations['delete_user_me_users_me_delete'];
+		delete: operations["delete_user_me_users_me_delete"];
 		options?: never;
 		head?: never;
 		/**
 		 * Update User Me
 		 * @description Update own user.
 		 */
-		patch: operations['update_user_me_users_me_patch'];
+		patch: operations["update_user_me_users_me_patch"];
 		trace?: never;
 	};
-	'/users/me/password': {
+	"/users/me/password": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -93,10 +93,10 @@ export interface paths {
 		 * Update Password Me
 		 * @description Update own password.
 		 */
-		patch: operations['update_password_me_users_me_password_patch'];
+		patch: operations["update_password_me_users_me_password_patch"];
 		trace?: never;
 	};
-	'/users/signup': {
+	"/users/signup": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -109,14 +109,14 @@ export interface paths {
 		 * Register User
 		 * @description Create new user without the need to be logged in.
 		 */
-		post: operations['register_user_users_signup_post'];
+		post: operations["register_user_users_signup_post"];
 		delete?: never;
 		options?: never;
 		head?: never;
 		patch?: never;
 		trace?: never;
 	};
-	'/users/{user_id}': {
+	"/users/{user_id}": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -127,24 +127,24 @@ export interface paths {
 		 * Read User By Id
 		 * @description Get a specific user by id.
 		 */
-		get: operations['read_user_by_id_users__user_id__get'];
+		get: operations["read_user_by_id_users__user_id__get"];
 		put?: never;
 		post?: never;
 		/**
 		 * Delete User
 		 * @description Delete a user.
 		 */
-		delete: operations['delete_user_users__user_id__delete'];
+		delete: operations["delete_user_users__user_id__delete"];
 		options?: never;
 		head?: never;
 		/**
 		 * Update User
 		 * @description Update a user.
 		 */
-		patch: operations['update_user_users__user_id__patch'];
+		patch: operations["update_user_users__user_id__patch"];
 		trace?: never;
 	};
-	'/users/{user_id}/roles/{role_id}': {
+	"/users/{user_id}/roles/{role_id}": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -157,18 +157,18 @@ export interface paths {
 		 * Assign Role To User
 		 * @description Assign a role to a user.
 		 */
-		post: operations['assign_role_to_user_users__user_id__roles__role_id__post'];
+		post: operations["assign_role_to_user_users__user_id__roles__role_id__post"];
 		/**
 		 * Remove Role From User
 		 * @description Remove a role from a user.
 		 */
-		delete: operations['remove_role_from_user_users__user_id__roles__role_id__delete'];
+		delete: operations["remove_role_from_user_users__user_id__roles__role_id__delete"];
 		options?: never;
 		head?: never;
 		patch?: never;
 		trace?: never;
 	};
-	'/users/{user_id}/scopes': {
+	"/users/{user_id}/scopes": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -181,18 +181,18 @@ export interface paths {
 		 * Assign Scopes To User
 		 * @description Assign custom scopes to a user.
 		 */
-		post: operations['assign_scopes_to_user_users__user_id__scopes_post'];
+		post: operations["assign_scopes_to_user_users__user_id__scopes_post"];
 		/**
 		 * Remove Scopes From User
 		 * @description Remove custom scopes from a user.
 		 */
-		delete: operations['remove_scopes_from_user_users__user_id__scopes_delete'];
+		delete: operations["remove_scopes_from_user_users__user_id__scopes_delete"];
 		options?: never;
 		head?: never;
 		patch?: never;
 		trace?: never;
 	};
-	'/recipes/upload-image': {
+	"/recipes/upload-image": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -205,14 +205,14 @@ export interface paths {
 		 * Upload Recipe Image
 		 * @description Upload an image for a recipe.
 		 */
-		post: operations['upload_recipe_image_recipes_upload_image_post'];
+		post: operations["upload_recipe_image_recipes_upload_image_post"];
 		delete?: never;
 		options?: never;
 		head?: never;
 		patch?: never;
 		trace?: never;
 	};
-	'/recipes/': {
+	"/recipes/": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -223,20 +223,20 @@ export interface paths {
 		 * Read Recipes
 		 * @description Retrieve recipes.
 		 */
-		get: operations['read_recipes_recipes__get'];
+		get: operations["read_recipes_recipes__get"];
 		put?: never;
 		/**
 		 * Create Recipe
 		 * @description Create a new recipe.
 		 */
-		post: operations['create_recipe_recipes__post'];
+		post: operations["create_recipe_recipes__post"];
 		delete?: never;
 		options?: never;
 		head?: never;
 		patch?: never;
 		trace?: never;
 	};
-	'/recipes/{recipe_id}': {
+	"/recipes/{recipe_id}": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -247,24 +247,24 @@ export interface paths {
 		 * Read Recipe
 		 * @description Retrieve a recipe.
 		 */
-		get: operations['read_recipe_recipes__recipe_id__get'];
+		get: operations["read_recipe_recipes__recipe_id__get"];
 		put?: never;
 		post?: never;
 		/**
 		 * Delete Recipe
 		 * @description Delete a recipe.
 		 */
-		delete: operations['delete_recipe_recipes__recipe_id__delete'];
+		delete: operations["delete_recipe_recipes__recipe_id__delete"];
 		options?: never;
 		head?: never;
 		/**
 		 * Update Recipe
 		 * @description Update a recipe.
 		 */
-		patch: operations['update_recipe_recipes__recipe_id__patch'];
+		patch: operations["update_recipe_recipes__recipe_id__patch"];
 		trace?: never;
 	};
-	'/ingredients/': {
+	"/ingredients/": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -275,20 +275,20 @@ export interface paths {
 		 * Read Ingredients
 		 * @description Retrieve ingredients.
 		 */
-		get: operations['read_ingredients_ingredients__get'];
+		get: operations["read_ingredients_ingredients__get"];
 		put?: never;
 		/**
 		 * Create Ingredient
 		 * @description Create a new ingredient.
 		 */
-		post: operations['create_ingredient_ingredients__post'];
+		post: operations["create_ingredient_ingredients__post"];
 		delete?: never;
 		options?: never;
 		head?: never;
 		patch?: never;
 		trace?: never;
 	};
-	'/ingredients/{ingredient_id}': {
+	"/ingredients/{ingredient_id}": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -299,24 +299,24 @@ export interface paths {
 		 * Read Ingredient
 		 * @description Retrieve a ingredient.
 		 */
-		get: operations['read_ingredient_ingredients__ingredient_id__get'];
+		get: operations["read_ingredient_ingredients__ingredient_id__get"];
 		put?: never;
 		post?: never;
 		/**
 		 * Delete Ingredient
 		 * @description Delete a ingredient.
 		 */
-		delete: operations['delete_ingredient_ingredients__ingredient_id__delete'];
+		delete: operations["delete_ingredient_ingredients__ingredient_id__delete"];
 		options?: never;
 		head?: never;
 		/**
 		 * Update Ingredient
 		 * @description Update an ingredient.
 		 */
-		patch: operations['update_ingredient_ingredients__ingredient_id__patch'];
+		patch: operations["update_ingredient_ingredients__ingredient_id__patch"];
 		trace?: never;
 	};
-	'/game/': {
+	"/game/": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -327,20 +327,20 @@ export interface paths {
 		 * Read Game Sessions
 		 * @description Retrieve game sessions.
 		 */
-		get: operations['read_game_sessions_game__get'];
+		get: operations["read_game_sessions_game__get"];
 		put?: never;
 		/**
 		 * Create Game Session
 		 * @description Create a new game session.
 		 */
-		post: operations['create_game_session_game__post'];
+		post: operations["create_game_session_game__post"];
 		delete?: never;
 		options?: never;
 		head?: never;
 		patch?: never;
 		trace?: never;
 	};
-	'/game/drinks': {
+	"/game/drinks": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -351,20 +351,20 @@ export interface paths {
 		 * Read Drinks
 		 * @description Retrieve drinks.
 		 */
-		get: operations['read_drinks_game_drinks_get'];
+		get: operations["read_drinks_game_drinks_get"];
 		put?: never;
 		/**
 		 * Create Drink
 		 * @description Create a new drink.
 		 */
-		post: operations['create_drink_game_drinks_post'];
+		post: operations["create_drink_game_drinks_post"];
 		delete?: never;
 		options?: never;
 		head?: never;
 		patch?: never;
 		trace?: never;
 	};
-	'/game/drinks/{drink_id}': {
+	"/game/drinks/{drink_id}": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -378,17 +378,17 @@ export interface paths {
 		 * Delete Drink
 		 * @description Delete a drink.
 		 */
-		delete: operations['delete_drink_game_drinks__drink_id__delete'];
+		delete: operations["delete_drink_game_drinks__drink_id__delete"];
 		options?: never;
 		head?: never;
 		/**
 		 * Update Drink
 		 * @description Update a drink.
 		 */
-		patch: operations['update_drink_game_drinks__drink_id__patch'];
+		patch: operations["update_drink_game_drinks__drink_id__patch"];
 		trace?: never;
 	};
-	'/game/{game_session_id}': {
+	"/game/{game_session_id}": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -399,20 +399,20 @@ export interface paths {
 		 * Read Game Session
 		 * @description Retrieve a game session.
 		 */
-		get: operations['read_game_session_game__game_session_id__get'];
+		get: operations["read_game_session_game__game_session_id__get"];
 		put?: never;
 		post?: never;
 		/**
 		 * Delete Game Session
 		 * @description Delete a game session. Users can delete their own game sessions.
 		 */
-		delete: operations['delete_game_session_game__game_session_id__delete'];
+		delete: operations["delete_game_session_game__game_session_id__delete"];
 		options?: never;
 		head?: never;
 		patch?: never;
 		trace?: never;
 	};
-	'/game/{game_session_id}/admin': {
+	"/game/{game_session_id}/admin": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -426,13 +426,13 @@ export interface paths {
 		 * Delete Game Session Admin
 		 * @description Delete any game session (admin only).
 		 */
-		delete: operations['delete_game_session_admin_game__game_session_id__admin_delete'];
+		delete: operations["delete_game_session_admin_game__game_session_id__admin_delete"];
 		options?: never;
 		head?: never;
 		patch?: never;
 		trace?: never;
 	};
-	'/game/{game_session_id}/player': {
+	"/game/{game_session_id}/player": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -445,14 +445,14 @@ export interface paths {
 		 * Create Game Player
 		 * @description Create a new game player.
 		 */
-		post: operations['create_game_player_game__game_session_id__player_post'];
+		post: operations["create_game_player_game__game_session_id__player_post"];
 		delete?: never;
 		options?: never;
 		head?: never;
 		patch?: never;
 		trace?: never;
 	};
-	'/game/{game_session_id}/team': {
+	"/game/{game_session_id}/team": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -465,14 +465,14 @@ export interface paths {
 		 * Create Game Team
 		 * @description Create a new game team.
 		 */
-		post: operations['create_game_team_game__game_session_id__team_post'];
+		post: operations["create_game_team_game__game_session_id__team_post"];
 		delete?: never;
 		options?: never;
 		head?: never;
 		patch?: never;
 		trace?: never;
 	};
-	'/game/{game_session_id}/player/{game_player_id}': {
+	"/game/{game_session_id}/player/{game_player_id}": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -486,17 +486,17 @@ export interface paths {
 		 * Delete Game Player
 		 * @description Delete a game player.
 		 */
-		delete: operations['delete_game_player_game__game_session_id__player__game_player_id__delete'];
+		delete: operations["delete_game_player_game__game_session_id__player__game_player_id__delete"];
 		options?: never;
 		head?: never;
 		/**
 		 * Update Game Player
 		 * @description Update a game player (e.g., change name).
 		 */
-		patch: operations['update_game_player_game__game_session_id__player__game_player_id__patch'];
+		patch: operations["update_game_player_game__game_session_id__player__game_player_id__patch"];
 		trace?: never;
 	};
-	'/game/{game_session_id}/team/{game_team_id}': {
+	"/game/{game_session_id}/team/{game_team_id}": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -510,13 +510,13 @@ export interface paths {
 		 * Delete Game Team
 		 * @description Delete a game team.
 		 */
-		delete: operations['delete_game_team_game__game_session_id__team__game_team_id__delete'];
+		delete: operations["delete_game_team_game__game_session_id__team__game_team_id__delete"];
 		options?: never;
 		head?: never;
 		patch?: never;
 		trace?: never;
 	};
-	'/game/{game_session_id}/player/{game_player_id}/drink': {
+	"/game/{game_session_id}/player/{game_player_id}/drink": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -534,10 +534,10 @@ export interface paths {
 		 * @description Add a drink to a game player or update the amount if the drink link already exists.
 		 *     The amount provided in drink_link_in will be set as the new total amount for that drink.
 		 */
-		patch: operations['add_drink_to_player_game__game_session_id__player__game_player_id__drink_patch'];
+		patch: operations["add_drink_to_player_game__game_session_id__player__game_player_id__drink_patch"];
 		trace?: never;
 	};
-	'/game/{game_session_id}/updates': {
+	"/game/{game_session_id}/updates": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -549,7 +549,7 @@ export interface paths {
 		 * @description Server-Sent Events endpoint that streams real-time updates for a game session.
 		 *     Clients can connect to this endpoint to receive notifications when drinks are added.
 		 */
-		get: operations['game_session_updates_game__game_session_id__updates_get'];
+		get: operations["game_session_updates_game__game_session_id__updates_get"];
 		put?: never;
 		post?: never;
 		delete?: never;
@@ -558,7 +558,7 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
-	'/login/access-token': {
+	"/login/access-token": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -571,14 +571,14 @@ export interface paths {
 		 * Login Access Token
 		 * @description OAuth2 compatible token login, get an access token for future requests
 		 */
-		post: operations['login_access_token_login_access_token_post'];
+		post: operations["login_access_token_login_access_token_post"];
 		delete?: never;
 		options?: never;
 		head?: never;
 		patch?: never;
 		trace?: never;
 	};
-	'/login/refresh': {
+	"/login/refresh": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -591,14 +591,14 @@ export interface paths {
 		 * Refresh Access Token
 		 * @description Issue a new access token using the refresh token from cookie (preferred) or body.
 		 */
-		post: operations['refresh_access_token_login_refresh_post'];
+		post: operations["refresh_access_token_login_refresh_post"];
 		delete?: never;
 		options?: never;
 		head?: never;
 		patch?: never;
 		trace?: never;
 	};
-	'/logout': {
+	"/logout": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -611,14 +611,14 @@ export interface paths {
 		 * Logout
 		 * @description Clear refresh cookie (client should also clear access-token cookie).
 		 */
-		post: operations['logout_logout_post'];
+		post: operations["logout_logout_post"];
 		delete?: never;
 		options?: never;
 		head?: never;
 		patch?: never;
 		trace?: never;
 	};
-	'/login/test-token': {
+	"/login/test-token": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -631,14 +631,14 @@ export interface paths {
 		 * Test Token
 		 * @description Test access token
 		 */
-		post: operations['test_token_login_test_token_post'];
+		post: operations["test_token_login_test_token_post"];
 		delete?: never;
 		options?: never;
 		head?: never;
 		patch?: never;
 		trace?: never;
 	};
-	'/password-recovery/{email}': {
+	"/password-recovery/{email}": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -651,14 +651,14 @@ export interface paths {
 		 * Recover Password
 		 * @description Password Recovery
 		 */
-		post: operations['recover_password_password_recovery__email__post'];
+		post: operations["recover_password_password_recovery__email__post"];
 		delete?: never;
 		options?: never;
 		head?: never;
 		patch?: never;
 		trace?: never;
 	};
-	'/reset-password/': {
+	"/reset-password/": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -671,14 +671,14 @@ export interface paths {
 		 * Reset Password
 		 * @description Reset password
 		 */
-		post: operations['reset_password_reset_password__post'];
+		post: operations["reset_password_reset_password__post"];
 		delete?: never;
 		options?: never;
 		head?: never;
 		patch?: never;
 		trace?: never;
 	};
-	'/password-recovery-html-content/{email}': {
+	"/password-recovery-html-content/{email}": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -691,14 +691,14 @@ export interface paths {
 		 * Recover Password Html Content
 		 * @description HTML Content for Password Recovery
 		 */
-		post: operations['recover_password_html_content_password_recovery_html_content__email__post'];
+		post: operations["recover_password_html_content_password_recovery_html_content__email__post"];
 		delete?: never;
 		options?: never;
 		head?: never;
 		patch?: never;
 		trace?: never;
 	};
-	'/roles/': {
+	"/roles/": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -709,20 +709,20 @@ export interface paths {
 		 * List Roles
 		 * @description List all roles
 		 */
-		get: operations['list_roles_roles__get'];
+		get: operations["list_roles_roles__get"];
 		put?: never;
 		/**
 		 * Create Role
 		 * @description Create a new role
 		 */
-		post: operations['create_role_roles__post'];
+		post: operations["create_role_roles__post"];
 		delete?: never;
 		options?: never;
 		head?: never;
 		patch?: never;
 		trace?: never;
 	};
-	'/roles/{role_id}': {
+	"/roles/{role_id}": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -733,24 +733,24 @@ export interface paths {
 		 * Get Role
 		 * @description Get a specific role
 		 */
-		get: operations['get_role_roles__role_id__get'];
+		get: operations["get_role_roles__role_id__get"];
 		/**
 		 * Update Role
 		 * @description Update a role
 		 */
-		put: operations['update_role_roles__role_id__put'];
+		put: operations["update_role_roles__role_id__put"];
 		post?: never;
 		/**
 		 * Delete Role
 		 * @description Delete a role
 		 */
-		delete: operations['delete_role_roles__role_id__delete'];
+		delete: operations["delete_role_roles__role_id__delete"];
 		options?: never;
 		head?: never;
 		patch?: never;
 		trace?: never;
 	};
-	'/roles/templates/': {
+	"/roles/templates/": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -761,7 +761,7 @@ export interface paths {
 		 * List Role Templates
 		 * @description List available role templates
 		 */
-		get: operations['list_role_templates_roles_templates__get'];
+		get: operations["list_role_templates_roles_templates__get"];
 		put?: never;
 		post?: never;
 		delete?: never;
@@ -770,7 +770,7 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
-	'/roles/from-template/{template_key}': {
+	"/roles/from-template/{template_key}": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -783,14 +783,14 @@ export interface paths {
 		 * Create Role From Template Endpoint
 		 * @description Create a role from a predefined template
 		 */
-		post: operations['create_role_from_template_endpoint_roles_from_template__template_key__post'];
+		post: operations["create_role_from_template_endpoint_roles_from_template__template_key__post"];
 		delete?: never;
 		options?: never;
 		head?: never;
 		patch?: never;
 		trace?: never;
 	};
-	'/roles/scopes/available': {
+	"/roles/scopes/available": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -801,7 +801,7 @@ export interface paths {
 		 * List Available Scopes
 		 * @description List all available scopes
 		 */
-		get: operations['list_available_scopes_roles_scopes_available_get'];
+		get: operations["list_available_scopes_roles_scopes_available_get"];
 		put?: never;
 		post?: never;
 		delete?: never;
@@ -810,7 +810,7 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
-	'/': {
+	"/": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -818,7 +818,7 @@ export interface paths {
 			cookie?: never;
 		};
 		/** Read Root */
-		get: operations['read_root__get'];
+		get: operations["read_root__get"];
 		put?: never;
 		post?: never;
 		delete?: never;
@@ -934,7 +934,7 @@ export interface components {
 		GamePlayerDrinkLinkPublic: {
 			/** Amount */
 			amount: number;
-			drink: components['schemas']['DrinkPublic'];
+			drink: components["schemas"]["DrinkPublic"];
 		};
 		/**
 		 * GamePlayerPublic
@@ -955,9 +955,9 @@ export interface components {
 			game_session_id: string;
 			/** Team Id */
 			team_id?: string | null;
-			team?: components['schemas']['GameTeamPlayerPublic'] | null;
+			team?: components["schemas"]["GameTeamPlayerPublic"] | null;
 			/** Drink Links */
-			drink_links: components['schemas']['GamePlayerDrinkLinkPublic'][];
+			drink_links: components["schemas"]["GamePlayerDrinkLinkPublic"][];
 		};
 		/**
 		 * GamePlayerUpdate
@@ -969,14 +969,14 @@ export interface components {
 			/** Team Id */
 			team_id?: string | null;
 			/** Drinks */
-			drinks?: components['schemas']['GamePlayerDrinkLinkCreate'][] | null;
+			drinks?: components["schemas"]["GamePlayerDrinkLinkCreate"][] | null;
 		};
 		/** GameSessionCreate */
 		GameSessionCreate: {
 			/** Title */
 			title: string;
 			/** Teams */
-			teams?: components['schemas']['GameTeamCreate'][] | null;
+			teams?: components["schemas"]["GameTeamCreate"][] | null;
 		};
 		/**
 		 * GameSessionPublic
@@ -992,11 +992,11 @@ export interface components {
 			 * Format: uuid
 			 */
 			id: string;
-			owner: components['schemas']['UserPublic'];
+			owner: components["schemas"]["UserPublic"];
 			/** Players */
-			players: components['schemas']['GamePlayerPublic'][];
+			players: components["schemas"]["GamePlayerPublic"][];
 			/** Teams */
-			teams: components['schemas']['GameTeamPublic'][];
+			teams: components["schemas"]["GameTeamPublic"][];
 		};
 		/** GameTeamCreate */
 		GameTeamCreate: {
@@ -1021,7 +1021,7 @@ export interface components {
 			 */
 			id: string;
 			/** Players */
-			players: components['schemas']['GamePlayer'][];
+			players: components["schemas"]["GamePlayer"][];
 			/**
 			 * Game Session Id
 			 * Format: uuid
@@ -1036,7 +1036,7 @@ export interface components {
 		/** HTTPValidationError */
 		HTTPValidationError: {
 			/** Detail */
-			detail?: components['schemas']['ValidationError'][];
+			detail?: components["schemas"]["ValidationError"][];
 		};
 		/** IngredientCreate */
 		IngredientCreate: {
@@ -1132,7 +1132,7 @@ export interface components {
 			/** Image */
 			image?: string | null;
 			/** Ingredients */
-			ingredients: components['schemas']['RecipeIngredientLinkCreate'][];
+			ingredients: components["schemas"]["RecipeIngredientLinkCreate"][];
 		};
 		/**
 		 * RecipeIngredientLinkCreate
@@ -1162,7 +1162,7 @@ export interface components {
 		 * @description Public class for recipe ingredient link.
 		 */
 		RecipeIngredientLinkPublic: {
-			ingredient: components['schemas']['IngredientPublic'];
+			ingredient: components["schemas"]["IngredientPublic"];
 			/** Amount */
 			amount: number;
 			/**
@@ -1190,9 +1190,9 @@ export interface components {
 			 * Format: uuid
 			 */
 			id: string;
-			owner: components['schemas']['UserPublic'];
+			owner: components["schemas"]["UserPublic"];
 			/** Ingredient Links */
-			ingredient_links: components['schemas']['RecipeIngredientLinkPublic'][];
+			ingredient_links: components["schemas"]["RecipeIngredientLinkPublic"][];
 			/**
 			 * Total Calories
 			 * @description Calculate total calories for the entire recipe based on ingredients and their amounts.
@@ -1410,7 +1410,7 @@ export interface components {
 			 */
 			id: string;
 			/** Roles */
-			roles: components['schemas']['RolePublic'][];
+			roles: components["schemas"]["RolePublic"][];
 			/** Custom Scopes */
 			custom_scopes: string[];
 			/** Effective Scopes */
@@ -1419,14 +1419,14 @@ export interface components {
 		/** UsersPublic */
 		UsersPublic: {
 			/** Data */
-			data: components['schemas']['UserPublic'][];
+			data: components["schemas"]["UserPublic"][];
 			/** Count */
 			count: number;
 		};
 		/** UsersWithPermissionsPublic */
 		UsersWithPermissionsPublic: {
 			/** Data */
-			data: components['schemas']['UserWithPermissionsPublic'][];
+			data: components["schemas"]["UserWithPermissionsPublic"][];
 			/** Count */
 			count: number;
 		};
@@ -1466,7 +1466,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/json': components['schemas']['UsersPublic'];
+					"application/json": components["schemas"]["UsersPublic"];
 				};
 			};
 			/** @description Validation Error */
@@ -1475,7 +1475,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/json': components['schemas']['HTTPValidationError'];
+					"application/json": components["schemas"]["HTTPValidationError"];
 				};
 			};
 		};
@@ -1489,7 +1489,7 @@ export interface operations {
 		};
 		requestBody: {
 			content: {
-				'application/json': components['schemas']['UserCreate'];
+				"application/json": components["schemas"]["UserCreate"];
 			};
 		};
 		responses: {
@@ -1499,7 +1499,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/json': components['schemas']['UserPublic'];
+					"application/json": components["schemas"]["UserPublic"];
 				};
 			};
 			/** @description Validation Error */
@@ -1508,7 +1508,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/json': components['schemas']['HTTPValidationError'];
+					"application/json": components["schemas"]["HTTPValidationError"];
 				};
 			};
 		};
@@ -1531,7 +1531,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/json': components['schemas']['UsersWithPermissionsPublic'];
+					"application/json": components["schemas"]["UsersWithPermissionsPublic"];
 				};
 			};
 			/** @description Validation Error */
@@ -1540,7 +1540,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/json': components['schemas']['HTTPValidationError'];
+					"application/json": components["schemas"]["HTTPValidationError"];
 				};
 			};
 		};
@@ -1560,7 +1560,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/json': components['schemas']['UserMePublic'];
+					"application/json": components["schemas"]["UserMePublic"];
 				};
 			};
 			/** @description Unauthorized */
@@ -1569,7 +1569,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/json': components['schemas']['HTTPExceptionDetail'];
+					"application/json": components["schemas"]["HTTPExceptionDetail"];
 				};
 			};
 		};
@@ -1589,7 +1589,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/json': components['schemas']['Message'];
+					"application/json": components["schemas"]["Message"];
 				};
 			};
 		};
@@ -1603,7 +1603,7 @@ export interface operations {
 		};
 		requestBody: {
 			content: {
-				'application/json': components['schemas']['UserUpdateMe'];
+				"application/json": components["schemas"]["UserUpdateMe"];
 			};
 		};
 		responses: {
@@ -1613,7 +1613,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/json': components['schemas']['UserPublic'];
+					"application/json": components["schemas"]["UserPublic"];
 				};
 			};
 			/** @description Validation Error */
@@ -1622,7 +1622,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/json': components['schemas']['HTTPValidationError'];
+					"application/json": components["schemas"]["HTTPValidationError"];
 				};
 			};
 		};
@@ -1636,7 +1636,7 @@ export interface operations {
 		};
 		requestBody: {
 			content: {
-				'application/json': components['schemas']['UpdatePassword'];
+				"application/json": components["schemas"]["UpdatePassword"];
 			};
 		};
 		responses: {
@@ -1646,7 +1646,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/json': components['schemas']['Message'];
+					"application/json": components["schemas"]["Message"];
 				};
 			};
 			/** @description Validation Error */
@@ -1655,7 +1655,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/json': components['schemas']['HTTPValidationError'];
+					"application/json": components["schemas"]["HTTPValidationError"];
 				};
 			};
 		};
@@ -1669,7 +1669,7 @@ export interface operations {
 		};
 		requestBody: {
 			content: {
-				'application/json': components['schemas']['UserRegister'];
+				"application/json": components["schemas"]["UserRegister"];
 			};
 		};
 		responses: {
@@ -1679,7 +1679,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/json': components['schemas']['UserPublic'];
+					"application/json": components["schemas"]["UserPublic"];
 				};
 			};
 			/** @description Validation Error */
@@ -1688,7 +1688,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/json': components['schemas']['HTTPValidationError'];
+					"application/json": components["schemas"]["HTTPValidationError"];
 				};
 			};
 		};
@@ -1710,7 +1710,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/json': components['schemas']['UserPublic'];
+					"application/json": components["schemas"]["UserPublic"];
 				};
 			};
 			/** @description Validation Error */
@@ -1719,7 +1719,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/json': components['schemas']['HTTPValidationError'];
+					"application/json": components["schemas"]["HTTPValidationError"];
 				};
 			};
 		};
@@ -1741,7 +1741,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/json': components['schemas']['Message'];
+					"application/json": components["schemas"]["Message"];
 				};
 			};
 			/** @description Validation Error */
@@ -1750,7 +1750,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/json': components['schemas']['HTTPValidationError'];
+					"application/json": components["schemas"]["HTTPValidationError"];
 				};
 			};
 		};
@@ -1766,7 +1766,7 @@ export interface operations {
 		};
 		requestBody: {
 			content: {
-				'application/json': components['schemas']['UserUpdate'];
+				"application/json": components["schemas"]["UserUpdate"];
 			};
 		};
 		responses: {
@@ -1776,7 +1776,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/json': components['schemas']['UserPublic'];
+					"application/json": components["schemas"]["UserPublic"];
 				};
 			};
 			/** @description Validation Error */
@@ -1785,7 +1785,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/json': components['schemas']['HTTPValidationError'];
+					"application/json": components["schemas"]["HTTPValidationError"];
 				};
 			};
 		};
@@ -1808,7 +1808,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/json': components['schemas']['UserPublic'];
+					"application/json": components["schemas"]["UserPublic"];
 				};
 			};
 			/** @description Validation Error */
@@ -1817,7 +1817,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/json': components['schemas']['HTTPValidationError'];
+					"application/json": components["schemas"]["HTTPValidationError"];
 				};
 			};
 		};
@@ -1840,7 +1840,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/json': components['schemas']['UserPublic'];
+					"application/json": components["schemas"]["UserPublic"];
 				};
 			};
 			/** @description Validation Error */
@@ -1849,7 +1849,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/json': components['schemas']['HTTPValidationError'];
+					"application/json": components["schemas"]["HTTPValidationError"];
 				};
 			};
 		};
@@ -1865,7 +1865,7 @@ export interface operations {
 		};
 		requestBody: {
 			content: {
-				'application/json': string[];
+				"application/json": string[];
 			};
 		};
 		responses: {
@@ -1875,7 +1875,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/json': components['schemas']['UserPublic'];
+					"application/json": components["schemas"]["UserPublic"];
 				};
 			};
 			/** @description Validation Error */
@@ -1884,7 +1884,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/json': components['schemas']['HTTPValidationError'];
+					"application/json": components["schemas"]["HTTPValidationError"];
 				};
 			};
 		};
@@ -1900,7 +1900,7 @@ export interface operations {
 		};
 		requestBody: {
 			content: {
-				'application/json': string[];
+				"application/json": string[];
 			};
 		};
 		responses: {
@@ -1910,7 +1910,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/json': components['schemas']['UserPublic'];
+					"application/json": components["schemas"]["UserPublic"];
 				};
 			};
 			/** @description Validation Error */
@@ -1919,7 +1919,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/json': components['schemas']['HTTPValidationError'];
+					"application/json": components["schemas"]["HTTPValidationError"];
 				};
 			};
 		};
@@ -1933,7 +1933,7 @@ export interface operations {
 		};
 		requestBody: {
 			content: {
-				'multipart/form-data': components['schemas']['Body_upload_recipe_image_recipes_upload_image_post'];
+				"multipart/form-data": components["schemas"]["Body_upload_recipe_image_recipes_upload_image_post"];
 			};
 		};
 		responses: {
@@ -1943,7 +1943,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/json': unknown;
+					"application/json": unknown;
 				};
 			};
 			/** @description Validation Error */
@@ -1952,7 +1952,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/json': components['schemas']['HTTPValidationError'];
+					"application/json": components["schemas"]["HTTPValidationError"];
 				};
 			};
 		};
@@ -1975,7 +1975,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/json': components['schemas']['RecipePublic'][];
+					"application/json": components["schemas"]["RecipePublic"][];
 				};
 			};
 			/** @description Validation Error */
@@ -1984,7 +1984,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/json': components['schemas']['HTTPValidationError'];
+					"application/json": components["schemas"]["HTTPValidationError"];
 				};
 			};
 		};
@@ -1998,7 +1998,7 @@ export interface operations {
 		};
 		requestBody: {
 			content: {
-				'application/json': components['schemas']['RecipeCreate'];
+				"application/json": components["schemas"]["RecipeCreate"];
 			};
 		};
 		responses: {
@@ -2008,7 +2008,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/json': components['schemas']['RecipePublic'];
+					"application/json": components["schemas"]["RecipePublic"];
 				};
 			};
 			/** @description Validation Error */
@@ -2017,7 +2017,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/json': components['schemas']['HTTPValidationError'];
+					"application/json": components["schemas"]["HTTPValidationError"];
 				};
 			};
 		};
@@ -2039,7 +2039,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/json': components['schemas']['RecipePublic'];
+					"application/json": components["schemas"]["RecipePublic"];
 				};
 			};
 			/** @description Validation Error */
@@ -2048,7 +2048,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/json': components['schemas']['HTTPValidationError'];
+					"application/json": components["schemas"]["HTTPValidationError"];
 				};
 			};
 		};
@@ -2070,7 +2070,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/json': components['schemas']['Recipe'];
+					"application/json": components["schemas"]["Recipe"];
 				};
 			};
 			/** @description Validation Error */
@@ -2079,7 +2079,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/json': components['schemas']['HTTPValidationError'];
+					"application/json": components["schemas"]["HTTPValidationError"];
 				};
 			};
 		};
@@ -2095,7 +2095,7 @@ export interface operations {
 		};
 		requestBody: {
 			content: {
-				'application/json': components['schemas']['RecipeCreate'];
+				"application/json": components["schemas"]["RecipeCreate"];
 			};
 		};
 		responses: {
@@ -2105,7 +2105,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/json': components['schemas']['RecipePublic'];
+					"application/json": components["schemas"]["RecipePublic"];
 				};
 			};
 			/** @description Validation Error */
@@ -2114,7 +2114,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/json': components['schemas']['HTTPValidationError'];
+					"application/json": components["schemas"]["HTTPValidationError"];
 				};
 			};
 		};
@@ -2137,7 +2137,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/json': components['schemas']['IngredientPublic'][];
+					"application/json": components["schemas"]["IngredientPublic"][];
 				};
 			};
 			/** @description Validation Error */
@@ -2146,7 +2146,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/json': components['schemas']['HTTPValidationError'];
+					"application/json": components["schemas"]["HTTPValidationError"];
 				};
 			};
 		};
@@ -2160,7 +2160,7 @@ export interface operations {
 		};
 		requestBody: {
 			content: {
-				'application/json': components['schemas']['IngredientCreate'];
+				"application/json": components["schemas"]["IngredientCreate"];
 			};
 		};
 		responses: {
@@ -2170,7 +2170,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/json': components['schemas']['IngredientPublic'];
+					"application/json": components["schemas"]["IngredientPublic"];
 				};
 			};
 			/** @description Validation Error */
@@ -2179,7 +2179,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/json': components['schemas']['HTTPValidationError'];
+					"application/json": components["schemas"]["HTTPValidationError"];
 				};
 			};
 		};
@@ -2201,7 +2201,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/json': components['schemas']['IngredientPublic'];
+					"application/json": components["schemas"]["IngredientPublic"];
 				};
 			};
 			/** @description Validation Error */
@@ -2210,7 +2210,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/json': components['schemas']['HTTPValidationError'];
+					"application/json": components["schemas"]["HTTPValidationError"];
 				};
 			};
 		};
@@ -2232,7 +2232,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/json': components['schemas']['IngredientPublic'];
+					"application/json": components["schemas"]["IngredientPublic"];
 				};
 			};
 			/** @description Validation Error */
@@ -2241,7 +2241,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/json': components['schemas']['HTTPValidationError'];
+					"application/json": components["schemas"]["HTTPValidationError"];
 				};
 			};
 		};
@@ -2257,7 +2257,7 @@ export interface operations {
 		};
 		requestBody: {
 			content: {
-				'application/json': components['schemas']['IngredientCreate'];
+				"application/json": components["schemas"]["IngredientCreate"];
 			};
 		};
 		responses: {
@@ -2267,7 +2267,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/json': components['schemas']['IngredientPublic'];
+					"application/json": components["schemas"]["IngredientPublic"];
 				};
 			};
 			/** @description Validation Error */
@@ -2276,7 +2276,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/json': components['schemas']['HTTPValidationError'];
+					"application/json": components["schemas"]["HTTPValidationError"];
 				};
 			};
 		};
@@ -2299,7 +2299,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/json': components['schemas']['GameSessionPublic'][];
+					"application/json": components["schemas"]["GameSessionPublic"][];
 				};
 			};
 			/** @description Validation Error */
@@ -2308,7 +2308,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/json': components['schemas']['HTTPValidationError'];
+					"application/json": components["schemas"]["HTTPValidationError"];
 				};
 			};
 		};
@@ -2322,7 +2322,7 @@ export interface operations {
 		};
 		requestBody: {
 			content: {
-				'application/json': components['schemas']['GameSessionCreate'];
+				"application/json": components["schemas"]["GameSessionCreate"];
 			};
 		};
 		responses: {
@@ -2332,7 +2332,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/json': components['schemas']['GameSessionPublic'];
+					"application/json": components["schemas"]["GameSessionPublic"];
 				};
 			};
 			/** @description Validation Error */
@@ -2341,7 +2341,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/json': components['schemas']['HTTPValidationError'];
+					"application/json": components["schemas"]["HTTPValidationError"];
 				};
 			};
 		};
@@ -2364,7 +2364,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/json': components['schemas']['DrinkPublic'][];
+					"application/json": components["schemas"]["DrinkPublic"][];
 				};
 			};
 			/** @description Validation Error */
@@ -2373,7 +2373,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/json': components['schemas']['HTTPValidationError'];
+					"application/json": components["schemas"]["HTTPValidationError"];
 				};
 			};
 		};
@@ -2387,7 +2387,7 @@ export interface operations {
 		};
 		requestBody: {
 			content: {
-				'application/json': components['schemas']['DrinkCreate'];
+				"application/json": components["schemas"]["DrinkCreate"];
 			};
 		};
 		responses: {
@@ -2397,7 +2397,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/json': components['schemas']['DrinkPublic'];
+					"application/json": components["schemas"]["DrinkPublic"];
 				};
 			};
 			/** @description Validation Error */
@@ -2406,7 +2406,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/json': components['schemas']['HTTPValidationError'];
+					"application/json": components["schemas"]["HTTPValidationError"];
 				};
 			};
 		};
@@ -2428,7 +2428,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/json': unknown;
+					"application/json": unknown;
 				};
 			};
 			/** @description Validation Error */
@@ -2437,7 +2437,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/json': components['schemas']['HTTPValidationError'];
+					"application/json": components["schemas"]["HTTPValidationError"];
 				};
 			};
 		};
@@ -2453,7 +2453,7 @@ export interface operations {
 		};
 		requestBody: {
 			content: {
-				'application/json': components['schemas']['DrinkCreate'];
+				"application/json": components["schemas"]["DrinkCreate"];
 			};
 		};
 		responses: {
@@ -2463,7 +2463,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/json': components['schemas']['DrinkPublic'];
+					"application/json": components["schemas"]["DrinkPublic"];
 				};
 			};
 			/** @description Validation Error */
@@ -2472,7 +2472,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/json': components['schemas']['HTTPValidationError'];
+					"application/json": components["schemas"]["HTTPValidationError"];
 				};
 			};
 		};
@@ -2494,7 +2494,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/json': components['schemas']['GameSessionPublic'];
+					"application/json": components["schemas"]["GameSessionPublic"];
 				};
 			};
 			/** @description Validation Error */
@@ -2503,7 +2503,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/json': components['schemas']['HTTPValidationError'];
+					"application/json": components["schemas"]["HTTPValidationError"];
 				};
 			};
 		};
@@ -2525,7 +2525,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/json': unknown;
+					"application/json": unknown;
 				};
 			};
 			/** @description Validation Error */
@@ -2534,7 +2534,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/json': components['schemas']['HTTPValidationError'];
+					"application/json": components["schemas"]["HTTPValidationError"];
 				};
 			};
 		};
@@ -2556,7 +2556,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/json': unknown;
+					"application/json": unknown;
 				};
 			};
 			/** @description Validation Error */
@@ -2565,7 +2565,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/json': components['schemas']['HTTPValidationError'];
+					"application/json": components["schemas"]["HTTPValidationError"];
 				};
 			};
 		};
@@ -2581,7 +2581,7 @@ export interface operations {
 		};
 		requestBody: {
 			content: {
-				'application/json': components['schemas']['GamePlayerCreate'];
+				"application/json": components["schemas"]["GamePlayerCreate"];
 			};
 		};
 		responses: {
@@ -2591,7 +2591,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/json': components['schemas']['GamePlayerPublic'];
+					"application/json": components["schemas"]["GamePlayerPublic"];
 				};
 			};
 			/** @description Validation Error */
@@ -2600,7 +2600,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/json': components['schemas']['HTTPValidationError'];
+					"application/json": components["schemas"]["HTTPValidationError"];
 				};
 			};
 		};
@@ -2616,7 +2616,7 @@ export interface operations {
 		};
 		requestBody: {
 			content: {
-				'application/json': components['schemas']['GameTeamCreate'];
+				"application/json": components["schemas"]["GameTeamCreate"];
 			};
 		};
 		responses: {
@@ -2626,7 +2626,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/json': components['schemas']['GameTeamPublic'];
+					"application/json": components["schemas"]["GameTeamPublic"];
 				};
 			};
 			/** @description Validation Error */
@@ -2635,7 +2635,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/json': components['schemas']['HTTPValidationError'];
+					"application/json": components["schemas"]["HTTPValidationError"];
 				};
 			};
 		};
@@ -2658,7 +2658,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/json': unknown;
+					"application/json": unknown;
 				};
 			};
 			/** @description Validation Error */
@@ -2667,7 +2667,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/json': components['schemas']['HTTPValidationError'];
+					"application/json": components["schemas"]["HTTPValidationError"];
 				};
 			};
 		};
@@ -2684,7 +2684,7 @@ export interface operations {
 		};
 		requestBody: {
 			content: {
-				'application/json': components['schemas']['GamePlayerUpdate'];
+				"application/json": components["schemas"]["GamePlayerUpdate"];
 			};
 		};
 		responses: {
@@ -2694,7 +2694,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/json': components['schemas']['GamePlayerPublic'];
+					"application/json": components["schemas"]["GamePlayerPublic"];
 				};
 			};
 			/** @description Validation Error */
@@ -2703,7 +2703,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/json': components['schemas']['HTTPValidationError'];
+					"application/json": components["schemas"]["HTTPValidationError"];
 				};
 			};
 		};
@@ -2726,7 +2726,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/json': unknown;
+					"application/json": unknown;
 				};
 			};
 			/** @description Validation Error */
@@ -2735,7 +2735,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/json': components['schemas']['HTTPValidationError'];
+					"application/json": components["schemas"]["HTTPValidationError"];
 				};
 			};
 		};
@@ -2752,7 +2752,7 @@ export interface operations {
 		};
 		requestBody: {
 			content: {
-				'application/json': components['schemas']['GamePlayerDrinkLinkCreate'];
+				"application/json": components["schemas"]["GamePlayerDrinkLinkCreate"];
 			};
 		};
 		responses: {
@@ -2762,7 +2762,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/json': components['schemas']['GamePlayerPublic'];
+					"application/json": components["schemas"]["GamePlayerPublic"];
 				};
 			};
 			/** @description Validation Error */
@@ -2771,7 +2771,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/json': components['schemas']['HTTPValidationError'];
+					"application/json": components["schemas"]["HTTPValidationError"];
 				};
 			};
 		};
@@ -2793,7 +2793,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/json': unknown;
+					"application/json": unknown;
 				};
 			};
 			/** @description Validation Error */
@@ -2802,7 +2802,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/json': components['schemas']['HTTPValidationError'];
+					"application/json": components["schemas"]["HTTPValidationError"];
 				};
 			};
 		};
@@ -2816,7 +2816,7 @@ export interface operations {
 		};
 		requestBody: {
 			content: {
-				'application/x-www-form-urlencoded': components['schemas']['Body_login_access_token_login_access_token_post'];
+				"application/x-www-form-urlencoded": components["schemas"]["Body_login_access_token_login_access_token_post"];
 			};
 		};
 		responses: {
@@ -2826,7 +2826,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/json': components['schemas']['Token'];
+					"application/json": components["schemas"]["Token"];
 				};
 			};
 			/** @description Validation Error */
@@ -2835,7 +2835,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/json': components['schemas']['HTTPValidationError'];
+					"application/json": components["schemas"]["HTTPValidationError"];
 				};
 			};
 		};
@@ -2849,7 +2849,7 @@ export interface operations {
 		};
 		requestBody: {
 			content: {
-				'application/json': components['schemas']['RefreshRequest'];
+				"application/json": components["schemas"]["RefreshRequest"];
 			};
 		};
 		responses: {
@@ -2859,7 +2859,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/json': components['schemas']['Token'];
+					"application/json": components["schemas"]["Token"];
 				};
 			};
 			/** @description Validation Error */
@@ -2868,7 +2868,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/json': components['schemas']['HTTPValidationError'];
+					"application/json": components["schemas"]["HTTPValidationError"];
 				};
 			};
 		};
@@ -2882,7 +2882,7 @@ export interface operations {
 		};
 		requestBody?: {
 			content: {
-				'application/json': components['schemas']['RefreshRequest'] | null;
+				"application/json": components["schemas"]["RefreshRequest"] | null;
 			};
 		};
 		responses: {
@@ -2892,7 +2892,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/json': components['schemas']['Message'];
+					"application/json": components["schemas"]["Message"];
 				};
 			};
 			/** @description Validation Error */
@@ -2901,7 +2901,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/json': components['schemas']['HTTPValidationError'];
+					"application/json": components["schemas"]["HTTPValidationError"];
 				};
 			};
 		};
@@ -2921,7 +2921,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/json': components['schemas']['UserPublic'];
+					"application/json": components["schemas"]["UserPublic"];
 				};
 			};
 		};
@@ -2943,7 +2943,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/json': components['schemas']['Message'];
+					"application/json": components["schemas"]["Message"];
 				};
 			};
 			/** @description Validation Error */
@@ -2952,7 +2952,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/json': components['schemas']['HTTPValidationError'];
+					"application/json": components["schemas"]["HTTPValidationError"];
 				};
 			};
 		};
@@ -2966,7 +2966,7 @@ export interface operations {
 		};
 		requestBody: {
 			content: {
-				'application/json': components['schemas']['NewPassword'];
+				"application/json": components["schemas"]["NewPassword"];
 			};
 		};
 		responses: {
@@ -2976,7 +2976,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/json': components['schemas']['Message'];
+					"application/json": components["schemas"]["Message"];
 				};
 			};
 			/** @description Validation Error */
@@ -2985,7 +2985,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/json': components['schemas']['HTTPValidationError'];
+					"application/json": components["schemas"]["HTTPValidationError"];
 				};
 			};
 		};
@@ -3007,7 +3007,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'text/html': string;
+					"text/html": string;
 				};
 			};
 			/** @description Validation Error */
@@ -3016,7 +3016,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/json': components['schemas']['HTTPValidationError'];
+					"application/json": components["schemas"]["HTTPValidationError"];
 				};
 			};
 		};
@@ -3036,7 +3036,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/json': components['schemas']['RolePublic'][];
+					"application/json": components["schemas"]["RolePublic"][];
 				};
 			};
 		};
@@ -3050,7 +3050,7 @@ export interface operations {
 		};
 		requestBody: {
 			content: {
-				'application/json': components['schemas']['RoleCreate'];
+				"application/json": components["schemas"]["RoleCreate"];
 			};
 		};
 		responses: {
@@ -3060,7 +3060,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/json': components['schemas']['RolePublic'];
+					"application/json": components["schemas"]["RolePublic"];
 				};
 			};
 			/** @description Validation Error */
@@ -3069,7 +3069,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/json': components['schemas']['HTTPValidationError'];
+					"application/json": components["schemas"]["HTTPValidationError"];
 				};
 			};
 		};
@@ -3091,7 +3091,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/json': components['schemas']['RolePublic'];
+					"application/json": components["schemas"]["RolePublic"];
 				};
 			};
 			/** @description Validation Error */
@@ -3100,7 +3100,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/json': components['schemas']['HTTPValidationError'];
+					"application/json": components["schemas"]["HTTPValidationError"];
 				};
 			};
 		};
@@ -3116,7 +3116,7 @@ export interface operations {
 		};
 		requestBody: {
 			content: {
-				'application/json': components['schemas']['RoleUpdate'];
+				"application/json": components["schemas"]["RoleUpdate"];
 			};
 		};
 		responses: {
@@ -3126,7 +3126,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/json': components['schemas']['RolePublic'];
+					"application/json": components["schemas"]["RolePublic"];
 				};
 			};
 			/** @description Validation Error */
@@ -3135,7 +3135,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/json': components['schemas']['HTTPValidationError'];
+					"application/json": components["schemas"]["HTTPValidationError"];
 				};
 			};
 		};
@@ -3157,7 +3157,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/json': components['schemas']['Message'];
+					"application/json": components["schemas"]["Message"];
 				};
 			};
 			/** @description Validation Error */
@@ -3166,7 +3166,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/json': components['schemas']['HTTPValidationError'];
+					"application/json": components["schemas"]["HTTPValidationError"];
 				};
 			};
 		};
@@ -3186,7 +3186,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/json': {
+					"application/json": {
 						[key: string]: unknown;
 					};
 				};
@@ -3210,7 +3210,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/json': components['schemas']['RolePublic'];
+					"application/json": components["schemas"]["RolePublic"];
 				};
 			};
 			/** @description Validation Error */
@@ -3219,7 +3219,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/json': components['schemas']['HTTPValidationError'];
+					"application/json": components["schemas"]["HTTPValidationError"];
 				};
 			};
 		};
@@ -3239,7 +3239,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/json': {
+					"application/json": {
 						[key: string]: unknown;
 					};
 				};
@@ -3261,7 +3261,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/json': unknown;
+					"application/json": unknown;
 				};
 			};
 		};

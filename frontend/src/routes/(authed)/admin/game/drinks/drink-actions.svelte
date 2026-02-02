@@ -1,21 +1,21 @@
 <script lang="ts">
-	import Button, { buttonVariants } from '$lib/components/ui/button/button.svelte';
-	import { Pencil, Trash2 } from 'lucide-svelte';
-	import { enhance } from '$app/forms';
-	import * as Dialog from '$lib/components/ui/dialog/index.js';
-	import { Input } from '$lib/components/ui/input';
-	import { Field, Control, Label, FieldErrors } from 'formsnap';
-	import { untrack } from 'svelte';
+	import Button, { buttonVariants } from "$lib/components/ui/button/button.svelte";
+	import { Pencil, Trash2 } from "lucide-svelte";
+	import { enhance } from "$app/forms";
+	import * as Dialog from "$lib/components/ui/dialog/index.js";
+	import { Input } from "$lib/components/ui/input";
+	import { Field, Control, Label, FieldErrors } from "formsnap";
+	import { untrack } from "svelte";
 
-	import type { components } from '$lib/api/v1';
-	import type { SuperForm, Infer } from 'sveltekit-superforms';
-	import type { DrinkUpdateSchema } from '$lib/schemas/schemas';
+	import type { components } from "$lib/api/v1";
+	import type { SuperForm, Infer } from "sveltekit-superforms";
+	import type { DrinkUpdateSchema } from "$lib/schemas/schemas";
 
 	let {
 		drink,
 		updateForm
 	}: {
-		drink: components['schemas']['DrinkPublic'];
+		drink: components["schemas"]["DrinkPublic"];
 		updateForm: SuperForm<Infer<typeof DrinkUpdateSchema>>;
 	} = $props();
 
@@ -34,7 +34,7 @@
 
 	$effect(() => {
 		if ($message && editOpen) {
-			if ($message.includes('successfully')) {
+			if ($message.includes("successfully")) {
 				editOpen = false;
 			}
 		}
@@ -44,7 +44,7 @@
 <div class="flex items-center justify-end gap-2">
 	<Dialog.Root bind:open={editOpen}>
 		<Dialog.Trigger
-			class={buttonVariants({ variant: 'ghost', size: 'sm', class: 'p-2' })}
+			class={buttonVariants({ variant: "ghost", size: "sm", class: "p-2" })}
 			onclick={openEdit}
 		>
 			<Pencil class="" />
@@ -57,7 +57,7 @@
 			<form method="POST" action="?/updateDrink" use:formEnhance class="space-y-4 py-4">
 				<input type="hidden" name="id" value={$formData.id} />
 
-				{#if $message && !$message.includes('successfully')}
+				{#if $message && !$message.includes("successfully")}
 					<div class="rounded-md border border-red-200 bg-red-50 p-3">
 						<p class="text-sm text-red-600">{$message}</p>
 					</div>

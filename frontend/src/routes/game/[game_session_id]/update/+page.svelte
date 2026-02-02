@@ -1,24 +1,30 @@
 <script lang="ts">
-	import { superForm, fileProxy } from 'sveltekit-superforms';
-	import { untrack } from 'svelte';
-	import SuperDebug from 'sveltekit-superforms';
-	import Team from '$lib/components/Team.svelte';
-	import Player from '$lib/components/Player.svelte';
-	import { Input } from '$lib/components/ui/input';
-	import { Button } from '$lib/components/ui/button';
+	import { superForm, fileProxy } from "sveltekit-superforms";
+	import { untrack } from "svelte";
+	import SuperDebug from "sveltekit-superforms";
+	import Team from "$lib/components/Team.svelte";
+	import Player from "$lib/components/Player.svelte";
+	import { Input } from "$lib/components/ui/input";
+	import { Button } from "$lib/components/ui/button";
 	import * as Select from "$lib/components/ui/select/index.js";
-	import { Field, Control, Label, FieldErrors, Description } from 'formsnap';
+	import { Field, Control, Label, FieldErrors, Description } from "formsnap";
 
 	let { data } = $props();
 
-	const teamForm = superForm(untrack(() => data.teamForm), {
-		dataType: 'json'
-	});
+	const teamForm = superForm(
+		untrack(() => data.teamForm),
+		{
+			dataType: "json"
+		}
+	);
 	const { form: teamFormData, errors, message, constraints, enhance } = teamForm;
 
-	const playerForm = superForm(untrack(() => data.playerForm), {
-		dataType: 'json'
-	});
+	const playerForm = superForm(
+		untrack(() => data.playerForm),
+		{
+			dataType: "json"
+		}
+	);
 	const {
 		form: playerFormData,
 		errors: playerErrors,
@@ -41,7 +47,7 @@
 				Game Management
 			</h1>
 			<p class="mt-2 text-sm text-gray-600 sm:text-base dark:text-gray-300">
-				Manage teams and players for {data.game_session.title || 'your game session'}
+				Manage teams and players for {data.game_session.title || "your game session"}
 			</p>
 		</div>
 
@@ -128,12 +134,7 @@
 					</Control>
 					<FieldErrors class="text-sm text-red-600 dark:text-red-400" />
 				</Field>
-				<Button
-					type="submit"
-					class="w-full sm:w-auto"
-				>
-					Add Team
-				</Button>
+				<Button type="submit" class="w-full sm:w-auto">Add Team</Button>
 			</form>
 		</div>
 
@@ -185,7 +186,7 @@
 							</Label>
 							<select
 								{...props}
-								class="w-full cursor-pointer rounded-lg border-2 border-gray-300 bg-white px-4 py-2 text-base transition-colors hover:border-blue-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100 sm:py-3 dark:border-gray-800 dark:bg-gray-900/40 dark:text-gray-100"
+								class="w-full cursor-pointer rounded-lg border-2 border-gray-300 bg-white px-4 py-2 text-base transition-colors hover:border-blue-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 focus:outline-none sm:py-3 dark:border-gray-800 dark:bg-gray-900/40 dark:text-gray-100"
 								bind:value={$playerFormData.team_id}
 							>
 								<option value="">No Team</option>
@@ -197,12 +198,7 @@
 					</Control>
 					<FieldErrors class="text-sm text-red-600 dark:text-red-400" />
 				</Field>
-				<Button
-					type="submit"
-					class="w-full sm:w-auto"
-				>
-					Add Player
-				</Button>
+				<Button type="submit" class="w-full sm:w-auto">Add Player</Button>
 			</form>
 		</div>
 	</div>

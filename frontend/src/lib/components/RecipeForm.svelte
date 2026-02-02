@@ -1,24 +1,24 @@
 <script lang="ts">
-	import { page } from '$app/stores';
-	import { browser } from '$app/environment';
-	import { onMount, untrack } from 'svelte';
-	import { superForm } from 'sveltekit-superforms';
-	import { zod4 as zodClient } from 'sveltekit-superforms/adapters';
-	import { RecipeSchema } from '$lib/schemas/schemas';
-	import * as Dialog from '$lib/components/ui/dialog/index.js';
-	import InstructionsEditor from '$lib/components/InstructionsEditor.svelte';
-	import * as Select from '$lib/components/ui/select/index.js';
-	import { Input } from '$lib/components/ui/input';
-	import { Label } from '$lib/components/ui/label';
-	import { Combobox } from '$lib/components/ui/combobox';
-	import { Field, Control, Label as SnapLabel, FieldErrors } from 'formsnap';
+	import { page } from "$app/stores";
+	import { browser } from "$app/environment";
+	import { onMount, untrack } from "svelte";
+	import { superForm } from "sveltekit-superforms";
+	import { zod4 as zodClient } from "sveltekit-superforms/adapters";
+	import { RecipeSchema } from "$lib/schemas/schemas";
+	import * as Dialog from "$lib/components/ui/dialog/index.js";
+	import InstructionsEditor from "$lib/components/InstructionsEditor.svelte";
+	import * as Select from "$lib/components/ui/select/index.js";
+	import { Input } from "$lib/components/ui/input";
+	import { Label } from "$lib/components/ui/label";
+	import { Combobox } from "$lib/components/ui/combobox";
+	import { Field, Control, Label as SnapLabel, FieldErrors } from "formsnap";
 
 	interface Props {
 		data: any;
 		pageTitle: string;
 		pageDescription: string;
 		submitButtonText: string;
-		submitButtonColor?: 'blue' | 'emerald';
+		submitButtonColor?: "blue" | "emerald";
 		onSubmit?: () => void;
 	}
 
@@ -27,26 +27,29 @@
 		pageTitle,
 		pageDescription,
 		submitButtonText,
-		submitButtonColor = 'blue',
+		submitButtonColor = "blue",
 		onSubmit
 	}: Props = $props();
 
-	const form = superForm(untrack(() => data.form), {
-		validators: zodClient(RecipeSchema),
-		dataType: 'json',
-		onUpdated({ form: f }) {
-			if (f.valid && browser) {
-				localStorage.removeItem(`recipe-snapshot-${$page.url.pathname}`);
-			}
-		},
-		onResult({ result }) {
-			if (result.type === 'redirect') {
-				if (browser) {
+	const form = superForm(
+		untrack(() => data.form),
+		{
+			validators: zodClient(RecipeSchema),
+			dataType: "json",
+			onUpdated({ form: f }) {
+				if (f.valid && browser) {
 					localStorage.removeItem(`recipe-snapshot-${$page.url.pathname}`);
+				}
+			},
+			onResult({ result }) {
+				if (result.type === "redirect") {
+					if (browser) {
+						localStorage.removeItem(`recipe-snapshot-${$page.url.pathname}`);
+					}
 				}
 			}
 		}
-	});
+	);
 
 	const { form: formData, errors, message, constraints, enhance, reset } = form;
 
@@ -59,7 +62,7 @@
 
 	// Function to clear form and localStorage
 	function clearForm() {
-		if (confirm('Are you sure you want to clear the form? This action cannot be undone.')) {
+		if (confirm("Are you sure you want to clear the form? This action cannot be undone.")) {
 			// Clear localStorage
 			if (browser) {
 				localStorage.removeItem(`recipe-snapshot-${$page.url.pathname}`);
@@ -78,7 +81,7 @@
 					const snapshot = JSON.parse(stored);
 					$formData = { ...$formData, ...snapshot };
 				} catch (e) {
-					console.error('Failed to restore form', e);
+					console.error("Failed to restore form", e);
 				}
 			}
 		}
@@ -91,38 +94,38 @@
 	});
 
 	// Ingredient dialog state
-	let selectedIngredientId = $state<string>('');
+	let selectedIngredientId = $state<string>("");
 	let ingredientAmount = $state<number>(1.0);
-	let ingredientUnit = $state<string>('g');
+	let ingredientUnit = $state<string>("g");
 	let open = $state(false);
 
 	const units = [
-		{ value: 'g', label: 'grams (g)' },
-		{ value: 'kg', label: 'kilograms (kg)' },
-		{ value: 'ml', label: 'milliliters (ml)' },
-		{ value: 'L', label: 'liters (L)' },
-		{ value: 'pcs', label: 'pieces (pcs)' }
+		{ value: "g", label: "grams (g)" },
+		{ value: "kg", label: "kilograms (kg)" },
+		{ value: "ml", label: "milliliters (ml)" },
+		{ value: "L", label: "liters (L)" },
+		{ value: "pcs", label: "pieces (pcs)" }
 	];
 
 	let selectedUnitLabel = $derived(
-		units.find((u) => u.value === ingredientUnit)?.label ?? 'Select a unit'
+		units.find((u) => u.value === ingredientUnit)?.label ?? "Select a unit"
 	);
 
 	// Color variations for submit button
 	const colorClasses = {
-		blue: 'bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 focus:ring-blue-500',
+		blue: "bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 focus:ring-blue-500",
 		emerald:
-			'bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 focus:ring-emerald-500'
+			"bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 focus:ring-emerald-500"
 	};
 
-	let previewUrl = $state('');
+	let previewUrl = $state("");
 
 	onMount(() => {
 		if (data.recipe?.image) {
-			if (data.recipe.image.startsWith('http')) {
+			if (data.recipe.image.startsWith("http")) {
 				previewUrl = data.recipe.image;
 			} else {
-				const baseUrl = data.backendUrl || 'http://127.0.0.1:8000';
+				const baseUrl = data.backendUrl || "http://127.0.0.1:8000";
 				previewUrl = `${baseUrl}${data.recipe.image}`;
 			}
 		}
@@ -141,7 +144,7 @@
 			</div>
 			<button
 				onclick={clearForm}
-				class="rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm transition-colors hover:bg-red-50 hover:text-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 dark:border-gray-800 dark:bg-gray-900/40 dark:text-gray-200 dark:hover:bg-red-900/20 dark:hover:text-red-400"
+				class="rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm transition-colors hover:bg-red-50 hover:text-red-700 focus:ring-2 focus:ring-red-500 focus:ring-offset-2 focus:outline-none dark:border-gray-800 dark:bg-gray-900/40 dark:text-gray-200 dark:hover:bg-red-900/20 dark:hover:text-red-400"
 				type="button"
 			>
 				Clear Form
@@ -172,23 +175,39 @@
 										<SnapLabel>Recipe Image</SnapLabel>
 
 										{#if previewUrl}
-											<div class="relative mb-4 aspect-video w-full overflow-hidden rounded-lg border border-gray-200 dark:border-gray-700">
-												<img src={previewUrl} alt="Recipe preview" class="h-full w-full object-cover" />
+											<div
+												class="relative mb-4 aspect-video w-full overflow-hidden rounded-lg border border-gray-200 dark:border-gray-700"
+											>
+												<img
+													src={previewUrl}
+													alt="Recipe preview"
+													class="h-full w-full object-cover"
+												/>
 												<button
 													type="button"
 													aria-label="Remove image"
-													class="absolute top-2 right-2 rounded-full bg-red-600 p-1.5 text-white shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+													class="absolute top-2 right-2 rounded-full bg-red-600 p-1.5 text-white shadow-sm hover:bg-red-700 focus:ring-2 focus:ring-red-500 focus:ring-offset-2 focus:outline-none"
 													onclick={() => {
-														previewUrl = '';
+														previewUrl = "";
 														$formData.image = null;
 														$formData.clearImage = true;
 														// If we have a file input, reset it
 														const input = document.getElementById(props.id) as HTMLInputElement;
-														if (input) input.value = '';
+														if (input) input.value = "";
 													}}
 												>
-													<svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-														<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+													<svg
+														class="h-4 w-4"
+														fill="none"
+														stroke="currentColor"
+														viewBox="0 0 24 24"
+													>
+														<path
+															stroke-linecap="round"
+															stroke-linejoin="round"
+															stroke-width="2"
+															d="M6 18L18 6M6 6l12 12"
+														/>
 													</svg>
 												</button>
 											</div>
@@ -225,7 +244,7 @@
 										<input
 											{...props}
 											{...$constraints.title}
-											class="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-gray-900 placeholder-gray-500 shadow-sm transition-colors focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 dark:border-gray-800 dark:bg-gray-900/40 dark:text-gray-100 dark:placeholder-gray-500 dark:focus:border-blue-400 dark:focus:ring-blue-400/20"
+											class="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-gray-900 placeholder-gray-500 shadow-sm transition-colors focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none dark:border-gray-800 dark:bg-gray-900/40 dark:text-gray-100 dark:placeholder-gray-500 dark:focus:border-blue-400 dark:focus:ring-blue-400/20"
 											type="text"
 											placeholder="Enter a delicious recipe name..."
 											bind:value={$formData.title}
@@ -245,7 +264,7 @@
 										<input
 											{...props}
 											{...$constraints.servings}
-											class="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-gray-900 placeholder-gray-500 shadow-sm transition-colors focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 dark:border-gray-800 dark:bg-gray-900/40 dark:text-gray-100 dark:placeholder-gray-500 dark:focus:border-blue-400 dark:focus:ring-blue-400/20"
+											class="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-gray-900 placeholder-gray-500 shadow-sm transition-colors focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none dark:border-gray-800 dark:bg-gray-900/40 dark:text-gray-100 dark:placeholder-gray-500 dark:focus:border-blue-400 dark:focus:ring-blue-400/20"
 											type="number"
 											min="1"
 											placeholder="Enter number of servings"
@@ -285,7 +304,7 @@
 										event.preventDefault();
 										open = true;
 									}}
-									class="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-medium text-white shadow-sm transition-colors hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+									class="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-medium text-white shadow-sm transition-colors hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none"
 								>
 									<svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 										<path
@@ -310,7 +329,10 @@
 										<div>
 											<Label for="ingredient-select" class="mb-2">Choose Ingredient</Label>
 											<Combobox
-												items={availableIngredients.map((i: any) => ({ label: i.title, value: i.id }))}
+												items={availableIngredients.map((i: any) => ({
+													label: i.title,
+													value: i.id
+												}))}
 												bind:value={selectedIngredientId}
 												placeholder="Select an ingredient..."
 												searchPlaceholder="Type to filter ingredients..."
@@ -329,7 +351,7 @@
 													type="number"
 													min="0.1"
 													step="0.1"
-													class="w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-gray-900 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 dark:border-gray-800 dark:bg-gray-900/40 dark:text-gray-100 dark:focus:border-blue-400 dark:focus:ring-blue-400/20"
+													class="w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-gray-900 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none dark:border-gray-800 dark:bg-gray-900/40 dark:text-gray-100 dark:focus:border-blue-400 dark:focus:ring-blue-400/20"
 													bind:value={ingredientAmount}
 													placeholder="1"
 												/>
@@ -354,12 +376,12 @@
 									<Dialog.Footer class="flex gap-3">
 										<button
 											type="button"
-											class="flex-1 rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:border-gray-800 dark:bg-gray-900/40 dark:text-gray-200 dark:hover:bg-gray-800"
+											class="flex-1 rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none dark:border-gray-800 dark:bg-gray-900/40 dark:text-gray-200 dark:hover:bg-gray-800"
 											onclick={() => {
 												// Reset form when canceling
-												selectedIngredientId = '';
+												selectedIngredientId = "";
 												ingredientAmount = 1.0;
-												ingredientUnit = 'g';
+												ingredientUnit = "g";
 												open = false;
 											}}
 										>
@@ -367,7 +389,7 @@
 										</button>
 										<button
 											type="button"
-											class="flex-1 rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:bg-gray-300"
+											class="flex-1 rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none disabled:cursor-not-allowed disabled:bg-gray-300"
 											disabled={!selectedIngredientId ||
 												!ingredientAmount ||
 												ingredientAmount < 0.1}
@@ -383,7 +405,7 @@
 														title: ingredient.title,
 														calories: ingredient.calories,
 														amount: ingredientAmount,
-														unit: ingredientUnit as 'g' | 'kg' | 'ml' | 'L' | 'pcs'
+														unit: ingredientUnit as "g" | "kg" | "ml" | "L" | "pcs"
 													};
 													$formData.ingredients = $formData.ingredients.concat({
 														id: ingredientLink.id,
@@ -392,12 +414,12 @@
 														unit: ingredientLink.unit
 													});
 													// Reset form
-													selectedIngredientId = '';
+													selectedIngredientId = "";
 													ingredientAmount = 1.0;
-													ingredientUnit = 'g';
+													ingredientUnit = "g";
 													open = false;
 												} else {
-													alert('Ingredient not found');
+													alert("Ingredient not found");
 												}
 											}}
 										>
@@ -413,7 +435,7 @@
 							<button
 								class="w-full rounded-lg {colorClasses[
 									submitButtonColor
-								]} px-6 py-3 text-base font-semibold text-white shadow-lg transition-all hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:focus:ring-offset-gray-900"
+								]} px-6 py-3 text-base font-semibold text-white shadow-lg transition-all hover:shadow-xl focus:ring-2 focus:ring-offset-2 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 dark:focus:ring-offset-gray-900"
 								type="submit"
 								onclick={() => {
 									onSubmit?.();
@@ -486,11 +508,11 @@
 										</span>
 										<div class="flex flex-col">
 											<span class="text-sm font-medium text-gray-900 dark:text-gray-100">
-												{ingredient.title || 'Unknown Ingredient'}
+												{ingredient.title || "Unknown Ingredient"}
 											</span>
 											<span class="text-xs text-gray-500 dark:text-gray-400">
 												{ingredient.amount || 0}
-												{ingredient.unit || 'units'}
+												{ingredient.unit || "units"}
 											</span>
 										</div>
 									</div>

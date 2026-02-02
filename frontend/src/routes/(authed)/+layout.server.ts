@@ -1,5 +1,5 @@
-import { redirect } from '@sveltejs/kit';
-import { error } from '@sveltejs/kit';
+import { redirect } from "@sveltejs/kit";
+import { error } from "@sveltejs/kit";
 
 export function load({ locals, url }) {
 	const { authenticatedUser } = locals;
@@ -7,6 +7,6 @@ export function load({ locals, url }) {
 		redirect(303, `/auth/login?redirectTo=${url.pathname}`);
 	}
 	if (!authenticatedUser?.is_superuser) {
-		error(403, 'Forbidden');
+		error(403, "Forbidden");
 	}
 }

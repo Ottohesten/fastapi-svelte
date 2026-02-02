@@ -1,35 +1,38 @@
 <script lang="ts">
-	import Ingredient from '$lib/components/Ingredient.svelte';
+	import Ingredient from "$lib/components/Ingredient.svelte";
 
-	import * as Dialog from '$lib/components/ui/dialog';
-	import { Button } from '$lib/components/ui/button';
-	import { superForm, type SuperValidated, type Infer } from 'sveltekit-superforms';
-	import { zod4 as zodClient } from 'sveltekit-superforms/adapters';
-	import SuperDebug from 'sveltekit-superforms';
-	import { untrack } from 'svelte';
-	import { Field, Control, Label, Description, FieldErrors } from 'formsnap';
-	import { Input } from '$lib/components/ui/input/index.js';
-	import { IngredientSchema } from '$lib/schemas/schemas.js';
+	import * as Dialog from "$lib/components/ui/dialog";
+	import { Button } from "$lib/components/ui/button";
+	import { superForm, type SuperValidated, type Infer } from "sveltekit-superforms";
+	import { zod4 as zodClient } from "sveltekit-superforms/adapters";
+	import SuperDebug from "sveltekit-superforms";
+	import { untrack } from "svelte";
+	import { Field, Control, Label, Description, FieldErrors } from "formsnap";
+	import { Input } from "$lib/components/ui/input/index.js";
+	import { IngredientSchema } from "$lib/schemas/schemas.js";
 
 	let { data } = $props();
 
 	let dialogOpen = $state(false);
 
-	const form = superForm(untrack(() => data.ingredientCreateForm), {
-		validators: zodClient(IngredientSchema),
-		resetForm: true,
-		onUpdated: ({ form }) => {
-			console.log('Form updated:', {
-				valid: form.valid,
-				message: form.message,
-				errors: form.errors
-			});
-			if (form.valid && form.message) {
-				// console.log('Closing dialog...');
-				dialogOpen = false;
+	const form = superForm(
+		untrack(() => data.ingredientCreateForm),
+		{
+			validators: zodClient(IngredientSchema),
+			resetForm: true,
+			onUpdated: ({ form }) => {
+				console.log("Form updated:", {
+					valid: form.valid,
+					message: form.message,
+					errors: form.errors
+				});
+				if (form.valid && form.message) {
+					// console.log('Closing dialog...');
+					dialogOpen = false;
+				}
 			}
 		}
-	});
+	);
 
 	const { form: formData, enhance, errors, message } = form;
 </script>
@@ -49,7 +52,7 @@
 		{#if data.authenticatedUser && data.authenticatedUser.is_superuser}
 			<Dialog.Root bind:open={dialogOpen}>
 				<Dialog.Trigger
-					class="bg-primary text-primary-foreground ring-offset-background hover:bg-primary/90 focus-visible:ring-ring inline-flex h-10 w-full items-center justify-center whitespace-nowrap rounded-md px-4 py-2 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 sm:w-auto"
+					class="bg-primary text-primary-foreground ring-offset-background hover:bg-primary/90 focus-visible:ring-ring inline-flex h-10 w-full items-center justify-center rounded-md px-4 py-2 text-sm font-medium whitespace-nowrap transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 sm:w-auto"
 				>
 					Create Ingredient
 				</Dialog.Trigger>

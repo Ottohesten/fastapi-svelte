@@ -1,7 +1,7 @@
-import { createApiClient } from '$lib/api/api';
-import { error } from '@sveltejs/kit';
-import { redirect } from '@sveltejs/kit';
-import { env } from '$env/dynamic/private';
+import { createApiClient } from "$lib/api/api";
+import { error } from "@sveltejs/kit";
+import { redirect } from "@sveltejs/kit";
+import { env } from "$env/dynamic/private";
 
 export const load = async ({ fetch, params, locals }) => {
 	const client = createApiClient(fetch);
@@ -10,7 +10,7 @@ export const load = async ({ fetch, params, locals }) => {
 		data,
 		error: apierror,
 		response
-	} = await client.GET('/game/{game_session_id}', {
+	} = await client.GET("/game/{game_session_id}", {
 		params: {
 			path: { game_session_id: params.game_session_id }
 		}
@@ -24,7 +24,7 @@ export const load = async ({ fetch, params, locals }) => {
 		data: drinks,
 		error: drinksError,
 		response: drinksResponse
-	} = await client.GET('/game/drinks');
+	} = await client.GET("/game/drinks");
 
 	if (drinksError) {
 		error(drinksResponse.status, drinksError.detail?.toString());
@@ -34,6 +34,6 @@ export const load = async ({ fetch, params, locals }) => {
 		game_session: data,
 		drinks: drinks,
 		is_owner: locals.authenticatedUser ? data.owner.id === locals.authenticatedUser.id : false,
-		backendHost: env.BACKEND_HOST || 'http://127.0.0.1:8000'
+		backendHost: env.BACKEND_HOST || "http://127.0.0.1:8000"
 	};
 };

@@ -1,18 +1,18 @@
-import { createApiClient } from '$lib/api/api';
-import { redirect } from '@sveltejs/kit';
-import type { Actions } from './$types.js';
-import { zod4 as zod } from 'sveltekit-superforms/adapters';
-import { z } from 'zod';
-import { message, superValidate, fail } from 'sveltekit-superforms';
-import { error } from '@sveltejs/kit';
-import { RecipeSchema } from '$lib/schemas/schemas.js';
-import { env } from '$env/dynamic/private';
+import { createApiClient } from "$lib/api/api";
+import { redirect } from "@sveltejs/kit";
+import type { Actions } from "./$types.js";
+import { zod4 as zod } from "sveltekit-superforms/adapters";
+import { z } from "zod";
+import { message, superValidate, fail } from "sveltekit-superforms";
+import { error } from "@sveltejs/kit";
+import { RecipeSchema } from "$lib/schemas/schemas.js";
+import { env } from "$env/dynamic/private";
 
 export const load = async ({ fetch, parent }) => {
 	const client = createApiClient(fetch);
 
 	// get the list of available ingredients
-	const { data: ingredients, error: apierror, response } = await client.GET('/ingredients/');
+	const { data: ingredients, error: apierror, response } = await client.GET("/ingredients/");
 
 	if (apierror) {
 		return error(404, JSON.stringify(apierror.detail));
@@ -23,7 +23,7 @@ export const load = async ({ fetch, parent }) => {
 	return {
 		ingredients: ingredients,
 		form,
-		backendUrl: env.BACKEND_HOST || 'http://127.0.0.1:8000'
+		backendUrl: env.BACKEND_HOST || "http://127.0.0.1:8000"
 	};
 };
 
@@ -39,7 +39,7 @@ export const actions = {
 
 		// post form data to the API
 		const client = createApiClient(fetch);
-		const auth_token = cookies.get('auth_token');
+		const auth_token = cookies.get("auth_token");
 
 		// Transform ingredients from frontend format to backend format
 		const ingredientsForBackend = form.data.ingredients.map((ingredient) => ({
@@ -51,10 +51,10 @@ export const actions = {
 		let imageUrl = null;
 		if (form.data.image instanceof File && form.data.image.size > 0) {
 			const formData = new FormData();
-			formData.append('file', form.data.image);
+			formData.append("file", form.data.image);
 
 			// Upload image
-			const { data: uploadData, error: uploadError } = await client.POST('/recipes/upload-image', {
+			const { data: uploadData, error: uploadError } = await client.POST("/recipes/upload-image", {
 				body: formData as any, // Type cast might be needed if OpenAPI client doesn't support FormData directly yet or generated types are strict
 				headers: {
 					Authorization: `Bearer ${auth_token}`
@@ -62,7 +62,7 @@ export const actions = {
 			});
 
 			if (uploadError) {
-				return fail(400, { form, error: 'Failed to upload image' });
+				return fail(400, { form, error: "Failed to upload image" });
 			}
 
 			if (uploadData) {
@@ -74,7 +74,7 @@ export const actions = {
 			data,
 			error: apierror,
 			response
-		} = await client.POST('/recipes/', {
+		} = await client.POST("/recipes/", {
 			body: {
 				title: form.data.title,
 				instructions: form.data.instructions ?? null,
@@ -91,7 +91,7 @@ export const actions = {
 			return fail(400, { form });
 		}
 
-		return redirect(302, '/recipes');
+		return redirect(302, "/recipes");
 		// return message(form, "Form posted successfully!");
 	}
 } satisfies Actions;

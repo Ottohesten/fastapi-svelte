@@ -1,10 +1,10 @@
 <script lang="ts">
-	import { enhance } from '$app/forms';
-	import type { components } from '$lib/api/v1';
+	import { enhance } from "$app/forms";
+	import type { components } from "$lib/api/v1";
 
 	type Props = {
-		player: components['schemas']['GamePlayerPublic'];
-		authenticatedUser?: components['schemas']['UserPublic'];
+		player: components["schemas"]["GamePlayerPublic"];
+		authenticatedUser?: components["schemas"]["UserPublic"];
 	};
 
 	let { player, authenticatedUser }: Props = $props();
@@ -27,7 +27,7 @@
 						{player.team.name}
 					</p>
 				{:else}
-					<p class="text-xs italic text-gray-500 sm:text-sm dark:text-gray-400">No team assigned</p>
+					<p class="text-xs text-gray-500 italic sm:text-sm dark:text-gray-400">No team assigned</p>
 				{/if}
 			</div>
 		</a>
@@ -42,7 +42,7 @@
 			<input type="hidden" name="player_id" value={player.id} />
 			<input type="hidden" name="game_session_id" value={player.game_session_id} />
 			<button
-				class="rounded-md bg-red-600 px-3 py-1.5 text-xs font-medium text-white transition-colors hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 sm:px-4 sm:py-2 sm:text-sm"
+				class="rounded-md bg-red-600 px-3 py-1.5 text-xs font-medium text-white transition-colors hover:bg-red-700 focus:ring-2 focus:ring-red-500 focus:ring-offset-2 focus:outline-none sm:px-4 sm:py-2 sm:text-sm"
 				type="submit"
 			>
 				Delete

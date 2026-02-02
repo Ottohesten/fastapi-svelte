@@ -1,6 +1,6 @@
 <script lang="ts">
-	import RecipeForm from '$lib/components/RecipeForm.svelte';
-	import SuperDebug from 'sveltekit-superforms';
+	import RecipeForm from "$lib/components/RecipeForm.svelte";
+	import SuperDebug from "sveltekit-superforms";
 
 	let { data } = $props();
 </script>

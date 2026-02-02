@@ -16,21 +16,21 @@
 			// Set theme class before app mounts to avoid FOUC
 			(function () {
 				try {
-					var ls = localStorage.getItem('theme');
-					var systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-					if (ls === 'dark' || (!ls && systemDark)) {
-						document.documentElement.classList.add('dark');
+					var ls = localStorage.getItem("theme");
+					var systemDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+					if (ls === "dark" || (!ls && systemDark)) {
+						document.documentElement.classList.add("dark");
 					} else {
-						document.documentElement.classList.remove('dark');
+						document.documentElement.classList.remove("dark");
 					}
 					// Sync meta theme-color after initial decision
 					var setThemeColor = function (dark) {
 						var metaLight = document.querySelector('meta[name="theme-color"][media*="light"]');
 						var metaDark = document.querySelector('meta[name="theme-color"][media*="dark"]');
-						if (metaLight) metaLight.setAttribute('content', '#ffffff');
-						if (metaDark) metaDark.setAttribute('content', '#0b1220');
+						if (metaLight) metaLight.setAttribute("content", "#ffffff");
+						if (metaDark) metaDark.setAttribute("content", "#0b1220");
 					};
-					setThemeColor(document.documentElement.classList.contains('dark'));
+					setThemeColor(document.documentElement.classList.contains("dark"));
 				} catch (e) {
 					/* noop */
 				}

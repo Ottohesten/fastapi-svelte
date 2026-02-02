@@ -1,12 +1,12 @@
-import { redirect } from '@sveltejs/kit';
-import { error } from '@sveltejs/kit';
-import { createApiClient } from '$lib/api/api.js';
+import { redirect } from "@sveltejs/kit";
+import { error } from "@sveltejs/kit";
+import { createApiClient } from "$lib/api/api.js";
 // import { createApiClient } from '$lib/api/api';
-import { zod4 as zod } from 'sveltekit-superforms/adapters';
-import { z } from 'zod';
-import { message, superValidate, fail } from 'sveltekit-superforms';
-import type { Actions } from './$types.js';
-import { GameSessionPlayerUpdateSchema } from '$lib/schemas/schemas.js';
+import { zod4 as zod } from "sveltekit-superforms/adapters";
+import { z } from "zod";
+import { message, superValidate, fail } from "sveltekit-superforms";
+import type { Actions } from "./$types.js";
+import { GameSessionPlayerUpdateSchema } from "$lib/schemas/schemas.js";
 
 export const load = async ({ locals, url, parent, params, fetch }) => {
 	const { authenticatedUser } = locals;
@@ -21,7 +21,7 @@ export const load = async ({ locals, url, parent, params, fetch }) => {
 	const player = parent_data.game_session?.players?.find((p) => p.id === params.player_id);
 
 	if (!player) {
-		error(404, 'Player not found');
+		error(404, "Player not found");
 	}
 
 	// Initialize the form with the player's current name.
@@ -47,10 +47,10 @@ export const load = async ({ locals, url, parent, params, fetch }) => {
 
 export const actions = {
 	default: async ({ fetch, request, cookies, params }) => {
-		const auth_token = cookies.get('auth_token');
+		const auth_token = cookies.get("auth_token");
 		const form = await superValidate(request, zod(GameSessionPlayerUpdateSchema));
 		if (!auth_token) {
-			redirect(302, '/auth/login');
+			redirect(302, "/auth/login");
 		}
 		if (!form.valid) {
 			return fail(400, { form });
@@ -66,7 +66,7 @@ export const actions = {
 			data,
 			error: apierror,
 			response
-		} = await client.PATCH('/game/{game_session_id}/player/{game_player_id}', {
+		} = await client.PATCH("/game/{game_session_id}/player/{game_player_id}", {
 			params: {
 				path: {
 					game_session_id: params.game_session_id,
@@ -83,12 +83,12 @@ export const actions = {
 		});
 
 		if (apierror) {
-			console.error('API Error:', apierror);
+			console.error("API Error:", apierror);
 			return fail(500, { form });
 		}
 
 		// return message(form, 'Player updated successfully')
 		// redirect to last page
-		redirect(303, '../');
+		redirect(303, "../");
 	}
 } satisfies Actions;

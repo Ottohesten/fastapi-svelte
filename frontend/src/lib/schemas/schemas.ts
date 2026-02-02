@@ -1,10 +1,10 @@
-import { zod4 as zod } from 'sveltekit-superforms/adapters';
-import { z } from 'zod';
+import { zod4 as zod } from "sveltekit-superforms/adapters";
+import { z } from "zod";
 
 // User Schema for creating a user
 export const UserSchema = z
 	.object({
-		email: z.string().email('Please enter a valid email'),
+		email: z.string().email("Please enter a valid email"),
 		password: z.string().min(8),
 		confirm_password: z.string().min(8),
 		full_name: z.string().min(1),
@@ -13,31 +13,31 @@ export const UserSchema = z
 	})
 	.refine((data) => data.password === data.confirm_password, {
 		message: "Passwords don't match",
-		path: ['confirm_password']
+		path: ["confirm_password"]
 	});
 
 export const UserUpdateSchema = z
 	.object({
 		user_id: z.string(),
-		email: z.string().email('Please enter a valid email').or(z.literal('')).optional(),
-		full_name: z.string().or(z.literal('')).optional(),
-		password: z.string().or(z.literal('')).optional(),
-		confirm_password: z.string().or(z.literal('')).optional(),
+		email: z.string().email("Please enter a valid email").or(z.literal("")).optional(),
+		full_name: z.string().or(z.literal("")).optional(),
+		password: z.string().or(z.literal("")).optional(),
+		confirm_password: z.string().or(z.literal("")).optional(),
 		is_active: z.boolean().optional(),
 		is_superuser: z.boolean().optional()
 	})
 	.superRefine((data, ctx) => {
 		// Only validate password if it's provided and not empty
-		if (data.password && data.password.trim() !== '') {
+		if (data.password && data.password.trim() !== "") {
 			if (data.password.length < 8) {
 				ctx.addIssue({
 					code: z.ZodIssueCode.too_small,
 					minimum: 8,
-					type: 'string',
-					origin: 'string',
+					type: "string",
+					origin: "string",
 					inclusive: true,
-					message: 'Password must be at least 8 characters',
-					path: ['password']
+					message: "Password must be at least 8 characters",
+					path: ["password"]
 				});
 			}
 			// Only validate password confirmation if password is provided
@@ -45,7 +45,7 @@ export const UserUpdateSchema = z
 				ctx.addIssue({
 					code: z.ZodIssueCode.custom,
 					message: "Passwords don't match",
-					path: ['confirm_password']
+					path: ["confirm_password"]
 				});
 			}
 		}
@@ -61,25 +61,25 @@ export const RecipeSchema = z.object({
 		z.object({
 			id: z.string(),
 			title: z.string().optional(), // For display purposes only, not sent to backend
-			amount: z.number().min(0.1, 'Amount must be at least 0.1').default(1),
+			amount: z.number().min(0.1, "Amount must be at least 0.1").default(1),
 			// unit is enum of "g", "kg", "ml", "L", "pcs"
-			unit: z.enum(['g', 'kg', 'ml', 'L', 'pcs']).default('g')
+			unit: z.enum(["g", "kg", "ml", "L", "pcs"]).default("g")
 		})
 	),
 
 	servings: z.number().int().min(1).default(1),
 
-	image: z.instanceof(File, { message: 'Image is required' }).nullable().optional(),
+	image: z.instanceof(File, { message: "Image is required" }).nullable().optional(),
 	clearImage: z.boolean().default(false).optional()
 });
 
 export const IngredientSchema = z.object({
-	title: z.string().min(1, 'Title is required').max(255, 'Title must be less than 255 characters'),
-	calories: z.number().int().nonnegative('Calories must be a non-negative integer'),
+	title: z.string().min(1, "Title is required").max(255, "Title must be less than 255 characters"),
+	calories: z.number().int().nonnegative("Calories must be a non-negative integer"),
 	weight_per_piece: z
 		.number()
 		.int()
-		.positive('Weight per piece must be a positive integer')
+		.positive("Weight per piece must be a positive integer")
 		.default(1)
 });
 
@@ -113,8 +113,8 @@ export const GameSessionTeamSchema = z.object({
 });
 
 export const LoginSchema = z.object({
-	email: z.string().email('Please enter a valid email'),
-	password: z.string().min(8, 'Password must be at least 8 characters')
+	email: z.string().email("Please enter a valid email"),
+	password: z.string().min(8, "Password must be at least 8 characters")
 });
 
 export const GameSessionPlayerSchema = z.object({
@@ -137,13 +137,13 @@ export const GameSessionPlayerUpdateSchema = z.object({
 });
 
 export const GameSessionAddDrinkSchema = z.object({
-	player_id: z.string().min(1, 'Player is required'),
-	drink_id: z.string().min(1, 'Drink is required'),
-	amount: z.number().int().min(1, 'Amount must be at least 1').default(1)
+	player_id: z.string().min(1, "Player is required"),
+	drink_id: z.string().min(1, "Drink is required"),
+	amount: z.number().int().min(1, "Amount must be at least 1").default(1)
 });
 
 export const DrinkSchema = z.object({
-	name: z.string().min(1, 'Name is required')
+	name: z.string().min(1, "Name is required")
 });
 
 export const DrinkUpdateSchema = DrinkSchema.extend({

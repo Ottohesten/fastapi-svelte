@@ -1,56 +1,65 @@
 <script lang="ts">
-	import DataTable from '$lib/components/ui/data-table.svelte';
-	import { createColumns } from './columns.js';
-	import type { components } from '$lib/api/v1';
-	import * as Dialog from '$lib/components/ui/dialog';
-	import { Button } from '$lib/components/ui/button';
-	import { superForm, type SuperValidated, type Infer } from 'sveltekit-superforms';
-	import { fade, fly } from 'svelte/transition';
-	import { zod4 as zodClient } from 'sveltekit-superforms/adapters';
-	import SuperDebug from 'sveltekit-superforms';
-	import { untrack } from 'svelte';
-	import { Field, Control, Label, Description, FieldErrors } from 'formsnap';
-	import { Input } from '$lib/components/ui/input/index.js';
+	import DataTable from "$lib/components/ui/data-table.svelte";
+	import { createColumns } from "./columns.js";
+	import type { components } from "$lib/api/v1";
+	import * as Dialog from "$lib/components/ui/dialog";
+	import { Button } from "$lib/components/ui/button";
+	import { superForm, type SuperValidated, type Infer } from "sveltekit-superforms";
+	import { fade, fly } from "svelte/transition";
+	import { zod4 as zodClient } from "sveltekit-superforms/adapters";
+	import SuperDebug from "sveltekit-superforms";
+	import { untrack } from "svelte";
+	import { Field, Control, Label, Description, FieldErrors } from "formsnap";
+	import { Input } from "$lib/components/ui/input/index.js";
 
-	import { UserSchema, UserUpdateSchema, UserAddRoleSchema } from '$lib/schemas/schemas.js';
+	import { UserSchema, UserUpdateSchema, UserAddRoleSchema } from "$lib/schemas/schemas.js";
 	let { data } = $props();
 	// let { data }: { data: { form: SuperValidated<Infer<FormSchema>> } } = $props();
 	let dialogOpen = $state(false);
 
-	const form = superForm(untrack(() => data.userCreateForm), {
-		id: 'userCreateForm',
-		validators: zodClient(UserSchema),
-		onUpdated: ({ form }) => {
-			console.log('Form updated - valid:', form.valid, 'message:', form.message);
-			if (form.valid) {
-				console.log('Form is valid, closing dialog');
-				dialogOpen = false;
+	const form = superForm(
+		untrack(() => data.userCreateForm),
+		{
+			id: "userCreateForm",
+			validators: zodClient(UserSchema),
+			onUpdated: ({ form }) => {
+				console.log("Form updated - valid:", form.valid, "message:", form.message);
+				if (form.valid) {
+					console.log("Form is valid, closing dialog");
+					dialogOpen = false;
+				}
 			}
 		}
-	});
+	);
 
-	const userUpdateForm = superForm(untrack(() => data.userUpdateForm), {
-		id: 'userUpdateForm',
-		dataType: 'json',
-		validators: zodClient(UserUpdateSchema),
-		onUpdated: ({ form }) => {
-			if (form.valid) {
-				// Dialog close will be handled in user-actions.svelte
-				console.log('Update form valid:', form.message);
+	const userUpdateForm = superForm(
+		untrack(() => data.userUpdateForm),
+		{
+			id: "userUpdateForm",
+			dataType: "json",
+			validators: zodClient(UserUpdateSchema),
+			onUpdated: ({ form }) => {
+				if (form.valid) {
+					// Dialog close will be handled in user-actions.svelte
+					console.log("Update form valid:", form.message);
+				}
 			}
 		}
-	});
+	);
 
-	const userAddRoleForm = superForm(untrack(() => data.userAddRoleForm), {
-		id: 'userAddRoleForm',
-		validators: zodClient(UserAddRoleSchema),
-		// dataType: 'json',
-		onUpdated: ({ form }) => {
-			if (form.valid) {
-				console.log('User Add Role form valid:', form.message);
+	const userAddRoleForm = superForm(
+		untrack(() => data.userAddRoleForm),
+		{
+			id: "userAddRoleForm",
+			validators: zodClient(UserAddRoleSchema),
+			// dataType: 'json',
+			onUpdated: ({ form }) => {
+				if (form.valid) {
+					console.log("User Add Role form valid:", form.message);
+				}
 			}
 		}
-	});
+	);
 
 	$effect(() => {
 		if ($message) {
@@ -80,10 +89,10 @@
 	} = userUpdateForm;
 
 	// Create columns with the update form
-	let columns = $derived(createColumns(userUpdateForm, userAddRoleForm, data.roles, data.availableScopes));
-
+	let columns = $derived(
+		createColumns(userUpdateForm, userAddRoleForm, data.roles, data.availableScopes)
+	);
 </script>
-
 
 <div class="mx-auto max-w-7xl space-y-6">
 	<!-- Header with Add User Button -->
@@ -136,7 +145,7 @@
 
 		<Dialog.Root bind:open={dialogOpen}>
 			<Dialog.Trigger
-				class="bg-primary text-primary-foreground ring-offset-background hover:bg-primary/90 focus-visible:ring-ring inline-flex h-10 w-full items-center justify-center whitespace-nowrap rounded-md px-4 py-2 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 sm:w-auto"
+				class="bg-primary text-primary-foreground ring-offset-background hover:bg-primary/90 focus-visible:ring-ring inline-flex h-10 w-full items-center justify-center rounded-md px-4 py-2 text-sm font-medium whitespace-nowrap transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 sm:w-auto"
 			>
 				Add User
 			</Dialog.Trigger>

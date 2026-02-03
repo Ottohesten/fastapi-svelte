@@ -25,9 +25,8 @@ repos:
     hooks:
     -   id: frontend-format
         name: frontend format
-        entry: npm run format
+        entry: bash -c 'cd frontend && npm run format'
         language: system
         types: [text]
         files: ^frontend/
-
-
+        pass_filenames: false

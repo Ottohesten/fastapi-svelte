@@ -143,6 +143,21 @@ def update_recipe(
     if not db_recipe:
         raise HTTPException(status_code=404, detail="Recipe not found")
 
+    # Get the new ingredient IDs from the request
+    new_ingredient_ids = {link.ingredient_id for link in recipe_in.ingredients}
+
+    # Get existing ingredient links from database
+    existing_links = session.exec(
+        select(RecipeIngredientLink).where(
+            RecipeIngredientLink.recipe_id == db_recipe.id
+        )
+    ).all()
+
+    # Delete ingredient links that are not in the new list
+    for existing_link in existing_links:
+        if existing_link.ingredient_id not in new_ingredient_ids:
+            session.delete(existing_link)
+
     # update the ingredient links
     for ingredient_link in recipe_in.ingredients:
         existing_link = session.exec(

@@ -2,7 +2,7 @@
 	import { page } from "$app/stores";
 	import { browser } from "$app/environment";
 	import { onMount, untrack } from "svelte";
-	import { superForm } from "sveltekit-superforms";
+	import SuperDebug, { superForm } from "sveltekit-superforms";
 	import { zod4 as zodClient } from "sveltekit-superforms/adapters";
 	import { RecipeSchema } from "$lib/schemas/schemas";
 	import * as Dialog from "$lib/components/ui/dialog/index.js";
@@ -131,6 +131,8 @@
 		}
 	});
 </script>
+
+<SuperDebug data={$formData} />
 
 <div
 	class="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 py-8 dark:from-gray-950 dark:to-gray-900"

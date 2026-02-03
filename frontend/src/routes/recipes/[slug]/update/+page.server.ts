@@ -39,10 +39,6 @@ export async function load({ fetch, params, locals, request, parent, url }) {
 		unit: link.unit as "g" | "kg" | "ml" | "L" | "pcs"
 	}));
 
-	// Filter out ingredients that are already in the recipe
-	const usedIngredientIds = new Set(frontendIngredients.map((ing) => ing.id));
-	const availableIngredients = allIngredients.filter((ing) => !usedIngredientIds.has(ing.id));
-
 	const form = await superValidate(
 		{
 			ingredients: frontendIngredients,
@@ -54,7 +50,8 @@ export async function load({ fetch, params, locals, request, parent, url }) {
 	);
 
 	return {
-		ingredients: availableIngredients,
+		// Pass all ingredients - the frontend will filter them reactively
+		ingredients: allIngredients,
 		form
 	};
 }

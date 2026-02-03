@@ -99,6 +99,12 @@
 	let ingredientUnit = $state<string>("g");
 	let open = $state(false);
 
+	// Edit ingredient dialog state
+	let editingIngredientId = $state<string | null>(null);
+	let editAmount = $state<number>(1.0);
+	let editUnit = $state<string>("g");
+	let editOpen = $state(false);
+
 	const units = [
 		{ value: "g", label: "grams (g)" },
 		{ value: "kg", label: "kilograms (kg)" },
@@ -518,26 +524,49 @@
 											</span>
 										</div>
 									</div>
-									<button
-										type="button"
-										aria-label="Remove ingredient"
-										onclick={() => {
-											$formData.ingredients = $formData.ingredients.filter(
-												(i: any) => i.id !== ingredient.id
-											);
-										}}
-										class="rounded-lg p-1.5 text-red-500 transition-colors hover:bg-red-50 hover:text-red-700 dark:hover:bg-red-900/20"
-										title="Remove ingredient"
-									>
-										<svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-											<path
-												stroke-linecap="round"
-												stroke-linejoin="round"
-												stroke-width="2"
-												d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-											/>
-										</svg>
-									</button>
+									<div class="flex items-center gap-1">
+										<button
+											type="button"
+											aria-label="Edit ingredient"
+											onclick={() => {
+												editingIngredientId = ingredient.id;
+												editAmount = ingredient.amount;
+												editUnit = ingredient.unit;
+												editOpen = true;
+											}}
+											class="rounded-lg p-1.5 text-blue-500 transition-colors hover:bg-blue-50 hover:text-blue-700 dark:hover:bg-blue-900/20"
+											title="Edit ingredient"
+										>
+											<svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+												<path
+													stroke-linecap="round"
+													stroke-linejoin="round"
+													stroke-width="2"
+													d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+												/>
+											</svg>
+										</button>
+										<button
+											type="button"
+											aria-label="Remove ingredient"
+											onclick={() => {
+												$formData.ingredients = $formData.ingredients.filter(
+													(i: any) => i.id !== ingredient.id
+												);
+											}}
+											class="rounded-lg p-1.5 text-red-500 transition-colors hover:bg-red-50 hover:text-red-700 dark:hover:bg-red-900/20"
+											title="Remove ingredient"
+										>
+											<svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+												<path
+													stroke-linecap="round"
+													stroke-linejoin="round"
+													stroke-width="2"
+													d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+												/>
+											</svg>
+										</button>
+									</div>
 								</div>
 							{/each}
 						</div>
@@ -547,6 +576,90 @@
 		</div>
 	</div>
 </div>
+
+<!-- Edit Ingredient Dialog -->
+<Dialog.Root bind:open={editOpen}>
+	<Dialog.Content class="sm:max-w-md">
+		<Dialog.Header>
+			<Dialog.Title class="text-lg font-semibold text-gray-900 dark:text-gray-100">
+				Edit Ingredient
+			</Dialog.Title>
+			<Dialog.Description class="text-sm text-gray-600 dark:text-gray-300">
+				Update the amount and unit for this ingredient.
+			</Dialog.Description>
+		</Dialog.Header>
+		<div class="space-y-4">
+			<div class="grid grid-cols-2 gap-3">
+				<div>
+					<Label for="edit-ingredient-amount" class="mb-2">Amount</Label>
+					<input
+						id="edit-ingredient-amount"
+						type="number"
+						min="0.1"
+						step="0.1"
+						class="w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-gray-900 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none dark:border-gray-800 dark:bg-gray-900/40 dark:text-gray-100 dark:focus:border-blue-400 dark:focus:ring-blue-400/20"
+						bind:value={editAmount}
+						placeholder="1"
+					/>
+				</div>
+				<div>
+					<Label for="edit-ingredient-unit" class="mb-2">Unit</Label>
+					<Select.Root type="single" bind:value={editUnit}>
+						<Select.Trigger id="edit-ingredient-unit" class="h-11 w-full justify-between">
+							{units.find((u) => u.value === editUnit)?.label ?? "Select a unit"}
+						</Select.Trigger>
+						<Select.Content>
+							{#each units as unit}
+								<Select.Item value={unit.value} label={unit.label}>
+									{unit.label}
+								</Select.Item>
+							{/each}
+						</Select.Content>
+					</Select.Root>
+				</div>
+			</div>
+		</div>
+		<Dialog.Footer class="flex gap-3">
+			<button
+				type="button"
+				class="flex-1 rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none dark:border-gray-800 dark:bg-gray-900/40 dark:text-gray-200 dark:hover:bg-gray-800"
+				onclick={() => {
+					editingIngredientId = null;
+					editAmount = 1.0;
+					editUnit = "g";
+					editOpen = false;
+				}}
+			>
+				Cancel
+			</button>
+			<button
+				type="button"
+				class="flex-1 rounded-lg bg-emerald-600 px-4 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-emerald-700 focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 focus:outline-none disabled:cursor-not-allowed disabled:bg-gray-300"
+				disabled={!editAmount || editAmount < 0.1}
+				onclick={() => {
+					if (editingIngredientId) {
+						$formData.ingredients = $formData.ingredients.map((ing: any) => {
+							if (ing.id === editingIngredientId) {
+								return {
+									...ing,
+									amount: editAmount,
+									unit: editUnit as "g" | "kg" | "ml" | "L" | "pcs"
+								};
+							}
+							return ing;
+						});
+						editingIngredientId = null;
+						editAmount = 1.0;
+						editUnit = "g";
+						editOpen = false;
+					}
+				}}
+			>
+				Save Changes
+			</button>
+		</Dialog.Footer>
+	</Dialog.Content>
+</Dialog.Root>
 
 <style>
 	/* Custom styles for enhanced visual appeal */

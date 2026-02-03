@@ -241,8 +241,12 @@ def create_role_from_template(session: Session, template_key: str) -> Role:
 
     if existing_role:
         # Update existing role with template scopes
-        existing_role.description = template["description"]
-        existing_role.scopes = template["scopes"]
+        existing_role.description = (
+            str(template["description"]) if template.get("description") else None
+        )
+        existing_role.scopes = (
+            list(template["scopes"]) if isinstance(template.get("scopes"), list) else []
+        )
         session.add(existing_role)
         session.commit()
         session.refresh(existing_role)

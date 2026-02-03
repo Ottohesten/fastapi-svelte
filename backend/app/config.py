@@ -85,7 +85,7 @@ class Settings(BaseSettings):
 
     EMAIL_RESET_TOKEN_EXPIRE_HOURS: int = 48
 
-    @computed_field  # type: ignore[prop-decorator]
+    @computed_field
     @property
     def emails_enabled(self) -> bool:
         return bool(self.SMTP_HOST and self.EMAILS_FROM_EMAIL)
@@ -98,7 +98,7 @@ class Settings(BaseSettings):
     FIRST_SUPERUSER_PASSWORD: str
 
 
-settings = Settings()
+settings = Settings()  # type: ignore[call-arg]
 
 
 # @lru_cache

@@ -6,7 +6,7 @@ from app.deps import SessionDep, get_current_user
 from typing import Annotated
 import asyncio
 import json
-from datetime import datetime
+from datetime import datetime, timezone
 
 from app.models import (
     GameSession,
@@ -40,7 +40,7 @@ async def broadcast_game_update(game_session_id: str, event_type: str):
         # Create the message to send
         message = {
             "type": event_type,
-            "timestamp": datetime.now().isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
             "game_session_id": game_session_id,
         }
 
@@ -684,7 +684,7 @@ async def game_session_updates(game_session_id: str):
                     yield f"data: {json.dumps(message)}\n\n"
                 except asyncio.TimeoutError:
                     # Send heartbeat to keep connection alive
-                    yield f"data: {json.dumps({'type': 'heartbeat', 'timestamp': datetime.now().isoformat()})}\n\n"
+                    yield f"data: {json.dumps({'type': 'heartbeat', 'timestamp': datetime.now(timezone.utc).isoformat()})}\n\n"
 
         except asyncio.CancelledError:
             # Client disconnected

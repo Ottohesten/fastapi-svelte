@@ -67,7 +67,7 @@ class UserRegister(SQLModel):
 
 # Properties to receive via API on update, all are optional
 class UserUpdate(UserBase):
-    email: EmailStr | None = Field(default=None, max_length=255)  # type: ignore
+    email: EmailStr | None = Field(default=None, max_length=255)
     password: str | None = Field(default=None, min_length=8, max_length=40)
     full_name: Optional[str] = Field(default=None, max_length=255)
 
@@ -158,7 +158,7 @@ class ItemCreate(ItemBase):
 
 # Properties to receive on item update
 class ItemUpdate(ItemBase):
-    title: str | None = Field(default=None, min_length=1, max_length=255)  # type: ignore
+    title: str | None = Field(default=None, min_length=1, max_length=255)
 
 
 # Database model, database table inferred from class name
@@ -668,9 +668,7 @@ class RefreshToken(SQLModel, table=True):
         index=True, max_length=128, description="SHA256 of the refresh token"
     )
     jti: uuid.UUID = Field(default_factory=uuid.uuid4, index=True)
-    created_at: datetime = Field(
-        default_factory=lambda: datetime.now(timezone.utc).replace(tzinfo=None)
-    )
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     expires_at: datetime
     revoked_at: datetime | None = None
 

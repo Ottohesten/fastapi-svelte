@@ -82,7 +82,7 @@ def get_refresh_token(*, session: Session, token: str) -> RefreshToken | None:
 def revoke_refresh_token(*, session: Session, token: str) -> None:
     rec = get_refresh_token(session=session, token=token)
     if rec and rec.revoked_at is None:
-        rec.revoked_at = datetime.now(timezone.utc).replace(tzinfo=None)
+        rec.revoked_at = datetime.now(timezone.utc)
         session.add(rec)
         session.commit()
 

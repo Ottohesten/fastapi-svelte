@@ -56,11 +56,7 @@ def login_access_token(
         session=session,
         user_id=user.id,
         token=refresh_token,
-        expires_at=(settings and (settings.ENVIRONMENT,))
-        and (  # placeholder to suppress static checks
-            # compute absolute expiry using timedelta relative to now on server side
-            datetime.now(timezone.utc) + refresh_token_expires
-        ),
+        expires_at=datetime.now(timezone.utc) + refresh_token_expires,
     )
     # HTTP-only cookie for refresh token (optional; primary flow uses body to rotate)
     response.set_cookie(
@@ -111,7 +107,7 @@ def refresh_access_token(
         if not rec or rec.revoked_at is not None:
             raise HTTPException(status_code=401, detail="Refresh token revoked")
         # expiry check (defense-in-depth beyond JWT exp)
-        if rec.expires_at <= __import__("datetime").datetime.utcnow():
+        if rec.expires_at <= datetime.now(timezone.utc):
             raise HTTPException(status_code=401, detail="Refresh token expired")
     except (InvalidTokenError, HTTPException):
         raise
@@ -135,9 +131,7 @@ def refresh_access_token(
         session=session,
         old_token=token_to_use,
         new_token=new_refresh,
-        new_expires_at=(
-            __import__("datetime").datetime.utcnow() + refresh_token_expires
-        ),
+        new_expires_at=(datetime.now(timezone.utc) + refresh_token_expires),
     )
     response.set_cookie(
         key="refresh_token",

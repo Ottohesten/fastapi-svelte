@@ -12,15 +12,6 @@ repos:
     -   id: ruff-format
         types_or: [ python, pyi ]
         files: ^backend/
--   repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v6.0.0
-    hooks:
-    -   id: trailing-whitespace
-    -   id: end-of-file-fixer
-    -   id: check-yaml
-    -   id: check-added-large-files
-    -   id: check-json
-        exclude: .devcontainer/devcontainer.json
 -   repo: local
     hooks:
     -   id: frontend-format
@@ -30,3 +21,12 @@ repos:
         types: [text]
         files: ^frontend/
         pass_filenames: false
+-   repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+    -   id: trailing-whitespace
+    -   id: end-of-file-fixer
+    -   id: check-yaml
+    -   id: check-added-large-files
+    -   id: check-json
+        exclude: .devcontainer/devcontainer.json

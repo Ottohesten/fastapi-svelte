@@ -45,7 +45,7 @@ fastapi-svelte/
 ## 📋 Prerequisites
 
 - **uv** (Python package manager) - [Install uv](https://docs.astral.sh/uv/getting-started/installation/)
-- Node.js 18+
+- Bun 1.1+
 - PostgreSQL 14+
 - Docker & Docker Compose (optional)
 
@@ -111,7 +111,7 @@ fastapi-svelte/
 
 2. **Install dependencies**
    ```bash
-   npm install
+   bun install
    ```
 
 3. **Configure environment**
@@ -122,12 +122,12 @@ fastapi-svelte/
 
 4. **Generate API types** (optional, but recommended)
    ```bash
-   npm run generate:sdk
+   bun run generate:sdk
    ```
 
 5. **Start development server**
    ```bash
-   npm run dev
+   bun run dev
    ```
 
    Frontend will be available at `http://localhost:5173`
@@ -159,7 +159,7 @@ uv run uvx ty check
 
 # Frontend
 cd frontend
-npm run check
+bun run check
 ```
 
 ## 🎨 Code Quality
@@ -197,7 +197,7 @@ uv run prek run
 
 # Frontend
 cd frontend
-npm run format
+bun run format
 ```
 
 ## 📚 API Documentation

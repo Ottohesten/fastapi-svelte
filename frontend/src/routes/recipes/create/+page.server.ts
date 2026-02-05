@@ -8,8 +8,13 @@ import { error } from "@sveltejs/kit";
 import { RecipeSchema } from "$lib/schemas/schemas.js";
 import { env } from "$env/dynamic/private";
 
-export const load = async ({ fetch, parent }) => {
+export const load = async ({ fetch, parent, cookies }) => {
 	const client = createApiClient(fetch);
+	const auth_token = cookies.get("auth_token");
+
+	if (!auth_token) {
+		redirect(302, "/auth/login");
+	}
 
 	// get the list of available ingredients
 	const { data: ingredients, error: apierror, response } = await client.GET("/ingredients/");

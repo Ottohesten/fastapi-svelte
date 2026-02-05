@@ -10,13 +10,12 @@ import { GameSessionPlayerUpdateSchema } from "$lib/schemas/schemas.js";
 
 export const load = async ({ locals, url, parent, params, fetch }) => {
 	const { authenticatedUser } = locals;
-	const client = createApiClient(fetch); // Ensure fetch is passed if client uses it
-
-	const parent_data = await parent();
-
 	if (!authenticatedUser) {
 		redirect(303, `/auth/login?redirectTo=${url.pathname}`);
 	}
+	const client = createApiClient(fetch); // Ensure fetch is passed if client uses it
+
+	const parent_data = await parent();
 
 	const player = parent_data.game_session?.players?.find((p) => p.id === params.player_id);
 

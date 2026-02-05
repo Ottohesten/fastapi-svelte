@@ -7,7 +7,11 @@ import { z } from "zod";
 import { message, superValidate, fail } from "sveltekit-superforms";
 import { GameSessionTeamSchema, GameSessionPlayerSchema } from "$lib/schemas/schemas.js";
 
-export const load = async ({}) => {
+export const load = async ({ locals, url }) => {
+	const { authenticatedUser } = locals;
+	if (!authenticatedUser) {
+		redirect(303, `/auth/login?redirectTo=${url.pathname}`);
+	}
 	const teamForm = await superValidate(zod4(GameSessionTeamSchema), {
 		id: "teamForm"
 	});
@@ -22,11 +26,11 @@ export const load = async ({}) => {
 };
 
 export const actions = {
-	addTeam: async ({ fetch, params, cookies, request }) => {
+	addTeam: async ({ fetch, params, cookies, request, url }) => {
 		const auth_token = cookies.get("auth_token");
 		const teamForm = await superValidate(request, zod4(GameSessionTeamSchema));
 		if (!auth_token) {
-			redirect(302, "/auth/login");
+			redirect(302, `/auth/login?redirectTo=${url.pathname}`);
 		}
 		if (!teamForm.valid) {
 			return fail(400, { teamForm });
@@ -55,11 +59,11 @@ export const actions = {
 		// return message(teamForm, `Team ${teamForm.data.name} added successfully!`);
 		// return message(teamForm, "Team added successfully!");
 	},
-	addPlayer: async ({ fetch, params, cookies, request }) => {
+	addPlayer: async ({ fetch, params, cookies, request, url }) => {
 		const auth_token = cookies.get("auth_token");
 		const playerForm = await superValidate(request, zod4(GameSessionPlayerSchema));
 		if (!auth_token) {
-			redirect(302, "/auth/login");
+			redirect(302, `/auth/login?redirectTo=${url.pathname}`);
 		}
 		if (!playerForm.valid) {
 			return fail(400, { playerForm });
@@ -89,12 +93,12 @@ export const actions = {
 		// return message(playerForm, `Player ${playerForm.data.name} added successfully!`);
 		// return message(playerForm, "Player added successfully!");
 	},
-	deleteTeam: async ({ fetch, params, cookies, request }) => {
+	deleteTeam: async ({ fetch, params, cookies, request, url }) => {
 		const client = createApiClient(fetch);
 		const auth_token = cookies.get("auth_token");
 
 		if (!auth_token) {
-			redirect(302, "/auth/login");
+			redirect(302, `/auth/login?redirectTo=${url.pathname}`);
 		}
 
 		const formData = await request.formData();
@@ -119,12 +123,12 @@ export const actions = {
 			error(404, JSON.stringify(apierror.detail));
 		}
 	},
-	deletePlayer: async ({ fetch, params, cookies, request }) => {
+	deletePlayer: async ({ fetch, params, cookies, request, url }) => {
 		const client = createApiClient(fetch);
 		const auth_token = cookies.get("auth_token");
 
 		if (!auth_token) {
-			redirect(302, "/auth/login");
+			redirect(302, `/auth/login?redirectTo=${url.pathname}`);
 		}
 
 		const formData = await request.formData();

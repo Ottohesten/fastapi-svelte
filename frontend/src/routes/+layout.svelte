@@ -1,6 +1,5 @@
 <script lang="ts">
 	import "../app.css";
-	import Footer from "$lib/components/Footer.svelte";
 	import ThemeToggle from "$lib/components/ThemeToggle.svelte";
 	import { page } from "$app/stores";
 	import { slide } from "svelte/transition";

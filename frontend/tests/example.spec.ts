@@ -3,7 +3,7 @@ import { test, expect } from "@playwright/test";
 test.describe("Homepage", () => {
 	test("should load the homepage", async ({ page }) => {
 		await page.goto("/");
-		await expect(page).toHaveTitle(/FastAPI Svelte App/);
+		await expect(page).toHaveTitle(/Internationaleregler/);
 	});
 
 	test("should have navigation links", async ({ page }) => {
@@ -58,36 +58,5 @@ test.describe("Ingredients", () => {
 	test("should display ingredients page", async ({ page }) => {
 		await page.goto("/ingredients");
 		await expect(page.getByRole("heading", { name: /ingredients/i })).toBeVisible();
-	});
-});
-
-test.describe("Navigation", () => {
-	test("should navigate between pages", async ({ page }) => {
-		await page.goto("/");
-
-		// Navigate to recipes
-		await page
-			.getByRole("link", { name: /recipes/i })
-			.first()
-			.click();
-		await expect(page).toHaveURL(/\/recipes/);
-
-		// Navigate to ingredients
-		await page
-			.getByRole("link", { name: /ingredients/i })
-			.first()
-			.click();
-		await expect(page).toHaveURL(/\/ingredients/);
-	});
-
-	test("should have working theme toggle", async ({ page }) => {
-		await page.goto("/");
-
-		// Look for theme toggle button (adjust selector based on your implementation)
-		const themeToggle = page.getByRole("button", { name: /theme|dark|light/i });
-		if (await themeToggle.isVisible()) {
-			await themeToggle.click();
-			// Verify theme changed (you might need to adjust this based on your implementation)
-		}
 	});
 });

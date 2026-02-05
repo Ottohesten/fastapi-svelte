@@ -26,6 +26,7 @@ repos:
     -   id: frontend-format
         name: frontend format
         entry: bash -c 'cd frontend && npm install --prefer-offline --no-audit && npm run format'
+        # entry: bash -c 'cd frontend && npm ci && npm run lint'
         language: system
         types: [text]
         files: ^frontend/

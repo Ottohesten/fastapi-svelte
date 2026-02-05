@@ -25,7 +25,7 @@ repos:
     hooks:
     -   id: frontend-format
         name: frontend format
-        entry: bash -c 'cd frontend && npm ci && npm run format'
+        entry: bash -c 'cd frontend && bun ci && bun run format'
         # entry: bash -c 'cd frontend && npm ci && npm run lint'
         language: system
         types: [text]

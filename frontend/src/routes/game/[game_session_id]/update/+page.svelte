@@ -38,7 +38,7 @@
 <!-- <SuperDebug data={$playerForm} /> -->
 
 <div
-  class="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 p-4 sm:p-6 lg:p-8 dark:from-gray-950 dark:to-gray-900"
+  class="min-h-screen bg-linear-to-br from-slate-50 to-blue-50 p-4 sm:p-6 lg:p-8 dark:from-gray-950 dark:to-gray-900"
 >
   <div class="mx-auto max-w-7xl space-y-8">
     <!-- Header -->

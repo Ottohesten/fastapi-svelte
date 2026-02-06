@@ -603,7 +603,7 @@
             selectedTeam = v === "all" ? null : v;
           }}
         >
-          <Select.Trigger id="team-filter" class="max-w-[14rem]">
+          <Select.Trigger id="team-filter" class="max-w-56">
             {selectedTeamLabel}
           </Select.Trigger>
           <Select.Content>
@@ -618,7 +618,7 @@
       <div class="flex flex-col gap-2 sm:flex-row sm:items-center">
         <label for="view-mode" class="font-semibold text-gray-700 dark:text-gray-300">View:</label>
         <Select.Root type="single" bind:value={viewMode}>
-          <Select.Trigger id="view-mode" class="max-w-[14rem]">
+          <Select.Trigger id="view-mode" class="max-w-56">
             {selectedViewModeLabel}
           </Select.Trigger>
           <Select.Content>

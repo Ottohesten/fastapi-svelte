@@ -15,10 +15,10 @@
 // }
 
 export async function load({ locals, depends }) {
-	// console.log("layout user", locals.user);
-	// depends("user");
-	return {
-		authenticatedUser: locals.authenticatedUser,
-		scopes: locals.authenticatedUser?.scopes ?? []
-	};
+    // console.log("layout user", locals.user);
+    // depends("user");
+    return {
+        authenticatedUser: locals.authenticatedUser,
+        scopes: locals.authenticatedUser?.scopes ?? []
+    };
 }

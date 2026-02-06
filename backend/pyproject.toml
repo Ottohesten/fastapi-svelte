@@ -40,3 +40,9 @@ packages = ["app"]
 
 [project.scripts]
 app-cli = "app.cli:app"
+
+[tool.ruff]
+line-length = 88
+
+[tool.ruff.format]
+indent-style = "space"

@@ -7,26 +7,26 @@ import type { SuperForm, Infer } from "sveltekit-superforms";
 import type { DrinkUpdateSchema } from "$lib/schemas/schemas";
 
 export const createColumns = (
-	updateForm: SuperForm<Infer<typeof DrinkUpdateSchema>>
+    updateForm: SuperForm<Infer<typeof DrinkUpdateSchema>>
 ): ColumnDef<components["schemas"]["DrinkPublic"]>[] => [
-	{
-		accessorKey: "name",
-		header: "Name"
-	},
-	{
-		id: "actions",
-		header: () => {
-			const actionsHeaderSnippet = createRawSnippet(() => {
-				return {
-					render: () => '<div class="text-right"><span class="pr-2">Actions</span></div>'
-				};
-			});
-			return renderSnippet(actionsHeaderSnippet, "");
-		},
-		enableHiding: false,
-		cell: ({ row }) => {
-			const drink = row.original;
-			return renderComponent(DrinkActions, { drink, updateForm });
-		}
-	}
+    {
+        accessorKey: "name",
+        header: "Name"
+    },
+    {
+        id: "actions",
+        header: () => {
+            const actionsHeaderSnippet = createRawSnippet(() => {
+                return {
+                    render: () => '<div class="text-right"><span class="pr-2">Actions</span></div>'
+                };
+            });
+            return renderSnippet(actionsHeaderSnippet, "");
+        },
+        enableHiding: false,
+        cell: ({ row }) => {
+            const drink = row.original;
+            return renderComponent(DrinkActions, { drink, updateForm });
+        }
+    }
 ];

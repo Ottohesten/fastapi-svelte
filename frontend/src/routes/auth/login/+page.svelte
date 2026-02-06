@@ -22,8 +22,8 @@
 <div class="container mt-10 flex h-screen w-screen flex-col items-center justify-start">
 	<div class="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]">
 		<div class="flex flex-col space-y-2 text-center">
-			<h1 class="text-2xl font-semibold tracking-tight">Login</h1>
-			<p class="text-muted-foreground text-sm">Enter your email and password below to login</p>
+			<h1 class="text-2xl font-semibold tracking-tight">Log in</h1>
+			<p class="text-muted-foreground text-sm">Enter your email and password below to log in</p>
 		</div>
 
 		{#if $message}
@@ -63,7 +63,7 @@
 				<FieldErrors />
 			</Field>
 
-			<Button type="submit">Login</Button>
+			<Button type="submit">Log in</Button>
 		</form>
 	</div>
 </div>

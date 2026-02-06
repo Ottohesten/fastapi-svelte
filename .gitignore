@@ -203,3 +203,6 @@ temp
 
 # static files
 static/
+
+# playwright auth state
+playwright/.auth/

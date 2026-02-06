@@ -3,8 +3,13 @@
 	import ThemeToggle from "$lib/components/ThemeToggle.svelte";
 	import { page } from "$app/stores";
 	import { slide } from "svelte/transition";
+	import { onMount } from "svelte";
 
 	let { children, data } = $props();
+
+	onMount(() => {
+		document.body.setAttribute("data-svelte-hydrated", "true");
+	});
 
 	// Mobile nav state
 	let mobileOpen = $state(false);

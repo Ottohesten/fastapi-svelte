@@ -1,6 +1,7 @@
 import uuid
 from pydantic import BaseModel, EmailStr, computed_field
 from sqlmodel import Field, SQLModel, Relationship, Column, JSON
+from sqlalchemy import DateTime
 from typing import Optional
 from datetime import datetime, timezone
 # from permissions.roles import Role
@@ -668,9 +669,16 @@ class RefreshToken(SQLModel, table=True):
         index=True, max_length=128, description="SHA256 of the refresh token"
     )
     jti: uuid.UUID = Field(default_factory=uuid.uuid4, index=True)
-    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
-    expires_at: datetime
-    revoked_at: datetime | None = None
+    created_at: datetime = Field(
+        default_factory=lambda: datetime.now(timezone.utc),
+        sa_column=Column(DateTime(timezone=True), nullable=False),
+    )
+    expires_at: datetime = Field(
+        sa_column=Column(DateTime(timezone=True), nullable=False)
+    )
+    revoked_at: datetime | None = Field(
+        default=None, sa_column=Column(DateTime(timezone=True), nullable=True)
+    )
 
     user: Optional["User"] = Relationship(
         back_populates="refresh_tokens", sa_relationship_kwargs={"lazy": "selectin"}

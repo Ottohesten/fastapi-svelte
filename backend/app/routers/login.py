@@ -107,7 +107,11 @@ def refresh_access_token(
         if not rec or rec.revoked_at is not None:
             raise HTTPException(status_code=401, detail="Refresh token revoked")
         # expiry check (defense-in-depth beyond JWT exp)
-        if rec.expires_at <= datetime.now(timezone.utc):
+        expires_at = rec.expires_at
+        # Normalize legacy/naive timestamps to UTC for comparison.
+        if expires_at.tzinfo is None:
+            expires_at = expires_at.replace(tzinfo=timezone.utc)
+        if expires_at <= datetime.now(timezone.utc):
             raise HTTPException(status_code=401, detail="Refresh token expired")
     except (InvalidTokenError, HTTPException):
         raise

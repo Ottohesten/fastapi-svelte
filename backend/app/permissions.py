@@ -97,7 +97,6 @@ ROLE_TEMPLATES = {
             "games:create",
             "games:update",
             "games:delete",
-            "recipes:read",
         ],
     },
     "user_manager": {
@@ -107,9 +106,7 @@ ROLE_TEMPLATES = {
             "users:read",
             "users:update",
             "users:create",
-            "recipes:read",
-            "ingredients:read",
-            "games:read",
+            "users:delete",
         ],
     },
     "content_manager": {

@@ -6,6 +6,7 @@ from app.permissions import (
     AVAILABLE_SCOPES,
     assign_role_to_user,
     get_user_effective_scopes,
+    ROLE_TEMPLATES,
 )
 from app.db_crud import get_user_by_email
 from app.models import Role
@@ -35,6 +36,32 @@ def init_roles():
         print(f"✅ Created/Updated {len(roles)} default roles:")
         for role in roles:
             print(f"  - {role.name}: {len(role.scopes)} scopes")
+
+
+@app.command()
+def update_roles():
+    """Sync roles from ROLE_TEMPLATES (create/update)"""
+    with Session(engine) as session:
+        for template in ROLE_TEMPLATES.values():
+            name = template["name"]
+            description = template.get("description")
+            if description is not None and not isinstance(description, str):
+                description = str(description)
+            scopes = sorted(set(template.get("scopes", [])))
+
+            role = session.exec(select(Role).where(Role.name == name)).first()
+            if role:
+                role.description = description
+                role.scopes = scopes
+                session.add(role)
+                print(f"✅ Updated role: {name}")
+            else:
+                role = Role(name=name, description=description, scopes=scopes)
+                session.add(role)
+                print(f"✅ Created role: {name}")
+
+        session.commit()
+    print("✅ Roles synced from ROLE_TEMPLATES")
 
 
 @app.command()

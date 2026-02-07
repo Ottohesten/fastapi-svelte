@@ -19,7 +19,7 @@
     // { href: '/tiptap', label: 'Tiptap' },
     { href: "/recipes", label: "Recipes", requiredScopes: "recipes:read" },
     { href: "/ingredients", label: "Ingredients", requiredScopes: "ingredients:read" },
-    { href: "/game", label: "Game" } // no scope required
+    { href: "/game", label: "Games" } // no scope required
   ];
 
   function hasRequiredScopes(item: NavItem, scopes: string[] | undefined) {

@@ -26,6 +26,7 @@ from app.models import (
     GamePlayerDrinkLinkCreate,
     User,
 )
+from app.permissions import get_user_effective_scopes
 
 # Store active SSE connections for each game session
 from collections import defaultdict
@@ -203,7 +204,7 @@ def create_game_session(
 def delete_game_session(
     session: SessionDep,
     game_session_id: str,
-    current_user: User = Security(get_current_user, scopes=["games:delete"]),
+    current_user: User = Security(get_current_user),
 ):
     """
     Delete a game session. Users can delete their own game sessions.
@@ -218,38 +219,17 @@ def delete_game_session(
     if not game_session:
         raise HTTPException(status_code=404, detail="Game session not found")
 
-    # Users can delete their own game sessions
+    # Allow delete if owner or user has games:delete scope.
     if game_session.owner_id != current_user.id:
-        raise HTTPException(
-            status_code=403, detail="Not authorized to delete this game session"
-        )
+        scopes = get_user_effective_scopes(current_user)
+        if "games:delete" not in scopes:
+            raise HTTPException(
+                status_code=403, detail="Not authorized to delete this game session"
+            )
 
     session.delete(game_session)
     session.commit()
 
-    return {"success": True}
-
-
-# delete game session (admin)
-@router.delete("/{game_session_id}/admin")
-def delete_game_session_admin(
-    session: SessionDep,
-    game_session_id: str,
-    current_user: User = Security(get_current_user, scopes=["games:delete"]),
-):
-    """
-    Delete any game session (admin only).
-    """
-    try:
-        game_session = session.get(GameSession, game_session_id)
-    except Exception:
-        raise HTTPException(status_code=400, detail="Invalid UUID")
-
-    if not game_session:
-        raise HTTPException(status_code=404, detail="Game session not found")
-
-    session.delete(game_session)
-    session.commit()
     return {"success": True}
 
 

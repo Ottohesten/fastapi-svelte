@@ -39,6 +39,22 @@ def init_roles():
 
 
 @app.command()
+def list_roles():
+    """List all roles and their scopes"""
+    with Session(engine) as session:
+        roles = session.exec(select(Role)).all()
+
+        if not roles:
+            print("No roles found. Run 'init-roles' first.")
+            return
+
+        for role in roles:
+            print(f"\n🎭 {role.name}")
+            print(f"   Description: {role.description}")
+            print(f"   Scopes: {', '.join(role.scopes) if role.scopes else 'None'}")
+
+
+@app.command()
 def update_roles():
     """Sync roles from ROLE_TEMPLATES (create/update)"""
     with Session(engine) as session:
@@ -62,22 +78,6 @@ def update_roles():
 
         session.commit()
     print("✅ Roles synced from ROLE_TEMPLATES")
-
-
-@app.command()
-def list_roles():
-    """List all roles and their scopes"""
-    with Session(engine) as session:
-        roles = session.exec(select(Role)).all()
-
-        if not roles:
-            print("No roles found. Run 'init-roles' first.")
-            return
-
-        for role in roles:
-            print(f"\n🎭 {role.name}")
-            print(f"   Description: {role.description}")
-            print(f"   Scopes: {', '.join(role.scopes) if role.scopes else 'None'}")
 
 
 @app.command()

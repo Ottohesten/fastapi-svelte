@@ -412,26 +412,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/game/{game_session_id}/admin": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post?: never;
-        /**
-         * Delete Game Session Admin
-         * @description Delete any game session (admin only).
-         */
-        delete: operations["delete_game_session_admin_game__game_session_id__admin_delete"];
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/game/{game_session_id}/player": {
         parameters: {
             query?: never;
@@ -2509,37 +2489,6 @@ export interface operations {
         };
     };
     delete_game_session_game__game_session_id__delete: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                game_session_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": unknown;
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    delete_game_session_admin_game__game_session_id__admin_delete: {
         parameters: {
             query?: never;
             header?: never;

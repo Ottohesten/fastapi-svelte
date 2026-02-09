@@ -4,7 +4,7 @@
   type Props = {
     data: {
       recipe: components["schemas"]["RecipePublic"];
-      authenticatedUser?: components["schemas"]["UserPublic"];
+      authenticatedUser?: components["schemas"]["UserMePublic"];
       is_owner: boolean;
       backendUrl?: string; // Add backendUrl
     };

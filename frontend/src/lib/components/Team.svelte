@@ -4,7 +4,7 @@
 
   type Props = {
     team: components["schemas"]["GameTeamPublic"];
-    authenticatedUser?: components["schemas"]["UserPublic"];
+    authenticatedUser?: components["schemas"]["UserMePublic"];
   };
 
   let { team, authenticatedUser }: Props = $props();

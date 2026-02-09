@@ -7,7 +7,7 @@
 
   type Props = {
     recipe: components["schemas"]["RecipePublic"];
-    authenticatedUser?: components["schemas"]["UserPublic"];
+    authenticatedUser?: components["schemas"]["UserMePublic"];
     backendUrl?: string;
   };
 

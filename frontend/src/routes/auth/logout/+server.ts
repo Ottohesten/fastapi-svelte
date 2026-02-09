@@ -20,6 +20,4 @@ export const GET = async ({ fetch, cookies }) => {
 
     // redirect to login page
     return redirect(302, "/");
-
-    // return Response.redirect("/auth/login", 302);
 };

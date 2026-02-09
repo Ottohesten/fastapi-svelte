@@ -25,11 +25,11 @@ export const load = async ({ fetch }) => {
 };
 
 export const actions = {
-    addDrink: async ({ fetch, cookies, request }) => {
+    addDrink: async ({ fetch, cookies, request, url }) => {
         const client = createApiClient(fetch);
         const auth_token = cookies.get("auth_token");
 
-        if (!auth_token) redirect(302, "/auth/login");
+        if (!auth_token) redirect(302, `/auth/login?redirectTo=${url.pathname}`);
 
         const form = await superValidate(request, zod(DrinkSchema));
         if (!form.valid) return fail(400, { form });
@@ -48,11 +48,11 @@ export const actions = {
         return message(form, "Drink added successfully");
     },
 
-    updateDrink: async ({ fetch, cookies, request }) => {
+    updateDrink: async ({ fetch, cookies, request, url }) => {
         const client = createApiClient(fetch);
         const auth_token = cookies.get("auth_token");
 
-        if (!auth_token) redirect(302, "/auth/login");
+        if (!auth_token) redirect(302, `/auth/login?redirectTo=${url.pathname}`);
 
         const form = await superValidate(request, zod(DrinkUpdateSchema));
         if (!form.valid) return fail(400, { form });
@@ -74,11 +74,11 @@ export const actions = {
         return message(form, "Drink updated successfully");
     },
 
-    deleteDrink: async ({ fetch, cookies, request }) => {
+    deleteDrink: async ({ fetch, cookies, request, url }) => {
         const client = createApiClient(fetch);
         const auth_token = cookies.get("auth_token");
 
-        if (!auth_token) redirect(302, "/auth/login");
+        if (!auth_token) redirect(302, `/auth/login?redirectTo=${url.pathname}`);
 
         const formData = await request.formData();
         const drinkId = formData.get("drink_id") as string;

@@ -61,14 +61,14 @@ export const load = async ({ fetch, cookies }) => {
 };
 
 export const actions = {
-    createUser: async ({ fetch, cookies, request }) => {
+    createUser: async ({ fetch, cookies, request, url }) => {
         // console.log('createUser action called');
         const auth_token = cookies.get("auth_token");
         const userCreateForm = await superValidate(request, zod(UserSchema));
 
         if (!auth_token) {
             console.log("No auth token found");
-            redirect(302, "/auth/login");
+            redirect(302, `/auth/login?redirectTo=${url.pathname}`);
         }
         if (!userCreateForm.valid) {
             return fail(400, { userCreateForm });
@@ -101,12 +101,12 @@ export const actions = {
         // redirect(302, "/admin/users");
     },
 
-    updateUser: async ({ fetch, cookies, request }) => {
+    updateUser: async ({ fetch, cookies, request, url }) => {
         const client = createApiClient(fetch);
         const auth_token = cookies.get("auth_token");
 
         if (!auth_token) {
-            redirect(302, "/auth/login");
+            redirect(302, `/auth/login?redirectTo=${url.pathname}`);
         }
 
         const userUpdateForm = await superValidate(request, zod(UserUpdateSchema));
@@ -162,12 +162,12 @@ export const actions = {
         return message(userUpdateForm, `User updated successfully!`);
     },
 
-    deleteUser: async ({ fetch, cookies, request }) => {
+    deleteUser: async ({ fetch, cookies, request, url }) => {
         const client = createApiClient(fetch);
         const auth_token = cookies.get("auth_token");
 
         if (!auth_token) {
-            redirect(302, "/auth/login");
+            redirect(302, `/auth/login?redirectTo=${url.pathname}`);
         }
 
         const formData = await request.formData();
@@ -191,12 +191,12 @@ export const actions = {
         return { success: true };
     },
 
-    toggleUserStatus: async ({ fetch, cookies, request }) => {
+    toggleUserStatus: async ({ fetch, cookies, request, url }) => {
         const client = createApiClient(fetch);
         const auth_token = cookies.get("auth_token");
 
         if (!auth_token) {
-            redirect(302, "/auth/login");
+            redirect(302, `/auth/login?redirectTo=${url.pathname}`);
         }
 
         const formData = await request.formData();
@@ -242,12 +242,12 @@ export const actions = {
 
         return { success: true };
     },
-    assignRole: async ({ fetch, cookies, request }) => {
+    assignRole: async ({ fetch, cookies, request, url }) => {
         const client = createApiClient(fetch);
         const auth_token = cookies.get("auth_token");
 
         if (!auth_token) {
-            redirect(302, "/auth/login");
+            redirect(302, `/auth/login?redirectTo=${url.pathname}`);
         }
         const userAddRoleForm = await superValidate(request, zod(UserAddRoleSchema));
         if (!userAddRoleForm.valid) {
@@ -275,11 +275,11 @@ export const actions = {
         }
         return message(userAddRoleForm, `Role assigned successfully!`);
     },
-    removeRole: async ({ fetch, cookies, request }) => {
+    removeRole: async ({ fetch, cookies, request, url }) => {
         const client = createApiClient(fetch);
         const auth_token = cookies.get("auth_token");
         if (!auth_token) {
-            redirect(302, "/auth/login");
+            redirect(302, `/auth/login?redirectTo=${url.pathname}`);
         }
 
         const formData = await request.formData();
@@ -306,11 +306,11 @@ export const actions = {
         return { success: true };
     },
 
-    addScope: async ({ fetch, cookies, request }) => {
+    addScope: async ({ fetch, cookies, request, url }) => {
         const client = createApiClient(fetch);
         const auth_token = cookies.get("auth_token");
         if (!auth_token) {
-            redirect(302, "/auth/login");
+            redirect(302, `/auth/login?redirectTo=${url.pathname}`);
         }
 
         const formData = await request.formData();
@@ -349,11 +349,11 @@ export const actions = {
         return { success: true };
     },
 
-    removeScope: async ({ fetch, cookies, request }) => {
+    removeScope: async ({ fetch, cookies, request, url }) => {
         const client = createApiClient(fetch);
         const auth_token = cookies.get("auth_token");
         if (!auth_token) {
-            redirect(302, "/auth/login");
+            redirect(302, `/auth/login?redirectTo=${url.pathname}`);
         }
 
         const formData = await request.formData();

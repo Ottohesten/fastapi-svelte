@@ -45,11 +45,11 @@ export const load = async ({ locals, url, parent, params, fetch }) => {
 };
 
 export const actions = {
-    default: async ({ fetch, request, cookies, params }) => {
+    default: async ({ fetch, request, cookies, params, url }) => {
         const auth_token = cookies.get("auth_token");
         const form = await superValidate(request, zod(GameSessionPlayerUpdateSchema));
         if (!auth_token) {
-            redirect(302, "/auth/login");
+            redirect(302, `/auth/login?redirectTo=${url.pathname}`);
         }
         if (!form.valid) {
             return fail(400, { form });

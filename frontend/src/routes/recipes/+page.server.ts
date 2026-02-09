@@ -5,12 +5,12 @@ import { redirect } from "@sveltejs/kit";
 import { fail } from "@sveltejs/kit";
 
 export const actions = {
-    delete: async ({ fetch, params, cookies, request }) => {
+    delete: async ({ fetch, params, cookies, request, url }) => {
         const client = createApiClient(fetch);
         const auth_token = cookies.get("auth_token");
 
         if (!auth_token) {
-            redirect(302, "/auth/login");
+            redirect(302, `/auth/login?redirectTo=${url.pathname}`);
         }
 
         const formData = await request.formData();

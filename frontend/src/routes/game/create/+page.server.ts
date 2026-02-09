@@ -18,12 +18,12 @@ export const load = async ({ fetch, parent }) => {
 };
 
 export const actions = {
-    default: async ({ fetch, request, cookies }) => {
+    default: async ({ fetch, request, cookies, url }) => {
         const auth_token = cookies.get("auth_token");
         const form = await superValidate(request, zod(GameSessionSchema));
         // console.log(form)
         if (!auth_token) {
-            redirect(302, "/auth/login");
+            redirect(302, `/auth/login?redirectTo=${url.pathname}`);
         }
 
         if (!form.valid) {

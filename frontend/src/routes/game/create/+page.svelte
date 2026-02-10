@@ -44,6 +44,16 @@
       <div
         class="rounded-lg border border-gray-100 bg-gray-50 p-4 dark:border-gray-800 dark:bg-gray-800/50"
       >
+        <div class="mb-3 flex items-center justify-between">
+          <h2 class="text-sm font-semibold text-gray-700 dark:text-gray-200">Team {i + 1}</h2>
+          <button
+            type="button"
+            class="rounded-md border border-red-200 bg-red-50 px-2.5 py-1 text-xs font-medium text-red-700 transition-colors hover:border-red-300 hover:bg-red-100 focus:ring-2 focus:ring-red-500 focus:ring-offset-1 focus:outline-none dark:border-red-900/50 dark:bg-red-900/40 dark:text-red-300 dark:hover:border-red-800 dark:hover:bg-red-900/50"
+            onclick={() => ($formData.teams = $formData.teams.filter((_, idx) => idx !== i))}
+          >
+            Remove
+          </button>
+        </div>
         <Field {form} name="teams[{i}].name">
           <Control>
             {#snippet children({ props })}

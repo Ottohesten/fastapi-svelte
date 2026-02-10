@@ -50,4 +50,19 @@ export class GamesPage {
         // after submit, we should be back on the game list
         await expect(this.page).toHaveURL("/game");
     }
+
+    async deleteGame(title: string) {
+        const deleteButton = this.page.getByRole("button", { name: "Delete" }).first();
+
+        await expect(deleteButton).toBeVisible();
+        await deleteButton.click();
+    }
+
+    async deleteAll() {
+        const deleteButtons = this.page.getByRole("button", { name: "Delete" });
+
+        while ((await deleteButtons.count()) > 0) {
+            await deleteButtons.first().click();
+        }
+    }
 }

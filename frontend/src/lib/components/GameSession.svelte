@@ -1,6 +1,7 @@
 <script lang="ts">
   import { enhance } from "$app/forms";
   import type { components } from "$lib/api/v1";
+  import { Trash, Trash2 } from "lucide-svelte";
 
   type Props = {
     session: components["schemas"]["GameSessionPublic"];
@@ -111,14 +112,15 @@
               }
             }}
           >
-            <svg class="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <!-- <svg class="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
                 stroke-linecap="round"
                 stroke-linejoin="round"
                 stroke-width="2"
                 d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
               />
-            </svg>
+            </svg> -->
+            <Trash2 class="h-3 w-3" />
             Delete
           </button>
         </form>

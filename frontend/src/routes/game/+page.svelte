@@ -11,7 +11,7 @@
     <GameSession {session} authenticatedUser={data.authenticatedUser ?? undefined} />
   {/each}
 
-  {#if data.authenticatedUser && data.authenticatedUser.is_superuser}
+  {#if data.authenticatedUser && data.authenticatedUser.scopes?.includes("games:create")}
     <!-- {#if data.authenticatedUser} -->
     <div class="mt-4">
       <a

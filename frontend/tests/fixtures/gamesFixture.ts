@@ -10,10 +10,10 @@ export const test = base.extend<{ gamesPage: GamesPage }, { cleanupGames: void }
             title: `Playwright Session 1`,
             teamNames: ["Red Team", "Blue Team"]
         });
-        await gamesPage.createNewGame({
-            title: `Playwright Session 2`,
-            teamNames: ["Red Team", "Blue Team"]
-        });
+        // await gamesPage.createNewGame({
+        //     title: `Playwright Session 2`,
+        //     teamNames: ["Red Team", "Blue Team"]
+        // });
         await use(gamesPage);
 
         // teardown

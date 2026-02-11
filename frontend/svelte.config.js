@@ -14,7 +14,12 @@ const config = {
         // See https://svelte.dev/docs/kit/adapters for more information about adapters.
         adapter: adapter(),
         csrf: {
-            checkOrigin: false
+            trustedOrigins: [
+                "https://internationaleregler.dk",
+                "https://fastapi-svelte-backend.onrender.com",
+                "http://localhost:5173",
+                "http://127.0.0.1:5173"
+            ]
         }
     }
 };

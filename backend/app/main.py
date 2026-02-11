@@ -1,8 +1,8 @@
 from fastapi.middleware.cors import CORSMiddleware
 
 from fastapi import FastAPI
+from fastapi.routing import APIRoute
 
-from app.deps import TokenDep
 from app.config import get_settings
 from app.routers import (
     users,
@@ -13,13 +13,29 @@ from app.routers import (
     roles,
 )
 
+settings = get_settings()
+
 # @asynccontextmanager
 # async def lifespan(app: FastAPI):
 
 
+def custom_generate_unique_id(route: APIRoute) -> str:
+    return f"{route.tags[0]}-{route.name}"
+
+
+# def custom_generate_unique_id(route: APIRoute) -> str:
+#     return f"{route.tags[0] if route.tags else 'unknowntag'}-{route.name}"
+
+
+# def custom_generate_unique_id(route: APIRoute) -> str:
+#     return f"{route.name}"
+
+
 # app = FastAPI(dependencies=[Depends(oauth2_scheme)])
 # app = FastAPI(swagger_ui_parameters={"persistAuthorization": True})
-app = FastAPI()
+app = FastAPI(
+    title=settings.PROJECT_NAME, generate_unique_id_function=custom_generate_unique_id
+)
 
 origins = [
     "http://localhost:5173",
@@ -47,8 +63,6 @@ app.add_middleware(
 # hero_3 = Hero(name="Rusty-Man", secret_name="Tommy Sharp", age=48)
 
 
-settings = get_settings()
-
 # print(settings.SQLALCHEMY_DATABASE_URI)
 # users.router.include_router(users.permissions_router)
 app.include_router(users.router)
@@ -68,9 +82,9 @@ app.include_router(roles.router)
 # Use it in your endpoints
 
 
-@app.get("/")
-async def read_root(token: TokenDep):
-    return {"token": token}
+# @app.get("/")
+# async def read_root(token: TokenDep):
+#     return {"token": token}
 
 
 # @app.get("/protected-route")

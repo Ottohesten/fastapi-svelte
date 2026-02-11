@@ -1,7 +1,7 @@
 from fastapi import APIRouter, BackgroundTasks
 from fastapi import HTTPException, Security
 from fastapi.responses import StreamingResponse
-from sqlmodel import select
+from sqlmodel import select, asc
 from app.deps import SessionDep, get_current_user
 from typing import Annotated
 import asyncio
@@ -61,7 +61,12 @@ def read_game_sessions(session: SessionDep, skip: int = 0, limit: int = 100):
     """
     Retrieve game sessions.
     """
-    statement = select(GameSession).offset(skip).limit(limit)
+    statement = (
+        select(GameSession)
+        .order_by(asc(GameSession.created_at))
+        .offset(skip)
+        .limit(limit)
+    )
     game_sessions = session.exec(statement).all()
 
     return game_sessions

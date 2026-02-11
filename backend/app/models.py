@@ -429,6 +429,7 @@ class GameSessionPublic(GameSessionBase):
     """
 
     id: uuid.UUID
+    created_at: datetime
     owner: UserPublic
     players: list["GamePlayerPublic"]
     teams: list["GameTeamPublic"]
@@ -455,6 +456,10 @@ class GameSession(GameSessionBase, table=True):
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
     owner_id: uuid.UUID = Field(foreign_key="user.id", nullable=False)
     owner: User = Relationship(back_populates="game_sessions")
+    created_at: datetime = Field(
+        default=datetime.now(timezone.utc),
+        sa_column=Column(DateTime(timezone=True), nullable=False),
+    )
 
     teams: Optional[list["GameTeam"]] = Relationship(
         back_populates="game_session", cascade_delete=True

@@ -5,7 +5,7 @@ export const test = base.extend<{ gamesPage: GamesPage }, { cleanupGames: void }
     gamesPage: async ({ page }, use) => {
         const gamesPage = new GamesPage(page);
         await gamesPage.goto();
-        // await page.waitForSelector('body[data-svelte-hydrated="true"]');
+        await page.waitForSelector('body[data-svelte-hydrated="true"]');
         await gamesPage.createNewGame({
             title: `Playwright Session 1`,
             teamNames: ["Red Team", "Blue Team"]
@@ -15,6 +15,8 @@ export const test = base.extend<{ gamesPage: GamesPage }, { cleanupGames: void }
             teamNames: ["Red Team", "Blue Team"]
         });
         await use(gamesPage);
+
+        // teardown
     }
 });
 

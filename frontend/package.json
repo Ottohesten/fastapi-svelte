@@ -13,6 +13,7 @@
         "lint": "prettier --check .",
         "test": "bunx playwright test",
         "test:ui": "bunx playwright test --ui",
+        "generate-client": "openapi-ts",
         "generate:sdk": "openapi-typescript http://127.0.0.1:8000/openapi.json --output src/lib/api/v1.d.ts"
     },
     "dependencies": {
@@ -44,6 +45,7 @@
         "zod": "^4.3.6"
     },
     "devDependencies": {
+        "@hey-api/openapi-ts": "0.92.3",
         "@playwright/test": "^1.58.1",
         "@sveltejs/adapter-auto": "^7.0.0",
         "@sveltejs/vite-plugin-svelte": "^4.0.0",

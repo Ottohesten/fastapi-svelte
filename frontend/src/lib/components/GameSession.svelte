@@ -16,6 +16,17 @@
       (authenticatedUser.id === session.owner.id ||
         authenticatedUser.scopes?.includes("games:delete"))
   );
+
+  function formatCreated(dateStr: string): string {
+    const d = new Date(dateStr);
+    if (Number.isNaN(d.getTime())) return dateStr;
+    const dd = String(d.getDate()).padStart(2, "0");
+    const mm = String(d.getMonth() + 1).padStart(2, "0");
+    const yy = String(d.getFullYear()).slice(-2);
+    const hh = String(d.getHours()).padStart(2, "0");
+    const min = String(d.getMinutes()).padStart(2, "0");
+    return `${dd}/${mm}/${yy}, ${hh}:${min}`;
+  }
 </script>
 
 <div
@@ -46,7 +57,7 @@
             />
           </svg>
         </div>
-        <div class="mb-3 text-sm text-gray-600 dark:text-gray-400">
+        <div class="mb-3 flex flex-col gap-1 text-sm text-gray-600 dark:text-gray-400">
           <span class="inline-flex items-center gap-1">
             <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
@@ -57,6 +68,9 @@
               />
             </svg>
             <span class="truncate">{session.owner.full_name ?? session.owner.email}</span>
+          </span>
+          <span class="text-xs text-gray-500 dark:text-gray-400">
+            Created: <time datetime={session.created_at}>{formatCreated(session.created_at)}</time>
           </span>
         </div>
         <div class="flex flex-wrap items-center gap-2">

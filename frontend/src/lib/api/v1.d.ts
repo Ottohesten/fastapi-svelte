@@ -972,6 +972,11 @@ export interface components {
              * Format: uuid
              */
             id: string;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
             owner: components["schemas"]["UserPublic"];
             /** Players */
             players: components["schemas"]["GamePlayerPublic"][];

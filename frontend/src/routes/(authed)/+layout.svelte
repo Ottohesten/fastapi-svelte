@@ -15,7 +15,7 @@
     <main class="w-full">
       <!-- Mobile Top Bar -->
       <div
-        class="sticky top-0 z-0 flex items-center gap-2 border-b border-gray-200 bg-white/80 p-3 backdrop-blur supports-[backdrop-filter]:bg-white/60 md:hidden dark:border-gray-800 dark:bg-gray-900/60"
+        class="sticky top-0 z-0 flex items-center gap-2 border-b border-gray-200 bg-white/80 p-3 backdrop-blur supports-backdrop-filter:bg-white/60 md:hidden dark:border-gray-800 dark:bg-gray-900/60"
       >
         <SidebarTrigger class="h-9 w-9" />
         <span class="text-sm font-medium text-gray-700 dark:text-gray-200">Admin</span>

@@ -36,7 +36,7 @@
 </script>
 
 <div
-  class="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 py-8 dark:from-gray-950 dark:to-gray-900"
+  class="min-h-screen bg-linear-to-br from-slate-50 to-blue-50 py-8 dark:from-gray-950 dark:to-gray-900"
 >
   <div class="container mx-auto max-w-7xl px-4">
     <!-- Header Section -->
@@ -98,7 +98,7 @@
     <div
       class="mb-8 overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-900/40"
     >
-      <div class="relative aspect-video w-full bg-gray-100 sm:aspect-[21/9] dark:bg-gray-800">
+      <div class="relative aspect-video w-full bg-gray-100 sm:aspect-21/9 dark:bg-gray-800">
         {#if data.recipe.image}
           <img
             src={data.recipe.image}
@@ -293,7 +293,7 @@
                   }
                 }}
               >
-                <div class="flex-shrink-0">
+                <div class="shrink-0">
                   {#if checkedIngredients.has(ingredient_link.ingredient.id)}
                     <svg class="h-5 w-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
                       <path

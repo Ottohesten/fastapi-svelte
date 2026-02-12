@@ -165,7 +165,7 @@
         </div>
         <div class="prose prose-sm dark:prose-invert max-w-none">
           <div
-            class="line-clamp-3 text-sm text-gray-600 dark:text-gray-300 [&>*]:text-sm [&>h1]:text-base [&>h2]:text-sm [&>h3]:text-sm"
+            class="line-clamp-3 text-sm text-gray-600 *:text-sm dark:text-gray-300 [&>h1]:text-base [&>h2]:text-sm [&>h3]:text-sm"
           >
             {@html recipe.instructions}
           </div>

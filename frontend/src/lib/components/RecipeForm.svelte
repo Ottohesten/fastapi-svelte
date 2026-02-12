@@ -136,7 +136,7 @@
 <SuperDebug data={$formData} />
 
 <div
-  class="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 py-8 dark:from-gray-950 dark:to-gray-900"
+  class="min-h-screen bg-linear-to-br from-slate-50 to-blue-50 py-8 dark:from-gray-950 dark:to-gray-900"
 >
   <div class="container mx-auto max-w-7xl px-4">
     <!-- Page Header -->

@@ -897,7 +897,7 @@ export type GetUsersData = {
          */
         limit?: number;
     };
-    url: "/users/";
+    url: '/users/';
 };
 
 export type GetUsersErrors = {
@@ -922,7 +922,7 @@ export type PostUsersData = {
     body: UserCreate;
     path?: never;
     query?: never;
-    url: "/users/";
+    url: '/users/';
 };
 
 export type PostUsersErrors = {
@@ -956,7 +956,7 @@ export type GetUsersWithPermissionsData = {
          */
         limit?: number;
     };
-    url: "/users/with-permissions";
+    url: '/users/with-permissions';
 };
 
 export type GetUsersWithPermissionsErrors = {
@@ -966,8 +966,7 @@ export type GetUsersWithPermissionsErrors = {
     422: HttpValidationError;
 };
 
-export type GetUsersWithPermissionsError =
-    GetUsersWithPermissionsErrors[keyof GetUsersWithPermissionsErrors];
+export type GetUsersWithPermissionsError = GetUsersWithPermissionsErrors[keyof GetUsersWithPermissionsErrors];
 
 export type GetUsersWithPermissionsResponses = {
     /**
@@ -976,14 +975,13 @@ export type GetUsersWithPermissionsResponses = {
     200: UsersWithPermissionsPublic;
 };
 
-export type GetUsersWithPermissionsResponse =
-    GetUsersWithPermissionsResponses[keyof GetUsersWithPermissionsResponses];
+export type GetUsersWithPermissionsResponse = GetUsersWithPermissionsResponses[keyof GetUsersWithPermissionsResponses];
 
 export type DeleteUsersMeData = {
     body?: never;
     path?: never;
     query?: never;
-    url: "/users/me";
+    url: '/users/me';
 };
 
 export type DeleteUsersMeResponses = {
@@ -999,7 +997,7 @@ export type GetUsersMeData = {
     body?: never;
     path?: never;
     query?: never;
-    url: "/users/me";
+    url: '/users/me';
 };
 
 export type GetUsersMeErrors = {
@@ -1024,7 +1022,7 @@ export type PatchUsersMeData = {
     body: UserUpdateMe;
     path?: never;
     query?: never;
-    url: "/users/me";
+    url: '/users/me';
 };
 
 export type PatchUsersMeErrors = {
@@ -1049,7 +1047,7 @@ export type PatchUsersMePasswordData = {
     body: UpdatePassword;
     path?: never;
     query?: never;
-    url: "/users/me/password";
+    url: '/users/me/password';
 };
 
 export type PatchUsersMePasswordErrors = {
@@ -1059,8 +1057,7 @@ export type PatchUsersMePasswordErrors = {
     422: HttpValidationError;
 };
 
-export type PatchUsersMePasswordError =
-    PatchUsersMePasswordErrors[keyof PatchUsersMePasswordErrors];
+export type PatchUsersMePasswordError = PatchUsersMePasswordErrors[keyof PatchUsersMePasswordErrors];
 
 export type PatchUsersMePasswordResponses = {
     /**
@@ -1069,14 +1066,13 @@ export type PatchUsersMePasswordResponses = {
     200: Message;
 };
 
-export type PatchUsersMePasswordResponse =
-    PatchUsersMePasswordResponses[keyof PatchUsersMePasswordResponses];
+export type PatchUsersMePasswordResponse = PatchUsersMePasswordResponses[keyof PatchUsersMePasswordResponses];
 
 export type PostUsersSignupData = {
     body: UserRegister;
     path?: never;
     query?: never;
-    url: "/users/signup";
+    url: '/users/signup';
 };
 
 export type PostUsersSignupErrors = {
@@ -1106,7 +1102,7 @@ export type DeleteUsersByUserIdData = {
         user_id: string;
     };
     query?: never;
-    url: "/users/{user_id}";
+    url: '/users/{user_id}';
 };
 
 export type DeleteUsersByUserIdErrors = {
@@ -1125,8 +1121,7 @@ export type DeleteUsersByUserIdResponses = {
     200: Message;
 };
 
-export type DeleteUsersByUserIdResponse =
-    DeleteUsersByUserIdResponses[keyof DeleteUsersByUserIdResponses];
+export type DeleteUsersByUserIdResponse = DeleteUsersByUserIdResponses[keyof DeleteUsersByUserIdResponses];
 
 export type GetUsersByUserIdData = {
     body?: never;
@@ -1137,7 +1132,7 @@ export type GetUsersByUserIdData = {
         user_id: string;
     };
     query?: never;
-    url: "/users/{user_id}";
+    url: '/users/{user_id}';
 };
 
 export type GetUsersByUserIdErrors = {
@@ -1167,7 +1162,7 @@ export type PatchUsersByUserIdData = {
         user_id: string;
     };
     query?: never;
-    url: "/users/{user_id}";
+    url: '/users/{user_id}';
 };
 
 export type PatchUsersByUserIdErrors = {
@@ -1186,8 +1181,7 @@ export type PatchUsersByUserIdResponses = {
     200: UserPublic;
 };
 
-export type PatchUsersByUserIdResponse =
-    PatchUsersByUserIdResponses[keyof PatchUsersByUserIdResponses];
+export type PatchUsersByUserIdResponse = PatchUsersByUserIdResponses[keyof PatchUsersByUserIdResponses];
 
 export type DeleteUsersByUserIdRolesByRoleIdData = {
     body?: never;
@@ -1202,7 +1196,7 @@ export type DeleteUsersByUserIdRolesByRoleIdData = {
         role_id: string;
     };
     query?: never;
-    url: "/users/{user_id}/roles/{role_id}";
+    url: '/users/{user_id}/roles/{role_id}';
 };
 
 export type DeleteUsersByUserIdRolesByRoleIdErrors = {
@@ -1212,8 +1206,7 @@ export type DeleteUsersByUserIdRolesByRoleIdErrors = {
     422: HttpValidationError;
 };
 
-export type DeleteUsersByUserIdRolesByRoleIdError =
-    DeleteUsersByUserIdRolesByRoleIdErrors[keyof DeleteUsersByUserIdRolesByRoleIdErrors];
+export type DeleteUsersByUserIdRolesByRoleIdError = DeleteUsersByUserIdRolesByRoleIdErrors[keyof DeleteUsersByUserIdRolesByRoleIdErrors];
 
 export type DeleteUsersByUserIdRolesByRoleIdResponses = {
     /**
@@ -1222,8 +1215,7 @@ export type DeleteUsersByUserIdRolesByRoleIdResponses = {
     200: UserPublic;
 };
 
-export type DeleteUsersByUserIdRolesByRoleIdResponse =
-    DeleteUsersByUserIdRolesByRoleIdResponses[keyof DeleteUsersByUserIdRolesByRoleIdResponses];
+export type DeleteUsersByUserIdRolesByRoleIdResponse = DeleteUsersByUserIdRolesByRoleIdResponses[keyof DeleteUsersByUserIdRolesByRoleIdResponses];
 
 export type PostUsersByUserIdRolesByRoleIdData = {
     body?: never;
@@ -1238,7 +1230,7 @@ export type PostUsersByUserIdRolesByRoleIdData = {
         role_id: string;
     };
     query?: never;
-    url: "/users/{user_id}/roles/{role_id}";
+    url: '/users/{user_id}/roles/{role_id}';
 };
 
 export type PostUsersByUserIdRolesByRoleIdErrors = {
@@ -1248,8 +1240,7 @@ export type PostUsersByUserIdRolesByRoleIdErrors = {
     422: HttpValidationError;
 };
 
-export type PostUsersByUserIdRolesByRoleIdError =
-    PostUsersByUserIdRolesByRoleIdErrors[keyof PostUsersByUserIdRolesByRoleIdErrors];
+export type PostUsersByUserIdRolesByRoleIdError = PostUsersByUserIdRolesByRoleIdErrors[keyof PostUsersByUserIdRolesByRoleIdErrors];
 
 export type PostUsersByUserIdRolesByRoleIdResponses = {
     /**
@@ -1258,8 +1249,7 @@ export type PostUsersByUserIdRolesByRoleIdResponses = {
     200: UserPublic;
 };
 
-export type PostUsersByUserIdRolesByRoleIdResponse =
-    PostUsersByUserIdRolesByRoleIdResponses[keyof PostUsersByUserIdRolesByRoleIdResponses];
+export type PostUsersByUserIdRolesByRoleIdResponse = PostUsersByUserIdRolesByRoleIdResponses[keyof PostUsersByUserIdRolesByRoleIdResponses];
 
 export type DeleteUsersByUserIdScopesData = {
     /**
@@ -1273,7 +1263,7 @@ export type DeleteUsersByUserIdScopesData = {
         user_id: string;
     };
     query?: never;
-    url: "/users/{user_id}/scopes";
+    url: '/users/{user_id}/scopes';
 };
 
 export type DeleteUsersByUserIdScopesErrors = {
@@ -1283,8 +1273,7 @@ export type DeleteUsersByUserIdScopesErrors = {
     422: HttpValidationError;
 };
 
-export type DeleteUsersByUserIdScopesError =
-    DeleteUsersByUserIdScopesErrors[keyof DeleteUsersByUserIdScopesErrors];
+export type DeleteUsersByUserIdScopesError = DeleteUsersByUserIdScopesErrors[keyof DeleteUsersByUserIdScopesErrors];
 
 export type DeleteUsersByUserIdScopesResponses = {
     /**
@@ -1293,8 +1282,7 @@ export type DeleteUsersByUserIdScopesResponses = {
     200: UserPublic;
 };
 
-export type DeleteUsersByUserIdScopesResponse =
-    DeleteUsersByUserIdScopesResponses[keyof DeleteUsersByUserIdScopesResponses];
+export type DeleteUsersByUserIdScopesResponse = DeleteUsersByUserIdScopesResponses[keyof DeleteUsersByUserIdScopesResponses];
 
 export type PostUsersByUserIdScopesData = {
     /**
@@ -1308,7 +1296,7 @@ export type PostUsersByUserIdScopesData = {
         user_id: string;
     };
     query?: never;
-    url: "/users/{user_id}/scopes";
+    url: '/users/{user_id}/scopes';
 };
 
 export type PostUsersByUserIdScopesErrors = {
@@ -1318,8 +1306,7 @@ export type PostUsersByUserIdScopesErrors = {
     422: HttpValidationError;
 };
 
-export type PostUsersByUserIdScopesError =
-    PostUsersByUserIdScopesErrors[keyof PostUsersByUserIdScopesErrors];
+export type PostUsersByUserIdScopesError = PostUsersByUserIdScopesErrors[keyof PostUsersByUserIdScopesErrors];
 
 export type PostUsersByUserIdScopesResponses = {
     /**
@@ -1328,14 +1315,13 @@ export type PostUsersByUserIdScopesResponses = {
     200: UserPublic;
 };
 
-export type PostUsersByUserIdScopesResponse =
-    PostUsersByUserIdScopesResponses[keyof PostUsersByUserIdScopesResponses];
+export type PostUsersByUserIdScopesResponse = PostUsersByUserIdScopesResponses[keyof PostUsersByUserIdScopesResponses];
 
 export type PostRecipesUploadImageData = {
     body: BodyRecipesUploadRecipeImage;
     path?: never;
     query?: never;
-    url: "/recipes/upload-image";
+    url: '/recipes/upload-image';
 };
 
 export type PostRecipesUploadImageErrors = {
@@ -1345,8 +1331,7 @@ export type PostRecipesUploadImageErrors = {
     422: HttpValidationError;
 };
 
-export type PostRecipesUploadImageError =
-    PostRecipesUploadImageErrors[keyof PostRecipesUploadImageErrors];
+export type PostRecipesUploadImageError = PostRecipesUploadImageErrors[keyof PostRecipesUploadImageErrors];
 
 export type PostRecipesUploadImageResponses = {
     /**
@@ -1368,7 +1353,7 @@ export type GetRecipesData = {
          */
         limit?: number;
     };
-    url: "/recipes/";
+    url: '/recipes/';
 };
 
 export type GetRecipesErrors = {
@@ -1395,7 +1380,7 @@ export type PostRecipesData = {
     body: RecipeCreate;
     path?: never;
     query?: never;
-    url: "/recipes/";
+    url: '/recipes/';
 };
 
 export type PostRecipesErrors = {
@@ -1425,7 +1410,7 @@ export type DeleteRecipesByRecipeIdData = {
         recipe_id: string;
     };
     query?: never;
-    url: "/recipes/{recipe_id}";
+    url: '/recipes/{recipe_id}';
 };
 
 export type DeleteRecipesByRecipeIdErrors = {
@@ -1435,8 +1420,7 @@ export type DeleteRecipesByRecipeIdErrors = {
     422: HttpValidationError;
 };
 
-export type DeleteRecipesByRecipeIdError =
-    DeleteRecipesByRecipeIdErrors[keyof DeleteRecipesByRecipeIdErrors];
+export type DeleteRecipesByRecipeIdError = DeleteRecipesByRecipeIdErrors[keyof DeleteRecipesByRecipeIdErrors];
 
 export type DeleteRecipesByRecipeIdResponses = {
     /**
@@ -1445,8 +1429,7 @@ export type DeleteRecipesByRecipeIdResponses = {
     200: Recipe;
 };
 
-export type DeleteRecipesByRecipeIdResponse =
-    DeleteRecipesByRecipeIdResponses[keyof DeleteRecipesByRecipeIdResponses];
+export type DeleteRecipesByRecipeIdResponse = DeleteRecipesByRecipeIdResponses[keyof DeleteRecipesByRecipeIdResponses];
 
 export type GetRecipesByRecipeIdData = {
     body?: never;
@@ -1457,7 +1440,7 @@ export type GetRecipesByRecipeIdData = {
         recipe_id: string;
     };
     query?: never;
-    url: "/recipes/{recipe_id}";
+    url: '/recipes/{recipe_id}';
 };
 
 export type GetRecipesByRecipeIdErrors = {
@@ -1467,8 +1450,7 @@ export type GetRecipesByRecipeIdErrors = {
     422: HttpValidationError;
 };
 
-export type GetRecipesByRecipeIdError =
-    GetRecipesByRecipeIdErrors[keyof GetRecipesByRecipeIdErrors];
+export type GetRecipesByRecipeIdError = GetRecipesByRecipeIdErrors[keyof GetRecipesByRecipeIdErrors];
 
 export type GetRecipesByRecipeIdResponses = {
     /**
@@ -1477,8 +1459,7 @@ export type GetRecipesByRecipeIdResponses = {
     200: RecipePublic;
 };
 
-export type GetRecipesByRecipeIdResponse =
-    GetRecipesByRecipeIdResponses[keyof GetRecipesByRecipeIdResponses];
+export type GetRecipesByRecipeIdResponse = GetRecipesByRecipeIdResponses[keyof GetRecipesByRecipeIdResponses];
 
 export type PatchRecipesByRecipeIdData = {
     body: RecipeCreate;
@@ -1489,7 +1470,7 @@ export type PatchRecipesByRecipeIdData = {
         recipe_id: string;
     };
     query?: never;
-    url: "/recipes/{recipe_id}";
+    url: '/recipes/{recipe_id}';
 };
 
 export type PatchRecipesByRecipeIdErrors = {
@@ -1499,8 +1480,7 @@ export type PatchRecipesByRecipeIdErrors = {
     422: HttpValidationError;
 };
 
-export type PatchRecipesByRecipeIdError =
-    PatchRecipesByRecipeIdErrors[keyof PatchRecipesByRecipeIdErrors];
+export type PatchRecipesByRecipeIdError = PatchRecipesByRecipeIdErrors[keyof PatchRecipesByRecipeIdErrors];
 
 export type PatchRecipesByRecipeIdResponses = {
     /**
@@ -1509,8 +1489,7 @@ export type PatchRecipesByRecipeIdResponses = {
     200: RecipePublic;
 };
 
-export type PatchRecipesByRecipeIdResponse =
-    PatchRecipesByRecipeIdResponses[keyof PatchRecipesByRecipeIdResponses];
+export type PatchRecipesByRecipeIdResponse = PatchRecipesByRecipeIdResponses[keyof PatchRecipesByRecipeIdResponses];
 
 export type GetIngredientsData = {
     body?: never;
@@ -1525,7 +1504,7 @@ export type GetIngredientsData = {
          */
         limit?: number;
     };
-    url: "/ingredients/";
+    url: '/ingredients/';
 };
 
 export type GetIngredientsErrors = {
@@ -1552,7 +1531,7 @@ export type PostIngredientsData = {
     body: IngredientCreate;
     path?: never;
     query?: never;
-    url: "/ingredients/";
+    url: '/ingredients/';
 };
 
 export type PostIngredientsErrors = {
@@ -1582,7 +1561,7 @@ export type DeleteIngredientsByIngredientIdData = {
         ingredient_id: string;
     };
     query?: never;
-    url: "/ingredients/{ingredient_id}";
+    url: '/ingredients/{ingredient_id}';
 };
 
 export type DeleteIngredientsByIngredientIdErrors = {
@@ -1592,8 +1571,7 @@ export type DeleteIngredientsByIngredientIdErrors = {
     422: HttpValidationError;
 };
 
-export type DeleteIngredientsByIngredientIdError =
-    DeleteIngredientsByIngredientIdErrors[keyof DeleteIngredientsByIngredientIdErrors];
+export type DeleteIngredientsByIngredientIdError = DeleteIngredientsByIngredientIdErrors[keyof DeleteIngredientsByIngredientIdErrors];
 
 export type DeleteIngredientsByIngredientIdResponses = {
     /**
@@ -1602,8 +1580,7 @@ export type DeleteIngredientsByIngredientIdResponses = {
     200: IngredientPublic;
 };
 
-export type DeleteIngredientsByIngredientIdResponse =
-    DeleteIngredientsByIngredientIdResponses[keyof DeleteIngredientsByIngredientIdResponses];
+export type DeleteIngredientsByIngredientIdResponse = DeleteIngredientsByIngredientIdResponses[keyof DeleteIngredientsByIngredientIdResponses];
 
 export type GetIngredientsByIngredientIdData = {
     body?: never;
@@ -1614,7 +1591,7 @@ export type GetIngredientsByIngredientIdData = {
         ingredient_id: string;
     };
     query?: never;
-    url: "/ingredients/{ingredient_id}";
+    url: '/ingredients/{ingredient_id}';
 };
 
 export type GetIngredientsByIngredientIdErrors = {
@@ -1624,8 +1601,7 @@ export type GetIngredientsByIngredientIdErrors = {
     422: HttpValidationError;
 };
 
-export type GetIngredientsByIngredientIdError =
-    GetIngredientsByIngredientIdErrors[keyof GetIngredientsByIngredientIdErrors];
+export type GetIngredientsByIngredientIdError = GetIngredientsByIngredientIdErrors[keyof GetIngredientsByIngredientIdErrors];
 
 export type GetIngredientsByIngredientIdResponses = {
     /**
@@ -1634,8 +1610,7 @@ export type GetIngredientsByIngredientIdResponses = {
     200: IngredientPublic;
 };
 
-export type GetIngredientsByIngredientIdResponse =
-    GetIngredientsByIngredientIdResponses[keyof GetIngredientsByIngredientIdResponses];
+export type GetIngredientsByIngredientIdResponse = GetIngredientsByIngredientIdResponses[keyof GetIngredientsByIngredientIdResponses];
 
 export type PatchIngredientsByIngredientIdData = {
     body: IngredientCreate;
@@ -1646,7 +1621,7 @@ export type PatchIngredientsByIngredientIdData = {
         ingredient_id: string;
     };
     query?: never;
-    url: "/ingredients/{ingredient_id}";
+    url: '/ingredients/{ingredient_id}';
 };
 
 export type PatchIngredientsByIngredientIdErrors = {
@@ -1656,8 +1631,7 @@ export type PatchIngredientsByIngredientIdErrors = {
     422: HttpValidationError;
 };
 
-export type PatchIngredientsByIngredientIdError =
-    PatchIngredientsByIngredientIdErrors[keyof PatchIngredientsByIngredientIdErrors];
+export type PatchIngredientsByIngredientIdError = PatchIngredientsByIngredientIdErrors[keyof PatchIngredientsByIngredientIdErrors];
 
 export type PatchIngredientsByIngredientIdResponses = {
     /**
@@ -1666,8 +1640,7 @@ export type PatchIngredientsByIngredientIdResponses = {
     200: IngredientPublic;
 };
 
-export type PatchIngredientsByIngredientIdResponse =
-    PatchIngredientsByIngredientIdResponses[keyof PatchIngredientsByIngredientIdResponses];
+export type PatchIngredientsByIngredientIdResponse = PatchIngredientsByIngredientIdResponses[keyof PatchIngredientsByIngredientIdResponses];
 
 export type GetGameData = {
     body?: never;
@@ -1682,7 +1655,7 @@ export type GetGameData = {
          */
         limit?: number;
     };
-    url: "/game/";
+    url: '/game/';
 };
 
 export type GetGameErrors = {
@@ -1709,7 +1682,7 @@ export type PostGameData = {
     body: GameSessionCreate;
     path?: never;
     query?: never;
-    url: "/game/";
+    url: '/game/';
 };
 
 export type PostGameErrors = {
@@ -1743,7 +1716,7 @@ export type GetGameDrinksData = {
          */
         limit?: number;
     };
-    url: "/game/drinks";
+    url: '/game/drinks';
 };
 
 export type GetGameDrinksErrors = {
@@ -1770,7 +1743,7 @@ export type PostGameDrinksData = {
     body: DrinkCreate;
     path?: never;
     query?: never;
-    url: "/game/drinks";
+    url: '/game/drinks';
 };
 
 export type PostGameDrinksErrors = {
@@ -1800,7 +1773,7 @@ export type DeleteGameDrinksByDrinkIdData = {
         drink_id: string;
     };
     query?: never;
-    url: "/game/drinks/{drink_id}";
+    url: '/game/drinks/{drink_id}';
 };
 
 export type DeleteGameDrinksByDrinkIdErrors = {
@@ -1810,8 +1783,7 @@ export type DeleteGameDrinksByDrinkIdErrors = {
     422: HttpValidationError;
 };
 
-export type DeleteGameDrinksByDrinkIdError =
-    DeleteGameDrinksByDrinkIdErrors[keyof DeleteGameDrinksByDrinkIdErrors];
+export type DeleteGameDrinksByDrinkIdError = DeleteGameDrinksByDrinkIdErrors[keyof DeleteGameDrinksByDrinkIdErrors];
 
 export type DeleteGameDrinksByDrinkIdResponses = {
     /**
@@ -1829,7 +1801,7 @@ export type PatchGameDrinksByDrinkIdData = {
         drink_id: string;
     };
     query?: never;
-    url: "/game/drinks/{drink_id}";
+    url: '/game/drinks/{drink_id}';
 };
 
 export type PatchGameDrinksByDrinkIdErrors = {
@@ -1839,8 +1811,7 @@ export type PatchGameDrinksByDrinkIdErrors = {
     422: HttpValidationError;
 };
 
-export type PatchGameDrinksByDrinkIdError =
-    PatchGameDrinksByDrinkIdErrors[keyof PatchGameDrinksByDrinkIdErrors];
+export type PatchGameDrinksByDrinkIdError = PatchGameDrinksByDrinkIdErrors[keyof PatchGameDrinksByDrinkIdErrors];
 
 export type PatchGameDrinksByDrinkIdResponses = {
     /**
@@ -1849,8 +1820,7 @@ export type PatchGameDrinksByDrinkIdResponses = {
     200: DrinkPublic;
 };
 
-export type PatchGameDrinksByDrinkIdResponse =
-    PatchGameDrinksByDrinkIdResponses[keyof PatchGameDrinksByDrinkIdResponses];
+export type PatchGameDrinksByDrinkIdResponse = PatchGameDrinksByDrinkIdResponses[keyof PatchGameDrinksByDrinkIdResponses];
 
 export type DeleteGameByGameSessionIdData = {
     body?: never;
@@ -1861,7 +1831,7 @@ export type DeleteGameByGameSessionIdData = {
         game_session_id: string;
     };
     query?: never;
-    url: "/game/{game_session_id}";
+    url: '/game/{game_session_id}';
 };
 
 export type DeleteGameByGameSessionIdErrors = {
@@ -1871,8 +1841,7 @@ export type DeleteGameByGameSessionIdErrors = {
     422: HttpValidationError;
 };
 
-export type DeleteGameByGameSessionIdError =
-    DeleteGameByGameSessionIdErrors[keyof DeleteGameByGameSessionIdErrors];
+export type DeleteGameByGameSessionIdError = DeleteGameByGameSessionIdErrors[keyof DeleteGameByGameSessionIdErrors];
 
 export type DeleteGameByGameSessionIdResponses = {
     /**
@@ -1890,7 +1859,7 @@ export type GetGameByGameSessionIdData = {
         game_session_id: string;
     };
     query?: never;
-    url: "/game/{game_session_id}";
+    url: '/game/{game_session_id}';
 };
 
 export type GetGameByGameSessionIdErrors = {
@@ -1900,8 +1869,7 @@ export type GetGameByGameSessionIdErrors = {
     422: HttpValidationError;
 };
 
-export type GetGameByGameSessionIdError =
-    GetGameByGameSessionIdErrors[keyof GetGameByGameSessionIdErrors];
+export type GetGameByGameSessionIdError = GetGameByGameSessionIdErrors[keyof GetGameByGameSessionIdErrors];
 
 export type GetGameByGameSessionIdResponses = {
     /**
@@ -1910,8 +1878,7 @@ export type GetGameByGameSessionIdResponses = {
     200: GameSessionPublic;
 };
 
-export type GetGameByGameSessionIdResponse =
-    GetGameByGameSessionIdResponses[keyof GetGameByGameSessionIdResponses];
+export type GetGameByGameSessionIdResponse = GetGameByGameSessionIdResponses[keyof GetGameByGameSessionIdResponses];
 
 export type PostGameByGameSessionIdPlayerData = {
     body: GamePlayerCreate;
@@ -1922,7 +1889,7 @@ export type PostGameByGameSessionIdPlayerData = {
         game_session_id: string;
     };
     query?: never;
-    url: "/game/{game_session_id}/player";
+    url: '/game/{game_session_id}/player';
 };
 
 export type PostGameByGameSessionIdPlayerErrors = {
@@ -1932,8 +1899,7 @@ export type PostGameByGameSessionIdPlayerErrors = {
     422: HttpValidationError;
 };
 
-export type PostGameByGameSessionIdPlayerError =
-    PostGameByGameSessionIdPlayerErrors[keyof PostGameByGameSessionIdPlayerErrors];
+export type PostGameByGameSessionIdPlayerError = PostGameByGameSessionIdPlayerErrors[keyof PostGameByGameSessionIdPlayerErrors];
 
 export type PostGameByGameSessionIdPlayerResponses = {
     /**
@@ -1942,8 +1908,7 @@ export type PostGameByGameSessionIdPlayerResponses = {
     200: GamePlayerPublic;
 };
 
-export type PostGameByGameSessionIdPlayerResponse =
-    PostGameByGameSessionIdPlayerResponses[keyof PostGameByGameSessionIdPlayerResponses];
+export type PostGameByGameSessionIdPlayerResponse = PostGameByGameSessionIdPlayerResponses[keyof PostGameByGameSessionIdPlayerResponses];
 
 export type PostGameByGameSessionIdTeamData = {
     body: GameTeamCreate;
@@ -1954,7 +1919,7 @@ export type PostGameByGameSessionIdTeamData = {
         game_session_id: string;
     };
     query?: never;
-    url: "/game/{game_session_id}/team";
+    url: '/game/{game_session_id}/team';
 };
 
 export type PostGameByGameSessionIdTeamErrors = {
@@ -1964,8 +1929,7 @@ export type PostGameByGameSessionIdTeamErrors = {
     422: HttpValidationError;
 };
 
-export type PostGameByGameSessionIdTeamError =
-    PostGameByGameSessionIdTeamErrors[keyof PostGameByGameSessionIdTeamErrors];
+export type PostGameByGameSessionIdTeamError = PostGameByGameSessionIdTeamErrors[keyof PostGameByGameSessionIdTeamErrors];
 
 export type PostGameByGameSessionIdTeamResponses = {
     /**
@@ -1974,8 +1938,7 @@ export type PostGameByGameSessionIdTeamResponses = {
     200: GameTeamPublic;
 };
 
-export type PostGameByGameSessionIdTeamResponse =
-    PostGameByGameSessionIdTeamResponses[keyof PostGameByGameSessionIdTeamResponses];
+export type PostGameByGameSessionIdTeamResponse = PostGameByGameSessionIdTeamResponses[keyof PostGameByGameSessionIdTeamResponses];
 
 export type DeleteGameByGameSessionIdPlayerByGamePlayerIdData = {
     body?: never;
@@ -1990,7 +1953,7 @@ export type DeleteGameByGameSessionIdPlayerByGamePlayerIdData = {
         game_player_id: string;
     };
     query?: never;
-    url: "/game/{game_session_id}/player/{game_player_id}";
+    url: '/game/{game_session_id}/player/{game_player_id}';
 };
 
 export type DeleteGameByGameSessionIdPlayerByGamePlayerIdErrors = {
@@ -2000,8 +1963,7 @@ export type DeleteGameByGameSessionIdPlayerByGamePlayerIdErrors = {
     422: HttpValidationError;
 };
 
-export type DeleteGameByGameSessionIdPlayerByGamePlayerIdError =
-    DeleteGameByGameSessionIdPlayerByGamePlayerIdErrors[keyof DeleteGameByGameSessionIdPlayerByGamePlayerIdErrors];
+export type DeleteGameByGameSessionIdPlayerByGamePlayerIdError = DeleteGameByGameSessionIdPlayerByGamePlayerIdErrors[keyof DeleteGameByGameSessionIdPlayerByGamePlayerIdErrors];
 
 export type DeleteGameByGameSessionIdPlayerByGamePlayerIdResponses = {
     /**
@@ -2023,7 +1985,7 @@ export type PatchGameByGameSessionIdPlayerByGamePlayerIdData = {
         game_player_id: string;
     };
     query?: never;
-    url: "/game/{game_session_id}/player/{game_player_id}";
+    url: '/game/{game_session_id}/player/{game_player_id}';
 };
 
 export type PatchGameByGameSessionIdPlayerByGamePlayerIdErrors = {
@@ -2033,8 +1995,7 @@ export type PatchGameByGameSessionIdPlayerByGamePlayerIdErrors = {
     422: HttpValidationError;
 };
 
-export type PatchGameByGameSessionIdPlayerByGamePlayerIdError =
-    PatchGameByGameSessionIdPlayerByGamePlayerIdErrors[keyof PatchGameByGameSessionIdPlayerByGamePlayerIdErrors];
+export type PatchGameByGameSessionIdPlayerByGamePlayerIdError = PatchGameByGameSessionIdPlayerByGamePlayerIdErrors[keyof PatchGameByGameSessionIdPlayerByGamePlayerIdErrors];
 
 export type PatchGameByGameSessionIdPlayerByGamePlayerIdResponses = {
     /**
@@ -2043,8 +2004,7 @@ export type PatchGameByGameSessionIdPlayerByGamePlayerIdResponses = {
     200: GamePlayerPublic;
 };
 
-export type PatchGameByGameSessionIdPlayerByGamePlayerIdResponse =
-    PatchGameByGameSessionIdPlayerByGamePlayerIdResponses[keyof PatchGameByGameSessionIdPlayerByGamePlayerIdResponses];
+export type PatchGameByGameSessionIdPlayerByGamePlayerIdResponse = PatchGameByGameSessionIdPlayerByGamePlayerIdResponses[keyof PatchGameByGameSessionIdPlayerByGamePlayerIdResponses];
 
 export type DeleteGameByGameSessionIdTeamByGameTeamIdData = {
     body?: never;
@@ -2059,7 +2019,7 @@ export type DeleteGameByGameSessionIdTeamByGameTeamIdData = {
         game_team_id: string;
     };
     query?: never;
-    url: "/game/{game_session_id}/team/{game_team_id}";
+    url: '/game/{game_session_id}/team/{game_team_id}';
 };
 
 export type DeleteGameByGameSessionIdTeamByGameTeamIdErrors = {
@@ -2069,8 +2029,7 @@ export type DeleteGameByGameSessionIdTeamByGameTeamIdErrors = {
     422: HttpValidationError;
 };
 
-export type DeleteGameByGameSessionIdTeamByGameTeamIdError =
-    DeleteGameByGameSessionIdTeamByGameTeamIdErrors[keyof DeleteGameByGameSessionIdTeamByGameTeamIdErrors];
+export type DeleteGameByGameSessionIdTeamByGameTeamIdError = DeleteGameByGameSessionIdTeamByGameTeamIdErrors[keyof DeleteGameByGameSessionIdTeamByGameTeamIdErrors];
 
 export type DeleteGameByGameSessionIdTeamByGameTeamIdResponses = {
     /**
@@ -2092,7 +2051,7 @@ export type PatchGameByGameSessionIdPlayerByGamePlayerIdDrinkData = {
         game_player_id: string;
     };
     query?: never;
-    url: "/game/{game_session_id}/player/{game_player_id}/drink";
+    url: '/game/{game_session_id}/player/{game_player_id}/drink';
 };
 
 export type PatchGameByGameSessionIdPlayerByGamePlayerIdDrinkErrors = {
@@ -2102,8 +2061,7 @@ export type PatchGameByGameSessionIdPlayerByGamePlayerIdDrinkErrors = {
     422: HttpValidationError;
 };
 
-export type PatchGameByGameSessionIdPlayerByGamePlayerIdDrinkError =
-    PatchGameByGameSessionIdPlayerByGamePlayerIdDrinkErrors[keyof PatchGameByGameSessionIdPlayerByGamePlayerIdDrinkErrors];
+export type PatchGameByGameSessionIdPlayerByGamePlayerIdDrinkError = PatchGameByGameSessionIdPlayerByGamePlayerIdDrinkErrors[keyof PatchGameByGameSessionIdPlayerByGamePlayerIdDrinkErrors];
 
 export type PatchGameByGameSessionIdPlayerByGamePlayerIdDrinkResponses = {
     /**
@@ -2112,8 +2070,7 @@ export type PatchGameByGameSessionIdPlayerByGamePlayerIdDrinkResponses = {
     200: GamePlayerPublic;
 };
 
-export type PatchGameByGameSessionIdPlayerByGamePlayerIdDrinkResponse =
-    PatchGameByGameSessionIdPlayerByGamePlayerIdDrinkResponses[keyof PatchGameByGameSessionIdPlayerByGamePlayerIdDrinkResponses];
+export type PatchGameByGameSessionIdPlayerByGamePlayerIdDrinkResponse = PatchGameByGameSessionIdPlayerByGamePlayerIdDrinkResponses[keyof PatchGameByGameSessionIdPlayerByGamePlayerIdDrinkResponses];
 
 export type GetGameByGameSessionIdUpdatesData = {
     body?: never;
@@ -2124,7 +2081,7 @@ export type GetGameByGameSessionIdUpdatesData = {
         game_session_id: string;
     };
     query?: never;
-    url: "/game/{game_session_id}/updates";
+    url: '/game/{game_session_id}/updates';
 };
 
 export type GetGameByGameSessionIdUpdatesErrors = {
@@ -2134,8 +2091,7 @@ export type GetGameByGameSessionIdUpdatesErrors = {
     422: HttpValidationError;
 };
 
-export type GetGameByGameSessionIdUpdatesError =
-    GetGameByGameSessionIdUpdatesErrors[keyof GetGameByGameSessionIdUpdatesErrors];
+export type GetGameByGameSessionIdUpdatesError = GetGameByGameSessionIdUpdatesErrors[keyof GetGameByGameSessionIdUpdatesErrors];
 
 export type GetGameByGameSessionIdUpdatesResponses = {
     /**
@@ -2148,7 +2104,7 @@ export type PostLoginAccessTokenData = {
     body: BodyLoginLoginAccessToken;
     path?: never;
     query?: never;
-    url: "/login/access-token";
+    url: '/login/access-token';
 };
 
 export type PostLoginAccessTokenErrors = {
@@ -2158,8 +2114,7 @@ export type PostLoginAccessTokenErrors = {
     422: HttpValidationError;
 };
 
-export type PostLoginAccessTokenError =
-    PostLoginAccessTokenErrors[keyof PostLoginAccessTokenErrors];
+export type PostLoginAccessTokenError = PostLoginAccessTokenErrors[keyof PostLoginAccessTokenErrors];
 
 export type PostLoginAccessTokenResponses = {
     /**
@@ -2168,14 +2123,13 @@ export type PostLoginAccessTokenResponses = {
     200: Token;
 };
 
-export type PostLoginAccessTokenResponse =
-    PostLoginAccessTokenResponses[keyof PostLoginAccessTokenResponses];
+export type PostLoginAccessTokenResponse = PostLoginAccessTokenResponses[keyof PostLoginAccessTokenResponses];
 
 export type PostLoginRefreshData = {
     body: RefreshRequest;
     path?: never;
     query?: never;
-    url: "/login/refresh";
+    url: '/login/refresh';
 };
 
 export type PostLoginRefreshErrors = {
@@ -2203,7 +2157,7 @@ export type PostLogoutData = {
     body?: RefreshRequest | null;
     path?: never;
     query?: never;
-    url: "/logout";
+    url: '/logout';
 };
 
 export type PostLogoutErrors = {
@@ -2228,7 +2182,7 @@ export type PostLoginTestTokenData = {
     body?: never;
     path?: never;
     query?: never;
-    url: "/login/test-token";
+    url: '/login/test-token';
 };
 
 export type PostLoginTestTokenResponses = {
@@ -2238,8 +2192,7 @@ export type PostLoginTestTokenResponses = {
     200: UserPublic;
 };
 
-export type PostLoginTestTokenResponse =
-    PostLoginTestTokenResponses[keyof PostLoginTestTokenResponses];
+export type PostLoginTestTokenResponse = PostLoginTestTokenResponses[keyof PostLoginTestTokenResponses];
 
 export type PostPasswordRecoveryByEmailData = {
     body?: never;
@@ -2250,7 +2203,7 @@ export type PostPasswordRecoveryByEmailData = {
         email: string;
     };
     query?: never;
-    url: "/password-recovery/{email}";
+    url: '/password-recovery/{email}';
 };
 
 export type PostPasswordRecoveryByEmailErrors = {
@@ -2260,8 +2213,7 @@ export type PostPasswordRecoveryByEmailErrors = {
     422: HttpValidationError;
 };
 
-export type PostPasswordRecoveryByEmailError =
-    PostPasswordRecoveryByEmailErrors[keyof PostPasswordRecoveryByEmailErrors];
+export type PostPasswordRecoveryByEmailError = PostPasswordRecoveryByEmailErrors[keyof PostPasswordRecoveryByEmailErrors];
 
 export type PostPasswordRecoveryByEmailResponses = {
     /**
@@ -2270,14 +2222,13 @@ export type PostPasswordRecoveryByEmailResponses = {
     200: Message;
 };
 
-export type PostPasswordRecoveryByEmailResponse =
-    PostPasswordRecoveryByEmailResponses[keyof PostPasswordRecoveryByEmailResponses];
+export type PostPasswordRecoveryByEmailResponse = PostPasswordRecoveryByEmailResponses[keyof PostPasswordRecoveryByEmailResponses];
 
 export type PostResetPasswordData = {
     body: NewPassword;
     path?: never;
     query?: never;
-    url: "/reset-password/";
+    url: '/reset-password/';
 };
 
 export type PostResetPasswordErrors = {
@@ -2296,8 +2247,7 @@ export type PostResetPasswordResponses = {
     200: Message;
 };
 
-export type PostResetPasswordResponse =
-    PostResetPasswordResponses[keyof PostResetPasswordResponses];
+export type PostResetPasswordResponse = PostResetPasswordResponses[keyof PostResetPasswordResponses];
 
 export type PostPasswordRecoveryHtmlContentByEmailData = {
     body?: never;
@@ -2308,7 +2258,7 @@ export type PostPasswordRecoveryHtmlContentByEmailData = {
         email: string;
     };
     query?: never;
-    url: "/password-recovery-html-content/{email}";
+    url: '/password-recovery-html-content/{email}';
 };
 
 export type PostPasswordRecoveryHtmlContentByEmailErrors = {
@@ -2318,8 +2268,7 @@ export type PostPasswordRecoveryHtmlContentByEmailErrors = {
     422: HttpValidationError;
 };
 
-export type PostPasswordRecoveryHtmlContentByEmailError =
-    PostPasswordRecoveryHtmlContentByEmailErrors[keyof PostPasswordRecoveryHtmlContentByEmailErrors];
+export type PostPasswordRecoveryHtmlContentByEmailError = PostPasswordRecoveryHtmlContentByEmailErrors[keyof PostPasswordRecoveryHtmlContentByEmailErrors];
 
 export type PostPasswordRecoveryHtmlContentByEmailResponses = {
     /**
@@ -2328,14 +2277,13 @@ export type PostPasswordRecoveryHtmlContentByEmailResponses = {
     200: string;
 };
 
-export type PostPasswordRecoveryHtmlContentByEmailResponse =
-    PostPasswordRecoveryHtmlContentByEmailResponses[keyof PostPasswordRecoveryHtmlContentByEmailResponses];
+export type PostPasswordRecoveryHtmlContentByEmailResponse = PostPasswordRecoveryHtmlContentByEmailResponses[keyof PostPasswordRecoveryHtmlContentByEmailResponses];
 
 export type GetRolesData = {
     body?: never;
     path?: never;
     query?: never;
-    url: "/roles/";
+    url: '/roles/';
 };
 
 export type GetRolesResponses = {
@@ -2353,7 +2301,7 @@ export type PostRolesData = {
     body: RoleCreate;
     path?: never;
     query?: never;
-    url: "/roles/";
+    url: '/roles/';
 };
 
 export type PostRolesErrors = {
@@ -2383,7 +2331,7 @@ export type DeleteRolesByRoleIdData = {
         role_id: string;
     };
     query?: never;
-    url: "/roles/{role_id}";
+    url: '/roles/{role_id}';
 };
 
 export type DeleteRolesByRoleIdErrors = {
@@ -2402,8 +2350,7 @@ export type DeleteRolesByRoleIdResponses = {
     200: Message;
 };
 
-export type DeleteRolesByRoleIdResponse =
-    DeleteRolesByRoleIdResponses[keyof DeleteRolesByRoleIdResponses];
+export type DeleteRolesByRoleIdResponse = DeleteRolesByRoleIdResponses[keyof DeleteRolesByRoleIdResponses];
 
 export type GetRolesByRoleIdData = {
     body?: never;
@@ -2414,7 +2361,7 @@ export type GetRolesByRoleIdData = {
         role_id: string;
     };
     query?: never;
-    url: "/roles/{role_id}";
+    url: '/roles/{role_id}';
 };
 
 export type GetRolesByRoleIdErrors = {
@@ -2444,7 +2391,7 @@ export type PutRolesByRoleIdData = {
         role_id: string;
     };
     query?: never;
-    url: "/roles/{role_id}";
+    url: '/roles/{role_id}';
 };
 
 export type PutRolesByRoleIdErrors = {
@@ -2469,7 +2416,7 @@ export type GetRolesTemplatesData = {
     body?: never;
     path?: never;
     query?: never;
-    url: "/roles/templates/";
+    url: '/roles/templates/';
 };
 
 export type GetRolesTemplatesResponses = {
@@ -2483,8 +2430,7 @@ export type GetRolesTemplatesResponses = {
     };
 };
 
-export type GetRolesTemplatesResponse =
-    GetRolesTemplatesResponses[keyof GetRolesTemplatesResponses];
+export type GetRolesTemplatesResponse = GetRolesTemplatesResponses[keyof GetRolesTemplatesResponses];
 
 export type PostRolesFromTemplateByTemplateKeyData = {
     body?: never;
@@ -2495,7 +2441,7 @@ export type PostRolesFromTemplateByTemplateKeyData = {
         template_key: string;
     };
     query?: never;
-    url: "/roles/from-template/{template_key}";
+    url: '/roles/from-template/{template_key}';
 };
 
 export type PostRolesFromTemplateByTemplateKeyErrors = {
@@ -2505,8 +2451,7 @@ export type PostRolesFromTemplateByTemplateKeyErrors = {
     422: HttpValidationError;
 };
 
-export type PostRolesFromTemplateByTemplateKeyError =
-    PostRolesFromTemplateByTemplateKeyErrors[keyof PostRolesFromTemplateByTemplateKeyErrors];
+export type PostRolesFromTemplateByTemplateKeyError = PostRolesFromTemplateByTemplateKeyErrors[keyof PostRolesFromTemplateByTemplateKeyErrors];
 
 export type PostRolesFromTemplateByTemplateKeyResponses = {
     /**
@@ -2515,14 +2460,13 @@ export type PostRolesFromTemplateByTemplateKeyResponses = {
     200: RolePublic;
 };
 
-export type PostRolesFromTemplateByTemplateKeyResponse =
-    PostRolesFromTemplateByTemplateKeyResponses[keyof PostRolesFromTemplateByTemplateKeyResponses];
+export type PostRolesFromTemplateByTemplateKeyResponse = PostRolesFromTemplateByTemplateKeyResponses[keyof PostRolesFromTemplateByTemplateKeyResponses];
 
 export type GetRolesScopesAvailableData = {
     body?: never;
     path?: never;
     query?: never;
-    url: "/roles/scopes/available";
+    url: '/roles/scopes/available';
 };
 
 export type GetRolesScopesAvailableResponses = {
@@ -2536,5 +2480,4 @@ export type GetRolesScopesAvailableResponses = {
     };
 };
 
-export type GetRolesScopesAvailableResponse =
-    GetRolesScopesAvailableResponses[keyof GetRolesScopesAvailableResponses];
+export type GetRolesScopesAvailableResponse = GetRolesScopesAvailableResponses[keyof GetRolesScopesAvailableResponses];

@@ -6,6 +6,10 @@ export default defineConfig({
     // output: "./src/client",
     plugins: [
         {
+            name: "@hey-api/client-fetch",
+            runtimeConfigPath: "./src/hey-api.ts"
+        },
+        {
             dates: true,
             name: "@hey-api/transformers"
         },
@@ -14,6 +18,7 @@ export default defineConfig({
             type: "json"
         },
         {
+            auth: true,
             name: "@hey-api/sdk",
             transformer: true,
             operations: {

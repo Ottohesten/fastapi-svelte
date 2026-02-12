@@ -1,5 +1,5 @@
+import { LoginService, UsersService } from "$lib/client/sdk.gen.js";
 import type { Actions, PageServerLoad } from "./$types";
-import { createApiClient } from "$lib/api/api";
 import { redirect, fail } from "@sveltejs/kit";
 import { superValidate, message } from "sveltekit-superforms";
 import { zod4 as zod } from "sveltekit-superforms/adapters";
@@ -18,14 +18,11 @@ export const actions = {
         if (!form.valid) {
             return fail(400, { form });
         }
-
-        const client = createApiClient(fetch);
-
         const {
             data,
             error: apierror,
             response
-        } = await client.POST("/login/access-token", {
+        } = await LoginService.LoginAccessToken({
             body: {
                 username: form.data.email,
                 password: form.data.password,
@@ -71,10 +68,8 @@ export const actions = {
             });
         }
 
-        const { error: userError } = await client.GET("/users/me", {
-            headers: {
-                Authorization: `Bearer ${cookies.get("auth_token")}`
-            }
+        const { data: userData, error: userError } = await UsersService.ReadUserMe({
+            auth: () => data.access_token
         });
 
         if (userError) {

@@ -133,7 +133,7 @@
   });
 </script>
 
-<SuperDebug data={$formData} />
+<!-- <SuperDebug data={$formData} /> -->
 
 <div
   class="min-h-screen bg-linear-to-br from-slate-50 to-blue-50 py-8 dark:from-gray-950 dark:to-gray-900"

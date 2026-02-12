@@ -8,10 +8,9 @@
   type Props = {
     recipe: components["schemas"]["RecipePublic"];
     authenticatedUser?: components["schemas"]["UserMePublic"];
-    backendUrl?: string;
   };
 
-  let { recipe, authenticatedUser, backendUrl }: Props = $props();
+  let { recipe, authenticatedUser }: Props = $props();
 </script>
 
 <div
@@ -22,7 +21,7 @@
     <div class="h-48 w-full overflow-hidden bg-gray-100 dark:bg-gray-800">
       {#if recipe.image}
         <img
-          src={recipe.image.startsWith("http") ? recipe.image : `${backendUrl}${recipe.image}`}
+          src={recipe.image}
           alt={recipe.title}
           class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
         />

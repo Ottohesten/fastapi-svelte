@@ -128,12 +128,7 @@
 
   onMount(() => {
     if (data.recipe?.image) {
-      if (data.recipe.image.startsWith("http")) {
-        previewUrl = data.recipe.image;
-      } else {
-        const baseUrl = data.backendUrl || "http://127.0.0.1:8000";
-        previewUrl = `${baseUrl}${data.recipe.image}`;
-      }
+      previewUrl = data.recipe.image;
     }
   });
 </script>

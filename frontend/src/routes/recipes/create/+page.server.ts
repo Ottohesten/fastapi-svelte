@@ -27,8 +27,7 @@ export const load = async ({ fetch, parent, cookies, url }) => {
     // const form = await superValidate({ ingredients: ingredients }, zod(RecipeSchema));
     return {
         ingredients: ingredients,
-        form,
-        backendUrl: env.BACKEND_HOST || "http://127.0.0.1:8000"
+        form
     };
 };
 

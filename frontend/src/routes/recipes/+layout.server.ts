@@ -25,7 +25,6 @@ export const load = async ({ fetch, locals }) => {
         recipes: data,
         ingredients: ingredients,
         authenticatedUser: locals.authenticatedUser,
-        scopes: locals.authenticatedUser?.scopes ?? [],
-        backendUrl: env.BACKEND_HOST || "http://127.0.0.1:8000"
+        scopes: locals.authenticatedUser?.scopes ?? []
     };
 };

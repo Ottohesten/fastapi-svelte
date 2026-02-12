@@ -6,7 +6,6 @@
       recipe: components["schemas"]["RecipePublic"];
       authenticatedUser?: components["schemas"]["UserMePublic"];
       is_owner: boolean;
-      backendUrl?: string; // Add backendUrl
     };
   };
 
@@ -102,9 +101,7 @@
       <div class="relative aspect-video w-full bg-gray-100 sm:aspect-[21/9] dark:bg-gray-800">
         {#if data.recipe.image}
           <img
-            src={data.recipe.image?.startsWith("http")
-              ? data.recipe.image
-              : (data.backendUrl || "http://127.0.0.1:8000") + data.recipe.image}
+            src={data.recipe.image}
             alt={data.recipe.title}
             class="absolute inset-0 h-full w-full object-cover"
           />

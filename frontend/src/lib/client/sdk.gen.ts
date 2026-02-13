@@ -459,11 +459,11 @@ export class IngredientsService {
 
 export class GameService {
     /**
-     * Read Game Sessions
+     * Get Game Sessions
      *
      * Retrieve game sessions.
      */
-    public static ReadGameSessions<ThrowOnError extends boolean = false>(options?: Options<GetGameData, ThrowOnError>) {
+    public static GetGameSessions<ThrowOnError extends boolean = false>(options?: Options<GetGameData, ThrowOnError>) {
         return (options?.client ?? client).get<GetGameResponses, GetGameErrors, ThrowOnError>({
             responseTransformer: getGameResponseTransformer,
             url: '/game/',
@@ -490,11 +490,11 @@ export class GameService {
     }
 
     /**
-     * Read Drinks
+     * Get Drinks
      *
      * Retrieve drinks.
      */
-    public static ReadDrinks<ThrowOnError extends boolean = false>(options?: Options<GetGameDrinksData, ThrowOnError>) {
+    public static GetDrinks<ThrowOnError extends boolean = false>(options?: Options<GetGameDrinksData, ThrowOnError>) {
         return (options?.client ?? client).get<GetGameDrinksResponses, GetGameDrinksErrors, ThrowOnError>({ url: '/game/drinks', ...options });
     }
 
@@ -559,11 +559,11 @@ export class GameService {
     }
 
     /**
-     * Read Game Session
+     * Get Game Session
      *
      * Retrieve a game session.
      */
-    public static ReadGameSession<ThrowOnError extends boolean = false>(options: Options<GetGameByGameSessionIdData, ThrowOnError>) {
+    public static GetGameSession<ThrowOnError extends boolean = false>(options: Options<GetGameByGameSessionIdData, ThrowOnError>) {
         return (options.client ?? client).get<GetGameByGameSessionIdResponses, GetGameByGameSessionIdErrors, ThrowOnError>({
             responseTransformer: getGameByGameSessionIdResponseTransformer,
             url: '/game/{game_session_id}',

@@ -1669,7 +1669,7 @@ export type GetGameError = GetGameErrors[keyof GetGameErrors];
 
 export type GetGameResponses = {
     /**
-     * Response Game-Read Game Sessions
+     * Response Game-Get Game Sessions
      *
      * Successful Response
      */
@@ -1730,7 +1730,7 @@ export type GetGameDrinksError = GetGameDrinksErrors[keyof GetGameDrinksErrors];
 
 export type GetGameDrinksResponses = {
     /**
-     * Response Game-Read Drinks
+     * Response Game-Get Drinks
      *
      * Successful Response
      */

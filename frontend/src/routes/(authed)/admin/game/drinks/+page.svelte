@@ -98,7 +98,7 @@
             Add a new drink to the game. Enter the drink name below.
           </Dialog.Description>
         </Dialog.Header>
-        <form method="POST" action="?/addDrink" use:formEnhance class="space-y-4 py-4">
+        <form method="POST" action="?/createDrink" use:formEnhance class="space-y-4 py-4">
           {#if $message && !$message.includes("successfully")}
             <div class="rounded-md border border-red-200 bg-red-50 p-3">
               <p class="text-sm text-red-600">{$message}</p>

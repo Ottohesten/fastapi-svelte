@@ -1,4 +1,4 @@
-import { createApiClient } from "$lib/api/api";
+import { GameService } from "$lib/client/sdk.gen.js";
 import { error, fail, redirect } from "@sveltejs/kit";
 import { message, superValidate } from "sveltekit-superforms";
 import { zod4 as zod } from "sveltekit-superforms/adapters";
@@ -6,12 +6,11 @@ import type { Actions } from "./$types.js";
 import { DrinkSchema, DrinkUpdateSchema } from "$lib/schemas/schemas";
 
 export const load = async ({ fetch }) => {
-    const client = createApiClient(fetch);
     const {
         data: drinks,
         error: drinksError,
         response: drinksResponse
-    } = await client.GET("/game/drinks");
+    } = await GameService.GetDrinks({});
 
     if (drinksError) {
         error(drinksResponse.status, drinksError.detail?.toString());
@@ -25,8 +24,7 @@ export const load = async ({ fetch }) => {
 };
 
 export const actions = {
-    addDrink: async ({ fetch, cookies, request, url }) => {
-        const client = createApiClient(fetch);
+    createDrink: async ({ fetch, cookies, request, url }) => {
         const auth_token = cookies.get("auth_token");
 
         if (!auth_token) redirect(302, `/auth/login?redirectTo=${url.pathname}`);
@@ -34,9 +32,9 @@ export const actions = {
         const form = await superValidate(request, zod(DrinkSchema));
         if (!form.valid) return fail(400, { form });
 
-        const { error: apierror } = await client.POST("/game/drinks", {
-            body: form.data,
-            headers: { Authorization: `Bearer ${auth_token}` }
+        const { error: apierror } = await GameService.CreateDrink({
+            auth: auth_token,
+            body: form.data
         });
 
         if (apierror) {
@@ -49,7 +47,6 @@ export const actions = {
     },
 
     updateDrink: async ({ fetch, cookies, request, url }) => {
-        const client = createApiClient(fetch);
         const auth_token = cookies.get("auth_token");
 
         if (!auth_token) redirect(302, `/auth/login?redirectTo=${url.pathname}`);
@@ -59,8 +56,9 @@ export const actions = {
 
         const { id, name } = form.data;
 
-        const { error: apierror } = await client.PATCH("/game/drinks/{drink_id}", {
-            params: { path: { drink_id: id } },
+        const { error: apierror } = await GameService.UpdateDrink({
+            auth: auth_token,
+            path: { drink_id: id },
             body: { name },
             headers: { Authorization: `Bearer ${auth_token}` }
         });
@@ -75,17 +73,15 @@ export const actions = {
     },
 
     deleteDrink: async ({ fetch, cookies, request, url }) => {
-        const client = createApiClient(fetch);
         const auth_token = cookies.get("auth_token");
-
         if (!auth_token) redirect(302, `/auth/login?redirectTo=${url.pathname}`);
 
         const formData = await request.formData();
         const drinkId = formData.get("drink_id") as string;
 
-        const { error: apierror } = await client.DELETE("/game/drinks/{drink_id}", {
-            params: { path: { drink_id: drinkId } },
-            headers: { Authorization: `Bearer ${auth_token}` }
+        const { error: apierror } = await GameService.DeleteDrink({
+            auth: auth_token,
+            path: { drink_id: drinkId }
         });
 
         if (apierror) {

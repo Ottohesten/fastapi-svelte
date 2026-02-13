@@ -57,7 +57,7 @@ router = APIRouter(prefix="/game", tags=["game"])
 
 
 @router.get("/", response_model=list[GameSessionPublic])
-def read_game_sessions(session: SessionDep, skip: int = 0, limit: int = 100):
+def get_game_sessions(session: SessionDep, skip: int = 0, limit: int = 100):
     """
     Retrieve game sessions.
     """
@@ -74,7 +74,7 @@ def read_game_sessions(session: SessionDep, skip: int = 0, limit: int = 100):
 
 # get all drinks
 @router.get("/drinks", response_model=list[DrinkPublic])
-def read_drinks(session: SessionDep, skip: int = 0, limit: int = 100):
+def get_drinks(session: SessionDep, skip: int = 0, limit: int = 100):
     """
     Retrieve drinks.
     """
@@ -152,7 +152,7 @@ def delete_drink(
 
 
 @router.get("/{game_session_id}", response_model=GameSessionPublic)
-def read_game_session(session: SessionDep, game_session_id: str):
+def get_game_session(session: SessionDep, game_session_id: str):
     """
     Retrieve a game session.
     """

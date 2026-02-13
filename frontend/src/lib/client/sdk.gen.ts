@@ -21,11 +21,11 @@ export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends 
 
 export class UsersService {
     /**
-     * Read Users
+     * Get Users
      *
      * Retrieve users.
      */
-    public static ReadUsers<ThrowOnError extends boolean = false>(options?: Options<GetUsersData, ThrowOnError>) {
+    public static GetUsers<ThrowOnError extends boolean = false>(options?: Options<GetUsersData, ThrowOnError>) {
         return (options?.client ?? client).get<GetUsersResponses, GetUsersErrors, ThrowOnError>({
             security: [{ scheme: 'bearer', type: 'http' }],
             url: '/users/',
@@ -51,11 +51,11 @@ export class UsersService {
     }
 
     /**
-     * Read Users With Permissions
+     * Get Users With Permissions
      *
      * Retrieve users including their roles, custom_scopes and computed effective_scopes.
      */
-    public static ReadUsersWithPermissions<ThrowOnError extends boolean = false>(options?: Options<GetUsersWithPermissionsData, ThrowOnError>) {
+    public static GetUsersWithPermissions<ThrowOnError extends boolean = false>(options?: Options<GetUsersWithPermissionsData, ThrowOnError>) {
         return (options?.client ?? client).get<GetUsersWithPermissionsResponses, GetUsersWithPermissionsErrors, ThrowOnError>({
             security: [{ scheme: 'bearer', type: 'http' }],
             url: '/users/with-permissions',
@@ -77,11 +77,11 @@ export class UsersService {
     }
 
     /**
-     * Read User Me
+     * Get User Me
      *
      * Get current user.
      */
-    public static ReadUserMe<ThrowOnError extends boolean = false>(options?: Options<GetUsersMeData, ThrowOnError>) {
+    public static GetUserMe<ThrowOnError extends boolean = false>(options?: Options<GetUsersMeData, ThrowOnError>) {
         return (options?.client ?? client).get<GetUsersMeResponses, GetUsersMeErrors, ThrowOnError>({
             security: [{ scheme: 'bearer', type: 'http' }],
             url: '/users/me',
@@ -153,11 +153,11 @@ export class UsersService {
     }
 
     /**
-     * Read User By Id
+     * Get User
      *
      * Get a specific user by id.
      */
-    public static ReadUserById<ThrowOnError extends boolean = false>(options: Options<GetUsersByUserIdData, ThrowOnError>) {
+    public static GetUser<ThrowOnError extends boolean = false>(options: Options<GetUsersByUserIdData, ThrowOnError>) {
         return (options.client ?? client).get<GetUsersByUserIdResponses, GetUsersByUserIdErrors, ThrowOnError>({
             security: [{ scheme: 'bearer', type: 'http' }],
             url: '/users/{user_id}',
@@ -781,11 +781,11 @@ export class LoginService {
 
 export class RolesService {
     /**
-     * List Roles
+     * Read Roles
      *
      * List all roles
      */
-    public static ListRoles<ThrowOnError extends boolean = false>(options?: Options<GetRolesData, ThrowOnError>) {
+    public static ReadRoles<ThrowOnError extends boolean = false>(options?: Options<GetRolesData, ThrowOnError>) {
         return (options?.client ?? client).get<GetRolesResponses, unknown, ThrowOnError>({
             security: [{ scheme: 'bearer', type: 'http' }],
             url: '/roles/',
@@ -880,11 +880,11 @@ export class RolesService {
     }
 
     /**
-     * List Available Scopes
+     * Get Available Scopes
      *
      * List all available scopes
      */
-    public static ListAvailableScopes<ThrowOnError extends boolean = false>(options?: Options<GetRolesScopesAvailableData, ThrowOnError>) {
+    public static GetAvailableScopes<ThrowOnError extends boolean = false>(options?: Options<GetRolesScopesAvailableData, ThrowOnError>) {
         return (options?.client ?? client).get<GetRolesScopesAvailableResponses, unknown, ThrowOnError>({
             security: [{ scheme: 'bearer', type: 'http' }],
             url: '/roles/scopes/available',

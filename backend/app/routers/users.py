@@ -37,7 +37,7 @@ router = APIRouter(prefix="/users", tags=["users"])
 
 
 @router.get("/", response_model=UsersPublic)
-def read_users(
+def get_users(
     session: SessionDep,
     skip: int = 0,
     limit: int = 100,
@@ -59,7 +59,7 @@ def read_users(
 
 
 @router.get("/with-permissions", response_model=UsersWithPermissionsPublic)
-def read_users_with_permissions(
+def get_users_with_permissions(
     session: SessionDep,
     skip: int = 0,
     limit: int = 100,
@@ -188,10 +188,7 @@ def update_password_me(
         }
     },
 )
-def read_user_me(*, current_user: Annotated[User, Security(get_current_active_user)]):
-    # def read_user_me(current_user: Annotated[User, Security(get_current_active_user, scopes=["me"])],) -> Any:
-    # def read_user_me(current_user: CurrentUser) -> Any:
-
+def get_user_me(*, current_user: Annotated[User, Security(get_current_active_user)]):
     """
     Get current user.
     """
@@ -239,7 +236,7 @@ def register_user(session: SessionDep, user_in: UserRegister):
 
 
 @router.get("/{user_id}", response_model=UserPublic)
-def read_user_by_id(
+def get_user(
     user_id: uuid.UUID,
     session: SessionDep,
     current_user: CurrentUser,
@@ -259,10 +256,7 @@ def read_user_by_id(
     return user
 
 
-@router.patch(
-    "/{user_id}",
-    response_model=UserPublic,
-)
+@router.patch("/{user_id}", response_model=UserPublic)
 def update_user(
     session: SessionDep,
     user_id: uuid.UUID,
@@ -287,12 +281,6 @@ def update_user(
                 status_code=409, detail="A user with this email already exists"
             )
 
-    # update the full name¨
-    # user_data = user_in.model_dump(exclude_unset=True)
-    # db_user.sqlmodel_update(user_data)
-    # session.add(db_user)
-    # session.commit()
-    # session.refresh(db_user)
     db_user = db_crud.update_user(
         session=session,
         db_user=db_user,

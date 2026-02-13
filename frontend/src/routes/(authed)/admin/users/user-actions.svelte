@@ -249,7 +249,7 @@
             {/if}
 
             <form
-              action="?/addScope"
+              action="?/assignScopesToUser"
               method="POST"
               use:enhance
               class="mt-2 flex w-full items-center gap-2"

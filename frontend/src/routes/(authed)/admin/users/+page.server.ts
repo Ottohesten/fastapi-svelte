@@ -1,48 +1,46 @@
-import { createApiClient } from "$lib/api/api";
+import { UsersService, RolesService } from "$lib/client/sdk.gen.js";
 import { error } from "@sveltejs/kit";
 import { redirect } from "@sveltejs/kit";
 import { message, superValidate, fail } from "sveltekit-superforms";
 import { zod4 as zod } from "sveltekit-superforms/adapters";
 import type { Actions } from "./$types.js";
-import type { components } from "$lib/api/v1";
 
 import { UserSchema, UserUpdateSchema, UserAddRoleSchema } from "$lib/schemas/schemas.js";
 
-export const load = async ({ fetch, cookies }) => {
-    const client = createApiClient(fetch);
+export const load = async ({ fetch, cookies, url }) => {
     const auth_token = cookies.get("auth_token");
+
+    if (!auth_token) {
+        redirect(302, `/auth/login?redirectTo=${url.pathname}`);
+    }
+
     // Fetch consolidated permissions (superuser-only endpoint)
-    const { data: permsData, error: permsError } = await client.GET("/users/with-permissions", {
-        headers: {
-            Authorization: `Bearer ${auth_token}`
-        }
+    const { data: permsData, error: permsError } = await UsersService.GetUsersWithPermissions({
+        auth: auth_token
     });
     if (permsError) {
         error(403, JSON.stringify(permsError.detail));
     }
 
     // Fetch all available roles
-    const { data: rolesData, error: rolesError } = await client.GET("/roles/", {
-        headers: {
-            Authorization: `Bearer ${auth_token}`
-        }
+    const { data: rolesData, error: rolesError } = await RolesService.ReadRoles({
+        auth: auth_token
     });
+    if (rolesError) {
+        // error(403, JSON.stringify(rolesError.detail));
+        error(403);
+    }
 
     // Fetch all available scopes
-    const { data: scopesData, error: scopesError } = await client.GET("/roles/scopes/available", {
-        headers: {
-            Authorization: `Bearer ${auth_token}`
-        }
+    const { data: scopesData, error: scopesError } = await RolesService.GetAvailableScopes({
+        auth: auth_token
     });
+    if (scopesError) {
+        // error(403, JSON.stringify(scopesError.detail));
+        error(403);
+    }
 
     const availableScopes = (scopesData as unknown as { scopes: string[] })?.scopes ?? [];
-
-    // Build lookup by email for quick access in the table
-    // const byEmail: Record<string, components['schemas']['UserWithPermissionsPublic']> = {};
-    // const byEmail: Record<string, components['schemas']['UserWithPermissionsPublic']> = {};
-    // for (const u of permsData?.data ?? []) {
-    //     byEmail[u.email] = u;
-    // }
 
     return {
         users: { data: permsData?.data ?? [], count: permsData?.count ?? 0 },
@@ -62,47 +60,37 @@ export const load = async ({ fetch, cookies }) => {
 
 export const actions = {
     createUser: async ({ fetch, cookies, request, url }) => {
-        // console.log('createUser action called');
         const auth_token = cookies.get("auth_token");
         const userCreateForm = await superValidate(request, zod(UserSchema));
 
         if (!auth_token) {
-            console.log("No auth token found");
             redirect(302, `/auth/login?redirectTo=${url.pathname}`);
         }
         if (!userCreateForm.valid) {
             return fail(400, { userCreateForm });
         }
 
-        const client = createApiClient(fetch);
-
-        const { error: apierror, response } = await client.POST("/users/", {
+        const { error: apierror } = await UsersService.CreateUser({
+            auth: auth_token,
             body: {
                 email: userCreateForm.data.email,
                 password: userCreateForm.data.password,
                 full_name: userCreateForm.data.full_name || null,
                 is_active: userCreateForm.data.is_active,
                 is_superuser: userCreateForm.data.is_superuser
-            },
-            headers: {
-                Authorization: `Bearer ${auth_token}`
             }
         });
 
         if (apierror) {
-            console.log("API error:", apierror);
             return fail(400, {
                 error: `Failed to create user: ${JSON.stringify(apierror.detail)}`
             });
         }
-        console.log("User created successfully");
-        // Return success instead of redirect
+
         return message(userCreateForm, `User ${userCreateForm.data.email} created successfully!`);
-        // redirect(302, "/admin/users");
     },
 
     updateUser: async ({ fetch, cookies, request, url }) => {
-        const client = createApiClient(fetch);
         const auth_token = cookies.get("auth_token");
 
         if (!auth_token) {
@@ -140,16 +128,10 @@ export const actions = {
             updateData.password = userUpdateForm.data.password;
         }
 
-        const { error: apierror, response } = await client.PATCH("/users/{user_id}", {
-            params: {
-                path: {
-                    user_id: userUpdateForm.data.user_id
-                }
-            },
-            body: updateData,
-            headers: {
-                Authorization: `Bearer ${auth_token}`
-            }
+        const { error: apierror } = await UsersService.UpdateUser({
+            auth: auth_token,
+            path: { user_id: userUpdateForm.data.user_id },
+            body: updateData
         });
 
         if (apierror) {
@@ -163,7 +145,6 @@ export const actions = {
     },
 
     deleteUser: async ({ fetch, cookies, request, url }) => {
-        const client = createApiClient(fetch);
         const auth_token = cookies.get("auth_token");
 
         if (!auth_token) {
@@ -171,17 +152,11 @@ export const actions = {
         }
 
         const formData = await request.formData();
-        const userId = formData.get("user_id") as string;
+        const user_id = formData.get("user_id") as string;
 
-        const { error: apierror, response } = await client.DELETE("/users/{user_id}", {
-            params: {
-                path: {
-                    user_id: userId
-                }
-            },
-            headers: {
-                Authorization: `Bearer ${auth_token}`
-            }
+        const { error: apierror } = await UsersService.DeleteUser({
+            auth: auth_token,
+            path: { user_id: user_id }
         });
 
         if (apierror) {
@@ -192,7 +167,6 @@ export const actions = {
     },
 
     toggleUserStatus: async ({ fetch, cookies, request, url }) => {
-        const client = createApiClient(fetch);
         const auth_token = cookies.get("auth_token");
 
         if (!auth_token) {
@@ -200,39 +174,27 @@ export const actions = {
         }
 
         const formData = await request.formData();
-        const userId = formData.get("user_id") as string;
+        const user_id = formData.get("user_id") as string;
         const isActive = formData.get("is_active") === "true";
 
         // First get the current user data to preserve other fields
-        const { data: userData, error: getUserError } = await client.GET("/users/{user_id}", {
-            params: {
-                path: {
-                    user_id: userId
-                }
-            },
-            headers: {
-                Authorization: `Bearer ${auth_token}`
-            }
+        const { data: userData, error: getUserError } = await UsersService.GetUser({
+            auth: auth_token,
+            path: { user_id }
         });
 
         if (getUserError) {
             error(400, `Failed to get user data: ${JSON.stringify(getUserError.detail)}`);
         }
 
-        const { error: apierror, response } = await client.PATCH("/users/{user_id}", {
-            params: {
-                path: {
-                    user_id: userId
-                }
-            },
+        const { error: apierror } = await UsersService.UpdateUser({
+            auth: auth_token,
+            path: { user_id: user_id },
             body: {
                 email: userData!.email,
                 full_name: userData!.full_name,
                 is_active: isActive,
                 is_superuser: userData!.is_superuser
-            },
-            headers: {
-                Authorization: `Bearer ${auth_token}`
             }
         });
 
@@ -243,7 +205,6 @@ export const actions = {
         return { success: true };
     },
     assignRole: async ({ fetch, cookies, request, url }) => {
-        const client = createApiClient(fetch);
         const auth_token = cookies.get("auth_token");
 
         if (!auth_token) {
@@ -253,20 +214,14 @@ export const actions = {
         if (!userAddRoleForm.valid) {
             return fail(400, { userAddRoleForm });
         }
-        const { error: apierror, response } = await client.POST(
-            "/users/{user_id}/roles/{role_id}",
-            {
-                params: {
-                    path: {
-                        user_id: userAddRoleForm.data.user_id,
-                        role_id: userAddRoleForm.data.role_id
-                    }
-                },
-                headers: {
-                    Authorization: `Bearer ${auth_token}`
-                }
+        const { error: apierror } = await UsersService.AssignRoleToUser({
+            auth: auth_token,
+            path: {
+                user_id: userAddRoleForm.data.user_id,
+                role_id: userAddRoleForm.data.role_id
             }
-        );
+        });
+
         if (apierror) {
             return fail(400, {
                 userAddRoleForm,
@@ -276,25 +231,21 @@ export const actions = {
         return message(userAddRoleForm, `Role assigned successfully!`);
     },
     removeRole: async ({ fetch, cookies, request, url }) => {
-        const client = createApiClient(fetch);
         const auth_token = cookies.get("auth_token");
+
         if (!auth_token) {
             redirect(302, `/auth/login?redirectTo=${url.pathname}`);
         }
 
         const formData = await request.formData();
-        const userId = formData.get("user_id") as string;
+        const user_id = formData.get("user_id") as string;
         const roleId = formData.get("role_id") as string;
 
-        const { error: apierror } = await client.DELETE("/users/{user_id}/roles/{role_id}", {
-            params: {
-                path: {
-                    user_id: userId,
-                    role_id: roleId
-                }
-            },
-            headers: {
-                Authorization: `Bearer ${auth_token}`
+        const { error: apierror } = await UsersService.RemoveRoleFromUser({
+            auth: auth_token,
+            path: {
+                user_id: user_id,
+                role_id: roleId
             }
         });
 
@@ -306,15 +257,14 @@ export const actions = {
         return { success: true };
     },
 
-    addScope: async ({ fetch, cookies, request, url }) => {
-        const client = createApiClient(fetch);
+    assignScopesToUser: async ({ fetch, cookies, request, url }) => {
         const auth_token = cookies.get("auth_token");
         if (!auth_token) {
             redirect(302, `/auth/login?redirectTo=${url.pathname}`);
         }
 
         const formData = await request.formData();
-        const userId = formData.get("user_id") as string;
+        const user_id = formData.get("user_id") as string;
         const scope = formData.get("scope") as string;
         console.log("Received scope to add:", scope);
 
@@ -328,18 +278,12 @@ export const actions = {
             .map((s) => s.trim())
             .filter((s) => s.length > 0);
 
-        console.log("Adding scopes:", scopesList);
-
         // Using any cast to bypass potential type mismatch if SDK is outdated
-        const { error: apierror } = await (client as any).POST("/users/{user_id}/scopes", {
-            params: {
-                path: {
-                    user_id: userId
-                }
-            },
+        const { data: scopesData, error: apierror } = await UsersService.AssignScopesToUser({
+            auth: auth_token,
             body: scopesList,
-            headers: {
-                Authorization: `Bearer ${auth_token}`
+            path: {
+                user_id: user_id
             }
         });
 
@@ -350,27 +294,20 @@ export const actions = {
     },
 
     removeScope: async ({ fetch, cookies, request, url }) => {
-        const client = createApiClient(fetch);
         const auth_token = cookies.get("auth_token");
         if (!auth_token) {
             redirect(302, `/auth/login?redirectTo=${url.pathname}`);
         }
 
         const formData = await request.formData();
-        const userId = formData.get("user_id") as string;
+        const user_id = formData.get("user_id") as string;
         const scope = formData.get("scope") as string;
 
         // Using any cast to bypass potential type mismatch if SDK is outdated
-        const { error: apierror } = await (client as any).DELETE("/users/{user_id}/scopes", {
-            params: {
-                path: {
-                    user_id: userId
-                }
-            },
-            body: [scope],
-            headers: {
-                Authorization: `Bearer ${auth_token}`
-            }
+        const { error: apierror } = await UsersService.RemoveScopesFromUser({
+            auth: auth_token,
+            path: { user_id: user_id },
+            body: [scope]
         });
 
         if (apierror) {

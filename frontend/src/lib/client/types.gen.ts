@@ -2288,7 +2288,7 @@ export type GetRolesData = {
 
 export type GetRolesResponses = {
     /**
-     * Response Roles-List Roles
+     * Response Roles-Read Roles
      *
      * Successful Response
      */
@@ -2471,7 +2471,7 @@ export type GetRolesScopesAvailableData = {
 
 export type GetRolesScopesAvailableResponses = {
     /**
-     * Response Roles-List Available Scopes
+     * Response Roles-Get Available Scopes
      *
      * Successful Response
      */

@@ -38,7 +38,7 @@ export const actions = {
         }
 
         const { error: apierror } = await GameService.CreateGameTeam({
-            auth: () => auth_token,
+            auth: auth_token,
             body: {
                 name: teamForm.data.name
             },
@@ -63,7 +63,7 @@ export const actions = {
         }
 
         const { error: apierror, response } = await GameService.CreateGamePlayer({
-            auth: () => auth_token,
+            auth: auth_token,
             body: {
                 name: playerForm.data.name,
                 team_id: playerForm.data.team_id || null
@@ -89,7 +89,7 @@ export const actions = {
         const team_id = formData.get("team_id") as string;
 
         const { error: apierror, response } = await GameService.DeleteGameTeam({
-            auth: () => auth_token,
+            auth: auth_token,
             path: { game_session_id: game_session_id, game_team_id: team_id }
         });
 
@@ -109,7 +109,7 @@ export const actions = {
         const player_id = formData.get("player_id") as string;
 
         const { error: apierror, response } = await GameService.DeleteGamePlayer({
-            auth: () => auth_token,
+            auth: auth_token,
             path: { game_session_id: game_session_id, game_player_id: player_id }
         });
 

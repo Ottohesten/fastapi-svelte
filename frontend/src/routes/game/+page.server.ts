@@ -34,7 +34,7 @@ export const actions = {
         const game_session_id = formData.get("game_session_id") as string;
 
         const { error: apierror, response } = await GameService.DeleteGameSession({
-            auth: () => auth_token,
+            auth: auth_token,
             path: { game_session_id }
         });
 

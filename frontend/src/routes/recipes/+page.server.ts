@@ -16,7 +16,7 @@ export const actions = {
         // console.log(recipe_id);
 
         const { data, error: apierror } = await RecipesService.DeleteRecipe({
-            auth: () => auth_token,
+            auth: auth_token,
             path: { recipe_id }
         });
 

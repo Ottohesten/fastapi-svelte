@@ -33,7 +33,7 @@ export const actions = {
         }
 
         const { error: apierror } = await IngredientsService.CreateIngredient({
-            auth: () => auth_token,
+            auth: auth_token,
             body: form.data
         });
 
@@ -60,7 +60,7 @@ export const actions = {
         const ingredient_id = formData.get("ingredient_id") as string;
 
         const { error: apierror } = await IngredientsService.DeleteIngredient({
-            auth: () => auth_token,
+            auth: auth_token,
             path: { ingredient_id }
         });
 

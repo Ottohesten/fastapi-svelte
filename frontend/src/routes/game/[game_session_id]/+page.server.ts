@@ -32,7 +32,7 @@ export const actions = {
         const { player_id, drink_id, amount } = form.data;
 
         const { data, error: apierror } = await GameService.AddDrinkToPlayer({
-            auth: () => auth_token,
+            auth: auth_token,
             body: {
                 drink_id: drink_id,
                 amount: amount

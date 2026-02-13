@@ -69,7 +69,7 @@ export const actions = {
         }
 
         const { data: userData, error: userError } = await UsersService.GetUserMe({
-            auth: () => data.access_token
+            auth: data.access_token
         });
 
         if (userError) {

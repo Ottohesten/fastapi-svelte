@@ -28,7 +28,7 @@ export const actions = {
         }
 
         const { data, error: apierror } = await GameService.CreateGameSession({
-            auth: () => auth_token,
+            auth: auth_token,
             body: {
                 title: form.data.title,
                 teams: form.data.teams.map((team) => {

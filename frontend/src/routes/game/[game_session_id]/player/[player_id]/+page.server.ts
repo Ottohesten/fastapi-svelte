@@ -61,7 +61,7 @@ export const actions = {
         }));
 
         const { data, error: apierror } = await GameService.UpdateGamePlayer({
-            auth: () => auth_token,
+            auth: auth_token,
             body: {
                 name: form.data.name,
                 drinks: all_drinks

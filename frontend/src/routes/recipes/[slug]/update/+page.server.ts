@@ -83,7 +83,7 @@ export const actions = {
             const { data: uploadData, error: uploadError } = await RecipesService.UploadRecipeImage(
                 {
                     fetch,
-                    auth: () => auth_token,
+                    auth: auth_token,
                     body: formData as any
                 }
             );
@@ -102,7 +102,7 @@ export const actions = {
         // post form data to the API (when backend PATCH is implemented)
         const recipe_id = params.slug;
         const { data, error: apierror } = await RecipesService.UpdateRecipe({
-            auth: () => auth_token,
+            auth: auth_token,
             body: {
                 title: form.data.title,
                 instructions: form.data.instructions ?? null,

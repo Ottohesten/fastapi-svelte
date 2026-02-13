@@ -8,8 +8,6 @@ import { error } from "@sveltejs/kit";
 import { GameSessionSchema } from "$lib/schemas/schemas.js";
 
 export const load = async ({ fetch, parent }) => {
-    // const client = createApiClient(fetch);
-
     const form = await superValidate(zod(GameSessionSchema));
 
     return {

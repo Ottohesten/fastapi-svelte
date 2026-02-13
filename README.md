@@ -89,6 +89,7 @@ fastapi-svelte/
    ```
 
 4. **Run database migrations**
+
     Make sure you have either a local PostgreSQL instance running or a Docker container with the database service up (see Docker section below). Then run:
    ```bash
    uv run alembic upgrade head

@@ -128,20 +128,15 @@
 
   onMount(() => {
     if (data.recipe?.image) {
-      if (data.recipe.image.startsWith("http")) {
-        previewUrl = data.recipe.image;
-      } else {
-        const baseUrl = data.backendUrl || "http://127.0.0.1:8000";
-        previewUrl = `${baseUrl}${data.recipe.image}`;
-      }
+      previewUrl = data.recipe.image;
     }
   });
 </script>
 
-<SuperDebug data={$formData} />
+<!-- <SuperDebug data={$formData} /> -->
 
 <div
-  class="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 py-8 dark:from-gray-950 dark:to-gray-900"
+  class="min-h-screen bg-linear-to-br from-slate-50 to-blue-50 py-8 dark:from-gray-950 dark:to-gray-900"
 >
   <div class="container mx-auto max-w-7xl px-4">
     <!-- Page Header -->

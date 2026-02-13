@@ -1,7 +1,6 @@
+import { IngredientsService, RecipesService } from "$lib/client/sdk.gen.js";
 import { redirect } from "@sveltejs/kit";
 import { error } from "@sveltejs/kit";
-import { createApiClient } from "$lib/api/api.js";
-// import { createApiClient } from '$lib/api/api';
 import { zod4 as zod } from "sveltekit-superforms/adapters";
 import { z } from "zod";
 import { message, superValidate, fail } from "sveltekit-superforms";
@@ -10,7 +9,6 @@ import { RecipeSchema } from "$lib/schemas/schemas.js";
 
 export async function load({ fetch, params, locals, request, parent, url }) {
     const { authenticatedUser } = locals;
-    const recipe_id = params.slug;
     const parent_data = await parent();
 
     // if there is no user redirect to login page
@@ -24,8 +22,9 @@ export async function load({ fetch, params, locals, request, parent, url }) {
     }
 
     // Get the list of available ingredients
-    const client = createApiClient(fetch);
-    const { data: allIngredients, error: apierror, response } = await client.GET("/ingredients/");
+    const { data: allIngredients, error: apierror } = await IngredientsService.GetIngredients({
+        fetch
+    });
 
     if (apierror) {
         return error(404, JSON.stringify(apierror.detail));
@@ -57,12 +56,13 @@ export async function load({ fetch, params, locals, request, parent, url }) {
 }
 
 export const actions = {
-    default: async ({ fetch, request, cookies, params }) => {
-        const client = createApiClient(fetch);
+    default: async ({ fetch, request, cookies, params, url }) => {
         const auth_token = cookies.get("auth_token");
+        if (!auth_token) {
+            redirect(303, `/auth/login?redirectTo=${url.pathname}`);
+        }
 
         const form = await superValidate(request, zod(RecipeSchema));
-        console.log(form);
         if (!form.valid) {
             return fail(400, { form });
         }
@@ -80,13 +80,11 @@ export const actions = {
             formData.append("file", form.data.image);
 
             // Upload image
-            const { data: uploadData, error: uploadError } = await client.POST(
-                "/recipes/upload-image",
+            const { data: uploadData, error: uploadError } = await RecipesService.UploadRecipeImage(
                 {
-                    body: formData as any,
-                    headers: {
-                        Authorization: `Bearer ${auth_token}`
-                    }
+                    fetch,
+                    auth: auth_token,
+                    body: formData as any
                 }
             );
 
@@ -103,11 +101,8 @@ export const actions = {
 
         // post form data to the API (when backend PATCH is implemented)
         const recipe_id = params.slug;
-        const {
-            data,
-            error: apierror,
-            response
-        } = await client.PATCH("/recipes/{recipe_id}", {
+        const { data, error: apierror } = await RecipesService.UpdateRecipe({
+            auth: auth_token,
             body: {
                 title: form.data.title,
                 instructions: form.data.instructions ?? null,
@@ -115,12 +110,7 @@ export const actions = {
                 servings: form.data.servings,
                 image: imageUrl
             },
-            params: {
-                path: { recipe_id }
-            },
-            headers: {
-                Authorization: `Bearer ${auth_token}`
-            }
+            path: { recipe_id }
         });
 
         if (apierror) {

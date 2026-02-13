@@ -1,4 +1,4 @@
-import { createApiClient } from "$lib/api/api";
+import { IngredientsService, RecipesService } from "$lib/client/sdk.gen.js";
 import { redirect } from "@sveltejs/kit";
 import type { Actions } from "./$types.js";
 import { zod4 as zod } from "sveltekit-superforms/adapters";
@@ -9,15 +9,15 @@ import { RecipeSchema } from "$lib/schemas/schemas.js";
 import { env } from "$env/dynamic/private";
 
 export const load = async ({ fetch, parent, cookies, url }) => {
-    const client = createApiClient(fetch);
     const auth_token = cookies.get("auth_token");
-
-    if (!auth_token) {
-        redirect(302, `/auth/login?redirectTo=${url.pathname}`);
-    }
+    if (!auth_token) redirect(302, `/auth/login?redirectTo=${url.pathname}`);
 
     // get the list of available ingredients
-    const { data: ingredients, error: apierror, response } = await client.GET("/ingredients/");
+    const {
+        data: ingredients,
+        error: apierror,
+        response
+    } = await IngredientsService.GetIngredients({});
 
     if (apierror) {
         return error(404, JSON.stringify(apierror.detail));
@@ -27,24 +27,17 @@ export const load = async ({ fetch, parent, cookies, url }) => {
     // const form = await superValidate({ ingredients: ingredients }, zod(RecipeSchema));
     return {
         ingredients: ingredients,
-        form,
-        backendUrl: env.BACKEND_HOST || "http://127.0.0.1:8000"
+        form
     };
 };
 
 export const actions = {
-    default: async ({ fetch, request, cookies }) => {
-        const form = await superValidate(request, zod(RecipeSchema));
-
-        if (!form.valid) {
-            return fail(400, { form });
-        }
-        // return message(form, 'You have uploaded a valid file!');
-        // return setError(form, 'image', 'Could not process file.');
-
-        // post form data to the API
-        const client = createApiClient(fetch);
+    default: async ({ fetch, request, cookies, url }) => {
         const auth_token = cookies.get("auth_token");
+        if (!auth_token) redirect(302, `/auth/login?redirectTo=${url.pathname}`);
+
+        const form = await superValidate(request, zod(RecipeSchema));
+        if (!form.valid) return fail(400, { form });
 
         // Transform ingredients from frontend format to backend format
         const ingredientsForBackend = form.data.ingredients.map((ingredient) => ({
@@ -59,13 +52,10 @@ export const actions = {
             formData.append("file", form.data.image);
 
             // Upload image
-            const { data: uploadData, error: uploadError } = await client.POST(
-                "/recipes/upload-image",
+            const { data: uploadData, error: uploadError } = await RecipesService.UploadRecipeImage(
                 {
-                    body: formData as any, // Type cast might be needed if OpenAPI client doesn't support FormData directly yet or generated types are strict
-                    headers: {
-                        Authorization: `Bearer ${auth_token}`
-                    }
+                    auth: auth_token,
+                    body: formData as any // Type cast might be needed if OpenAPI client doesn't support FormData directly yet or generated types are strict
                 }
             );
 
@@ -78,20 +68,14 @@ export const actions = {
             }
         }
 
-        const {
-            data,
-            error: apierror,
-            response
-        } = await client.POST("/recipes/", {
+        const { data, error: apierror } = await RecipesService.CreateRecipe({
+            auth: auth_token,
             body: {
                 title: form.data.title,
                 instructions: form.data.instructions ?? null,
                 ingredients: ingredientsForBackend,
                 servings: form.data.servings,
                 image: imageUrl
-            },
-            headers: {
-                Authorization: `Bearer ${auth_token}`
             }
         });
 

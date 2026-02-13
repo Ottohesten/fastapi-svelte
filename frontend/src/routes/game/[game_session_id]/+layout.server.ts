@@ -1,19 +1,15 @@
-import { createApiClient } from "$lib/api/api";
+import { GameService } from "$lib/client/sdk.gen.js";
 import { error } from "@sveltejs/kit";
 import { redirect } from "@sveltejs/kit";
 import { env } from "$env/dynamic/private";
 
 export const load = async ({ fetch, params, locals }) => {
-    const client = createApiClient(fetch);
-
     const {
         data,
         error: apierror,
         response
-    } = await client.GET("/game/{game_session_id}", {
-        params: {
-            path: { game_session_id: params.game_session_id }
-        }
+    } = await GameService.GetGameSession({
+        path: { game_session_id: params.game_session_id }
     });
 
     if (apierror) {
@@ -24,7 +20,7 @@ export const load = async ({ fetch, params, locals }) => {
         data: drinks,
         error: drinksError,
         response: drinksResponse
-    } = await client.GET("/game/drinks");
+    } = await GameService.GetDrinks();
 
     if (drinksError) {
         error(drinksResponse.status, drinksError.detail?.toString());

@@ -17,7 +17,7 @@ router = APIRouter(prefix="/roles", tags=["roles"])
 
 # Role CRUD endpoints
 @router.get("/", response_model=List[RolePublic])
-def list_roles(
+def get_roles(
     session: SessionDep,
     current_user: User = Security(get_current_user, scopes=["roles:read"]),
 ):
@@ -162,7 +162,7 @@ def create_role_from_template_endpoint(
 
 # Available scopes endpoint
 @router.get("/scopes/available", response_model=dict)
-def list_available_scopes(
+def get_available_scopes(
     current_user: User = Security(get_current_user, scopes=["roles:read"]),
 ):
     """List all available scopes"""

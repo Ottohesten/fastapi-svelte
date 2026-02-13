@@ -1,18 +1,16 @@
-import { createApiClient } from "$lib/api/api";
-import { error } from "@sveltejs/kit";
+import { IngredientsService } from "$lib/client/sdk.gen.js";
+import { error, redirect } from "@sveltejs/kit";
 import { message, superValidate, fail } from "sveltekit-superforms";
 import { zod4 as zod } from "sveltekit-superforms/adapters";
 import type { Actions } from "./$types.js";
 import { IngredientSchema } from "$lib/schemas/schemas.js";
 
 export const load = async ({ fetch, locals }) => {
-    const client = createApiClient(fetch);
-    const { data, error: apierror, response } = await client.GET("/ingredients/");
+    const { data, error: apierror, response } = await IngredientsService.GetIngredients({});
 
     if (apierror) {
         error(404, JSON.stringify(apierror.detail));
     }
-    // console.log(data)
 
     return {
         ingredients: data,
@@ -21,9 +19,12 @@ export const load = async ({ fetch, locals }) => {
 };
 
 export const actions = {
-    create: async ({ fetch, cookies, request }) => {
-        const client = createApiClient(fetch);
+    create: async ({ fetch, cookies, request, url }) => {
         const auth_token = cookies.get("auth_token");
+
+        if (!auth_token) {
+            redirect(302, `/auth/login?redirectTo=${url.pathname}`);
+        }
 
         const form = await superValidate(request, zod(IngredientSchema));
 
@@ -31,15 +32,9 @@ export const actions = {
             return fail(400, { form });
         }
 
-        const {
-            data,
-            error: apierror,
-            response
-        } = await client.POST("/ingredients/", {
-            body: form.data,
-            headers: {
-                Authorization: `Bearer ${auth_token}`
-            }
+        const { error: apierror } = await IngredientsService.CreateIngredient({
+            auth: auth_token,
+            body: form.data
         });
 
         if (apierror) {
@@ -54,23 +49,23 @@ export const actions = {
 
         return message(form, "Ingredient created successfully!");
     },
-    delete: async ({ fetch, params, cookies, request }) => {
-        const client = createApiClient(fetch);
+    delete: async ({ fetch, params, cookies, request, url }) => {
         const auth_token = cookies.get("auth_token");
+
+        if (!auth_token) {
+            redirect(302, `/auth/login?redirectTo=${url.pathname}`);
+        }
 
         const formData = await request.formData();
         const ingredient_id = formData.get("ingredient_id") as string;
-        // console.log(ingredient_id);
 
-        const { error: apierror, response } = await client.DELETE("/ingredients/{ingredient_id}", {
-            params: {
-                path: { ingredient_id: ingredient_id }
-            },
-            headers: {
-                Authorization: `Bearer ${auth_token}`
-            }
+        const { error: apierror } = await IngredientsService.DeleteIngredient({
+            auth: auth_token,
+            path: { ingredient_id }
         });
 
-        // return redirect(302, "/ingredients");
+        if (apierror) {
+            error(400, JSON.stringify(apierror.detail));
+        }
     }
 } satisfies Actions;

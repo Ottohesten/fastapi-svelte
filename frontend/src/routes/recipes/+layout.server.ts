@@ -1,31 +1,25 @@
-import { createApiClient } from "$lib/api/api";
+import { RecipesService, IngredientsService } from "$lib/client/sdk.gen.js";
 import { error } from "@sveltejs/kit";
-import { env } from "$env/dynamic/private";
 
 export const load = async ({ fetch, locals }) => {
-    const client = createApiClient(fetch);
-    const { data, error: apierror, response } = await client.GET("/recipes/");
+    const { data: recipes, error: recipeError } = await RecipesService.GetRecipes({});
 
-    if (apierror) {
-        error(404, JSON.stringify(apierror.detail));
+    if (recipeError) {
+        error(404, JSON.stringify(recipeError.detail));
     }
-    // console.log(data)
 
-    const {
-        data: ingredients,
-        error: apierror_2,
-        response: response_2
-    } = await client.GET("/ingredients/");
+    const { data: ingredients, error: ingredientError } = await IngredientsService.GetIngredients(
+        {}
+    );
 
-    if (apierror_2) {
-        return error(404, JSON.stringify(apierror_2.detail));
+    if (ingredientError) {
+        error(404, JSON.stringify(ingredientError.detail));
     }
 
     return {
-        recipes: data,
+        recipes: recipes,
         ingredients: ingredients,
         authenticatedUser: locals.authenticatedUser,
-        scopes: locals.authenticatedUser?.scopes ?? [],
-        backendUrl: env.BACKEND_HOST || "http://127.0.0.1:8000"
+        scopes: locals.authenticatedUser?.scopes ?? []
     };
 };

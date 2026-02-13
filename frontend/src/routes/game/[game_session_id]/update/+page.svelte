@@ -32,6 +32,10 @@
     constraints: playerConstraints,
     enhance: playerEnhance
   } = playerForm;
+
+  let selectedTeamName = $derived(
+    data.game_session.teams.find((team) => team.id === $playerFormData.team_id)?.name || "No Team"
+  );
 </script>
 
 <!-- <SuperDebug data={$form} /> -->
@@ -184,16 +188,18 @@
               <Label class="text-sm font-semibold text-gray-700 sm:text-base dark:text-gray-200">
                 Team (Optional)
               </Label>
-              <select
-                {...props}
-                class="w-full cursor-pointer rounded-lg border-2 border-gray-300 bg-white px-4 py-2 text-base transition-colors hover:border-blue-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 focus:outline-none sm:py-3 dark:border-gray-800 dark:bg-gray-900/40 dark:text-gray-100"
-                bind:value={$playerFormData.team_id}
-              >
-                <option value="">No Team</option>
-                {#each data.game_session.teams as team}
-                  <option value={team.id}>{team.name}</option>
-                {/each}
-              </select>
+              <Select.Root type="single" bind:value={$playerFormData.team_id}>
+                <Select.Trigger {...props}>
+                  {selectedTeamName}
+                </Select.Trigger>
+                <Select.Content>
+                  {#each data.game_session.teams as team}
+                    <Select.Item value={team.id} label={team.name}>
+                      {team.name}
+                    </Select.Item>
+                  {/each}
+                </Select.Content>
+              </Select.Root>
             {/snippet}
           </Control>
           <FieldErrors class="text-sm text-red-600 dark:text-red-400" />

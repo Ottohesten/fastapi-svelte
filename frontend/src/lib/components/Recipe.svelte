@@ -8,10 +8,9 @@
   type Props = {
     recipe: components["schemas"]["RecipePublic"];
     authenticatedUser?: components["schemas"]["UserMePublic"];
-    backendUrl?: string;
   };
 
-  let { recipe, authenticatedUser, backendUrl }: Props = $props();
+  let { recipe, authenticatedUser }: Props = $props();
 </script>
 
 <div
@@ -22,7 +21,7 @@
     <div class="h-48 w-full overflow-hidden bg-gray-100 dark:bg-gray-800">
       {#if recipe.image}
         <img
-          src={recipe.image.startsWith("http") ? recipe.image : `${backendUrl}${recipe.image}`}
+          src={recipe.image}
           alt={recipe.title}
           class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
         />
@@ -166,7 +165,7 @@
         </div>
         <div class="prose prose-sm dark:prose-invert max-w-none">
           <div
-            class="line-clamp-3 text-sm text-gray-600 dark:text-gray-300 [&>*]:text-sm [&>h1]:text-base [&>h2]:text-sm [&>h3]:text-sm"
+            class="line-clamp-3 text-sm text-gray-600 *:text-sm dark:text-gray-300 [&>h1]:text-base [&>h2]:text-sm [&>h3]:text-sm"
           >
             {@html recipe.instructions}
           </div>

@@ -1,4 +1,4 @@
-import { createApiClient } from "$lib/api/api";
+import { GameService } from "$lib/client/sdk.gen.js";
 import { error } from "@sveltejs/kit";
 import { redirect } from "@sveltejs/kit";
 import type { Actions } from "./$types.js";
@@ -8,8 +8,7 @@ import { message, superValidate, fail } from "sveltekit-superforms";
 import { GameSessionTeamSchema } from "$lib/schemas/schemas.js";
 
 export const load = async ({ fetch, locals }) => {
-    const client = createApiClient(fetch);
-    const { data, error: apierror, response } = await client.GET("/game/");
+    const { data, error: apierror } = await GameService.GetGameSessions({});
 
     if (apierror) {
         error(404, JSON.stringify(apierror.detail));
@@ -24,8 +23,7 @@ export const load = async ({ fetch, locals }) => {
 };
 
 export const actions = {
-    deleteGame: async ({ fetch, params, cookies, request, url }) => {
-        const client = createApiClient(fetch);
+    deleteGame: async ({ fetch, cookies, request, url }) => {
         const auth_token = cookies.get("auth_token");
 
         if (!auth_token) {
@@ -35,21 +33,13 @@ export const actions = {
         const formData = await request.formData();
         const game_session_id = formData.get("game_session_id") as string;
 
-        const { error: apierror, response } = await client.DELETE("/game/{game_session_id}", {
-            params: {
-                path: { game_session_id: game_session_id }
-            },
-            headers: {
-                Authorization: `Bearer ${auth_token}`
-            }
+        const { error: apierror, response } = await GameService.DeleteGameSession({
+            auth: auth_token,
+            path: { game_session_id }
         });
 
         if (apierror) {
-            // log with file name
-            // console.log("apierror in game/+page.server.ts", apierror);
             error(404, JSON.stringify(apierror.detail));
         }
-
-        // return redirect(302, "/recipes");
     }
 } satisfies Actions;

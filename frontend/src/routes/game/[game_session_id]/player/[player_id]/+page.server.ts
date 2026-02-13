@@ -1,7 +1,6 @@
+import { GameService } from "$lib/client/sdk.gen.js";
 import { redirect } from "@sveltejs/kit";
 import { error } from "@sveltejs/kit";
-import { createApiClient } from "$lib/api/api.js";
-// import { createApiClient } from '$lib/api/api';
 import { zod4 as zod } from "sveltekit-superforms/adapters";
 import { z } from "zod";
 import { message, superValidate, fail } from "sveltekit-superforms";
@@ -13,7 +12,6 @@ export const load = async ({ locals, url, parent, params, fetch }) => {
     if (!authenticatedUser) {
         redirect(303, `/auth/login?redirectTo=${url.pathname}`);
     }
-    const client = createApiClient(fetch); // Ensure fetch is passed if client uses it
 
     const parent_data = await parent();
 
@@ -47,37 +45,30 @@ export const load = async ({ locals, url, parent, params, fetch }) => {
 export const actions = {
     default: async ({ fetch, request, cookies, params, url }) => {
         const auth_token = cookies.get("auth_token");
-        const form = await superValidate(request, zod(GameSessionPlayerUpdateSchema));
         if (!auth_token) {
             redirect(302, `/auth/login?redirectTo=${url.pathname}`);
         }
+
+        const form = await superValidate(request, zod(GameSessionPlayerUpdateSchema));
         if (!form.valid) {
             return fail(400, { form });
         }
-        const client = createApiClient(fetch);
+
         // all drinks that are in in the form should be added with the amount 0
         const all_drinks = form.data.drinks.map((drink) => ({
             drink_id: drink.drink_id,
             amount: drink.amount
         }));
 
-        const {
-            data,
-            error: apierror,
-            response
-        } = await client.PATCH("/game/{game_session_id}/player/{game_player_id}", {
-            params: {
-                path: {
-                    game_session_id: params.game_session_id,
-                    game_player_id: params.player_id
-                }
-            },
+        const { data, error: apierror } = await GameService.UpdateGamePlayer({
+            auth: auth_token,
             body: {
                 name: form.data.name,
                 drinks: all_drinks
             },
-            headers: {
-                Authorization: `Bearer ${auth_token}`
+            path: {
+                game_session_id: params.game_session_id,
+                game_player_id: params.player_id
             }
         });
 

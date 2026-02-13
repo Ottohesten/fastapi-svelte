@@ -1,12 +1,10 @@
 import { redirect, type Handle } from "@sveltejs/kit";
-import { createApiClient } from "$lib/api/api";
+import { LoginService, UsersService } from "$lib/client";
 
 // Server handle: hydrate authenticatedUser from /users/me and manage token refresh
 
 export const handle: Handle = async ({ event, resolve }) => {
     let auth_token = event.cookies.get("auth_token");
-    // console.log(auth_token);
-    // console.log(event.locals.user);
 
     if (event.url.pathname.startsWith("/.well-known/appspecific/com.chrome.devtools")) {
         return new Response(null, { status: 204 }); // Return empty response with 204 No Content
@@ -17,13 +15,10 @@ export const handle: Handle = async ({ event, resolve }) => {
         const refresh = event.cookies.get("refresh_token");
         if (refresh) {
             try {
-                const refreshClient = createApiClient(event.fetch);
-                const { data: refData, error: refErr } = await refreshClient.POST(
-                    "/login/refresh",
-                    {
-                        body: { refresh_token: refresh }
-                    }
-                );
+                const { data: refData, error: refErr } = await LoginService.RefreshAccessToken({
+                    body: { refresh_token: refresh }
+                });
+
                 if (refData && !refErr) {
                     const newAccess = refData.access_token as string;
                     const newRefresh = (refData as any).refresh_token as string | undefined;
@@ -56,9 +51,8 @@ export const handle: Handle = async ({ event, resolve }) => {
     }
 
     // Try to validate current access token; on failure attempt refresh
-    const client = createApiClient(event.fetch);
-    let { data, error: apierror } = await client.GET("/users/me", {
-        headers: { Authorization: `Bearer ${auth_token}` }
+    let { data, error: apierror } = await UsersService.GetUserMe({
+        auth: auth_token
     });
 
     if (data) {
@@ -68,13 +62,9 @@ export const handle: Handle = async ({ event, resolve }) => {
         const refresh = event.cookies.get("refresh_token");
         if (refresh) {
             try {
-                const refreshClient = createApiClient(event.fetch);
-                const { data: refData, error: refErr } = await refreshClient.POST(
-                    "/login/refresh",
-                    {
-                        body: { refresh_token: refresh }
-                    }
-                );
+                const { data: refData, error: refErr } = await LoginService.RefreshAccessToken({
+                    body: { refresh_token: refresh }
+                });
                 if (refData && !refErr) {
                     const newAccess = refData.access_token as string;
                     const newRefresh = (refData as any).refresh_token as string | undefined;
@@ -97,8 +87,8 @@ export const handle: Handle = async ({ event, resolve }) => {
                         console.log("Rotated refresh token successfully");
                     }
                     // Retry current user call
-                    const retry = await client.GET("/users/me", {
-                        headers: { Authorization: `Bearer ${newAccess}` }
+                    const retry = await UsersService.GetUserMe({
+                        auth: newAccess
                     });
                     if (retry.data) {
                         event.locals.authenticatedUser = retry.data as any;

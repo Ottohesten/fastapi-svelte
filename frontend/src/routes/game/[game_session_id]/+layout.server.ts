@@ -8,7 +8,7 @@ export const load = async ({ fetch, params, locals }) => {
         data,
         error: apierror,
         response
-    } = await GameService.ReadGameSession({
+    } = await GameService.GetGameSession({
         path: { game_session_id: params.game_session_id }
     });
 
@@ -20,7 +20,7 @@ export const load = async ({ fetch, params, locals }) => {
         data: drinks,
         error: drinksError,
         response: drinksResponse
-    } = await GameService.ReadDrinks();
+    } = await GameService.GetDrinks();
 
     if (drinksError) {
         error(drinksResponse.status, drinksError.detail?.toString());

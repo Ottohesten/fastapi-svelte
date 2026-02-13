@@ -22,7 +22,7 @@ export const load = async ({ fetch, cookies, url }) => {
     }
 
     // Fetch all available roles
-    const { data: rolesData, error: rolesError } = await RolesService.ReadRoles({
+    const { data: rolesData, error: rolesError } = await RolesService.GetRoles({
         auth: auth_token
     });
     if (rolesError) {

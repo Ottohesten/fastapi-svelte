@@ -17,7 +17,7 @@ router = APIRouter(prefix="/roles", tags=["roles"])
 
 # Role CRUD endpoints
 @router.get("/", response_model=List[RolePublic])
-def read_roles(
+def get_roles(
     session: SessionDep,
     current_user: User = Security(get_current_user, scopes=["roles:read"]),
 ):

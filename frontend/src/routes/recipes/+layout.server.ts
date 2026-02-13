@@ -2,13 +2,13 @@ import { RecipesService, IngredientsService } from "$lib/client/sdk.gen.js";
 import { error } from "@sveltejs/kit";
 
 export const load = async ({ fetch, locals }) => {
-    const { data: recipes, error: recipeError } = await RecipesService.ReadRecipes({});
+    const { data: recipes, error: recipeError } = await RecipesService.GetRecipes({});
 
     if (recipeError) {
         error(404, JSON.stringify(recipeError.detail));
     }
 
-    const { data: ingredients, error: ingredientError } = await IngredientsService.ReadIngredients(
+    const { data: ingredients, error: ingredientError } = await IngredientsService.GetIngredients(
         {}
     );
 

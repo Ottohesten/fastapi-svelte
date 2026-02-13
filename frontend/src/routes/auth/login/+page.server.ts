@@ -68,7 +68,7 @@ export const actions = {
             });
         }
 
-        const { data: userData, error: userError } = await UsersService.ReadUserMe({
+        const { data: userData, error: userError } = await UsersService.GetUserMe({
             auth: () => data.access_token
         });
 

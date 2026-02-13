@@ -46,7 +46,7 @@ def upload_recipe_image(
 
 
 @router.get("/", response_model=list[RecipePublic])
-def read_recipes(session: SessionDep, skip: int = 0, limit: int = 100):
+def get_recipes(session: SessionDep, skip: int = 0, limit: int = 100):
     """
     Retrieve recipes.
     """
@@ -61,7 +61,7 @@ def read_recipes(session: SessionDep, skip: int = 0, limit: int = 100):
 
 
 @router.get("/{recipe_id}", response_model=RecipePublic)
-def read_recipe(session: SessionDep, recipe_id: str):
+def get_recipe(session: SessionDep, recipe_id: str):
     """
     Retrieve a recipe.
     """

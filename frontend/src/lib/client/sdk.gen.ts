@@ -325,11 +325,11 @@ export class RecipesService {
     }
 
     /**
-     * Read Recipes
+     * Get Recipes
      *
      * Retrieve recipes.
      */
-    public static ReadRecipes<ThrowOnError extends boolean = false>(options?: Options<GetRecipesData, ThrowOnError>) {
+    public static GetRecipes<ThrowOnError extends boolean = false>(options?: Options<GetRecipesData, ThrowOnError>) {
         return (options?.client ?? client).get<GetRecipesResponses, GetRecipesErrors, ThrowOnError>({ url: '/recipes/', ...options });
     }
 
@@ -364,11 +364,11 @@ export class RecipesService {
     }
 
     /**
-     * Read Recipe
+     * Get Recipe
      *
      * Retrieve a recipe.
      */
-    public static ReadRecipe<ThrowOnError extends boolean = false>(options: Options<GetRecipesByRecipeIdData, ThrowOnError>) {
+    public static GetRecipe<ThrowOnError extends boolean = false>(options: Options<GetRecipesByRecipeIdData, ThrowOnError>) {
         return (options.client ?? client).get<GetRecipesByRecipeIdResponses, GetRecipesByRecipeIdErrors, ThrowOnError>({ url: '/recipes/{recipe_id}', ...options });
     }
 
@@ -781,11 +781,11 @@ export class LoginService {
 
 export class RolesService {
     /**
-     * Read Roles
+     * Get Roles
      *
      * List all roles
      */
-    public static ReadRoles<ThrowOnError extends boolean = false>(options?: Options<GetRolesData, ThrowOnError>) {
+    public static GetRoles<ThrowOnError extends boolean = false>(options?: Options<GetRolesData, ThrowOnError>) {
         return (options?.client ?? client).get<GetRolesResponses, unknown, ThrowOnError>({
             security: [{ scheme: 'bearer', type: 'http' }],
             url: '/roles/',

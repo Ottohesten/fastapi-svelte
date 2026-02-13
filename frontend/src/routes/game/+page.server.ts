@@ -8,7 +8,7 @@ import { message, superValidate, fail } from "sveltekit-superforms";
 import { GameSessionTeamSchema } from "$lib/schemas/schemas.js";
 
 export const load = async ({ fetch, locals }) => {
-    const { data, error: apierror } = await GameService.ReadGameSessions({});
+    const { data, error: apierror } = await GameService.GetGameSessions({});
 
     if (apierror) {
         error(404, JSON.stringify(apierror.detail));

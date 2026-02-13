@@ -23,7 +23,7 @@ export async function load({ fetch, params, locals, request, parent, url }) {
     }
 
     // Get the list of available ingredients
-    const { data: allIngredients, error: apierror } = await IngredientsService.ReadIngredients({
+    const { data: allIngredients, error: apierror } = await IngredientsService.GetIngredients({
         fetch
     });
 

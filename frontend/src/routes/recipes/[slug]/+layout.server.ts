@@ -7,7 +7,7 @@ export const load = async ({ fetch, params, locals }) => {
         data,
         error: apierror,
         response
-    } = await RecipesService.ReadRecipe({
+    } = await RecipesService.GetRecipe({
         fetch,
         path: { recipe_id: params.slug }
     });

@@ -1367,7 +1367,7 @@ export type GetRecipesError = GetRecipesErrors[keyof GetRecipesErrors];
 
 export type GetRecipesResponses = {
     /**
-     * Response Recipes-Read Recipes
+     * Response Recipes-Get Recipes
      *
      * Successful Response
      */
@@ -2288,7 +2288,7 @@ export type GetRolesData = {
 
 export type GetRolesResponses = {
     /**
-     * Response Roles-Read Roles
+     * Response Roles-Get Roles
      *
      * Successful Response
      */

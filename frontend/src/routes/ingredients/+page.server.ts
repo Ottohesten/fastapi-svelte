@@ -6,7 +6,7 @@ import type { Actions } from "./$types.js";
 import { IngredientSchema } from "$lib/schemas/schemas.js";
 
 export const load = async ({ fetch, locals }) => {
-    const { data, error: apierror, response } = await IngredientsService.ReadIngredients({});
+    const { data, error: apierror, response } = await IngredientsService.GetIngredients({});
 
     if (apierror) {
         error(404, JSON.stringify(apierror.detail));

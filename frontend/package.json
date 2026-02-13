@@ -13,8 +13,7 @@
         "lint": "prettier --check .",
         "test": "bunx playwright test",
         "test:ui": "bunx playwright test --ui",
-        "generate-client": "openapi-ts",
-        "generate:sdk": "openapi-typescript http://127.0.0.1:8000/openapi.json --output src/lib/api/v1.d.ts"
+        "generate-client": "openapi-ts"
     },
     "dependencies": {
         "@floating-ui/dom": "^1.7.2",

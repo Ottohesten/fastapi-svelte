@@ -373,6 +373,10 @@ class IngredientCreate(IngredientBase):
 
 class IngredientPublic(IngredientBase):
     id: uuid.UUID
+    # Make fields required for public responses so OpenAPI marks them as required
+    title: str
+    calories: int
+    weight_per_piece: int
     # recipes: list[RecipePublic]
 
 

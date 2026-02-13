@@ -39,15 +39,15 @@
 
 <!-- {JSON.stringify(data)} -->
 
-<div class="container">
+<div class="container mx-auto px-4 py-4 sm:px-6 sm:py-6 lg:px-8">
   <!-- message -->
   {#if $message}
     <div class="mb-4 rounded border border-green-200 bg-green-100 p-4 text-center">
       <p class="text-green-700">{$message}</p>
     </div>
   {/if}
-  <div class="mb-6 flex items-center justify-between">
-    <h1 class="text-4xl font-bold">Ingredients:</h1>
+  <div class="mb-6 flex flex-col items-center justify-between sm:flex-row">
+    <h1 class="mb-4 text-2xl font-bold sm:mb-0 sm:text-3xl lg:text-4xl">Ingredients:</h1>
 
     {#if data.authenticatedUser && data.authenticatedUser.is_superuser}
       <Dialog.Root bind:open={dialogOpen}>

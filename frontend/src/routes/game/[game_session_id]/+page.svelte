@@ -1198,7 +1198,7 @@
           <DialogTrigger>
             <!-- Styled like Button variant="primary" size="default" -->
             <span
-              class="ring-offset-background inline-flex h-10 w-full cursor-pointer items-center justify-center gap-2 rounded-md bg-blue-600 px-4 py-2 text-sm font-medium whitespace-nowrap text-white shadow-sm transition-colors hover:bg-blue-500 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 sm:w-auto dark:bg-blue-500 dark:text-white dark:hover:bg-blue-400 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0"
+              class="ring-offset-background inline-flex h-10 w-full cursor-pointer items-center justify-center gap-2 rounded-md bg-blue-600 px-4 py-2 text-sm font-medium whitespace-nowrap text-white shadow-sm transition-colors hover:bg-blue-500 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 sm:w-auto dark:bg-blue-600 dark:text-white dark:hover:bg-blue-500 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0"
             >
               Add Drink to Player
             </span>

@@ -60,7 +60,7 @@
               <Label>Team Name</Label>
               <Input
                 {...props}
-                bind:value={$formData.teams[i].name}
+                bind:value={$formData.teams![i]!.name}
                 placeholder="Enter team name"
               />
             {/snippet}

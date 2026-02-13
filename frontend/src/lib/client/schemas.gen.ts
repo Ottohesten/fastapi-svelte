@@ -534,23 +534,15 @@ export const IngredientPublicSchema = {
     properties: {
         title: {
             type: 'string',
-            maxLength: 255,
-            minLength: 1,
             title: 'Title'
         },
         calories: {
             type: 'integer',
-            minimum: 0,
-            title: 'Calories',
-            description: 'Calories per 100g of the ingredient',
-            default: 0
+            title: 'Calories'
         },
         weight_per_piece: {
             type: 'integer',
-            minimum: 0,
-            title: 'Weight Per Piece',
-            description: 'Average weight per piece in grams (used when unit is \'pcs\')',
-            default: 100
+            title: 'Weight Per Piece'
         },
         id: {
             type: 'string',
@@ -561,6 +553,8 @@ export const IngredientPublicSchema = {
     type: 'object',
     required: [
         'title',
+        'calories',
+        'weight_per_piece',
         'id'
     ],
     title: 'IngredientPublic'

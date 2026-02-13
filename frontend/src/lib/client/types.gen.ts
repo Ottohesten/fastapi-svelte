@@ -331,16 +331,12 @@ export type IngredientPublic = {
     title: string;
     /**
      * Calories
-     *
-     * Calories per 100g of the ingredient
      */
-    calories?: number;
+    calories: number;
     /**
      * Weight Per Piece
-     *
-     * Average weight per piece in grams (used when unit is 'pcs')
      */
-    weight_per_piece?: number;
+    weight_per_piece: number;
     /**
      * Id
      */

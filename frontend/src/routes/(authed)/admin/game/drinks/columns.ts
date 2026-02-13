@@ -1,5 +1,5 @@
 import type { ColumnDef } from "@tanstack/table-core";
-import type { components } from "$lib/api/v1";
+import type { DrinkPublic } from "$lib/client";
 import { renderComponent, renderSnippet } from "$lib/components/ui/data-table/index.js";
 import DrinkActions from "./drink-actions.svelte";
 import { createRawSnippet } from "svelte";
@@ -8,7 +8,7 @@ import type { DrinkUpdateSchema } from "$lib/schemas/schemas";
 
 export const createColumns = (
     updateForm: SuperForm<Infer<typeof DrinkUpdateSchema>>
-): ColumnDef<components["schemas"]["DrinkPublic"]>[] => [
+): ColumnDef<DrinkPublic>[] => [
     {
         accessorKey: "name",
         header: "Name"

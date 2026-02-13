@@ -1,10 +1,10 @@
 <script lang="ts">
-  import type { components } from "$lib/api/v1";
+  import type { RecipePublic, UserMePublic } from "$lib/client";
 
   type Props = {
     data: {
-      recipe: components["schemas"]["RecipePublic"];
-      authenticatedUser?: components["schemas"]["UserMePublic"];
+      recipe: RecipePublic;
+      authenticatedUser?: UserMePublic;
       is_owner: boolean;
     };
   };

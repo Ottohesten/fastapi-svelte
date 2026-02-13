@@ -12,7 +12,7 @@
   import SuperDebug from "sveltekit-superforms/SuperDebug.svelte";
   import { untrack } from "svelte";
 
-  import type { components } from "$lib/api/v1";
+  import type { UserPublic, UserWithPermissionsPublic, RolePublic } from "$lib/client";
   import type { SuperForm } from "sveltekit-superforms";
   import type { Infer } from "sveltekit-superforms";
 
@@ -24,11 +24,11 @@
     roles,
     availableScopes = []
   }: {
-    user: components["schemas"]["UserPublic"];
+    user: UserPublic;
     userUpdateForm: SuperForm<Infer<typeof UserUpdateSchema>>;
-    permissions: components["schemas"]["UserWithPermissionsPublic"];
+    permissions: UserWithPermissionsPublic;
     userAddRoleForm: SuperForm<Infer<typeof UserAddRoleSchema>>;
-    roles: components["schemas"]["RolePublic"][];
+    roles: RolePublic[];
     availableScopes?: string[];
   } = $props();
 

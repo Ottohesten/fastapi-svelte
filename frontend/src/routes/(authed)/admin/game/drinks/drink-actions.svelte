@@ -7,7 +7,7 @@
   import { Field, Control, Label, FieldErrors } from "formsnap";
   import { untrack } from "svelte";
 
-  import type { components } from "$lib/api/v1";
+  import type { DrinkPublic } from "$lib/client";
   import type { SuperForm, Infer } from "sveltekit-superforms";
   import type { DrinkUpdateSchema } from "$lib/schemas/schemas";
 
@@ -15,7 +15,7 @@
     drink,
     updateForm
   }: {
-    drink: components["schemas"]["DrinkPublic"];
+    drink: DrinkPublic;
     updateForm: SuperForm<Infer<typeof DrinkUpdateSchema>>;
   } = $props();
 

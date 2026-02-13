@@ -9,7 +9,12 @@
   import { schemeCategory10, schemeSet3 } from "d3-scale-chromatic";
   import { scaleLinear, scaleBand, scaleOrdinal } from "d3-scale";
   import { max as d3Max } from "d3-array";
-  import type { components } from "$lib/api/v1";
+  import type {
+    GameSessionPublic,
+    GameTeamPublic,
+    GamePlayerPublic,
+    GamePlayerDrinkLinkPublic
+  } from "$lib/client";
   import { onMount, onDestroy, untrack } from "svelte";
   import { page } from "$app/stores";
   import { goto } from "$app/navigation";
@@ -31,11 +36,6 @@
   // import * as Dialog from '$lib/components/ui/dialog/index.js';
   import { Input } from "$lib/components/ui/input";
   import { fade } from "svelte/transition";
-  // Use the actual API types instead of custom interfaces
-  type GameSession = components["schemas"]["GameSessionPublic"];
-  type Team = components["schemas"]["GameTeamPublic"];
-  type Player = components["schemas"]["GamePlayerPublic"];
-  type DrinkLink = components["schemas"]["GamePlayerDrinkLinkPublic"];
 
   // Local view models to power charts/UI
   type DrinkAmount = { name: string; amount: number };
@@ -90,8 +90,8 @@
   const DEFAULT_CHART_TYPE: "drinks" | "players" = "drinks";
 
   // Make gameSession a state variable instead of derived so we can update it directly
-  let gameSession: GameSession | undefined = $state(
-    untrack(() => data.game_session as GameSession | undefined)
+  let gameSession: GameSessionPublic | undefined = $state(
+    untrack(() => data.game_session as GameSessionPublic | undefined)
   );
 
   // State for interactivity - initialize from URL parameters
@@ -120,7 +120,7 @@
   // Watch for data prop changes and update gameSession
   $effect(() => {
     if (data.game_session) {
-      gameSession = data.game_session as GameSession;
+      gameSession = data.game_session as GameSessionPublic;
     }
   });
 
@@ -177,10 +177,10 @@
 
   // Process player data with drink breakdowns
   let allPlayersData: PlayerView[] = $derived(
-    gameSession?.players?.map((player: Player) => {
+    gameSession?.players?.map((player: GamePlayerPublic) => {
       const drinkBreakdown = new Map<string, { name: string; amount: number }>();
 
-      player.drink_links?.forEach((drinkLink: DrinkLink) => {
+      player.drink_links?.forEach((drinkLink: GamePlayerDrinkLinkPublic) => {
         const drinkName = drinkLink.drink?.name || "Unknown Drink";
         if (drinkBreakdown.has(drinkName)) {
           drinkBreakdown.get(drinkName)!.amount += drinkLink.amount;
@@ -196,7 +196,7 @@
         teamId: (player.team_id ?? null) as string | null,
         totalDrinks:
           player.drink_links?.reduce(
-            (sum: number, drinkLink: DrinkLink) => sum + drinkLink.amount,
+            (sum: number, drinkLink: GamePlayerDrinkLinkPublic) => sum + drinkLink.amount,
             0
           ) || 0,
         drinkBreakdown: Array.from(drinkBreakdown.values()).sort(
@@ -262,21 +262,13 @@
   // Color scale for teams with stable color assignment
   let colorScale = $derived.by(() => {
     const colors = schemeCategory10;
+    const fallbackColor = colors[0] ?? "#000000";
 
     // Assign colors to new teams while preserving existing assignments
     teams.forEach((team: string, index: number) => {
       if (!teamColorMap.has(team)) {
-        // Find the next available color that's not already used
-        let colorIndex = 0;
-        let assignedColor = colors[colorIndex];
-
-        // Check if this color is already used by another team
         const usedColors = Array.from(teamColorMap.values());
-        while (usedColors.includes(assignedColor) && colorIndex < colors.length - 1) {
-          colorIndex++;
-          assignedColor = colors[colorIndex];
-        }
-
+        const assignedColor = colors.find((c) => !usedColors.includes(c)) ?? fallbackColor;
         teamColorMap.set(team, assignedColor);
       }
     });

@@ -1,5 +1,5 @@
 import type { ColumnDef } from "@tanstack/table-core";
-import type { components } from "$lib/api/v1";
+import type { RolePublic, UserWithPermissionsPublic } from "$lib/client";
 import { renderComponent, renderSnippet } from "$lib/components/ui/data-table/index.js";
 import UserBadge from "./user-badge.svelte";
 import UserActions from "./user-actions.svelte";
@@ -11,9 +11,9 @@ import type { Infer } from "sveltekit-superforms";
 export function createColumns(
     userUpdateForm: SuperForm<Infer<typeof UserUpdateSchema>>,
     userAddRoleForm: SuperForm<Infer<typeof UserAddRoleSchema>>,
-    roles: components["schemas"]["RolePublic"][],
+    roles: RolePublic[],
     availableScopes: string[] = []
-): ColumnDef<components["schemas"]["UserWithPermissionsPublic"]>[] {
+): ColumnDef<UserWithPermissionsPublic>[] {
     return [
         {
             accessorKey: "email",
@@ -28,7 +28,8 @@ export function createColumns(
             header: "Roles / Scopes",
             cell: ({ row }) => {
                 const user = row.original;
-                const roles = user.roles?.map((r) => r.name).join(", ") || "No roles";
+                const roles =
+                    user.roles?.map((r: { name: string }) => r.name).join(", ") || "No roles";
                 const scopes = user.effective_scopes?.length ?? 0;
                 return `${roles} • ${scopes} scopes`;
             }

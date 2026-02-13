@@ -119,7 +119,7 @@
                 </label>
               </div>
               <!-- If the  -->
-              {#if isChecked}
+              {#if isChecked && $formData.drinks && $formData.drinks[currentSelectedDrinkIndex]}
                 <div class="ml-4 flex-none">
                   <label for={`drink-amount-${availableDrink.id}`} class="sr-only"
                     >Amount for {availableDrink.name}</label

@@ -1,7 +1,6 @@
 <script lang="ts">
   import DataTable from "$lib/components/ui/data-table.svelte";
   import { createColumns } from "./columns.js";
-  import type { components } from "$lib/api/v1";
   import * as Dialog from "$lib/components/ui/dialog";
   import { Button } from "$lib/components/ui/button";
   import { superForm, type SuperValidated, type Infer } from "sveltekit-superforms";

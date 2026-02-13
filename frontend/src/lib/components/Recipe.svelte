@@ -3,11 +3,11 @@
   // let { user, recipe } = $props();
   import { enhance } from "$app/forms";
 
-  import type { components } from "$lib/api/v1";
+  import type { RecipePublic, UserMePublic } from "$lib/client";
 
   type Props = {
-    recipe: components["schemas"]["RecipePublic"];
-    authenticatedUser?: components["schemas"]["UserMePublic"];
+    recipe: RecipePublic;
+    authenticatedUser?: UserMePublic;
   };
 
   let { recipe, authenticatedUser }: Props = $props();

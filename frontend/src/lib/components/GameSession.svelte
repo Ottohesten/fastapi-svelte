@@ -1,11 +1,11 @@
 <script lang="ts">
   import { enhance } from "$app/forms";
-  import type { components } from "$lib/api/v1";
+  import type { GameSessionPublic, UserMePublic } from "$lib/client";
   import { Trash, Trash2 } from "lucide-svelte";
 
   type Props = {
-    session: components["schemas"]["GameSessionPublic"];
-    authenticatedUser?: components["schemas"]["UserMePublic"];
+    session: GameSessionPublic;
+    authenticatedUser?: UserMePublic;
   };
 
   let { session, authenticatedUser }: Props = $props();
@@ -70,7 +70,16 @@
             <span class="truncate">{session.owner.full_name ?? session.owner.email}</span>
           </span>
           <span class="text-xs text-gray-500 dark:text-gray-400">
-            Created: <time datetime={session.created_at}>{formatCreated(session.created_at)}</time>
+            Created: <time
+              datetime={session.created_at instanceof Date
+                ? session.created_at.toISOString()
+                : session.created_at}
+              >{formatCreated(
+                session.created_at instanceof Date
+                  ? session.created_at.toISOString()
+                  : session.created_at
+              )}</time
+            >
           </span>
         </div>
         <div class="flex flex-wrap items-center gap-2">

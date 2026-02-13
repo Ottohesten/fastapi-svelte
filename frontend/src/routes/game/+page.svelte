@@ -8,7 +8,12 @@
   <h1 class="text-4xl font-bold">Game sessions:</h1>
 
   {#each [...data.game_sessions].reverse() as session}
-    <GameSession {session} authenticatedUser={data.authenticatedUser ?? undefined} />
+    <GameSession
+      {session}
+      authenticatedUser={data.authenticatedUser
+        ? { ...data.authenticatedUser, scopes: data.authenticatedUser.scopes ?? [] }
+        : undefined}
+    />
   {/each}
 
   {#if data.authenticatedUser && data.authenticatedUser.scopes?.includes("games:create")}

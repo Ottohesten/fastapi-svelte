@@ -19,13 +19,7 @@ export class GamesPage {
         await this.page.goto("/game");
     }
 
-    async createNewGame({
-        title = "Test Game Session",
-        teamNames = ["Team 1"]
-    }: {
-        title?: string;
-        teamNames?: string[];
-    } = {}) {
+    async createNewGame({ title, teamNames }: { title: string; teamNames: string[] }) {
         await this.createGameButton.click();
 
         // we get taken to to a new page /game/create
@@ -42,7 +36,7 @@ export class GamesPage {
                 await this.addTeamButton.click();
                 await expect(teamNameInputs).toHaveCount(i + 1);
             }
-            await teamNameInputs.nth(i).fill(teamNames[i]);
+            await teamNameInputs.nth(i).fill(teamNames[i] ?? `Team ${i + 1}`);
         }
 
         await this.submitButton.click();

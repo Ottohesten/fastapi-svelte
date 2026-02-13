@@ -1,10 +1,10 @@
 <script lang="ts">
   import { enhance } from "$app/forms";
-  import type { components } from "$lib/api/v1";
+  import type { GameTeamPublic, UserMePublic } from "$lib/client";
 
   type Props = {
-    team: components["schemas"]["GameTeamPublic"];
-    authenticatedUser?: components["schemas"]["UserMePublic"];
+    team: GameTeamPublic;
+    authenticatedUser?: UserMePublic;
   };
 
   let { team, authenticatedUser }: Props = $props();
@@ -33,7 +33,7 @@
 
     <!-- Delete Button -->
     <form
-      action="/game/{team.game_session_id}?/deleteTeam"
+      action="/game/{team.game_session_id}/update?/deleteTeam"
       method="POST"
       use:enhance
       class="shrink-0"

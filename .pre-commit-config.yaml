@@ -37,9 +37,9 @@ repos:
         files: ^frontend/
         pass_filenames: false
 
-      - id: generate-frontend-sdk
-        name: generate Frontend SDK
-        entry: bash ./scripts/generate-client.sh
-        pass_filenames: false
-        language: unsupported
-        files: ^backend/.*$|^scripts/generate-client\.sh$
+      # - id: generate-frontend-sdk
+      #   name: generate Frontend SDK
+      #   entry: bash ./scripts/generate-client.sh
+      #   pass_filenames: false
+      #   language: unsupported
+      #   files: ^backend/.*$|^scripts/generate-client\.sh$

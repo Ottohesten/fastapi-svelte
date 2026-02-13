@@ -17,7 +17,7 @@ router = APIRouter(prefix="/ingredients", tags=["ingredients"])
 
 
 @router.get("/", response_model=list[IngredientPublic])
-def read_ingredients(session: SessionDep, skip: int = 0, limit: int = 100):
+def get_ingredients(session: SessionDep, skip: int = 0, limit: int = 100):
     """
     Retrieve ingredients.
     """
@@ -29,7 +29,7 @@ def read_ingredients(session: SessionDep, skip: int = 0, limit: int = 100):
 
 
 @router.get("/{ingredient_id}", response_model=IngredientPublic)
-def read_ingredient(session: SessionDep, ingredient_id: str):
+def get_ingredient(session: SessionDep, ingredient_id: str):
     """
     Retrieve a ingredient.
     """

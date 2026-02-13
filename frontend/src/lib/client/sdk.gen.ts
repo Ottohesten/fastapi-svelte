@@ -392,11 +392,11 @@ export class RecipesService {
 
 export class IngredientsService {
     /**
-     * Read Ingredients
+     * Get Ingredients
      *
      * Retrieve ingredients.
      */
-    public static ReadIngredients<ThrowOnError extends boolean = false>(options?: Options<GetIngredientsData, ThrowOnError>) {
+    public static GetIngredients<ThrowOnError extends boolean = false>(options?: Options<GetIngredientsData, ThrowOnError>) {
         return (options?.client ?? client).get<GetIngredientsResponses, GetIngredientsErrors, ThrowOnError>({ url: '/ingredients/', ...options });
     }
 
@@ -431,11 +431,11 @@ export class IngredientsService {
     }
 
     /**
-     * Read Ingredient
+     * Get Ingredient
      *
      * Retrieve a ingredient.
      */
-    public static ReadIngredient<ThrowOnError extends boolean = false>(options: Options<GetIngredientsByIngredientIdData, ThrowOnError>) {
+    public static GetIngredient<ThrowOnError extends boolean = false>(options: Options<GetIngredientsByIngredientIdData, ThrowOnError>) {
         return (options.client ?? client).get<GetIngredientsByIngredientIdResponses, GetIngredientsByIngredientIdErrors, ThrowOnError>({ url: '/ingredients/{ingredient_id}', ...options });
     }
 

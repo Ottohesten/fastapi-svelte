@@ -1518,7 +1518,7 @@ export type GetIngredientsError = GetIngredientsErrors[keyof GetIngredientsError
 
 export type GetIngredientsResponses = {
     /**
-     * Response Ingredients-Read Ingredients
+     * Response Ingredients-Get Ingredients
      *
      * Successful Response
      */

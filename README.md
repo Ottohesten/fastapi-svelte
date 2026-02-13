@@ -89,6 +89,7 @@ fastapi-svelte/
    ```
 
 4. **Run database migrations**
+    Make sure you have either a local PostgreSQL instance running or a Docker container with the database service up (see Docker section below). Then run:
    ```bash
    uv run alembic upgrade head
    ```
@@ -114,18 +115,12 @@ fastapi-svelte/
    bun install
    ```
 
-3. **Configure environment**
-   Create `.env` file in `frontend/` directory:
-   ```env
-   PUBLIC_API_URL=http://localhost:8000
-   ```
-
-4. **Generate API types** (optional, but recommended)
+3. **Generate API types** (optional, but recommended)
    ```bash
-   bun run generate:sdk
+   bun run generate-client
    ```
 
-5. **Start development server**
+4. **Start development server**
    ```bash
    bun run dev
    ```
@@ -134,14 +129,32 @@ fastapi-svelte/
 
 ## 🐳 Docker Setup
 
+If you want to run the full stack with Docker, use the following sequence to ensure the database is recreated and services are built from the latest images:
+
 ```bash
-docker-compose up -d
+# Stop and remove containers, networks, and volumes created by previous runs
+docker compose down -v --remove-orphans
+
+# (Optional) Build images from Dockerfiles
+docker compose build
+
+# Start services in detached mode
+docker compose up -d
 ```
 
-This will start:
-- PostgreSQL database
-- Backend API server
-- Frontend development server
+Notes:
+- `docker compose down -v --remove-orphans` removes containers, associated named volumes, and any orphaned containers from prior compose runs — useful when changing database schema or clearing persisted state.
+- `docker compose build` forces rebuild of images when you changed Dockerfile or dependencies.
+- `docker compose up -d` starts services in the background.
+
+After the stack is up, you may need to run database migrations inside the backend container (or run them from your host against the DB):
+
+```bash
+# Run migrations from the backend container (example)
+docker compose exec backend uv run alembic upgrade head
+```
+
+This will start the PostgreSQL database, backend API server, and frontend development server as defined in `docker-compose.yml`.
 
 ## 🧪 Testing
 

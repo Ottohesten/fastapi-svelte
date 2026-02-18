@@ -25,6 +25,9 @@ export class GamesPage {
         // we get taken to to a new page /game/create
         await expect(this.page).toHaveURL("/game/create");
 
+        // wait for hydration
+        await this.page.waitForSelector('body[data-svelte-hydrated="true"]');
+
         // fill in the title
         await this.titleInput.fill(title);
 
@@ -46,8 +49,28 @@ export class GamesPage {
     }
 
     async deleteGame(title: string) {
-        const deleteButton = this.page.getByRole("button", { name: "Delete" }).first();
+        // const gameCard = this.page
+        //     .locator("div")
+        //     .filter({
+        //         has: this.page.getByRole("heading", { name: title, exact: true })
+        //     })
+        //     .filter({
+        //         has: this.page.getByRole("button", { name: "Delete" })
+        //     })
+        //     .first();
+        // const deleteButton = gameCard.getByRole("button", { name: "Delete" });
+        // const gameCard = this.page.getByRole('link', { name: `Open game session “${title}”` })
 
+        // await expect(gameCard).toBeVisible();
+        // const deleteButton = gameCard.getByRole("button", { name: "Delete" });
+        const slug = String(title)
+            .trim()
+            .toLowerCase()
+            .replace(/\s+/g, "-")
+            .replace(/[^a-z0-9-]/g, "")
+            .replace(/-+/g, "-")
+            .replace(/^-|-$/g, "");
+        const deleteButton = this.page.locator(`id=delete-session-${slug}`);
         await expect(deleteButton).toBeVisible();
         await deleteButton.click();
     }
@@ -58,5 +81,9 @@ export class GamesPage {
         while ((await deleteButtons.count()) > 0) {
             await deleteButtons.first().click();
         }
+    }
+    async openGame(title: string) {
+        await this.page.getByRole("heading", { name: title }).click();
+        await expect(this.page).toHaveURL(/\/game\/[^/]+$/);
     }
 }

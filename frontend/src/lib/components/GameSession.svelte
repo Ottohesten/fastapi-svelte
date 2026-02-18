@@ -27,6 +27,16 @@
     const min = String(d.getMinutes()).padStart(2, "0");
     return `${dd}/${mm}/${yy}, ${hh}:${min}`;
   }
+
+  function idFromTitle(title: string): string {
+    return String(title)
+      .trim()
+      .toLowerCase()
+      .replace(/\s+/g, "-")
+      .replace(/[^a-z0-9-]/g, "")
+      .replace(/-+/g, "-")
+      .replace(/^-|-$/g, "");
+  }
 </script>
 
 <div
@@ -125,6 +135,7 @@
           <button
             type="submit"
             class="inline-flex items-center gap-1.5 rounded-lg border border-red-200 bg-red-50 px-3 py-1.5 text-xs font-medium text-red-700 transition-colors hover:border-red-300 hover:bg-red-100 focus:ring-2 focus:ring-red-500 focus:ring-offset-1 focus:outline-none dark:border-red-900/50 dark:bg-red-900/40 dark:text-red-300 dark:hover:border-red-800 dark:hover:bg-red-900/50"
+            id={"delete-session-" + idFromTitle(session.title)}
             onclick={(e) => {
               if (
                 !confirm(

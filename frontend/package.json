@@ -18,7 +18,7 @@
     "dependencies": {
         "@floating-ui/dom": "^1.7.5",
         "@internationalized/date": "^3.11.0",
-        "@lucide/svelte": "^0.563.1",
+        "@lucide/svelte": "^0.574.0",
         "@sveltejs/adapter-node": "^5.5.3",
         "@sveltejs/kit": "^2.51.0",
         "@tanstack/table-core": "^8.21.3",

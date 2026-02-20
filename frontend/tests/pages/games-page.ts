@@ -49,20 +49,9 @@ export class GamesPage {
     }
 
     async deleteGame(title: string) {
-        // const gameCard = this.page
-        //     .locator("div")
-        //     .filter({
-        //         has: this.page.getByRole("heading", { name: title, exact: true })
-        //     })
-        //     .filter({
-        //         has: this.page.getByRole("button", { name: "Delete" })
-        //     })
-        //     .first();
-        // const deleteButton = gameCard.getByRole("button", { name: "Delete" });
-        // const gameCard = this.page.getByRole('link', { name: `Open game session “${title}”` })
+        await this.goto();
+        await this.page.waitForSelector('body[data-svelte-hydrated="true"]');
 
-        // await expect(gameCard).toBeVisible();
-        // const deleteButton = gameCard.getByRole("button", { name: "Delete" });
         const slug = String(title)
             .trim()
             .toLowerCase()
@@ -71,15 +60,30 @@ export class GamesPage {
             .replace(/-+/g, "-")
             .replace(/^-|-$/g, "");
         const deleteButton = this.page.locator(`id=delete-session-${slug}`);
-        await expect(deleteButton).toBeVisible();
+
+        if ((await deleteButton.count()) === 0) {
+            return;
+        }
+
+        this.page.once("dialog", async (dialog) => {
+            await dialog.accept();
+        });
         await deleteButton.click();
+        await expect(deleteButton).toHaveCount(0);
     }
 
     async deleteAll() {
+        await this.goto();
+        await this.page.waitForSelector('body[data-svelte-hydrated="true"]');
         const deleteButtons = this.page.getByRole("button", { name: "Delete" });
 
         while ((await deleteButtons.count()) > 0) {
+            const currentCount = await deleteButtons.count();
+            this.page.once("dialog", async (dialog) => {
+                await dialog.accept();
+            });
             await deleteButtons.first().click();
+            await expect(deleteButtons).toHaveCount(currentCount - 1);
         }
     }
     async openGame(title: string) {

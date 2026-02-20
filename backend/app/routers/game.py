@@ -151,6 +151,26 @@ def delete_drink(
     return {"success": True}
 
 
+@router.delete("/delete_all")
+def delete_all_game_sessions(
+    session: SessionDep,
+    current_user: User = Security(get_current_user, scopes=["games:delete"]),
+):
+    """
+    Delete all game sessions. For testing purposes only.
+    """
+
+    statement = select(GameSession)
+    game_sessions = session.exec(statement).all()
+
+    for game_session in game_sessions:
+        session.delete(game_session)
+
+    session.commit()
+
+    return {"success": True}
+
+
 @router.get("/{game_session_id}", response_model=GameSessionPublic)
 def get_game_session(session: SessionDep, game_session_id: str):
     """

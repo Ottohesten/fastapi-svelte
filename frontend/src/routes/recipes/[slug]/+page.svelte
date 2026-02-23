@@ -1,5 +1,6 @@
 <script lang="ts">
   import type { RecipePublic, UserMePublic } from "$lib/client";
+  import RecipeNutritionSheet from "$lib/components/RecipeNutritionSheet.svelte";
 
   type Props = {
     data: {
@@ -33,10 +34,6 @@
     }
     checkedIngredients = new Set(checkedIngredients); // Trigger reactivity
   }
-
-  function formatGrams(value: number | undefined): string {
-    return `${(value ?? 0).toFixed(1)}g`;
-  }
 </script>
 
 <div
@@ -60,14 +57,17 @@
           </svg>
           Back to Recipes
         </a>
-        {#if data.is_owner}
-          <a
-            href="/recipes/{data.recipe.id}/update"
-            class="ml-auto rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-emerald-700"
-          >
-            Edit Recipe
-          </a>
-        {/if}
+        <div class="ml-auto flex items-center gap-2">
+          <RecipeNutritionSheet recipe={data.recipe} />
+          {#if data.is_owner}
+            <a
+              href="/recipes/{data.recipe.id}/update"
+              class="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-emerald-700"
+            >
+              Edit Recipe
+            </a>
+          {/if}
+        </div>
       </div>
 
       <h1 class="mb-4 text-4xl font-bold text-gray-900 dark:text-gray-100">{data.recipe.title}</h1>
@@ -129,7 +129,7 @@
       <div class="lg:col-span-2">
         <!-- Recipe Stats -->
         <div
-          class="mb-8 grid grid-cols-2 gap-6 rounded-xl border border-gray-300 bg-white p-6 shadow-sm md:grid-cols-4 xl:grid-cols-8 dark:border-gray-800 dark:bg-gray-900/40"
+          class="mb-8 grid grid-cols-2 gap-6 rounded-xl border border-gray-300 bg-white p-6 shadow-sm md:grid-cols-5 dark:border-gray-800 dark:bg-gray-900/40"
         >
           <div class="text-center">
             <div class="mb-2 flex items-center justify-center">
@@ -175,78 +175,6 @@
               {data.recipe.calories_per_serving || 0}
             </div>
             <div class="text-sm text-gray-600 dark:text-gray-300">Per Serving</div>
-          </div>
-          <div class="text-center">
-            <div class="mb-2 flex items-center justify-center">
-              <svg
-                class="h-6 w-6 text-blue-600"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M13 10V3L4 14h7v7l9-11h-7z"
-                />
-              </svg>
-            </div>
-            <div class="text-2xl font-bold text-gray-900 dark:text-gray-100">
-              {formatGrams(data.recipe.total_carbohydrates)}
-            </div>
-            <div class="text-sm text-gray-600 dark:text-gray-300">Carbs</div>
-            <div class="mt-1 text-xs text-gray-500 dark:text-gray-400">
-              {formatGrams(data.recipe.carbohydrates_per_serving)} / serving
-            </div>
-          </div>
-          <div class="text-center">
-            <div class="mb-2 flex items-center justify-center">
-              <svg
-                class="h-6 w-6 text-yellow-600"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M12 3v18m0-18l7 7m-7-7L5 10"
-                />
-              </svg>
-            </div>
-            <div class="text-2xl font-bold text-gray-900 dark:text-gray-100">
-              {formatGrams(data.recipe.total_fat)}
-            </div>
-            <div class="text-sm text-gray-600 dark:text-gray-300">Fat</div>
-            <div class="mt-1 text-xs text-gray-500 dark:text-gray-400">
-              {formatGrams(data.recipe.fat_per_serving)} / serving
-            </div>
-          </div>
-          <div class="text-center">
-            <div class="mb-2 flex items-center justify-center">
-              <svg
-                class="h-6 w-6 text-red-600"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M12 6v12m0-12c-1.657 0-3 1.343-3 3 0 1.306.835 2.417 2 2.83V18h2v-6.17c1.165-.413 2-1.524 2-2.83 0-1.657-1.343-3-3-3z"
-                />
-              </svg>
-            </div>
-            <div class="text-2xl font-bold text-gray-900 dark:text-gray-100">
-              {formatGrams(data.recipe.total_protein)}
-            </div>
-            <div class="text-sm text-gray-600 dark:text-gray-300">Protein</div>
-            <div class="mt-1 text-xs text-gray-500 dark:text-gray-400">
-              {formatGrams(data.recipe.protein_per_serving)} / serving
-            </div>
           </div>
           <div class="text-center">
             <div class="mb-2 flex items-center justify-center">
@@ -395,10 +323,6 @@
                   <div class="text-sm text-gray-600 dark:text-gray-400">
                     {ingredient_link.amount}
                     {ingredient_link.unit}
-                  </div>
-                  <div class="text-xs text-gray-500 dark:text-gray-400">
-                    C {ingredient_link.ingredient.carbohydrates}g • F {ingredient_link.ingredient
-                      .fat}g • P {ingredient_link.ingredient.protein}g (per 100g)
                   </div>
                 </div>
               </div>

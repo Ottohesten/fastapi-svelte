@@ -26,6 +26,9 @@
     value: number;
     percentage: number;
     path: string;
+    labelX: number;
+    labelY: number;
+    showLabel: boolean;
   };
 
   type MacroContributor = {
@@ -157,19 +160,29 @@
 
     const pieGenerator = d3Pie<(typeof rawSlices)[number]>()
       .value((slice) => slice.value)
+      .padAngle(0.012)
       .sort(null);
     const pieData = pieGenerator(rawSlices);
-    const arcGenerator = d3Arc<(typeof pieData)[number]>().innerRadius(0).outerRadius(88);
+    const arcGenerator = d3Arc<(typeof pieData)[number]>()
+      .innerRadius(46)
+      .outerRadius(88)
+      .cornerRadius(5);
+    const labelArc = d3Arc<(typeof pieData)[number]>().innerRadius(64).outerRadius(64);
 
     return pieData.map((segment) => {
       const slice = segment.data;
       const percentage = totalMacroGrams > 0 ? (slice.value / totalMacroGrams) * 100 : 0;
       const path = arcGenerator(segment) ?? "";
+      const [labelX, labelY] = labelArc.centroid(segment);
+      const showLabel = percentage >= 5 && slice.value > 0;
 
       return {
         ...slice,
         percentage,
-        path
+        path,
+        labelX,
+        labelY,
+        showLabel
       };
     });
   });
@@ -285,10 +298,46 @@
                 <g transform="translate(110, 110)">
                   {#each pieSlices as slice}
                     {#if slice.path}
-                      <path d={slice.path} fill={slice.color} stroke="#0f172a" stroke-width="1.2"
+                      <path d={slice.path} fill={slice.color} stroke="#0f172a" stroke-width="1.5"
                       ></path>
+                      {#if slice.showLabel}
+                        <text
+                          x={slice.labelX}
+                          y={slice.labelY}
+                          text-anchor="middle"
+                          dominant-baseline="middle"
+                          class="fill-white text-[12px] font-semibold"
+                        >
+                          {roundWhole(slice.percentage)}%
+                        </text>
+                      {/if}
                     {/if}
                   {/each}
+                  <circle r="37" fill="rgba(2, 6, 23, 0.9)"></circle>
+                  <text
+                    text-anchor="middle"
+                    dominant-baseline="middle"
+                    y="-11"
+                    class="fill-slate-300 text-[8px] tracking-wide uppercase"
+                  >
+                    Total
+                  </text>
+                  <text
+                    text-anchor="middle"
+                    dominant-baseline="middle"
+                    y="-2"
+                    class="fill-slate-300 text-[8px] tracking-wide uppercase"
+                  >
+                    Macros
+                  </text>
+                  <text
+                    text-anchor="middle"
+                    dominant-baseline="middle"
+                    y="13"
+                    class="fill-white text-[14px] font-bold"
+                  >
+                    {roundWhole(totalMacroGrams)}g
+                  </text>
                 </g>
               </svg>
             {:else}
@@ -315,7 +364,7 @@
                 <div class="text-right text-sm text-gray-700 dark:text-gray-300">
                   <div class="font-semibold">{roundWhole(slice.value)}g</div>
                   <div class="text-xs text-gray-500 dark:text-gray-400">
-                    {roundOne(slice.percentage)}%
+                    {roundWhole(slice.percentage)}%
                   </div>
                 </div>
               </div>

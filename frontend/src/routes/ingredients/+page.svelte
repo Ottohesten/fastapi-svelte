@@ -93,6 +93,78 @@
                 <Description class="text-sm text-gray-500">Calories per 100g</Description>
                 <FieldErrors />
               </Field>
+              <Field {form} name="carbohydrates">
+                <Control>
+                  {#snippet children({ props })}
+                    <Label class="mb-1 block text-sm font-medium text-gray-700"
+                      >Carbohydrates (g) *</Label
+                    >
+                    <Input
+                      {...props}
+                      type="number"
+                      min="0"
+                      step="0.1"
+                      bind:value={$formData.carbohydrates}
+                      placeholder="Carbohydrates per 100g"
+                    />
+                  {/snippet}
+                </Control>
+                <Description class="text-sm text-gray-500">Carbohydrates per 100g</Description>
+                <FieldErrors />
+              </Field>
+              <Field {form} name="fat">
+                <Control>
+                  {#snippet children({ props })}
+                    <Label class="mb-1 block text-sm font-medium text-gray-700">Fat (g) *</Label>
+                    <Input
+                      {...props}
+                      type="number"
+                      min="0"
+                      step="0.1"
+                      bind:value={$formData.fat}
+                      placeholder="Fat per 100g"
+                    />
+                  {/snippet}
+                </Control>
+                <Description class="text-sm text-gray-500">Fat per 100g</Description>
+                <FieldErrors />
+              </Field>
+              <Field {form} name="protein">
+                <Control>
+                  {#snippet children({ props })}
+                    <Label class="mb-1 block text-sm font-medium text-gray-700">Protein (g) *</Label
+                    >
+                    <Input
+                      {...props}
+                      type="number"
+                      min="0"
+                      step="0.1"
+                      bind:value={$formData.protein}
+                      placeholder="Protein per 100g"
+                    />
+                  {/snippet}
+                </Control>
+                <Description class="text-sm text-gray-500">Protein per 100g</Description>
+                <FieldErrors />
+              </Field>
+              <Field {form} name="weight_per_piece">
+                <Control>
+                  {#snippet children({ props })}
+                    <Label class="mb-1 block text-sm font-medium text-gray-700"
+                      >Weight Per Piece (g) *</Label
+                    >
+                    <Input
+                      {...props}
+                      type="number"
+                      min="1"
+                      bind:value={$formData.weight_per_piece}
+                      placeholder="Weight per piece in grams"
+                    />
+                  {/snippet}
+                </Control>
+                <Description class="text-sm text-gray-500">Used when unit is pcs</Description>
+                <FieldErrors />
+              </Field>
             </div>
 
             <Dialog.Footer class="mt-6">

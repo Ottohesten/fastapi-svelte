@@ -35,7 +35,9 @@ export class GamePage {
         await expect(this.page.getByText("Player", { exact: true })).toBeVisible();
         await expect(this.page.getByText("Drink", { exact: true })).toBeVisible();
         await expect(this.page.getByLabel("Amount")).toBeVisible();
-        await expect(this.page.getByRole('button', { name: 'Add Drink', exact: true })).toBeVisible();
+        await expect(
+            this.page.getByRole("button", { name: "Add Drink", exact: true })
+        ).toBeVisible();
     }
 
     async gotoEditPage() {

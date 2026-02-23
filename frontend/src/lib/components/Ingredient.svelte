@@ -39,6 +39,34 @@
 
       <!-- Content Section -->
       <div class="space-y-3">
+        <div
+          class="rounded-lg border border-gray-100 bg-gray-50 p-3 dark:border-gray-800 dark:bg-gray-900/40"
+        >
+          <p
+            class="mb-2 text-xs font-semibold tracking-wide text-gray-500 uppercase dark:text-gray-400"
+          >
+            Nutrition per 100g
+          </p>
+          <div class="grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
+            <div class="text-gray-600 dark:text-gray-300">Calories</div>
+            <div class="text-right font-medium text-gray-900 dark:text-gray-100">
+              {ingredient.calories} kcal
+            </div>
+            <div class="text-gray-600 dark:text-gray-300">Carbs</div>
+            <div class="text-right font-medium text-gray-900 dark:text-gray-100">
+              {ingredient.carbohydrates}g
+            </div>
+            <div class="text-gray-600 dark:text-gray-300">Fat</div>
+            <div class="text-right font-medium text-gray-900 dark:text-gray-100">
+              {ingredient.fat}g
+            </div>
+            <div class="text-gray-600 dark:text-gray-300">Protein</div>
+            <div class="text-right font-medium text-gray-900 dark:text-gray-100">
+              {ingredient.protein}g
+            </div>
+          </div>
+        </div>
+
         <!-- Ingredient Type Badge -->
         <!-- <div class="flex items-center gap-2">
 					<span

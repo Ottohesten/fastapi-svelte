@@ -13,7 +13,9 @@ export class PlayerDetailPage {
 
     async expectLoaded(playerName: string) {
         await expect(this.heading).toBeVisible();
-        await expect(this.page.getByRole("heading", { name: `Edit Player: ${playerName}` })).toBeVisible();
+        await expect(
+            this.page.getByRole("heading", { name: `Edit Player: ${playerName}` })
+        ).toBeVisible();
         await expect(this.page).toHaveURL(/\/game\/[^/]+\/player\/[^/]+$/);
     }
 

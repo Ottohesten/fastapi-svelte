@@ -314,6 +314,24 @@ export type IngredientCreate = {
      */
     calories?: number;
     /**
+     * Carbohydrates
+     *
+     * Carbohydrates per 100g of the ingredient in grams
+     */
+    carbohydrates?: number;
+    /**
+     * Fat
+     *
+     * Fat per 100g of the ingredient in grams
+     */
+    fat?: number;
+    /**
+     * Protein
+     *
+     * Protein per 100g of the ingredient in grams
+     */
+    protein?: number;
+    /**
      * Weight Per Piece
      *
      * Average weight per piece in grams (used when unit is 'pcs')
@@ -333,6 +351,18 @@ export type IngredientPublic = {
      * Calories
      */
     calories: number;
+    /**
+     * Carbohydrates
+     */
+    carbohydrates: number;
+    /**
+     * Fat
+     */
+    fat: number;
+    /**
+     * Protein
+     */
+    protein: number;
     /**
      * Weight Per Piece
      */
@@ -511,6 +541,42 @@ export type RecipePublic = {
      * Calculate calories per serving.
      */
     readonly calories_per_serving: number;
+    /**
+     * Total Carbohydrates
+     *
+     * Calculate total carbohydrates for the entire recipe in grams.
+     */
+    readonly total_carbohydrates: number;
+    /**
+     * Total Fat
+     *
+     * Calculate total fat for the entire recipe in grams.
+     */
+    readonly total_fat: number;
+    /**
+     * Total Protein
+     *
+     * Calculate total protein for the entire recipe in grams.
+     */
+    readonly total_protein: number;
+    /**
+     * Carbohydrates Per Serving
+     *
+     * Calculate carbohydrates per serving in grams.
+     */
+    readonly carbohydrates_per_serving: number;
+    /**
+     * Fat Per Serving
+     *
+     * Calculate fat per serving in grams.
+     */
+    readonly fat_per_serving: number;
+    /**
+     * Protein Per Serving
+     *
+     * Calculate protein per serving in grams.
+     */
+    readonly protein_per_serving: number;
     /**
      * Calculated Weight
      *
@@ -847,6 +913,16 @@ export type ValidationError = {
      * Error Type
      */
     type: string;
+    /**
+     * Input
+     */
+    input?: unknown;
+    /**
+     * Context
+     */
+    ctx?: {
+        [key: string]: unknown;
+    };
 };
 
 /**
@@ -879,6 +955,185 @@ export type RecipePublicWritable = {
      */
     ingredient_links: Array<RecipeIngredientLinkPublic>;
 };
+
+export type PostLoginAccessTokenData = {
+    body: BodyLoginLoginAccessToken;
+    path?: never;
+    query?: never;
+    url: '/login/access-token';
+};
+
+export type PostLoginAccessTokenErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type PostLoginAccessTokenError = PostLoginAccessTokenErrors[keyof PostLoginAccessTokenErrors];
+
+export type PostLoginAccessTokenResponses = {
+    /**
+     * Successful Response
+     */
+    200: Token;
+};
+
+export type PostLoginAccessTokenResponse = PostLoginAccessTokenResponses[keyof PostLoginAccessTokenResponses];
+
+export type PostLoginRefreshData = {
+    body: RefreshRequest;
+    path?: never;
+    query?: never;
+    url: '/login/refresh';
+};
+
+export type PostLoginRefreshErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type PostLoginRefreshError = PostLoginRefreshErrors[keyof PostLoginRefreshErrors];
+
+export type PostLoginRefreshResponses = {
+    /**
+     * Successful Response
+     */
+    200: Token;
+};
+
+export type PostLoginRefreshResponse = PostLoginRefreshResponses[keyof PostLoginRefreshResponses];
+
+export type PostLogoutData = {
+    /**
+     * Body
+     */
+    body?: RefreshRequest | null;
+    path?: never;
+    query?: never;
+    url: '/logout';
+};
+
+export type PostLogoutErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type PostLogoutError = PostLogoutErrors[keyof PostLogoutErrors];
+
+export type PostLogoutResponses = {
+    /**
+     * Successful Response
+     */
+    200: Message;
+};
+
+export type PostLogoutResponse = PostLogoutResponses[keyof PostLogoutResponses];
+
+export type PostLoginTestTokenData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/login/test-token';
+};
+
+export type PostLoginTestTokenResponses = {
+    /**
+     * Successful Response
+     */
+    200: UserPublic;
+};
+
+export type PostLoginTestTokenResponse = PostLoginTestTokenResponses[keyof PostLoginTestTokenResponses];
+
+export type PostPasswordRecoveryByEmailData = {
+    body?: never;
+    path: {
+        /**
+         * Email
+         */
+        email: string;
+    };
+    query?: never;
+    url: '/password-recovery/{email}';
+};
+
+export type PostPasswordRecoveryByEmailErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type PostPasswordRecoveryByEmailError = PostPasswordRecoveryByEmailErrors[keyof PostPasswordRecoveryByEmailErrors];
+
+export type PostPasswordRecoveryByEmailResponses = {
+    /**
+     * Successful Response
+     */
+    200: Message;
+};
+
+export type PostPasswordRecoveryByEmailResponse = PostPasswordRecoveryByEmailResponses[keyof PostPasswordRecoveryByEmailResponses];
+
+export type PostResetPasswordData = {
+    body: NewPassword;
+    path?: never;
+    query?: never;
+    url: '/reset-password/';
+};
+
+export type PostResetPasswordErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type PostResetPasswordError = PostResetPasswordErrors[keyof PostResetPasswordErrors];
+
+export type PostResetPasswordResponses = {
+    /**
+     * Successful Response
+     */
+    200: Message;
+};
+
+export type PostResetPasswordResponse = PostResetPasswordResponses[keyof PostResetPasswordResponses];
+
+export type PostPasswordRecoveryHtmlContentByEmailData = {
+    body?: never;
+    path: {
+        /**
+         * Email
+         */
+        email: string;
+    };
+    query?: never;
+    url: '/password-recovery-html-content/{email}';
+};
+
+export type PostPasswordRecoveryHtmlContentByEmailErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type PostPasswordRecoveryHtmlContentByEmailError = PostPasswordRecoveryHtmlContentByEmailErrors[keyof PostPasswordRecoveryHtmlContentByEmailErrors];
+
+export type PostPasswordRecoveryHtmlContentByEmailResponses = {
+    /**
+     * Successful Response
+     */
+    200: string;
+};
+
+export type PostPasswordRecoveryHtmlContentByEmailResponse = PostPasswordRecoveryHtmlContentByEmailResponses[keyof PostPasswordRecoveryHtmlContentByEmailResponses];
 
 export type GetUsersData = {
     body?: never;
@@ -1312,6 +1567,24 @@ export type PostUsersByUserIdScopesResponses = {
 };
 
 export type PostUsersByUserIdScopesResponse = PostUsersByUserIdScopesResponses[keyof PostUsersByUserIdScopesResponses];
+
+export type GetUtilsHealthCheckData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/utils/health-check/';
+};
+
+export type GetUtilsHealthCheckResponses = {
+    /**
+     * Response Utils-Health Check
+     *
+     * Successful Response
+     */
+    200: boolean;
+};
+
+export type GetUtilsHealthCheckResponse = GetUtilsHealthCheckResponses[keyof GetUtilsHealthCheckResponses];
 
 export type PostRecipesUploadImageData = {
     body: BodyRecipesUploadRecipeImage;
@@ -1818,6 +2091,20 @@ export type PatchGameDrinksByDrinkIdResponses = {
 
 export type PatchGameDrinksByDrinkIdResponse = PatchGameDrinksByDrinkIdResponses[keyof PatchGameDrinksByDrinkIdResponses];
 
+export type DeleteGameDeleteAllData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/game/delete_all';
+};
+
+export type DeleteGameDeleteAllResponses = {
+    /**
+     * Successful Response
+     */
+    200: unknown;
+};
+
 export type DeleteGameByGameSessionIdData = {
     body?: never;
     path: {
@@ -2095,185 +2382,6 @@ export type GetGameByGameSessionIdUpdatesResponses = {
      */
     200: unknown;
 };
-
-export type PostLoginAccessTokenData = {
-    body: BodyLoginLoginAccessToken;
-    path?: never;
-    query?: never;
-    url: '/login/access-token';
-};
-
-export type PostLoginAccessTokenErrors = {
-    /**
-     * Validation Error
-     */
-    422: HttpValidationError;
-};
-
-export type PostLoginAccessTokenError = PostLoginAccessTokenErrors[keyof PostLoginAccessTokenErrors];
-
-export type PostLoginAccessTokenResponses = {
-    /**
-     * Successful Response
-     */
-    200: Token;
-};
-
-export type PostLoginAccessTokenResponse = PostLoginAccessTokenResponses[keyof PostLoginAccessTokenResponses];
-
-export type PostLoginRefreshData = {
-    body: RefreshRequest;
-    path?: never;
-    query?: never;
-    url: '/login/refresh';
-};
-
-export type PostLoginRefreshErrors = {
-    /**
-     * Validation Error
-     */
-    422: HttpValidationError;
-};
-
-export type PostLoginRefreshError = PostLoginRefreshErrors[keyof PostLoginRefreshErrors];
-
-export type PostLoginRefreshResponses = {
-    /**
-     * Successful Response
-     */
-    200: Token;
-};
-
-export type PostLoginRefreshResponse = PostLoginRefreshResponses[keyof PostLoginRefreshResponses];
-
-export type PostLogoutData = {
-    /**
-     * Body
-     */
-    body?: RefreshRequest | null;
-    path?: never;
-    query?: never;
-    url: '/logout';
-};
-
-export type PostLogoutErrors = {
-    /**
-     * Validation Error
-     */
-    422: HttpValidationError;
-};
-
-export type PostLogoutError = PostLogoutErrors[keyof PostLogoutErrors];
-
-export type PostLogoutResponses = {
-    /**
-     * Successful Response
-     */
-    200: Message;
-};
-
-export type PostLogoutResponse = PostLogoutResponses[keyof PostLogoutResponses];
-
-export type PostLoginTestTokenData = {
-    body?: never;
-    path?: never;
-    query?: never;
-    url: '/login/test-token';
-};
-
-export type PostLoginTestTokenResponses = {
-    /**
-     * Successful Response
-     */
-    200: UserPublic;
-};
-
-export type PostLoginTestTokenResponse = PostLoginTestTokenResponses[keyof PostLoginTestTokenResponses];
-
-export type PostPasswordRecoveryByEmailData = {
-    body?: never;
-    path: {
-        /**
-         * Email
-         */
-        email: string;
-    };
-    query?: never;
-    url: '/password-recovery/{email}';
-};
-
-export type PostPasswordRecoveryByEmailErrors = {
-    /**
-     * Validation Error
-     */
-    422: HttpValidationError;
-};
-
-export type PostPasswordRecoveryByEmailError = PostPasswordRecoveryByEmailErrors[keyof PostPasswordRecoveryByEmailErrors];
-
-export type PostPasswordRecoveryByEmailResponses = {
-    /**
-     * Successful Response
-     */
-    200: Message;
-};
-
-export type PostPasswordRecoveryByEmailResponse = PostPasswordRecoveryByEmailResponses[keyof PostPasswordRecoveryByEmailResponses];
-
-export type PostResetPasswordData = {
-    body: NewPassword;
-    path?: never;
-    query?: never;
-    url: '/reset-password/';
-};
-
-export type PostResetPasswordErrors = {
-    /**
-     * Validation Error
-     */
-    422: HttpValidationError;
-};
-
-export type PostResetPasswordError = PostResetPasswordErrors[keyof PostResetPasswordErrors];
-
-export type PostResetPasswordResponses = {
-    /**
-     * Successful Response
-     */
-    200: Message;
-};
-
-export type PostResetPasswordResponse = PostResetPasswordResponses[keyof PostResetPasswordResponses];
-
-export type PostPasswordRecoveryHtmlContentByEmailData = {
-    body?: never;
-    path: {
-        /**
-         * Email
-         */
-        email: string;
-    };
-    query?: never;
-    url: '/password-recovery-html-content/{email}';
-};
-
-export type PostPasswordRecoveryHtmlContentByEmailErrors = {
-    /**
-     * Validation Error
-     */
-    422: HttpValidationError;
-};
-
-export type PostPasswordRecoveryHtmlContentByEmailError = PostPasswordRecoveryHtmlContentByEmailErrors[keyof PostPasswordRecoveryHtmlContentByEmailErrors];
-
-export type PostPasswordRecoveryHtmlContentByEmailResponses = {
-    /**
-     * Successful Response
-     */
-    200: string;
-};
-
-export type PostPasswordRecoveryHtmlContentByEmailResponse = PostPasswordRecoveryHtmlContentByEmailResponses[keyof PostPasswordRecoveryHtmlContentByEmailResponses];
 
 export type GetRolesData = {
     body?: never;

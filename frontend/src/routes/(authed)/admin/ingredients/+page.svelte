@@ -142,6 +142,57 @@
               </Control>
               <FieldErrors />
             </Field>
+            <Field {form} name="carbohydrates">
+              <Control>
+                {#snippet children({ props })}
+                  <Label>Carbohydrates (per 100g)</Label>
+                  <Input
+                    {...props}
+                    type="number"
+                    bind:value={$formData.carbohydrates}
+                    placeholder="Enter carbohydrates"
+                    class="mt-2"
+                    min="0"
+                    step="0.1"
+                  />
+                {/snippet}
+              </Control>
+              <FieldErrors />
+            </Field>
+            <Field {form} name="fat">
+              <Control>
+                {#snippet children({ props })}
+                  <Label>Fat (per 100g)</Label>
+                  <Input
+                    {...props}
+                    type="number"
+                    bind:value={$formData.fat}
+                    placeholder="Enter fat"
+                    class="mt-2"
+                    min="0"
+                    step="0.1"
+                  />
+                {/snippet}
+              </Control>
+              <FieldErrors />
+            </Field>
+            <Field {form} name="protein">
+              <Control>
+                {#snippet children({ props })}
+                  <Label>Protein (per 100g)</Label>
+                  <Input
+                    {...props}
+                    type="number"
+                    bind:value={$formData.protein}
+                    placeholder="Enter protein"
+                    class="mt-2"
+                    min="0"
+                    step="0.1"
+                  />
+                {/snippet}
+              </Control>
+              <FieldErrors />
+            </Field>
             <Field {form} name="weight_per_piece">
               <Control>
                 {#snippet children({ props })}

@@ -3,7 +3,7 @@
 import { type Client, formDataBodySerializer, type Options as Options2, type TDataShape, urlSearchParamsBodySerializer } from './client';
 import { client } from './client.gen';
 import { getGameByGameSessionIdResponseTransformer, getGameResponseTransformer, postGameResponseTransformer } from './transformers.gen';
-import type { DeleteGameByGameSessionIdData, DeleteGameByGameSessionIdErrors, DeleteGameByGameSessionIdPlayerByGamePlayerIdData, DeleteGameByGameSessionIdPlayerByGamePlayerIdErrors, DeleteGameByGameSessionIdPlayerByGamePlayerIdResponses, DeleteGameByGameSessionIdResponses, DeleteGameByGameSessionIdTeamByGameTeamIdData, DeleteGameByGameSessionIdTeamByGameTeamIdErrors, DeleteGameByGameSessionIdTeamByGameTeamIdResponses, DeleteGameDrinksByDrinkIdData, DeleteGameDrinksByDrinkIdErrors, DeleteGameDrinksByDrinkIdResponses, DeleteIngredientsByIngredientIdData, DeleteIngredientsByIngredientIdErrors, DeleteIngredientsByIngredientIdResponses, DeleteRecipesByRecipeIdData, DeleteRecipesByRecipeIdErrors, DeleteRecipesByRecipeIdResponses, DeleteRolesByRoleIdData, DeleteRolesByRoleIdErrors, DeleteRolesByRoleIdResponses, DeleteUsersByUserIdData, DeleteUsersByUserIdErrors, DeleteUsersByUserIdResponses, DeleteUsersByUserIdRolesByRoleIdData, DeleteUsersByUserIdRolesByRoleIdErrors, DeleteUsersByUserIdRolesByRoleIdResponses, DeleteUsersByUserIdScopesData, DeleteUsersByUserIdScopesErrors, DeleteUsersByUserIdScopesResponses, DeleteUsersMeData, DeleteUsersMeResponses, GetGameByGameSessionIdData, GetGameByGameSessionIdErrors, GetGameByGameSessionIdResponses, GetGameByGameSessionIdUpdatesData, GetGameByGameSessionIdUpdatesErrors, GetGameByGameSessionIdUpdatesResponses, GetGameData, GetGameDrinksData, GetGameDrinksErrors, GetGameDrinksResponses, GetGameErrors, GetGameResponses, GetIngredientsByIngredientIdData, GetIngredientsByIngredientIdErrors, GetIngredientsByIngredientIdResponses, GetIngredientsData, GetIngredientsErrors, GetIngredientsResponses, GetRecipesByRecipeIdData, GetRecipesByRecipeIdErrors, GetRecipesByRecipeIdResponses, GetRecipesData, GetRecipesErrors, GetRecipesResponses, GetRolesByRoleIdData, GetRolesByRoleIdErrors, GetRolesByRoleIdResponses, GetRolesData, GetRolesResponses, GetRolesScopesAvailableData, GetRolesScopesAvailableResponses, GetRolesTemplatesData, GetRolesTemplatesResponses, GetUsersByUserIdData, GetUsersByUserIdErrors, GetUsersByUserIdResponses, GetUsersData, GetUsersErrors, GetUsersMeData, GetUsersMeErrors, GetUsersMeResponses, GetUsersResponses, GetUsersWithPermissionsData, GetUsersWithPermissionsErrors, GetUsersWithPermissionsResponses, PatchGameByGameSessionIdPlayerByGamePlayerIdData, PatchGameByGameSessionIdPlayerByGamePlayerIdDrinkData, PatchGameByGameSessionIdPlayerByGamePlayerIdDrinkErrors, PatchGameByGameSessionIdPlayerByGamePlayerIdDrinkResponses, PatchGameByGameSessionIdPlayerByGamePlayerIdErrors, PatchGameByGameSessionIdPlayerByGamePlayerIdResponses, PatchGameDrinksByDrinkIdData, PatchGameDrinksByDrinkIdErrors, PatchGameDrinksByDrinkIdResponses, PatchIngredientsByIngredientIdData, PatchIngredientsByIngredientIdErrors, PatchIngredientsByIngredientIdResponses, PatchRecipesByRecipeIdData, PatchRecipesByRecipeIdErrors, PatchRecipesByRecipeIdResponses, PatchUsersByUserIdData, PatchUsersByUserIdErrors, PatchUsersByUserIdResponses, PatchUsersMeData, PatchUsersMeErrors, PatchUsersMePasswordData, PatchUsersMePasswordErrors, PatchUsersMePasswordResponses, PatchUsersMeResponses, PostGameByGameSessionIdPlayerData, PostGameByGameSessionIdPlayerErrors, PostGameByGameSessionIdPlayerResponses, PostGameByGameSessionIdTeamData, PostGameByGameSessionIdTeamErrors, PostGameByGameSessionIdTeamResponses, PostGameData, PostGameDrinksData, PostGameDrinksErrors, PostGameDrinksResponses, PostGameErrors, PostGameResponses, PostIngredientsData, PostIngredientsErrors, PostIngredientsResponses, PostLoginAccessTokenData, PostLoginAccessTokenErrors, PostLoginAccessTokenResponses, PostLoginRefreshData, PostLoginRefreshErrors, PostLoginRefreshResponses, PostLoginTestTokenData, PostLoginTestTokenResponses, PostLogoutData, PostLogoutErrors, PostLogoutResponses, PostPasswordRecoveryByEmailData, PostPasswordRecoveryByEmailErrors, PostPasswordRecoveryByEmailResponses, PostPasswordRecoveryHtmlContentByEmailData, PostPasswordRecoveryHtmlContentByEmailErrors, PostPasswordRecoveryHtmlContentByEmailResponses, PostRecipesData, PostRecipesErrors, PostRecipesResponses, PostRecipesUploadImageData, PostRecipesUploadImageErrors, PostRecipesUploadImageResponses, PostResetPasswordData, PostResetPasswordErrors, PostResetPasswordResponses, PostRolesData, PostRolesErrors, PostRolesFromTemplateByTemplateKeyData, PostRolesFromTemplateByTemplateKeyErrors, PostRolesFromTemplateByTemplateKeyResponses, PostRolesResponses, PostUsersByUserIdRolesByRoleIdData, PostUsersByUserIdRolesByRoleIdErrors, PostUsersByUserIdRolesByRoleIdResponses, PostUsersByUserIdScopesData, PostUsersByUserIdScopesErrors, PostUsersByUserIdScopesResponses, PostUsersData, PostUsersErrors, PostUsersResponses, PostUsersSignupData, PostUsersSignupErrors, PostUsersSignupResponses, PutRolesByRoleIdData, PutRolesByRoleIdErrors, PutRolesByRoleIdResponses } from './types.gen';
+import type { DeleteGameByGameSessionIdData, DeleteGameByGameSessionIdErrors, DeleteGameByGameSessionIdPlayerByGamePlayerIdData, DeleteGameByGameSessionIdPlayerByGamePlayerIdErrors, DeleteGameByGameSessionIdPlayerByGamePlayerIdResponses, DeleteGameByGameSessionIdResponses, DeleteGameByGameSessionIdTeamByGameTeamIdData, DeleteGameByGameSessionIdTeamByGameTeamIdErrors, DeleteGameByGameSessionIdTeamByGameTeamIdResponses, DeleteGameDeleteAllData, DeleteGameDeleteAllResponses, DeleteGameDrinksByDrinkIdData, DeleteGameDrinksByDrinkIdErrors, DeleteGameDrinksByDrinkIdResponses, DeleteIngredientsByIngredientIdData, DeleteIngredientsByIngredientIdErrors, DeleteIngredientsByIngredientIdResponses, DeleteRecipesByRecipeIdData, DeleteRecipesByRecipeIdErrors, DeleteRecipesByRecipeIdResponses, DeleteRolesByRoleIdData, DeleteRolesByRoleIdErrors, DeleteRolesByRoleIdResponses, DeleteUsersByUserIdData, DeleteUsersByUserIdErrors, DeleteUsersByUserIdResponses, DeleteUsersByUserIdRolesByRoleIdData, DeleteUsersByUserIdRolesByRoleIdErrors, DeleteUsersByUserIdRolesByRoleIdResponses, DeleteUsersByUserIdScopesData, DeleteUsersByUserIdScopesErrors, DeleteUsersByUserIdScopesResponses, DeleteUsersMeData, DeleteUsersMeResponses, GetGameByGameSessionIdData, GetGameByGameSessionIdErrors, GetGameByGameSessionIdResponses, GetGameByGameSessionIdUpdatesData, GetGameByGameSessionIdUpdatesErrors, GetGameByGameSessionIdUpdatesResponses, GetGameData, GetGameDrinksData, GetGameDrinksErrors, GetGameDrinksResponses, GetGameErrors, GetGameResponses, GetIngredientsByIngredientIdData, GetIngredientsByIngredientIdErrors, GetIngredientsByIngredientIdResponses, GetIngredientsData, GetIngredientsErrors, GetIngredientsResponses, GetRecipesByRecipeIdData, GetRecipesByRecipeIdErrors, GetRecipesByRecipeIdResponses, GetRecipesData, GetRecipesErrors, GetRecipesResponses, GetRolesByRoleIdData, GetRolesByRoleIdErrors, GetRolesByRoleIdResponses, GetRolesData, GetRolesResponses, GetRolesScopesAvailableData, GetRolesScopesAvailableResponses, GetRolesTemplatesData, GetRolesTemplatesResponses, GetUsersByUserIdData, GetUsersByUserIdErrors, GetUsersByUserIdResponses, GetUsersData, GetUsersErrors, GetUsersMeData, GetUsersMeErrors, GetUsersMeResponses, GetUsersResponses, GetUsersWithPermissionsData, GetUsersWithPermissionsErrors, GetUsersWithPermissionsResponses, GetUtilsHealthCheckData, GetUtilsHealthCheckResponses, PatchGameByGameSessionIdPlayerByGamePlayerIdData, PatchGameByGameSessionIdPlayerByGamePlayerIdDrinkData, PatchGameByGameSessionIdPlayerByGamePlayerIdDrinkErrors, PatchGameByGameSessionIdPlayerByGamePlayerIdDrinkResponses, PatchGameByGameSessionIdPlayerByGamePlayerIdErrors, PatchGameByGameSessionIdPlayerByGamePlayerIdResponses, PatchGameDrinksByDrinkIdData, PatchGameDrinksByDrinkIdErrors, PatchGameDrinksByDrinkIdResponses, PatchIngredientsByIngredientIdData, PatchIngredientsByIngredientIdErrors, PatchIngredientsByIngredientIdResponses, PatchRecipesByRecipeIdData, PatchRecipesByRecipeIdErrors, PatchRecipesByRecipeIdResponses, PatchUsersByUserIdData, PatchUsersByUserIdErrors, PatchUsersByUserIdResponses, PatchUsersMeData, PatchUsersMeErrors, PatchUsersMePasswordData, PatchUsersMePasswordErrors, PatchUsersMePasswordResponses, PatchUsersMeResponses, PostGameByGameSessionIdPlayerData, PostGameByGameSessionIdPlayerErrors, PostGameByGameSessionIdPlayerResponses, PostGameByGameSessionIdTeamData, PostGameByGameSessionIdTeamErrors, PostGameByGameSessionIdTeamResponses, PostGameData, PostGameDrinksData, PostGameDrinksErrors, PostGameDrinksResponses, PostGameErrors, PostGameResponses, PostIngredientsData, PostIngredientsErrors, PostIngredientsResponses, PostLoginAccessTokenData, PostLoginAccessTokenErrors, PostLoginAccessTokenResponses, PostLoginRefreshData, PostLoginRefreshErrors, PostLoginRefreshResponses, PostLoginTestTokenData, PostLoginTestTokenResponses, PostLogoutData, PostLogoutErrors, PostLogoutResponses, PostPasswordRecoveryByEmailData, PostPasswordRecoveryByEmailErrors, PostPasswordRecoveryByEmailResponses, PostPasswordRecoveryHtmlContentByEmailData, PostPasswordRecoveryHtmlContentByEmailErrors, PostPasswordRecoveryHtmlContentByEmailResponses, PostRecipesData, PostRecipesErrors, PostRecipesResponses, PostRecipesUploadImageData, PostRecipesUploadImageErrors, PostRecipesUploadImageResponses, PostResetPasswordData, PostResetPasswordErrors, PostResetPasswordResponses, PostRolesData, PostRolesErrors, PostRolesFromTemplateByTemplateKeyData, PostRolesFromTemplateByTemplateKeyErrors, PostRolesFromTemplateByTemplateKeyResponses, PostRolesResponses, PostUsersByUserIdRolesByRoleIdData, PostUsersByUserIdRolesByRoleIdErrors, PostUsersByUserIdRolesByRoleIdResponses, PostUsersByUserIdScopesData, PostUsersByUserIdScopesErrors, PostUsersByUserIdScopesResponses, PostUsersData, PostUsersErrors, PostUsersResponses, PostUsersSignupData, PostUsersSignupErrors, PostUsersSignupResponses, PutRolesByRoleIdData, PutRolesByRoleIdErrors, PutRolesByRoleIdResponses } from './types.gen';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean> = Options2<TData, ThrowOnError> & {
     /**
@@ -18,6 +18,108 @@ export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends 
      */
     meta?: Record<string, unknown>;
 };
+
+export class LoginService {
+    /**
+     * Login Access Token
+     *
+     * OAuth2 compatible token login, get an access token for future requests
+     */
+    public static LoginAccessToken<ThrowOnError extends boolean = false>(options: Options<PostLoginAccessTokenData, ThrowOnError>) {
+        return (options.client ?? client).post<PostLoginAccessTokenResponses, PostLoginAccessTokenErrors, ThrowOnError>({
+            ...urlSearchParamsBodySerializer,
+            url: '/login/access-token',
+            ...options,
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                ...options.headers
+            }
+        });
+    }
+
+    /**
+     * Refresh Access Token
+     *
+     * Issue a new access token using the refresh token from cookie (preferred) or body.
+     */
+    public static RefreshAccessToken<ThrowOnError extends boolean = false>(options: Options<PostLoginRefreshData, ThrowOnError>) {
+        return (options.client ?? client).post<PostLoginRefreshResponses, PostLoginRefreshErrors, ThrowOnError>({
+            url: '/login/refresh',
+            ...options,
+            headers: {
+                'Content-Type': 'application/json',
+                ...options.headers
+            }
+        });
+    }
+
+    /**
+     * Logout
+     *
+     * Clear refresh cookie (client should also clear access-token cookie).
+     */
+    public static Logout<ThrowOnError extends boolean = false>(options?: Options<PostLogoutData, ThrowOnError>) {
+        return (options?.client ?? client).post<PostLogoutResponses, PostLogoutErrors, ThrowOnError>({
+            url: '/logout',
+            ...options,
+            headers: {
+                'Content-Type': 'application/json',
+                ...options?.headers
+            }
+        });
+    }
+
+    /**
+     * Test Token
+     *
+     * Test access token
+     */
+    public static TestToken<ThrowOnError extends boolean = false>(options?: Options<PostLoginTestTokenData, ThrowOnError>) {
+        return (options?.client ?? client).post<PostLoginTestTokenResponses, unknown, ThrowOnError>({
+            security: [{ scheme: 'bearer', type: 'http' }],
+            url: '/login/test-token',
+            ...options
+        });
+    }
+
+    /**
+     * Recover Password
+     *
+     * Password Recovery
+     */
+    public static RecoverPassword<ThrowOnError extends boolean = false>(options: Options<PostPasswordRecoveryByEmailData, ThrowOnError>) {
+        return (options.client ?? client).post<PostPasswordRecoveryByEmailResponses, PostPasswordRecoveryByEmailErrors, ThrowOnError>({ url: '/password-recovery/{email}', ...options });
+    }
+
+    /**
+     * Reset Password
+     *
+     * Reset password
+     */
+    public static ResetPassword<ThrowOnError extends boolean = false>(options: Options<PostResetPasswordData, ThrowOnError>) {
+        return (options.client ?? client).post<PostResetPasswordResponses, PostResetPasswordErrors, ThrowOnError>({
+            url: '/reset-password/',
+            ...options,
+            headers: {
+                'Content-Type': 'application/json',
+                ...options.headers
+            }
+        });
+    }
+
+    /**
+     * Recover Password Html Content
+     *
+     * HTML Content for Password Recovery
+     */
+    public static RecoverPasswordHtmlContent<ThrowOnError extends boolean = false>(options: Options<PostPasswordRecoveryHtmlContentByEmailData, ThrowOnError>) {
+        return (options.client ?? client).post<PostPasswordRecoveryHtmlContentByEmailResponses, PostPasswordRecoveryHtmlContentByEmailErrors, ThrowOnError>({
+            security: [{ scheme: 'bearer', type: 'http' }],
+            url: '/password-recovery-html-content/{email}',
+            ...options
+        });
+    }
+}
 
 export class UsersService {
     /**
@@ -305,6 +407,15 @@ export class UserPermissionsService {
     }
 }
 
+export class UtilsService {
+    /**
+     * Health Check
+     */
+    public static HealthCheck<ThrowOnError extends boolean = false>(options?: Options<GetUtilsHealthCheckData, ThrowOnError>) {
+        return (options?.client ?? client).get<GetUtilsHealthCheckResponses, unknown, ThrowOnError>({ url: '/utils/health-check/', ...options });
+    }
+}
+
 export class RecipesService {
     /**
      * Upload Recipe Image
@@ -546,6 +657,19 @@ export class GameService {
     }
 
     /**
+     * Delete All Game Sessions
+     *
+     * Delete all game sessions. For testing purposes only.
+     */
+    public static DeleteAllGameSessions<ThrowOnError extends boolean = false>(options?: Options<DeleteGameDeleteAllData, ThrowOnError>) {
+        return (options?.client ?? client).delete<DeleteGameDeleteAllResponses, unknown, ThrowOnError>({
+            security: [{ scheme: 'bearer', type: 'http' }],
+            url: '/game/delete_all',
+            ...options
+        });
+    }
+
+    /**
      * Delete Game Session
      *
      * Delete a game session. Users can delete their own game sessions.
@@ -674,108 +798,6 @@ export class GameService {
      */
     public static GameSessionUpdates<ThrowOnError extends boolean = false>(options: Options<GetGameByGameSessionIdUpdatesData, ThrowOnError>) {
         return (options.client ?? client).get<GetGameByGameSessionIdUpdatesResponses, GetGameByGameSessionIdUpdatesErrors, ThrowOnError>({ url: '/game/{game_session_id}/updates', ...options });
-    }
-}
-
-export class LoginService {
-    /**
-     * Login Access Token
-     *
-     * OAuth2 compatible token login, get an access token for future requests
-     */
-    public static LoginAccessToken<ThrowOnError extends boolean = false>(options: Options<PostLoginAccessTokenData, ThrowOnError>) {
-        return (options.client ?? client).post<PostLoginAccessTokenResponses, PostLoginAccessTokenErrors, ThrowOnError>({
-            ...urlSearchParamsBodySerializer,
-            url: '/login/access-token',
-            ...options,
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-                ...options.headers
-            }
-        });
-    }
-
-    /**
-     * Refresh Access Token
-     *
-     * Issue a new access token using the refresh token from cookie (preferred) or body.
-     */
-    public static RefreshAccessToken<ThrowOnError extends boolean = false>(options: Options<PostLoginRefreshData, ThrowOnError>) {
-        return (options.client ?? client).post<PostLoginRefreshResponses, PostLoginRefreshErrors, ThrowOnError>({
-            url: '/login/refresh',
-            ...options,
-            headers: {
-                'Content-Type': 'application/json',
-                ...options.headers
-            }
-        });
-    }
-
-    /**
-     * Logout
-     *
-     * Clear refresh cookie (client should also clear access-token cookie).
-     */
-    public static Logout<ThrowOnError extends boolean = false>(options?: Options<PostLogoutData, ThrowOnError>) {
-        return (options?.client ?? client).post<PostLogoutResponses, PostLogoutErrors, ThrowOnError>({
-            url: '/logout',
-            ...options,
-            headers: {
-                'Content-Type': 'application/json',
-                ...options?.headers
-            }
-        });
-    }
-
-    /**
-     * Test Token
-     *
-     * Test access token
-     */
-    public static TestToken<ThrowOnError extends boolean = false>(options?: Options<PostLoginTestTokenData, ThrowOnError>) {
-        return (options?.client ?? client).post<PostLoginTestTokenResponses, unknown, ThrowOnError>({
-            security: [{ scheme: 'bearer', type: 'http' }],
-            url: '/login/test-token',
-            ...options
-        });
-    }
-
-    /**
-     * Recover Password
-     *
-     * Password Recovery
-     */
-    public static RecoverPassword<ThrowOnError extends boolean = false>(options: Options<PostPasswordRecoveryByEmailData, ThrowOnError>) {
-        return (options.client ?? client).post<PostPasswordRecoveryByEmailResponses, PostPasswordRecoveryByEmailErrors, ThrowOnError>({ url: '/password-recovery/{email}', ...options });
-    }
-
-    /**
-     * Reset Password
-     *
-     * Reset password
-     */
-    public static ResetPassword<ThrowOnError extends boolean = false>(options: Options<PostResetPasswordData, ThrowOnError>) {
-        return (options.client ?? client).post<PostResetPasswordResponses, PostResetPasswordErrors, ThrowOnError>({
-            url: '/reset-password/',
-            ...options,
-            headers: {
-                'Content-Type': 'application/json',
-                ...options.headers
-            }
-        });
-    }
-
-    /**
-     * Recover Password Html Content
-     *
-     * HTML Content for Password Recovery
-     */
-    public static RecoverPasswordHtmlContent<ThrowOnError extends boolean = false>(options: Options<PostPasswordRecoveryHtmlContentByEmailData, ThrowOnError>) {
-        return (options.client ?? client).post<PostPasswordRecoveryHtmlContentByEmailResponses, PostPasswordRecoveryHtmlContentByEmailErrors, ThrowOnError>({
-            security: [{ scheme: 'bearer', type: 'http' }],
-            url: '/password-recovery-html-content/{email}',
-            ...options
-        });
     }
 }
 

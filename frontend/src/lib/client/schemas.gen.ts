@@ -515,6 +515,27 @@ export const IngredientCreateSchema = {
             description: 'Calories per 100g of the ingredient',
             default: 0
         },
+        carbohydrates: {
+            type: 'number',
+            minimum: 0,
+            title: 'Carbohydrates',
+            description: 'Carbohydrates per 100g of the ingredient in grams',
+            default: 0
+        },
+        fat: {
+            type: 'number',
+            minimum: 0,
+            title: 'Fat',
+            description: 'Fat per 100g of the ingredient in grams',
+            default: 0
+        },
+        protein: {
+            type: 'number',
+            minimum: 0,
+            title: 'Protein',
+            description: 'Protein per 100g of the ingredient in grams',
+            default: 0
+        },
         weight_per_piece: {
             type: 'integer',
             minimum: 0,
@@ -540,6 +561,18 @@ export const IngredientPublicSchema = {
             type: 'integer',
             title: 'Calories'
         },
+        carbohydrates: {
+            type: 'number',
+            title: 'Carbohydrates'
+        },
+        fat: {
+            type: 'number',
+            title: 'Fat'
+        },
+        protein: {
+            type: 'number',
+            title: 'Protein'
+        },
         weight_per_piece: {
             type: 'integer',
             title: 'Weight Per Piece'
@@ -554,6 +587,9 @@ export const IngredientPublicSchema = {
     required: [
         'title',
         'calories',
+        'carbohydrates',
+        'fat',
+        'protein',
         'weight_per_piece',
         'id'
     ],
@@ -824,6 +860,42 @@ export const RecipePublicSchema = {
             description: 'Calculate calories per serving.',
             readOnly: true
         },
+        total_carbohydrates: {
+            type: 'number',
+            title: 'Total Carbohydrates',
+            description: 'Calculate total carbohydrates for the entire recipe in grams.',
+            readOnly: true
+        },
+        total_fat: {
+            type: 'number',
+            title: 'Total Fat',
+            description: 'Calculate total fat for the entire recipe in grams.',
+            readOnly: true
+        },
+        total_protein: {
+            type: 'number',
+            title: 'Total Protein',
+            description: 'Calculate total protein for the entire recipe in grams.',
+            readOnly: true
+        },
+        carbohydrates_per_serving: {
+            type: 'number',
+            title: 'Carbohydrates Per Serving',
+            description: 'Calculate carbohydrates per serving in grams.',
+            readOnly: true
+        },
+        fat_per_serving: {
+            type: 'number',
+            title: 'Fat Per Serving',
+            description: 'Calculate fat per serving in grams.',
+            readOnly: true
+        },
+        protein_per_serving: {
+            type: 'number',
+            title: 'Protein Per Serving',
+            description: 'Calculate protein per serving in grams.',
+            readOnly: true
+        },
         calculated_weight: {
             type: 'integer',
             title: 'Calculated Weight',
@@ -845,6 +917,12 @@ export const RecipePublicSchema = {
         'ingredient_links',
         'total_calories',
         'calories_per_serving',
+        'total_carbohydrates',
+        'total_fat',
+        'total_protein',
+        'carbohydrates_per_serving',
+        'fat_per_serving',
+        'protein_per_serving',
         'calculated_weight',
         'calories_per_100g'
     ],
@@ -1431,6 +1509,13 @@ export const ValidationErrorSchema = {
         type: {
             type: 'string',
             title: 'Error Type'
+        },
+        input: {
+            title: 'Input'
+        },
+        ctx: {
+            type: 'object',
+            title: 'Context'
         }
     },
     type: 'object',

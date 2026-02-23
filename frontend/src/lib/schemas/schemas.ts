@@ -79,6 +79,9 @@ export const IngredientSchema = z.object({
         .min(1, "Title is required")
         .max(255, "Title must be less than 255 characters"),
     calories: z.number().int().nonnegative("Calories must be a non-negative integer"),
+    carbohydrates: z.number().nonnegative("Carbohydrates must be non-negative").default(0),
+    fat: z.number().nonnegative("Fat must be non-negative").default(0),
+    protein: z.number().nonnegative("Protein must be non-negative").default(0),
     weight_per_piece: z
         .number()
         .int()

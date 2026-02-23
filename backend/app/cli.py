@@ -11,6 +11,7 @@ from app.permissions import (
 from app.db_crud import get_user_by_email
 from app.models import Role
 from sqlmodel import select
+from app.seed_food_data import seed_ingredients, seed_recipes
 
 app = typer.Typer()
 
@@ -203,6 +204,57 @@ def set_superuser(email: str, superuser: bool = True):
 
         status = "superuser" if superuser else "normal user"
         print(f"✅ User '{email}' is now a {status}")
+
+
+@app.command()
+def init_ingredients(
+    overwrite_existing: bool = typer.Option(
+        True,
+        "--overwrite-existing/--skip-existing",
+        help="Overwrite existing ingredient nutrition values if the title already exists.",
+    ),
+):
+    """Seed sample ingredients with macro nutrition values."""
+    with Session(engine) as session:
+        created, updated, skipped = seed_ingredients(
+            session, overwrite_existing=overwrite_existing
+        )
+        print(
+            "✅ Ingredient seed complete: "
+            f"{created} created, {updated} updated, {skipped} skipped."
+        )
+
+
+@app.command()
+def init_recipes(
+    owner_email: str | None = typer.Option(
+        None,
+        "--owner-email",
+        help="Recipe owner email. Defaults to FIRST_SUPERUSER from environment.",
+    ),
+    overwrite_existing: bool = typer.Option(
+        True,
+        "--overwrite-existing/--skip-existing",
+        help="Overwrite recipes with the same title for the target owner.",
+    ),
+    ensure_ingredients: bool = typer.Option(
+        True,
+        "--ensure-ingredients/--no-ensure-ingredients",
+        help="Ensure seed ingredients exist before creating recipes.",
+    ),
+):
+    """Seed sample recipes with ingredient links."""
+    with Session(engine) as session:
+        created, updated, skipped = seed_recipes(
+            session,
+            owner_email=owner_email,
+            overwrite_existing=overwrite_existing,
+            ensure_ingredients=ensure_ingredients,
+        )
+        print(
+            "✅ Recipe seed complete: "
+            f"{created} created, {updated} updated, {skipped} skipped."
+        )
 
 
 if __name__ == "__main__":

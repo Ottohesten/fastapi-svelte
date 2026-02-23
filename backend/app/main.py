@@ -11,6 +11,7 @@ from app.routers import (
     ingredients,
     game,
     roles,
+    utils,
 )
 
 settings = get_settings()
@@ -23,70 +24,26 @@ def custom_generate_unique_id(route: APIRoute) -> str:
     return f"{route.tags[0]}-{route.name}"
 
 
-# def custom_generate_unique_id(route: APIRoute) -> str:
-#     return f"{route.tags[0] if route.tags else 'unknowntag'}-{route.name}"
-
-
-# def custom_generate_unique_id(route: APIRoute) -> str:
-#     return f"{route.name}"
-
-
 # app = FastAPI(dependencies=[Depends(oauth2_scheme)])
 # app = FastAPI(swagger_ui_parameters={"persistAuthorization": True})
 app = FastAPI(
     title=settings.PROJECT_NAME, generate_unique_id_function=custom_generate_unique_id
 )
 
-origins = [
-    "http://localhost:5173",
-    "http://localhost:3000",
-    # Add more origins here
-    "*",
-    "0.0.0.0:8000",
-    "0.0.0.0:10000",
-    "https://fastapi-svelte-frontend.onrender.com",
-    "fastapi-svelte:8000",
-    "fastapi-svelte:10000",
-]
-
-app.add_middleware(
-    CORSMiddleware,  # type: ignore[arg-type]
-    allow_origins=origins,
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+if settings.all_cors_origins:
+    app.add_middleware(
+        CORSMiddleware,  # type: ignore[arg-type]
+        allow_origins=settings.all_cors_origins,
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
 
 
-# hero_1 = Hero(name="Deadpond", secret_name="Dive Wilson")
-# hero_2 = Hero(name="Spider-Boy", secret_name="Pedro Parqueador")
-# hero_3 = Hero(name="Rusty-Man", secret_name="Tommy Sharp", age=48)
-
-
-# print(settings.SQLALCHEMY_DATABASE_URI)
-# users.router.include_router(users.permissions_router)
+app.include_router(login.router)
 app.include_router(users.router)
+app.include_router(utils.router)
 app.include_router(recipes.router)
 app.include_router(ingredients.router)
 app.include_router(game.router)
-app.include_router(login.router)
 app.include_router(roles.router)
-
-
-# security = HTTPBearer(
-#     scheme_name="Authorization",
-#     description="Bearer token for authorization",
-#     auto_error=True
-# )
-
-# Use it in your endpoints
-
-
-# @app.get("/")
-# async def read_root(token: TokenDep):
-#     return {"token": token}
-
-
-# @app.get("/protected-route")
-# async def protected_route(credentials: HTTPAuthorizationCredentials = Security(security)):
-#     return {"message": "You accessed a protected route"}

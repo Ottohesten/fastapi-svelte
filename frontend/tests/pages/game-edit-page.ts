@@ -74,11 +74,15 @@ export class GameEditPage {
     }
 
     async expectPlayerWithoutTeam(playerName: string) {
-        await expect(this.playerCard(playerName).getByText("No team assigned", { exact: false })).toBeVisible();
+        await expect(
+            this.playerCard(playerName).getByText("No team assigned", { exact: false })
+        ).toBeVisible();
     }
 
     async expectPlayerInTeam(playerName: string, teamName: string) {
-        await expect(this.playerCard(playerName)).toContainText(new RegExp(`Team:\\s*${escapeForRegex(teamName)}`));
+        await expect(this.playerCard(playerName)).toContainText(
+            new RegExp(`Team:\\s*${escapeForRegex(teamName)}`)
+        );
     }
 
     async expectPlayerNotInTeam(playerName: string, teamName: string) {

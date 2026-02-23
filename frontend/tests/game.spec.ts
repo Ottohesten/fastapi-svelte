@@ -14,14 +14,12 @@ test.describe("Game detail page", () => {
         await gamePage.expectAddDrinkFormVisible();
     });
 
-
     test("navigates to edit page from detail page", async ({ gamePage, sessionTitle, page }) => {
         await gamePage.expectLoaded(sessionTitle);
         await gamePage.gotoEditPage();
         await expect(page.getByRole("heading", { name: "Game Management" })).toBeVisible();
     });
 });
-
 
 test.describe("Game edit page", () => {
     test("loads edit page for a specific session", async ({ gamePage, sessionTitle, page }) => {
@@ -83,7 +81,11 @@ test.describe("Game edit page", () => {
         await gameEditPage.deletePlayer(playerName);
     });
 
-    test("can delete a team that has players attributed to it", async ({ gamePage, sessionTitle, page }) => {
+    test("can delete a team that has players attributed to it", async ({
+        gamePage,
+        sessionTitle,
+        page
+    }) => {
         await gamePage.expectLoaded(sessionTitle);
         await gamePage.gotoEditPage();
         const gameEditPage = new GameEditPage(page);
@@ -113,7 +115,10 @@ test.describe("Player detail page", () => {
 
         const playerDetailPage = new PlayerDetailPage(page);
         await playerDetailPage.expectLoaded(playerName);
-        test.skip(!(await playerDetailPage.hasAvailableDrinks()), "No drinks available in test environment.");
+        test.skip(
+            !(await playerDetailPage.hasAvailableDrinks()),
+            "No drinks available in test environment."
+        );
 
         const drinkId = await playerDetailPage.selectFirstDrinkWithAmount(3);
         await playerDetailPage.submitAndReopen();
@@ -132,7 +137,10 @@ test.describe("Player detail page", () => {
 
         const playerDetailPage = new PlayerDetailPage(page);
         await playerDetailPage.expectLoaded(playerName);
-        test.skip(!(await playerDetailPage.hasAvailableDrinks()), "No drinks available in test environment.");
+        test.skip(
+            !(await playerDetailPage.hasAvailableDrinks()),
+            "No drinks available in test environment."
+        );
 
         const drinkId = await playerDetailPage.selectFirstDrinkWithAmount(2);
         await playerDetailPage.submitAndReopen();

@@ -11,6 +11,10 @@
   };
 
   let { recipe, authenticatedUser }: Props = $props();
+
+  function formatGrams(value: number | undefined): string {
+    return `${(value ?? 0).toFixed(1)}g`;
+  }
 </script>
 
 <div
@@ -109,6 +113,36 @@
           <div class="mt-1">
             <span class="text-lg font-bold text-gray-900 dark:text-gray-100">{recipe.servings}</span
             >
+          </div>
+        </div>
+      </div>
+
+      <div
+        class="mb-4 rounded-lg border border-gray-200 bg-gray-50 p-3 dark:border-gray-800 dark:bg-gray-900/40"
+      >
+        <p
+          class="mb-2 text-xs font-semibold tracking-wide text-gray-600 uppercase dark:text-gray-400"
+        >
+          Macros
+        </p>
+        <div class="grid grid-cols-3 gap-2 text-center">
+          <div>
+            <div class="text-xs text-gray-500 dark:text-gray-400">Carbs</div>
+            <div class="text-sm font-semibold text-gray-900 dark:text-gray-100">
+              {formatGrams(recipe.total_carbohydrates)}
+            </div>
+          </div>
+          <div>
+            <div class="text-xs text-gray-500 dark:text-gray-400">Fat</div>
+            <div class="text-sm font-semibold text-gray-900 dark:text-gray-100">
+              {formatGrams(recipe.total_fat)}
+            </div>
+          </div>
+          <div>
+            <div class="text-xs text-gray-500 dark:text-gray-400">Protein</div>
+            <div class="text-sm font-semibold text-gray-900 dark:text-gray-100">
+              {formatGrams(recipe.total_protein)}
+            </div>
           </div>
         </div>
       </div>

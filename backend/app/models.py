@@ -259,60 +259,93 @@ class RecipePublic(RecipeBase):
     owner: UserPublic
     ingredient_links: list[RecipeIngredientLinkPublic]
 
+    def _amount_to_grams(self, link: RecipeIngredientLinkPublic) -> float:
+        """
+        Convert a recipe ingredient amount to grams for nutrition/weight calculations.
+        """
+        amount_in_grams = link.amount
+        if link.unit == "kg":
+            amount_in_grams = link.amount * 1000
+        elif link.unit == "L":
+            amount_in_grams = link.amount * 1000
+        elif link.unit == "pcs":
+            amount_in_grams = link.amount * link.ingredient.weight_per_piece
+
+        # For "g" and "ml" we keep a 1:1 conversion for now.
+        return amount_in_grams
+
+    def _sum_nutrient(self, nutrient_field: str) -> float:
+        """
+        Sum nutrient values for all linked ingredients.
+        Nutrients are stored as value per 100g on Ingredient.
+        """
+        total = 0.0
+        for link in self.ingredient_links:
+            amount_in_grams = self._amount_to_grams(link)
+            nutrient_per_100g = getattr(link.ingredient, nutrient_field, 0)
+            total += (nutrient_per_100g * amount_in_grams) / 100
+        return total
+
+    def _per_serving(self, total_value: float) -> float:
+        if self.servings <= 0:
+            return 0.0
+        return total_value / self.servings
+
     @computed_field
     @property
     def total_calories(self) -> int:
         """Calculate total calories for the entire recipe based on ingredients and their amounts."""
-        total = 0
-        for link in self.ingredient_links:
-            # Convert amount to standardized unit (grams) for calculation
-            amount_in_grams = link.amount
-            if link.unit == "kg":
-                amount_in_grams = link.amount * 1000
-            elif link.unit == "ml":
-                # Assume 1ml = 1g for simplicity (works for most liquids)
-                amount_in_grams = link.amount
-            elif link.unit == "L":
-                amount_in_grams = link.amount * 1000
-            elif link.unit == "pcs":
-                # Use ingredient's weight_per_piece for calculation
-                amount_in_grams = link.amount * link.ingredient.weight_per_piece
-
-            # Calculate calories: (calories_per_100g * amount_in_grams) / 100
-            ingredient_calories = (link.ingredient.calories * amount_in_grams) / 100
-            total += ingredient_calories
-
-        return round(total)
+        return round(self._sum_nutrient("calories"))
 
     @computed_field
     @property
     def calories_per_serving(self) -> int:
         """Calculate calories per serving."""
-        if self.servings <= 0:
-            return 0
-        return round(self.total_calories / self.servings)
+        return round(self._per_serving(self.total_calories))
+
+    @computed_field
+    @property
+    def total_carbohydrates(self) -> float:
+        """Calculate total carbohydrates for the entire recipe in grams."""
+        return round(self._sum_nutrient("carbohydrates"), 1)
+
+    @computed_field
+    @property
+    def total_fat(self) -> float:
+        """Calculate total fat for the entire recipe in grams."""
+        return round(self._sum_nutrient("fat"), 1)
+
+    @computed_field
+    @property
+    def total_protein(self) -> float:
+        """Calculate total protein for the entire recipe in grams."""
+        return round(self._sum_nutrient("protein"), 1)
+
+    @computed_field
+    @property
+    def carbohydrates_per_serving(self) -> float:
+        """Calculate carbohydrates per serving in grams."""
+        return round(self._per_serving(self.total_carbohydrates), 1)
+
+    @computed_field
+    @property
+    def fat_per_serving(self) -> float:
+        """Calculate fat per serving in grams."""
+        return round(self._per_serving(self.total_fat), 1)
+
+    @computed_field
+    @property
+    def protein_per_serving(self) -> float:
+        """Calculate protein per serving in grams."""
+        return round(self._per_serving(self.total_protein), 1)
 
     @computed_field
     @property
     def calculated_weight(self) -> int:
         """The calculated weight of the recipe based on the ingredients and their amounts. Returns the total weight in grams."""
-        total_weight = 0
-        for link in self.ingredient_links:
-            # Convert amount to standardized unit (grams) for calculation
-            amount_in_grams = link.amount
-            if link.unit == "kg":
-                amount_in_grams = link.amount * 1000
-            elif link.unit == "ml":
-                # Assume 1ml = 1g for simplicity (works for most liquids)
-                amount_in_grams = link.amount
-            elif link.unit == "L":
-                amount_in_grams = link.amount * 1000
-            elif link.unit == "pcs":
-                # Use ingredient's weight_per_piece for calculation
-                amount_in_grams = link.amount * link.ingredient.weight_per_piece
-
-            total_weight += amount_in_grams
-
+        total_weight = sum(
+            self._amount_to_grams(link) for link in self.ingredient_links
+        )
         return round(total_weight)
 
     @computed_field
@@ -359,6 +392,21 @@ class IngredientBase(SQLModel):
     calories: int = Field(
         default=0, ge=0, description="Calories per 100g of the ingredient"
     )
+    carbohydrates: float = Field(
+        default=0,
+        ge=0,
+        description="Carbohydrates per 100g of the ingredient in grams",
+    )
+    fat: float = Field(
+        default=0,
+        ge=0,
+        description="Fat per 100g of the ingredient in grams",
+    )
+    protein: float = Field(
+        default=0,
+        ge=0,
+        description="Protein per 100g of the ingredient in grams",
+    )
     weight_per_piece: int = Field(
         default=100,
         ge=0,
@@ -376,6 +424,9 @@ class IngredientPublic(IngredientBase):
     # Make fields required for public responses so OpenAPI marks them as required
     title: str
     calories: int
+    carbohydrates: float
+    fat: float
+    protein: float
     weight_per_piece: int
     # recipes: list[RecipePublic]
 
@@ -391,6 +442,24 @@ class Ingredient(IngredientBase, table=True):
     title: str = Field(max_length=255, min_length=1)
     calories: int = Field(
         default=0, ge=0, description="Calories per 100g of the ingredient"
+    )
+    carbohydrates: float = Field(
+        default=0,
+        ge=0,
+        description="Carbohydrates per 100g of the ingredient in grams",
+        sa_column_kwargs={"server_default": "0"},
+    )
+    fat: float = Field(
+        default=0,
+        ge=0,
+        description="Fat per 100g of the ingredient in grams",
+        sa_column_kwargs={"server_default": "0"},
+    )
+    protein: float = Field(
+        default=0,
+        ge=0,
+        description="Protein per 100g of the ingredient in grams",
+        sa_column_kwargs={"server_default": "0"},
     )
     weight_per_piece: int = Field(
         default=1,

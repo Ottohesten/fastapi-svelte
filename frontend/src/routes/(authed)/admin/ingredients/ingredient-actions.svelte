@@ -30,6 +30,9 @@
       id: ingredient.id,
       title: ingredient.title,
       calories: ingredient.calories,
+      carbohydrates: ingredient.carbohydrates,
+      fat: ingredient.fat,
+      protein: ingredient.protein,
       weight_per_piece: ingredient.weight_per_piece
     }));
     editOpen = true;
@@ -86,6 +89,57 @@
                 bind:value={$formData.calories}
                 placeholder="Enter calories"
                 min="0"
+              />
+            {/snippet}
+          </Control>
+          <FieldErrors />
+        </Field>
+
+        <Field form={updateForm} name="carbohydrates">
+          <Control>
+            {#snippet children({ props })}
+              <Label>Carbohydrates (per 100g)</Label>
+              <Input
+                {...props}
+                type="number"
+                bind:value={$formData.carbohydrates}
+                placeholder="Enter carbohydrates"
+                min="0"
+                step="0.1"
+              />
+            {/snippet}
+          </Control>
+          <FieldErrors />
+        </Field>
+
+        <Field form={updateForm} name="fat">
+          <Control>
+            {#snippet children({ props })}
+              <Label>Fat (per 100g)</Label>
+              <Input
+                {...props}
+                type="number"
+                bind:value={$formData.fat}
+                placeholder="Enter fat"
+                min="0"
+                step="0.1"
+              />
+            {/snippet}
+          </Control>
+          <FieldErrors />
+        </Field>
+
+        <Field form={updateForm} name="protein">
+          <Control>
+            {#snippet children({ props })}
+              <Label>Protein (per 100g)</Label>
+              <Input
+                {...props}
+                type="number"
+                bind:value={$formData.protein}
+                placeholder="Enter protein"
+                min="0"
+                step="0.1"
               />
             {/snippet}
           </Control>

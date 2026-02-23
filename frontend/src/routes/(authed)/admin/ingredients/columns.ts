@@ -23,6 +23,30 @@ export const createColumns = (
         }
     },
     {
+        accessorKey: "carbohydrates",
+        header: "Carbs (per 100g)",
+        cell: ({ row }) => {
+            const carbohydrates = row.getValue("carbohydrates") as number;
+            return `${carbohydrates.toFixed(1)}g`;
+        }
+    },
+    {
+        accessorKey: "fat",
+        header: "Fat (per 100g)",
+        cell: ({ row }) => {
+            const fat = row.getValue("fat") as number;
+            return `${fat.toFixed(1)}g`;
+        }
+    },
+    {
+        accessorKey: "protein",
+        header: "Protein (per 100g)",
+        cell: ({ row }) => {
+            const protein = row.getValue("protein") as number;
+            return `${protein.toFixed(1)}g`;
+        }
+    },
+    {
         accessorKey: "weight_per_piece",
         header: "Weight per piece",
         cell: ({ row }) => {

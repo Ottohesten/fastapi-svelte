@@ -15,17 +15,31 @@
   let editor = $state();
   let editorState = $state(0); // Counter to force reactivity
 
+  const EMPTY_PARAGRAPH = "<p></p>";
+  let lastInternalValue = "";
+
+  function normalizeHtml(html: string | null | undefined) {
+    if (html === undefined || html === null || html === EMPTY_PARAGRAPH) {
+      return "";
+    }
+
+    return html;
+  }
+
   $effect(() => {
     if (editor && value !== undefined) {
-      const isEditorEmpty = editor.isEmpty;
+      const normalizedValue = normalizeHtml(value);
+      const normalizedCurrentHtml = normalizeHtml(editor.getHTML());
+      const normalizedLastInternalValue = normalizeHtml(lastInternalValue);
 
-      // Simple logic:
-      // 1. If we are clearing the form (value is empty), clear the editor
-      // 2. If the editor is empty and we have a value (initial load/restore), set it
-      if (value === "" && !isEditorEmpty) {
-        editor.commands.setContent("", { emitUpdate: false });
-      } else if (isEditorEmpty && value !== "" && value !== "<p></p>") {
-        editor.commands.setContent(value, { emitUpdate: false });
+      // Ignore updates that originated from this editor instance.
+      if (normalizedValue === normalizedLastInternalValue) {
+        return;
+      }
+
+      // Apply only truly external changes (restore/reset/etc).
+      if (normalizedValue !== normalizedCurrentHtml) {
+        editor.commands.setContent(normalizedValue, { emitUpdate: false });
       }
     }
   });
@@ -44,7 +58,7 @@
         TextStyle.configure({ types: [ListItem.name] }),
         StarterKit
       ],
-      content: value || "",
+      content: normalizeHtml(value),
       editorProps: {
         attributes: {
           class:
@@ -58,7 +72,11 @@
       onUpdate: ({ editor }) => {
         // Update the bound value with HTML content
         if (value !== undefined) {
-          value = editor.getHTML();
+          const html = editor.getHTML();
+          lastInternalValue = html;
+          if (value !== html) {
+            value = html;
+          }
         }
       }
     });
@@ -76,13 +94,13 @@
 
     switch (action) {
       case "toggleBold":
-        return editor.can().chain().focus().toggleBold().run();
+        return editor.can().chain().toggleBold().run();
       case "toggleItalic":
-        return editor.can().chain().focus().toggleItalic().run();
+        return editor.can().chain().toggleItalic().run();
       case "undo":
-        return editor.can().chain().focus().undo().run();
+        return editor.can().chain().undo().run();
       case "redo":
-        return editor.can().chain().focus().redo().run();
+        return editor.can().chain().redo().run();
       default:
         return false;
     }

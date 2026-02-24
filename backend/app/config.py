@@ -12,6 +12,7 @@ from pydantic import (
     model_validator,
     BeforeValidator,
     AnyUrl,
+    HttpUrl,
 )
 
 
@@ -56,7 +57,7 @@ class Settings(BaseSettings):
         ]
 
     PROJECT_NAME: str
-    # SENTRY_DSN: HttpUrl | None = None
+    SENTRY_DSN: HttpUrl | None = None
     POSTGRES_SERVER: str
     POSTGRES_PORT: int
     POSTGRES_USER: str

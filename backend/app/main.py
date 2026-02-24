@@ -1,9 +1,10 @@
+import sentry_sdk
 from fastapi.middleware.cors import CORSMiddleware
 
 from fastapi import FastAPI
 from fastapi.routing import APIRoute
 
-from app.config import get_settings
+from app.config import settings
 from app.routers import (
     users,
     login,
@@ -14,14 +15,22 @@ from app.routers import (
     utils,
 )
 
-settings = get_settings()
-
-# @asynccontextmanager
-# async def lifespan(app: FastAPI):
-
 
 def custom_generate_unique_id(route: APIRoute) -> str:
     return f"{route.tags[0]}-{route.name}"
+
+
+sentry_sdk.init(
+    dsn=str(settings.SENTRY_DSN),
+    # Add data like request headers and IP for users,
+    # see https://docs.sentry.io/platforms/python/data-management/data-collected/ for more info
+    send_default_pii=True,
+    # Set traces_sample_rate to 1.0 to capture 100%
+    # of transactions for tracing.
+    traces_sample_rate=1.0,
+    # Set environment to distinguish between different environments (e.g., development, staging, production)
+    environment=settings.ENVIRONMENT,
+)
 
 
 # app = FastAPI(dependencies=[Depends(oauth2_scheme)])

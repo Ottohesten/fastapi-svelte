@@ -41,25 +41,6 @@
 
   let open = $state(false);
 
-  function amountToGrams(
-    amount: number,
-    unit: string | undefined,
-    weightPerPiece: number | undefined
-  ): number {
-    const safeAmount = Number.isFinite(amount) ? amount : 0;
-    const safeWeightPerPiece = Number.isFinite(weightPerPiece) ? (weightPerPiece ?? 0) : 0;
-
-    if (unit === "kg" || unit === "L") {
-      return safeAmount * 1000;
-    }
-
-    if (unit === "pcs") {
-      return safeAmount * safeWeightPerPiece;
-    }
-
-    return safeAmount;
-  }
-
   function roundWhole(value: number | undefined): number {
     return Math.round(value ?? 0);
   }
@@ -85,22 +66,32 @@
   }
 
   const ingredientRows = $derived.by<IngredientNutritionRow[]>(() => {
-    const baseRows = recipe.ingredient_links.map((link) => {
-      const grams = amountToGrams(
-        link.amount ?? 0,
-        link.unit ?? "g",
-        link.ingredient.weight_per_piece ?? 0
-      );
-      const calories = (link.ingredient.calories * grams) / 100;
-      const carbohydrates = (link.ingredient.carbohydrates * grams) / 100;
-      const fat = (link.ingredient.fat * grams) / 100;
-      const protein = (link.ingredient.protein * grams) / 100;
+    if (!recipe.total_ingredients) {
+      throw new Error("Recipe response missing total_ingredients");
+    }
+
+    const baseRows = recipe.total_ingredients.map((item) => {
+      const totalIngredient = item as typeof item & {
+        grams?: number;
+        calories?: number;
+        carbohydrates?: number;
+        fat?: number;
+        protein?: number;
+      };
+
+      const unit = totalIngredient.unit ?? "g";
+      const amount = totalIngredient.amount ?? 0;
+      const grams = totalIngredient.grams ?? amount;
+      const calories = totalIngredient.calories ?? 0;
+      const carbohydrates = totalIngredient.carbohydrates ?? 0;
+      const fat = totalIngredient.fat ?? 0;
+      const protein = totalIngredient.protein ?? 0;
 
       return {
-        id: link.ingredient.id,
-        title: link.ingredient.title,
-        amount: link.amount ?? 0,
-        unit: link.unit ?? "g",
+        id: totalIngredient.ingredient_id,
+        title: totalIngredient.title,
+        amount,
+        unit,
         grams,
         calories,
         carbohydrates,

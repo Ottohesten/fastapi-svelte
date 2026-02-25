@@ -730,6 +730,14 @@ export const RecipeCreateSchema = {
             },
             type: 'array',
             title: 'Ingredients'
+        },
+        sub_recipes: {
+            items: {
+                $ref: '#/components/schemas/RecipeSubRecipeLinkCreate'
+            },
+            type: 'array',
+            title: 'Sub Recipes',
+            default: []
         }
     },
     type: 'object',
@@ -796,6 +804,126 @@ export const RecipeIngredientLinkPublicSchema = {
     description: 'Public class for recipe ingredient link.'
 } as const;
 
+export const RecipeIngredientSourcePublicSchema = {
+    properties: {
+        recipe_id: {
+            type: 'string',
+            format: 'uuid',
+            title: 'Recipe Id'
+        },
+        recipe_title: {
+            type: 'string',
+            title: 'Recipe Title'
+        },
+        amount: {
+            type: 'number',
+            title: 'Amount'
+        },
+        unit: {
+            type: 'string',
+            maxLength: 10,
+            title: 'Unit',
+            description: 'Unit of the amount, e.g. g, ml, pcs, etc.'
+        },
+        is_main_recipe: {
+            type: 'boolean',
+            title: 'Is Main Recipe',
+            description: 'True when the source is the currently viewed recipe.'
+        }
+    },
+    type: 'object',
+    required: [
+        'recipe_id',
+        'recipe_title',
+        'amount',
+        'unit',
+        'is_main_recipe'
+    ],
+    title: 'RecipeIngredientSourcePublic'
+} as const;
+
+export const RecipeIngredientTotalPublicSchema = {
+    properties: {
+        ingredient_id: {
+            type: 'string',
+            format: 'uuid',
+            title: 'Ingredient Id'
+        },
+        title: {
+            type: 'string',
+            title: 'Title'
+        },
+        amount: {
+            type: 'number',
+            title: 'Amount'
+        },
+        unit: {
+            type: 'string',
+            maxLength: 10,
+            title: 'Unit',
+            description: 'Unit of the amount, e.g. g, ml, pcs, etc.'
+        },
+        grams: {
+            type: 'number',
+            title: 'Grams',
+            description: 'Total ingredient amount converted to grams for nutrition calculations.'
+        },
+        calories: {
+            type: 'number',
+            title: 'Calories',
+            description: 'Calories contributed by this aggregated ingredient amount.'
+        },
+        carbohydrates: {
+            type: 'number',
+            title: 'Carbohydrates',
+            description: 'Carbohydrates (g) contributed by this aggregated ingredient amount.'
+        },
+        fat: {
+            type: 'number',
+            title: 'Fat',
+            description: 'Fat (g) contributed by this aggregated ingredient amount.'
+        },
+        protein: {
+            type: 'number',
+            title: 'Protein',
+            description: 'Protein (g) contributed by this aggregated ingredient amount.'
+        },
+        sources: {
+            items: {
+                $ref: '#/components/schemas/RecipeIngredientSourcePublic'
+            },
+            type: 'array',
+            title: 'Sources'
+        },
+        source_count: {
+            type: 'integer',
+            title: 'Source Count',
+            readOnly: true
+        },
+        has_overlap: {
+            type: 'boolean',
+            title: 'Has Overlap',
+            readOnly: true
+        }
+    },
+    type: 'object',
+    required: [
+        'ingredient_id',
+        'title',
+        'amount',
+        'unit',
+        'grams',
+        'calories',
+        'carbohydrates',
+        'fat',
+        'protein',
+        'sources',
+        'source_count',
+        'has_overlap'
+    ],
+    title: 'RecipeIngredientTotalPublic'
+} as const;
+
 export const RecipePublicSchema = {
     properties: {
         title: {
@@ -847,6 +975,21 @@ export const RecipePublicSchema = {
             },
             type: 'array',
             title: 'Ingredient Links'
+        },
+        sub_recipe_links: {
+            items: {
+                $ref: '#/components/schemas/RecipeSubRecipeLinkPublic'
+            },
+            type: 'array',
+            title: 'Sub Recipe Links',
+            default: []
+        },
+        total_ingredients: {
+            items: {
+                $ref: '#/components/schemas/RecipeIngredientTotalPublic'
+            },
+            type: 'array',
+            title: 'Total Ingredients'
         },
         total_calories: {
             type: 'integer',
@@ -915,6 +1058,7 @@ export const RecipePublicSchema = {
         'id',
         'owner',
         'ingredient_links',
+        'total_ingredients',
         'total_calories',
         'calories_per_serving',
         'total_carbohydrates',
@@ -927,6 +1071,88 @@ export const RecipePublicSchema = {
         'calories_per_100g'
     ],
     title: 'RecipePublic'
+} as const;
+
+export const RecipeSubRecipeLinkCreateSchema = {
+    properties: {
+        sub_recipe_id: {
+            type: 'string',
+            format: 'uuid',
+            title: 'Sub Recipe Id'
+        },
+        scale_factor: {
+            type: 'number',
+            exclusiveMinimum: 0,
+            title: 'Scale Factor',
+            description: 'Multiplier applied to the linked sub-recipe. Example: 0.25 means a quarter of the recipe.',
+            default: 1
+        }
+    },
+    type: 'object',
+    required: [
+        'sub_recipe_id'
+    ],
+    title: 'RecipeSubRecipeLinkCreate'
+} as const;
+
+export const RecipeSubRecipeLinkPublicSchema = {
+    properties: {
+        sub_recipe: {
+            $ref: '#/components/schemas/RecipeSubRecipePublic'
+        },
+        scale_factor: {
+            type: 'number',
+            title: 'Scale Factor'
+        },
+        scaled_servings: {
+            type: 'number',
+            title: 'Scaled Servings',
+            readOnly: true
+        }
+    },
+    type: 'object',
+    required: [
+        'sub_recipe',
+        'scale_factor',
+        'scaled_servings'
+    ],
+    title: 'RecipeSubRecipeLinkPublic'
+} as const;
+
+export const RecipeSubRecipePublicSchema = {
+    properties: {
+        id: {
+            type: 'string',
+            format: 'uuid',
+            title: 'Id'
+        },
+        title: {
+            type: 'string',
+            title: 'Title'
+        },
+        servings: {
+            type: 'integer',
+            title: 'Servings'
+        },
+        image: {
+            anyOf: [
+                {
+                    type: 'string'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Image'
+        }
+    },
+    type: 'object',
+    required: [
+        'id',
+        'title',
+        'servings'
+    ],
+    title: 'RecipeSubRecipePublic'
 } as const;
 
 export const RefreshRequestSchema = {
@@ -1527,6 +1753,76 @@ export const ValidationErrorSchema = {
     title: 'ValidationError'
 } as const;
 
+export const RecipeIngredientTotalPublicWritableSchema = {
+    properties: {
+        ingredient_id: {
+            type: 'string',
+            format: 'uuid',
+            title: 'Ingredient Id'
+        },
+        title: {
+            type: 'string',
+            title: 'Title'
+        },
+        amount: {
+            type: 'number',
+            title: 'Amount'
+        },
+        unit: {
+            type: 'string',
+            maxLength: 10,
+            title: 'Unit',
+            description: 'Unit of the amount, e.g. g, ml, pcs, etc.'
+        },
+        grams: {
+            type: 'number',
+            title: 'Grams',
+            description: 'Total ingredient amount converted to grams for nutrition calculations.'
+        },
+        calories: {
+            type: 'number',
+            title: 'Calories',
+            description: 'Calories contributed by this aggregated ingredient amount.'
+        },
+        carbohydrates: {
+            type: 'number',
+            title: 'Carbohydrates',
+            description: 'Carbohydrates (g) contributed by this aggregated ingredient amount.'
+        },
+        fat: {
+            type: 'number',
+            title: 'Fat',
+            description: 'Fat (g) contributed by this aggregated ingredient amount.'
+        },
+        protein: {
+            type: 'number',
+            title: 'Protein',
+            description: 'Protein (g) contributed by this aggregated ingredient amount.'
+        },
+        sources: {
+            items: {
+                $ref: '#/components/schemas/RecipeIngredientSourcePublic'
+            },
+            type: 'array',
+            title: 'Sources'
+        }
+    },
+    type: 'object',
+    required: [
+        'ingredient_id',
+        'title',
+        'amount',
+        'unit',
+        'grams',
+        'calories',
+        'carbohydrates',
+        'fat',
+        'protein',
+        'sources'
+    ],
+    title: 'RecipeIngredientTotalPublic'
+} as const;
+
 export const RecipePublicWritableSchema = {
     properties: {
         title: {
@@ -1578,6 +1874,21 @@ export const RecipePublicWritableSchema = {
             },
             type: 'array',
             title: 'Ingredient Links'
+        },
+        sub_recipe_links: {
+            items: {
+                $ref: '#/components/schemas/RecipeSubRecipeLinkPublicWritable'
+            },
+            type: 'array',
+            title: 'Sub Recipe Links',
+            default: []
+        },
+        total_ingredients: {
+            items: {
+                $ref: '#/components/schemas/RecipeIngredientTotalPublicWritable'
+            },
+            type: 'array',
+            title: 'Total Ingredients'
         }
     },
     type: 'object',
@@ -1585,7 +1896,26 @@ export const RecipePublicWritableSchema = {
         'title',
         'id',
         'owner',
-        'ingredient_links'
+        'ingredient_links',
+        'total_ingredients'
     ],
     title: 'RecipePublic'
+} as const;
+
+export const RecipeSubRecipeLinkPublicWritableSchema = {
+    properties: {
+        sub_recipe: {
+            $ref: '#/components/schemas/RecipeSubRecipePublic'
+        },
+        scale_factor: {
+            type: 'number',
+            title: 'Scale Factor'
+        }
+    },
+    type: 'object',
+    required: [
+        'sub_recipe',
+        'scale_factor'
+    ],
+    title: 'RecipeSubRecipeLinkPublic'
 } as const;

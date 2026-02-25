@@ -2,18 +2,8 @@
   import { Badge } from "$lib/components/ui/badge";
   import type { RecipeIngredientSourcePublic, RecipeIngredientTotalPublic } from "$lib/client";
 
-  type IngredientSourceView = RecipeIngredientSourcePublic & {
-    unit: string;
-    is_main_recipe: boolean;
-  };
-
-  type IngredientTotalView = RecipeIngredientTotalPublic & {
-    unit: string;
-    sources: IngredientSourceView[];
-  };
-
   type Props = {
-    ingredients: IngredientTotalView[];
+    ingredients: RecipeIngredientTotalPublic[];
   };
 
   let { ingredients }: Props = $props();
@@ -40,7 +30,7 @@
       : ingredientCardBaseClass;
   }
 
-  function sourceBadgeClass(source: IngredientSourceView): string {
+  function sourceBadgeClass(source: RecipeIngredientSourcePublic): string {
     return source.is_main_recipe
       ? `${sourceBadgeBaseClass} ${sourceBadgeMainClass}`
       : `${sourceBadgeBaseClass} ${sourceBadgeSubRecipeClass}`;

@@ -338,7 +338,8 @@ class RecipePublic(RecipeBase):
     owner: UserPublic
     ingredient_links: list[RecipeIngredientLinkPublic]
     sub_recipe_links: list[RecipeSubRecipeLinkPublic] = []
-    total_ingredients: list[RecipeIngredientTotalPublic] = Field(default_factory=list)
+    # Required in public responses so OpenAPI/TS client do not mark it as optional.
+    total_ingredients: list[RecipeIngredientTotalPublic]
 
     def _ensure_aggregated_totals(self) -> None:
         if self.total_ingredients:

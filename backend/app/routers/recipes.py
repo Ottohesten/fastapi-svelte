@@ -264,10 +264,20 @@ def _calculate_total_ingredients(
 
 
 def _build_recipe_public(session: SessionDep, recipe: Recipe) -> RecipePublic:
-    # Hydrate response-only aggregate data used by RecipePublic computed fields.
-    recipe_public = RecipePublic.model_validate(recipe)
-    recipe_public.total_ingredients = _calculate_total_ingredients(session, recipe)
-    return recipe_public
+    # Build full response payload including required aggregate fields.
+    return RecipePublic.model_validate(
+        {
+            "id": recipe.id,
+            "title": recipe.title,
+            "instructions": recipe.instructions,
+            "servings": recipe.servings,
+            "image": recipe.image,
+            "owner": recipe.owner,
+            "ingredient_links": recipe.ingredient_links,
+            "sub_recipe_links": recipe.sub_recipe_links,
+            "total_ingredients": _calculate_total_ingredients(session, recipe),
+        }
+    )
 
 
 @router.post("/upload-image")

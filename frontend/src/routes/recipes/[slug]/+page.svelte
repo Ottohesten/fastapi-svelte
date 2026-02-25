@@ -1,19 +1,37 @@
 <script lang="ts">
-  import type { RecipePublic, UserMePublic } from "$lib/client";
+  import type {
+    RecipeIngredientSourcePublic,
+    RecipeIngredientTotalPublic,
+    RecipePublic,
+    UserMePublic
+  } from "$lib/client";
+  import RecipeIngredientsChecklist from "$lib/components/RecipeIngredientsChecklist.svelte";
   import RecipeNutritionSheet from "$lib/components/RecipeNutritionSheet.svelte";
+
+  type IngredientSourceView = RecipeIngredientSourcePublic & {
+    unit: string;
+    is_main_recipe: boolean;
+  };
+
+  type IngredientTotalView = RecipeIngredientTotalPublic & {
+    unit: string;
+    source_count: number;
+    has_overlap: boolean;
+    sources: IngredientSourceView[];
+  };
 
   type Props = {
     data: {
       recipe: RecipePublic;
       authenticatedUser?: UserMePublic;
       is_owner: boolean;
+      total_ingredients: IngredientTotalView[];
     };
   };
 
   let { data }: Props = $props();
-
-  // State for ingredient checking (shopping list functionality)
-  let checkedIngredients = $state<Set<string>>(new Set());
+  const subRecipeLinks = $derived(data.recipe.sub_recipe_links ?? []);
+  const totalIngredients = $derived(data.total_ingredients);
 
   // Simple step count - just count <li> elements in instructions
   const stepCount = $derived.by(() => {
@@ -24,16 +42,6 @@
 
     return liMatches ? liMatches.length : 0;
   });
-
-  // Toggle ingredient as checked/unchecked
-  function toggleIngredient(ingredientId: string) {
-    if (checkedIngredients.has(ingredientId)) {
-      checkedIngredients.delete(ingredientId);
-    } else {
-      checkedIngredients.add(ingredientId);
-    }
-    checkedIngredients = new Set(checkedIngredients); // Trigger reactivity
-  }
 </script>
 
 <div
@@ -214,7 +222,7 @@
               </svg>
             </div>
             <div class="text-2xl font-bold text-gray-900 dark:text-gray-100">
-              {data.recipe.ingredient_links.length}
+              {totalIngredients.length}
             </div>
             <div class="text-sm text-gray-600 dark:text-gray-300">Ingredients</div>
           </div>
@@ -267,71 +275,38 @@
       </div>
 
       <!-- Sidebar -->
-      <div class="lg:col-span-1">
-        <!-- Ingredients Section -->
+      <div class="lg:sticky lg:top-8 lg:col-span-1 lg:self-start">
+        <RecipeIngredientsChecklist ingredients={totalIngredients} />
+
         <div
-          class="sticky top-8 rounded-xl border border-gray-300 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-900/40"
+          class="mt-4 rounded-xl border border-gray-300 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-900/40"
         >
           <div class="mb-4 flex items-center justify-between">
-            <h2 class="text-xl font-bold text-gray-900 dark:text-gray-100">Ingredients</h2>
+            <h2 class="text-xl font-bold text-gray-900 dark:text-gray-100">Sub-Recipes</h2>
             <span class="text-sm text-gray-600 dark:text-gray-300">
-              {checkedIngredients.size}/{data.recipe.ingredient_links.length} checked
+              {subRecipeLinks.length}
             </span>
           </div>
 
-          <div class="space-y-3">
-            {#each data.recipe.ingredient_links as ingredient_link, index}
-              <div
-                class="flex cursor-pointer items-center gap-3 rounded-lg border border-gray-300 p-3 transition-all hover:bg-gray-50 dark:border-gray-800 dark:hover:bg-gray-900/60 {checkedIngredients.has(
-                  ingredient_link.ingredient.id
-                )
-                  ? 'border-green-200 bg-green-50 dark:border-green-900/50 dark:bg-green-900/20'
-                  : ''}"
-                role="button"
-                tabindex="0"
-                onclick={() => toggleIngredient(ingredient_link.ingredient.id)}
-                onkeydown={(e) => {
-                  if (e.key === "Enter" || e.key === " ") {
-                    e.preventDefault();
-                    toggleIngredient(ingredient_link.ingredient.id);
-                  }
-                }}
-              >
-                <div class="shrink-0">
-                  {#if checkedIngredients.has(ingredient_link.ingredient.id)}
-                    <svg class="h-5 w-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
-                      <path
-                        fill-rule="evenodd"
-                        d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                        clip-rule="evenodd"
-                      />
-                    </svg>
-                  {:else}
-                    <div
-                      class="h-5 w-5 rounded-full border-2 border-gray-300 dark:border-gray-600"
-                    ></div>
-                  {/if}
-                </div>
+          {#if subRecipeLinks.length === 0}
+            <p class="text-sm text-gray-500 dark:text-gray-400">No sub-recipes linked</p>
+          {:else}
+            <div class="space-y-2">
+              {#each subRecipeLinks as subRecipeLink}
                 <div
-                  class="flex-1 {checkedIngredients.has(ingredient_link.ingredient.id)
-                    ? 'text-gray-500 line-through dark:text-gray-400'
-                    : ''}"
+                  class="rounded-lg border border-gray-300 p-3 transition-colors hover:bg-gray-50 dark:border-gray-800 dark:hover:bg-gray-900/60"
                 >
-                  <div class="font-medium text-gray-900 dark:text-gray-100">
-                    {ingredient_link.ingredient.title}
-                  </div>
-                  <div class="text-sm text-gray-600 dark:text-gray-400">
-                    {ingredient_link.amount}
-                    {ingredient_link.unit}
+                  <a
+                    href="/recipes/{subRecipeLink.sub_recipe.id}"
+                    class="text-sm font-semibold text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
+                  >
+                    {subRecipeLink.sub_recipe.title}
+                  </a>
+                  <div class="mt-1 text-xs text-gray-600 dark:text-gray-400">
+                    Scale x{subRecipeLink.scale_factor} • {subRecipeLink.scaled_servings} servings
                   </div>
                 </div>
-              </div>
-            {/each}
-          </div>
-
-          {#if data.recipe.ingredient_links.length === 0}
-            <div class="py-8 text-center">
-              <p class="text-gray-500 dark:text-gray-400">No ingredients listed</p>
+              {/each}
             </div>
           {/if}
         </div>

@@ -37,7 +37,7 @@
     class: className = "",
     onSelect,
     buttonClass = "w-[200px] justify-between",
-    popoverClass = "w-[240px]",
+    popoverClass = "w-(--bits-popover-anchor-width)",
     disabled = false
   }: Props = $props();
 
@@ -94,9 +94,10 @@
                 data-value={item.value}
                 disabled={item.disabled}
                 onSelect={() => select(item.value)}
+                class="w-full"
               >
                 <CheckIcon class={cn("mr-2 h-4 w-4", value !== item.value && "text-transparent")} />
-                {item.label}
+                <span class="truncate" title={item.label}>{item.label}</span>
               </Command.Item>
             {/each}
           </Command.Group>

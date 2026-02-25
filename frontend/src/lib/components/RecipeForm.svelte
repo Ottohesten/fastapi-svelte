@@ -392,8 +392,6 @@
                         searchPlaceholder="Type to filter ingredients..."
                         ariaLabel="Ingredient"
                         buttonClass="w-full justify-between"
-                        popoverClass="w-full min-w-[var(--radix-popover-trigger-width)]"
-                        class="w-full"
                       />
                     </div>
 
@@ -503,7 +501,7 @@
                   searchPlaceholder="Type to filter sub-recipes..."
                   ariaLabel="Sub-Recipe"
                   buttonClass="w-full justify-between"
-                  popoverClass="w-full min-w-[var(--radix-popover-trigger-width)]"
+                  popoverClass="w-(--bits-popover-anchor-width)"
                 />
 
                 <!-- <select

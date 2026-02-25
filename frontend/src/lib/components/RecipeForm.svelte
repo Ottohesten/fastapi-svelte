@@ -13,6 +13,8 @@
   import { Combobox } from "$lib/components/ui/combobox";
   import { Field, Control, Label as SnapLabel, FieldErrors } from "formsnap";
 
+  import { Plus } from "lucide-svelte";
+
   interface Props {
     data: any;
     pageTitle: string;
@@ -363,16 +365,9 @@
                     event.preventDefault();
                     open = true;
                   }}
-                  class="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-medium text-white shadow-sm transition-colors hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none"
+                  class="ring-offset-background inline-flex h-10 w-full cursor-pointer items-center justify-center gap-2 rounded-md bg-blue-600 px-4 py-2 text-sm font-medium whitespace-nowrap text-white shadow-sm transition-colors hover:bg-blue-500 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 sm:w-auto dark:bg-blue-600 dark:text-white dark:hover:bg-blue-500 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0"
                 >
-                  <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-                    />
-                  </svg>
+                  <Plus class="h-4 w-4" />
                   Add Ingredient
                 </Dialog.Trigger>
                 <Dialog.Content class="sm:max-w-md">
@@ -498,7 +493,20 @@
               </div>
 
               <div class="grid grid-cols-1 gap-3 md:grid-cols-[1fr_170px_auto]">
-                <select
+                <Combobox
+                  items={availableSubRecipes.map((r: any) => ({
+                    label: `${r.title} (${r.servings} servings)`,
+                    value: r.id
+                  }))}
+                  bind:value={selectedSubRecipeId}
+                  placeholder="Select a sub-recipe..."
+                  searchPlaceholder="Type to filter sub-recipes..."
+                  ariaLabel="Sub-Recipe"
+                  buttonClass="w-full justify-between"
+                  popoverClass="w-full min-w-[var(--radix-popover-trigger-width)]"
+                />
+
+                <!-- <select
                   id="sub-recipe-select"
                   class="w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm text-gray-900 shadow-sm transition-colors focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none dark:border-gray-800 dark:bg-gray-900/40 dark:text-gray-100 dark:focus:border-blue-400 dark:focus:ring-blue-400/20"
                   bind:value={selectedSubRecipeId}
@@ -507,7 +515,7 @@
                   {#each availableSubRecipes as recipe}
                     <option value={recipe.id}>{recipe.title} ({recipe.servings} servings)</option>
                   {/each}
-                </select>
+                </select> -->
 
                 <input
                   type="number"

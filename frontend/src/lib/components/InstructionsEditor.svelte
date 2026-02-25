@@ -12,11 +12,14 @@
   let { value = $bindable("") } = $props();
 
   let element;
-  let editor = $state();
+  let editor = $state.raw<Editor | null>(null);
+  let editorReady = $state(false);
   let editorState = $state(0); // Counter to force reactivity
 
   const EMPTY_PARAGRAPH = "<p></p>";
   let lastInternalValue = "";
+  let isApplyingExternalContent = false;
+  let lastAppliedExternalValue = "";
 
   function normalizeHtml(html: string | null | undefined) {
     if (html === undefined || html === null || html === EMPTY_PARAGRAPH) {
@@ -26,27 +29,55 @@
     return html;
   }
 
+  function normalizeForCompare(html: string | null | undefined) {
+    return normalizeHtml(html)
+      .replaceAll("&nbsp;", " ")
+      .replaceAll("\u00A0", " ")
+      .replace(/>\s+</g, "><")
+      .trim();
+  }
+
   $effect(() => {
-    if (editor && value !== undefined) {
-      const normalizedValue = normalizeHtml(value);
-      const normalizedCurrentHtml = normalizeHtml(editor.getHTML());
-      const normalizedLastInternalValue = normalizeHtml(lastInternalValue);
+    if (!editorReady || !editor || value === undefined) {
+      return;
+    }
 
-      // Ignore updates that originated from this editor instance.
-      if (normalizedValue === normalizedLastInternalValue) {
-        return;
-      }
+    if (isApplyingExternalContent) {
+      return;
+    }
 
-      // Apply only truly external changes (restore/reset/etc).
-      if (normalizedValue !== normalizedCurrentHtml) {
-        editor.commands.setContent(normalizedValue, { emitUpdate: false });
-      }
+    const normalizedValue = normalizeForCompare(value);
+    const normalizedCurrentHtml = normalizeForCompare(editor.getHTML());
+    const normalizedLastInternalValue = normalizeForCompare(lastInternalValue);
+    const normalizedLastAppliedExternalValue = normalizeForCompare(lastAppliedExternalValue);
+
+    // Ignore updates that originated from this editor instance.
+    if (normalizedValue === normalizedLastInternalValue) {
+      return;
+    }
+
+    // Ignore repeated attempts to apply the same external HTML.
+    if (normalizedValue === normalizedLastAppliedExternalValue) {
+      return;
+    }
+
+    // Apply only truly external changes (restore/reset/etc).
+    if (normalizedValue !== normalizedCurrentHtml) {
+      isApplyingExternalContent = true;
+      lastAppliedExternalValue = normalizeHtml(value);
+      lastInternalValue = normalizeHtml(value);
+      editor.commands.setContent(normalizeHtml(value), { emitUpdate: false });
+      queueMicrotask(() => {
+        isApplyingExternalContent = false;
+      });
     }
   });
 
   onDestroy(() => {
     if (editor) {
       editor.destroy();
+      editor = null;
+      editorReady = false;
     }
   });
 
@@ -80,6 +111,7 @@
         }
       }
     });
+    editorReady = true;
   });
 
   // Reactive function to check if editor is active (depends on editorState)
@@ -107,7 +139,7 @@
   }
 </script>
 
-{#if editor}
+{#if editorReady && editor}
   <div class="control-group mb-2">
     <div class="button-group flex flex-wrap gap-1">
       <button

@@ -239,6 +239,55 @@ class RecipeIngredientLinkPublic(SQLModel):
     )
 
 
+class RecipeIngredientSourcePublic(SQLModel):
+    recipe_id: uuid.UUID
+    recipe_title: str
+    amount: float
+    unit: str = Field(
+        max_length=10,
+        description="Unit of the amount, e.g. g, ml, pcs, etc.",
+    )
+    is_main_recipe: bool = Field(
+        description="True when the source is the currently viewed recipe.",
+    )
+
+
+class RecipeIngredientTotalPublic(SQLModel):
+    ingredient_id: uuid.UUID
+    title: str
+    amount: float
+    unit: str = Field(
+        max_length=10,
+        description="Unit of the amount, e.g. g, ml, pcs, etc.",
+    )
+    grams: float = Field(
+        description="Total ingredient amount converted to grams for nutrition calculations.",
+    )
+    calories: float = Field(
+        description="Calories contributed by this aggregated ingredient amount.",
+    )
+    carbohydrates: float = Field(
+        description="Carbohydrates (g) contributed by this aggregated ingredient amount.",
+    )
+    fat: float = Field(
+        description="Fat (g) contributed by this aggregated ingredient amount.",
+    )
+    protein: float = Field(
+        description="Protein (g) contributed by this aggregated ingredient amount.",
+    )
+    sources: list[RecipeIngredientSourcePublic]
+
+    @computed_field
+    @property
+    def source_count(self) -> int:
+        return len(self.sources)
+
+    @computed_field
+    @property
+    def has_overlap(self) -> bool:
+        return self.source_count > 1
+
+
 class RecipeSubRecipeLinkCreate(SQLModel):
     sub_recipe_id: uuid.UUID
     scale_factor: float = Field(
@@ -289,33 +338,25 @@ class RecipePublic(RecipeBase):
     owner: UserPublic
     ingredient_links: list[RecipeIngredientLinkPublic]
     sub_recipe_links: list[RecipeSubRecipeLinkPublic] = []
+    total_ingredients: list[RecipeIngredientTotalPublic] = Field(default_factory=list)
 
-    def _amount_to_grams(self, link: RecipeIngredientLinkPublic) -> float:
-        """
-        Convert a recipe ingredient amount to grams for nutrition/weight calculations.
-        """
-        amount_in_grams = link.amount
-        if link.unit == "kg":
-            amount_in_grams = link.amount * 1000
-        elif link.unit == "L":
-            amount_in_grams = link.amount * 1000
-        elif link.unit == "pcs":
-            amount_in_grams = link.amount * link.ingredient.weight_per_piece
-
-        # For "g" and "ml" we keep a 1:1 conversion for now.
-        return amount_in_grams
+    def _ensure_aggregated_totals(self) -> None:
+        if self.total_ingredients:
+            return
+        if self.ingredient_links or self.sub_recipe_links:
+            raise ValueError(
+                "RecipePublic.total_ingredients must be populated by "
+                "build_recipe_public before computing nutrition fields."
+            )
 
     def _sum_nutrient(self, nutrient_field: str) -> float:
         """
-        Sum nutrient values for all linked ingredients.
-        Nutrients are stored as value per 100g on Ingredient.
+        Sum nutrient values from pre-aggregated total ingredients.
         """
-        total = 0.0
-        for link in self.ingredient_links:
-            amount_in_grams = self._amount_to_grams(link)
-            nutrient_per_100g = getattr(link.ingredient, nutrient_field, 0)
-            total += (nutrient_per_100g * amount_in_grams) / 100
-        return total
+        self._ensure_aggregated_totals()
+        return sum(
+            getattr(item, nutrient_field, 0.0) for item in self.total_ingredients
+        )
 
     def _per_serving(self, total_value: float) -> float:
         if self.servings <= 0:
@@ -374,10 +415,8 @@ class RecipePublic(RecipeBase):
     @property
     def calculated_weight(self) -> int:
         """The calculated weight of the recipe based on the ingredients and their amounts. Returns the total weight in grams."""
-        total_weight = sum(
-            self._amount_to_grams(link) for link in self.ingredient_links
-        )
-        return round(total_weight)
+        self._ensure_aggregated_totals()
+        return round(sum(item.grams for item in self.total_ingredients))
 
     @computed_field
     @property

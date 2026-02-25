@@ -1,6 +1,5 @@
 import { RecipesService } from "$lib/client/sdk.gen.js";
 import { error } from "@sveltejs/kit";
-import { redirect } from "@sveltejs/kit";
 
 export const load = async ({ fetch, params, locals }) => {
     const {

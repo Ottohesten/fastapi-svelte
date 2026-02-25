@@ -239,6 +239,35 @@ class RecipeIngredientLinkPublic(SQLModel):
     )
 
 
+class RecipeSubRecipeLinkCreate(SQLModel):
+    sub_recipe_id: uuid.UUID
+    scale_factor: float = Field(
+        default=1.0,
+        gt=0,
+        description=(
+            "Multiplier applied to the linked sub-recipe. "
+            "Example: 0.25 means a quarter of the recipe."
+        ),
+    )
+
+
+class RecipeSubRecipePublic(SQLModel):
+    id: uuid.UUID
+    title: str
+    servings: int
+    image: Optional[str] = None
+
+
+class RecipeSubRecipeLinkPublic(SQLModel):
+    sub_recipe: RecipeSubRecipePublic
+    scale_factor: float
+
+    @computed_field
+    @property
+    def scaled_servings(self) -> float:
+        return round(self.sub_recipe.servings * self.scale_factor, 2)
+
+
 #####################################################################################
 # Recipes
 
@@ -252,12 +281,14 @@ class RecipeBase(SQLModel):
 
 class RecipeCreate(RecipeBase):
     ingredients: list[RecipeIngredientLinkCreate]
+    sub_recipes: list[RecipeSubRecipeLinkCreate] = []
 
 
 class RecipePublic(RecipeBase):
     id: uuid.UUID
     owner: UserPublic
     ingredient_links: list[RecipeIngredientLinkPublic]
+    sub_recipe_links: list[RecipeSubRecipeLinkPublic] = []
 
     def _amount_to_grams(self, link: RecipeIngredientLinkPublic) -> float:
         """
@@ -378,9 +409,49 @@ class Recipe(RecipeBase, table=True):
     ingredient_links: list[RecipeIngredientLink] = Relationship(
         back_populates="recipe", cascade_delete=True
     )
+    sub_recipe_links: list["RecipeSubRecipeLink"] = Relationship(
+        back_populates="parent_recipe",
+        sa_relationship_kwargs={"foreign_keys": "RecipeSubRecipeLink.parent_recipe_id"},
+        cascade_delete=True,
+    )
+    parent_recipe_links: list["RecipeSubRecipeLink"] = Relationship(
+        back_populates="sub_recipe",
+        sa_relationship_kwargs={"foreign_keys": "RecipeSubRecipeLink.sub_recipe_id"},
+        cascade_delete=True,
+    )
 
     # class Config:
     #     arbitrary_types_allowed = True
+
+
+#####################################################################################
+# Recipe Sub-Recipe links
+
+
+class RecipeSubRecipeLink(SQLModel, table=True):
+    parent_recipe_id: uuid.UUID | None = Field(
+        default=None, foreign_key="recipe.id", primary_key=True
+    )
+    sub_recipe_id: uuid.UUID | None = Field(
+        default=None, foreign_key="recipe.id", primary_key=True
+    )
+    scale_factor: float = Field(
+        default=1.0,
+        gt=0,
+        description=(
+            "Multiplier applied to the linked sub-recipe. "
+            "Example: 0.25 means a quarter of the recipe."
+        ),
+    )
+
+    parent_recipe: "Recipe" = Relationship(
+        back_populates="sub_recipe_links",
+        sa_relationship_kwargs={"foreign_keys": "RecipeSubRecipeLink.parent_recipe_id"},
+    )
+    sub_recipe: "Recipe" = Relationship(
+        back_populates="parent_recipe_links",
+        sa_relationship_kwargs={"foreign_keys": "RecipeSubRecipeLink.sub_recipe_id"},
+    )
 
 
 #####################################################################################

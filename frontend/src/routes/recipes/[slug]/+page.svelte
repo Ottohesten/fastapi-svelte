@@ -1,37 +1,19 @@
 <script lang="ts">
-  import type {
-    RecipeIngredientSourcePublic,
-    RecipeIngredientTotalPublic,
-    RecipePublic,
-    UserMePublic
-  } from "$lib/client";
+  import type { RecipePublic, UserMePublic } from "$lib/client";
   import RecipeIngredientsChecklist from "$lib/components/RecipeIngredientsChecklist.svelte";
   import RecipeNutritionSheet from "$lib/components/RecipeNutritionSheet.svelte";
-
-  type IngredientSourceView = RecipeIngredientSourcePublic & {
-    unit: string;
-    is_main_recipe: boolean;
-  };
-
-  type IngredientTotalView = RecipeIngredientTotalPublic & {
-    unit: string;
-    source_count: number;
-    has_overlap: boolean;
-    sources: IngredientSourceView[];
-  };
 
   type Props = {
     data: {
       recipe: RecipePublic;
       authenticatedUser?: UserMePublic;
       is_owner: boolean;
-      total_ingredients: IngredientTotalView[];
     };
   };
 
   let { data }: Props = $props();
   const subRecipeLinks = $derived(data.recipe.sub_recipe_links ?? []);
-  const totalIngredients = $derived(data.total_ingredients);
+  const totalIngredients = $derived(data.recipe.total_ingredients);
 
   // Simple step count - just count <li> elements in instructions
   const stepCount = $derived.by(() => {
@@ -276,7 +258,7 @@
 
       <!-- Sidebar -->
       <div class="lg:sticky lg:top-8 lg:col-span-1 lg:self-start">
-        <RecipeIngredientsChecklist ingredients={totalIngredients} />
+        <RecipeIngredientsChecklist ingredients={data.recipe.total_ingredients} />
 
         <div
           class="mt-4 rounded-xl border border-gray-300 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-900/40"

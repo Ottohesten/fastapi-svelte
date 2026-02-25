@@ -2,11 +2,9 @@ import { IngredientsService, RecipesService } from "$lib/client/sdk.gen.js";
 import { redirect } from "@sveltejs/kit";
 import type { Actions } from "./$types.js";
 import { zod4 as zod } from "sveltekit-superforms/adapters";
-import { z } from "zod";
-import { message, superValidate, fail } from "sveltekit-superforms";
+import { superValidate, fail } from "sveltekit-superforms";
 import { error } from "@sveltejs/kit";
 import { RecipeSchema } from "$lib/schemas/schemas.js";
-import { env } from "$env/dynamic/private";
 
 export const load = async ({ fetch, parent, cookies, url }) => {
     const auth_token = cookies.get("auth_token");
@@ -23,10 +21,15 @@ export const load = async ({ fetch, parent, cookies, url }) => {
         return error(404, JSON.stringify(apierror.detail));
     }
 
+    const { data: recipes, error: recipeError } = await RecipesService.GetRecipes({});
+    if (recipeError) {
+        return error(404, JSON.stringify(recipeError.detail));
+    }
+
     const form = await superValidate(zod(RecipeSchema));
-    // const form = await superValidate({ ingredients: ingredients }, zod(RecipeSchema));
     return {
         ingredients: ingredients,
+        recipes: recipes,
         form
     };
 };
@@ -44,6 +47,10 @@ export const actions = {
             ingredient_id: ingredient.id,
             amount: ingredient.amount,
             unit: ingredient.unit
+        }));
+        const subRecipesForBackend = form.data.sub_recipes.map((recipe) => ({
+            sub_recipe_id: recipe.id,
+            scale_factor: recipe.scale_factor
         }));
 
         let imageUrl = null;
@@ -74,6 +81,7 @@ export const actions = {
                 title: form.data.title,
                 instructions: form.data.instructions ?? null,
                 ingredients: ingredientsForBackend,
+                sub_recipes: subRecipesForBackend,
                 servings: form.data.servings,
                 image: imageUrl
             }

@@ -41,25 +41,6 @@
 
   let open = $state(false);
 
-  function amountToGrams(
-    amount: number,
-    unit: string | undefined,
-    weightPerPiece: number | undefined
-  ): number {
-    const safeAmount = Number.isFinite(amount) ? amount : 0;
-    const safeWeightPerPiece = Number.isFinite(weightPerPiece) ? (weightPerPiece ?? 0) : 0;
-
-    if (unit === "kg" || unit === "L") {
-      return safeAmount * 1000;
-    }
-
-    if (unit === "pcs") {
-      return safeAmount * safeWeightPerPiece;
-    }
-
-    return safeAmount;
-  }
-
   function roundWhole(value: number | undefined): number {
     return Math.round(value ?? 0);
   }
@@ -85,27 +66,17 @@
   }
 
   const ingredientRows = $derived.by<IngredientNutritionRow[]>(() => {
-    const baseRows = recipe.ingredient_links.map((link) => {
-      const grams = amountToGrams(
-        link.amount ?? 0,
-        link.unit ?? "g",
-        link.ingredient.weight_per_piece ?? 0
-      );
-      const calories = (link.ingredient.calories * grams) / 100;
-      const carbohydrates = (link.ingredient.carbohydrates * grams) / 100;
-      const fat = (link.ingredient.fat * grams) / 100;
-      const protein = (link.ingredient.protein * grams) / 100;
-
+    const baseRows = recipe.total_ingredients.map((item) => {
       return {
-        id: link.ingredient.id,
-        title: link.ingredient.title,
-        amount: link.amount ?? 0,
-        unit: link.unit ?? "g",
-        grams,
-        calories,
-        carbohydrates,
-        fat,
-        protein,
+        id: item.ingredient_id,
+        title: item.title,
+        amount: item.amount,
+        unit: item.unit,
+        grams: item.grams,
+        calories: item.calories,
+        carbohydrates: item.carbohydrates,
+        fat: item.fat,
+        protein: item.protein,
         calorieShare: 0,
         carbohydrateShare: 0,
         fatShare: 0,

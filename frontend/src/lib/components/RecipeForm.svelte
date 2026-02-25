@@ -59,6 +59,13 @@
       (i: any) => !$formData.ingredients.some((selected: any) => selected.id === i.id)
     )
   );
+  let availableSubRecipes = $derived(
+    data.recipes.filter(
+      (recipe: any) =>
+        recipe.id !== data.recipe?.id &&
+        !$formData.sub_recipes.some((selected: any) => selected.id === recipe.id)
+    )
+  );
 
   // Function to clear form and localStorage
   function clearForm() {
@@ -99,6 +106,10 @@
   let ingredientUnit = $state<string>("g");
   let open = $state(false);
 
+  // Sub-recipe state
+  let selectedSubRecipeId = $state<string>("");
+  let subRecipeScaleFactor = $state<number>(1.0);
+
   // Edit ingredient dialog state
   let editingIngredientId = $state<string | null>(null);
   let editAmount = $state<number>(1.0);
@@ -131,6 +142,51 @@
       previewUrl = data.recipe.image;
     }
   });
+
+  function addSubRecipe() {
+    if (!selectedSubRecipeId) return;
+    const recipe = data.recipes.find((r: any) => r.id === selectedSubRecipeId);
+    if (!recipe) return;
+
+    $formData.sub_recipes = $formData.sub_recipes.concat({
+      id: recipe.id,
+      title: recipe.title,
+      scale_factor: subRecipeScaleFactor
+    });
+    appendSubRecipeInstructions(recipe);
+
+    selectedSubRecipeId = "";
+    subRecipeScaleFactor = 1.0;
+  }
+
+  function removeSubRecipe(recipeId: string) {
+    $formData.sub_recipes = $formData.sub_recipes.filter((recipe: any) => recipe.id !== recipeId);
+  }
+
+  function escapeHtml(value: string): string {
+    return value
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#39;");
+  }
+
+  function buildSubRecipeInstructionBlock(recipe: any): string {
+    const heading = `<h2>${escapeHtml(recipe.title ?? "Sub-Recipe")}</h2>`;
+    const body = recipe.instructions?.trim()
+      ? recipe.instructions
+      : "<p>No instructions provided in sub-recipe.</p>";
+    return `${heading}\n${body}`;
+  }
+
+  function appendSubRecipeInstructions(recipe: any) {
+    const currentInstructions = $formData.instructions ?? "";
+    const nextBlock = buildSubRecipeInstructionBlock(recipe);
+    $formData.instructions = currentInstructions.trim()
+      ? `${currentInstructions}\n\n${nextBlock}`
+      : nextBlock;
+  }
 </script>
 
 <!-- <SuperDebug data={$formData} /> -->
@@ -433,6 +489,101 @@
               </Dialog.Root>
             </div>
 
+            <div class="space-y-3 rounded-lg border border-gray-200 p-4 dark:border-gray-800">
+              <div class="flex items-center justify-between">
+                <Label for="sub-recipe-select">Sub-Recipes</Label>
+                <span class="text-xs text-gray-500 dark:text-gray-400">
+                  {$formData.sub_recipes.length} selected
+                </span>
+              </div>
+
+              <div class="grid grid-cols-1 gap-3 md:grid-cols-[1fr_170px_auto]">
+                <select
+                  id="sub-recipe-select"
+                  class="w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm text-gray-900 shadow-sm transition-colors focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none dark:border-gray-800 dark:bg-gray-900/40 dark:text-gray-100 dark:focus:border-blue-400 dark:focus:ring-blue-400/20"
+                  bind:value={selectedSubRecipeId}
+                >
+                  <option value="">Select a recipe...</option>
+                  {#each availableSubRecipes as recipe}
+                    <option value={recipe.id}>{recipe.title} ({recipe.servings} servings)</option>
+                  {/each}
+                </select>
+
+                <input
+                  type="number"
+                  min="0.01"
+                  step="0.01"
+                  class="w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm text-gray-900 shadow-sm transition-colors focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none dark:border-gray-800 dark:bg-gray-900/40 dark:text-gray-100 dark:focus:border-blue-400 dark:focus:ring-blue-400/20"
+                  bind:value={subRecipeScaleFactor}
+                  placeholder="Scale factor"
+                />
+
+                <button
+                  type="button"
+                  class="rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-medium text-white shadow-sm transition-colors hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none disabled:cursor-not-allowed disabled:bg-gray-300"
+                  disabled={!selectedSubRecipeId ||
+                    !subRecipeScaleFactor ||
+                    subRecipeScaleFactor <= 0}
+                  onclick={addSubRecipe}
+                >
+                  Add
+                </button>
+              </div>
+
+              {#if $formData.sub_recipes.length > 0}
+                <div class="space-y-2">
+                  {#each $formData.sub_recipes as subRecipe, index}
+                    <div
+                      class="flex flex-col gap-3 rounded-lg border border-gray-200 bg-gray-50 p-3 md:flex-row md:items-center md:justify-between dark:border-gray-800 dark:bg-gray-900/40"
+                    >
+                      <div class="min-w-0">
+                        <p class="truncate text-sm font-medium text-gray-900 dark:text-gray-100">
+                          {subRecipe.title || "Unknown Recipe"}
+                        </p>
+                      </div>
+
+                      <div class="flex items-center gap-2">
+                        <label
+                          class="text-xs text-gray-600 dark:text-gray-300"
+                          for={`sub-recipe-scale-${index}`}>Scale</label
+                        >
+                        <input
+                          id={`sub-recipe-scale-${index}`}
+                          type="number"
+                          min="0.01"
+                          step="0.01"
+                          class="w-28 rounded-md border border-gray-300 bg-white px-2 py-1.5 text-sm text-gray-900 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none dark:border-gray-800 dark:bg-gray-900/40 dark:text-gray-100 dark:focus:border-blue-400 dark:focus:ring-blue-400/20"
+                          bind:value={$formData.sub_recipes[index].scale_factor}
+                        />
+                        <button
+                          type="button"
+                          class="rounded-lg p-1.5 text-red-500 transition-colors hover:bg-red-50 hover:text-red-700 dark:hover:bg-red-900/20"
+                          aria-label="Remove sub-recipe"
+                          onclick={() => removeSubRecipe(subRecipe.id)}
+                        >
+                          <svg
+                            class="h-4 w-4"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                              stroke-width="2"
+                              d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                            />
+                          </svg>
+                        </button>
+                      </div>
+                    </div>
+                  {/each}
+                </div>
+              {:else}
+                <p class="text-sm text-gray-500 dark:text-gray-400">No sub-recipes added.</p>
+              {/if}
+            </div>
+
             <!-- Submit Button -->
             <div class="border-t border-gray-200 pt-4 dark:border-gray-800">
               <button
@@ -452,8 +603,8 @@
       </div>
 
       <!-- Ingredients Sidebar -->
-      <div class="lg:col-span-1">
-        <div class="surface-2 sticky top-8 rounded-xl p-6">
+      <div class="lg:sticky lg:top-8 lg:col-span-1 lg:self-start">
+        <div class="surface-2 rounded-xl p-6">
           <div class="mb-4 flex items-center gap-2">
             <svg
               class="h-5 w-5 text-green-600"
@@ -562,6 +713,51 @@
                       </svg>
                     </button>
                   </div>
+                </div>
+              {/each}
+            </div>
+          {/if}
+        </div>
+
+        <div class="surface-2 mt-4 rounded-xl p-6">
+          <div class="mb-4 flex items-center justify-between">
+            <h2 class="text-lg font-semibold text-gray-900 dark:text-gray-100">Sub-Recipes</h2>
+            <span class="text-sm text-gray-600 dark:text-gray-300">
+              {$formData.sub_recipes.length}
+            </span>
+          </div>
+
+          {#if $formData.sub_recipes.length === 0}
+            <p class="text-sm text-gray-500 dark:text-gray-400">No sub-recipes added yet</p>
+          {:else}
+            <div class="space-y-2">
+              {#each $formData.sub_recipes as subRecipe}
+                <div
+                  class="flex items-center justify-between rounded-lg border border-gray-200 bg-gray-50 p-3 dark:border-gray-800 dark:bg-gray-900/40"
+                >
+                  <div class="min-w-0">
+                    <p class="truncate text-sm font-medium text-gray-900 dark:text-gray-100">
+                      {subRecipe.title || "Unknown Recipe"}
+                    </p>
+                    <p class="text-xs text-gray-500 dark:text-gray-400">
+                      x{subRecipe.scale_factor}
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    aria-label="Remove sub-recipe"
+                    class="rounded-lg p-1.5 text-red-500 transition-colors hover:bg-red-50 hover:text-red-700 dark:hover:bg-red-900/20"
+                    onclick={() => removeSubRecipe(subRecipe.id)}
+                  >
+                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                      />
+                    </svg>
+                  </button>
                 </div>
               {/each}
             </div>

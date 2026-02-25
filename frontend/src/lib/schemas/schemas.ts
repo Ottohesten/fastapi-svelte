@@ -57,15 +57,26 @@ export const RecipeSchema = z.object({
     instructions: z.string().min(1).max(9999),
 
     // ingredients: an array of objects that have an id and a title
-    ingredients: z.array(
-        z.object({
-            id: z.string(),
-            title: z.string().optional(), // For display purposes only, not sent to backend
-            amount: z.number().min(0.1, "Amount must be at least 0.1").default(1),
-            // unit is enum of "g", "kg", "ml", "L", "pcs"
-            unit: z.enum(["g", "kg", "ml", "L", "pcs"]).default("g")
-        })
-    ),
+    ingredients: z
+        .array(
+            z.object({
+                id: z.string(),
+                title: z.string().optional(), // For display purposes only, not sent to backend
+                amount: z.number().min(0.1, "Amount must be at least 0.1").default(1),
+                // unit is enum of "g", "kg", "ml", "L", "pcs"
+                unit: z.enum(["g", "kg", "ml", "L", "pcs"]).default("g")
+            })
+        )
+        .default([]),
+    sub_recipes: z
+        .array(
+            z.object({
+                id: z.string(),
+                title: z.string().optional(),
+                scale_factor: z.number().positive("Scale factor must be greater than 0").default(1)
+            })
+        )
+        .default([]),
 
     servings: z.number().int().min(1).default(1),
 

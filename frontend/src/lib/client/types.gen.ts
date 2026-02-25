@@ -455,6 +455,10 @@ export type RecipeCreate = {
      * Ingredients
      */
     ingredients: Array<RecipeIngredientLinkCreate>;
+    /**
+     * Sub Recipes
+     */
+    sub_recipes?: Array<RecipeSubRecipeLinkCreate>;
 };
 
 /**
@@ -501,6 +505,102 @@ export type RecipeIngredientLinkPublic = {
 };
 
 /**
+ * RecipeIngredientSourcePublic
+ */
+export type RecipeIngredientSourcePublic = {
+    /**
+     * Recipe Id
+     */
+    recipe_id: string;
+    /**
+     * Recipe Title
+     */
+    recipe_title: string;
+    /**
+     * Amount
+     */
+    amount: number;
+    /**
+     * Unit
+     *
+     * Unit of the amount, e.g. g, ml, pcs, etc.
+     */
+    unit: string;
+    /**
+     * Is Main Recipe
+     *
+     * True when the source is the currently viewed recipe.
+     */
+    is_main_recipe: boolean;
+};
+
+/**
+ * RecipeIngredientTotalPublic
+ */
+export type RecipeIngredientTotalPublic = {
+    /**
+     * Ingredient Id
+     */
+    ingredient_id: string;
+    /**
+     * Title
+     */
+    title: string;
+    /**
+     * Amount
+     */
+    amount: number;
+    /**
+     * Unit
+     *
+     * Unit of the amount, e.g. g, ml, pcs, etc.
+     */
+    unit: string;
+    /**
+     * Grams
+     *
+     * Total ingredient amount converted to grams for nutrition calculations.
+     */
+    grams: number;
+    /**
+     * Calories
+     *
+     * Calories contributed by this aggregated ingredient amount.
+     */
+    calories: number;
+    /**
+     * Carbohydrates
+     *
+     * Carbohydrates (g) contributed by this aggregated ingredient amount.
+     */
+    carbohydrates: number;
+    /**
+     * Fat
+     *
+     * Fat (g) contributed by this aggregated ingredient amount.
+     */
+    fat: number;
+    /**
+     * Protein
+     *
+     * Protein (g) contributed by this aggregated ingredient amount.
+     */
+    protein: number;
+    /**
+     * Sources
+     */
+    sources: Array<RecipeIngredientSourcePublic>;
+    /**
+     * Source Count
+     */
+    readonly source_count: number;
+    /**
+     * Has Overlap
+     */
+    readonly has_overlap: boolean;
+};
+
+/**
  * RecipePublic
  */
 export type RecipePublic = {
@@ -529,6 +629,14 @@ export type RecipePublic = {
      * Ingredient Links
      */
     ingredient_links: Array<RecipeIngredientLinkPublic>;
+    /**
+     * Sub Recipe Links
+     */
+    sub_recipe_links?: Array<RecipeSubRecipeLinkPublic>;
+    /**
+     * Total Ingredients
+     */
+    total_ingredients: Array<RecipeIngredientTotalPublic>;
     /**
      * Total Calories
      *
@@ -589,6 +697,59 @@ export type RecipePublic = {
      * Calculate calories per 100g of the recipe.
      */
     readonly calories_per_100g: number;
+};
+
+/**
+ * RecipeSubRecipeLinkCreate
+ */
+export type RecipeSubRecipeLinkCreate = {
+    /**
+     * Sub Recipe Id
+     */
+    sub_recipe_id: string;
+    /**
+     * Scale Factor
+     *
+     * Multiplier applied to the linked sub-recipe. Example: 0.25 means a quarter of the recipe.
+     */
+    scale_factor?: number;
+};
+
+/**
+ * RecipeSubRecipeLinkPublic
+ */
+export type RecipeSubRecipeLinkPublic = {
+    sub_recipe: RecipeSubRecipePublic;
+    /**
+     * Scale Factor
+     */
+    scale_factor: number;
+    /**
+     * Scaled Servings
+     */
+    readonly scaled_servings: number;
+};
+
+/**
+ * RecipeSubRecipePublic
+ */
+export type RecipeSubRecipePublic = {
+    /**
+     * Id
+     */
+    id: string;
+    /**
+     * Title
+     */
+    title: string;
+    /**
+     * Servings
+     */
+    servings: number;
+    /**
+     * Image
+     */
+    image?: string | null;
 };
 
 /**
@@ -926,6 +1087,64 @@ export type ValidationError = {
 };
 
 /**
+ * RecipeIngredientTotalPublic
+ */
+export type RecipeIngredientTotalPublicWritable = {
+    /**
+     * Ingredient Id
+     */
+    ingredient_id: string;
+    /**
+     * Title
+     */
+    title: string;
+    /**
+     * Amount
+     */
+    amount: number;
+    /**
+     * Unit
+     *
+     * Unit of the amount, e.g. g, ml, pcs, etc.
+     */
+    unit: string;
+    /**
+     * Grams
+     *
+     * Total ingredient amount converted to grams for nutrition calculations.
+     */
+    grams: number;
+    /**
+     * Calories
+     *
+     * Calories contributed by this aggregated ingredient amount.
+     */
+    calories: number;
+    /**
+     * Carbohydrates
+     *
+     * Carbohydrates (g) contributed by this aggregated ingredient amount.
+     */
+    carbohydrates: number;
+    /**
+     * Fat
+     *
+     * Fat (g) contributed by this aggregated ingredient amount.
+     */
+    fat: number;
+    /**
+     * Protein
+     *
+     * Protein (g) contributed by this aggregated ingredient amount.
+     */
+    protein: number;
+    /**
+     * Sources
+     */
+    sources: Array<RecipeIngredientSourcePublic>;
+};
+
+/**
  * RecipePublic
  */
 export type RecipePublicWritable = {
@@ -954,6 +1173,25 @@ export type RecipePublicWritable = {
      * Ingredient Links
      */
     ingredient_links: Array<RecipeIngredientLinkPublic>;
+    /**
+     * Sub Recipe Links
+     */
+    sub_recipe_links?: Array<RecipeSubRecipeLinkPublicWritable>;
+    /**
+     * Total Ingredients
+     */
+    total_ingredients: Array<RecipeIngredientTotalPublicWritable>;
+};
+
+/**
+ * RecipeSubRecipeLinkPublic
+ */
+export type RecipeSubRecipeLinkPublicWritable = {
+    sub_recipe: RecipeSubRecipePublic;
+    /**
+     * Scale Factor
+     */
+    scale_factor: number;
 };
 
 export type PostLoginAccessTokenData = {
@@ -1585,6 +1823,26 @@ export type GetUtilsHealthCheckResponses = {
 };
 
 export type GetUtilsHealthCheckResponse = GetUtilsHealthCheckResponses[keyof GetUtilsHealthCheckResponses];
+
+export type GetUtilsSentryDebugData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/utils/sentry-debug';
+};
+
+export type GetUtilsSentryDebugResponses = {
+    /**
+     * Response Utils-Trigger Error
+     *
+     * Successful Response
+     */
+    200: {
+        [key: string]: unknown;
+    };
+};
+
+export type GetUtilsSentryDebugResponse = GetUtilsSentryDebugResponses[keyof GetUtilsSentryDebugResponses];
 
 export type PostRecipesUploadImageData = {
     body: BodyRecipesUploadRecipeImage;

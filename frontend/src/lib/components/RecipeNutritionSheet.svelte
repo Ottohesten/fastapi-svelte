@@ -66,37 +66,17 @@
   }
 
   const ingredientRows = $derived.by<IngredientNutritionRow[]>(() => {
-    if (!recipe.total_ingredients) {
-      throw new Error("Recipe response missing total_ingredients");
-    }
-
     const baseRows = recipe.total_ingredients.map((item) => {
-      const totalIngredient = item as typeof item & {
-        grams?: number;
-        calories?: number;
-        carbohydrates?: number;
-        fat?: number;
-        protein?: number;
-      };
-
-      const unit = totalIngredient.unit ?? "g";
-      const amount = totalIngredient.amount ?? 0;
-      const grams = totalIngredient.grams ?? amount;
-      const calories = totalIngredient.calories ?? 0;
-      const carbohydrates = totalIngredient.carbohydrates ?? 0;
-      const fat = totalIngredient.fat ?? 0;
-      const protein = totalIngredient.protein ?? 0;
-
       return {
-        id: totalIngredient.ingredient_id,
-        title: totalIngredient.title,
-        amount,
-        unit,
-        grams,
-        calories,
-        carbohydrates,
-        fat,
-        protein,
+        id: item.ingredient_id,
+        title: item.title,
+        amount: item.amount,
+        unit: item.unit,
+        grams: item.grams,
+        calories: item.calories,
+        carbohydrates: item.carbohydrates,
+        fat: item.fat,
+        protein: item.protein,
         calorieShare: 0,
         carbohydrateShare: 0,
         fatShare: 0,

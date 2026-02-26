@@ -1,10 +1,48 @@
-import { UsersService, RolesService } from "$lib/client/sdk.gen.js";
+import { LoginService, UsersService, RolesService } from "$lib/client/sdk.gen.js";
 import { error, redirect } from "@sveltejs/kit";
 import { message, superValidate, fail } from "sveltekit-superforms";
 import { zod4 as zod } from "sveltekit-superforms/adapters";
 import type { Actions } from "./$types.js";
+import type { Cookies } from "@sveltejs/kit";
 
 import { UserSchema, UserUpdateSchema, UserAddRoleSchema } from "$lib/schemas/schemas.js";
+
+const ACCESS_COOKIE_MAX_AGE = 60 * 60;
+const REFRESH_COOKIE_MAX_AGE = 60 * 60 * 24 * 7;
+
+async function refreshSessionIfCurrentUserChanged(params: {
+    authUserId: string | undefined;
+    changedUserId: string;
+    cookies: Cookies;
+}) {
+    if (!params.authUserId || params.authUserId !== params.changedUserId) return;
+
+    const refreshToken = params.cookies.get("refresh_token");
+    if (!refreshToken) return;
+
+    const { data, error: refreshError } = await LoginService.RefreshAccessToken({
+        body: { refresh_token: refreshToken }
+    });
+    if (!data || refreshError) return;
+
+    params.cookies.set("auth_token", data.access_token, {
+        httpOnly: true,
+        path: "/",
+        secure: true,
+        sameSite: "strict",
+        maxAge: ACCESS_COOKIE_MAX_AGE
+    });
+
+    if (data.refresh_token) {
+        params.cookies.set("refresh_token", data.refresh_token, {
+            httpOnly: true,
+            path: "/",
+            secure: true,
+            sameSite: "lax",
+            maxAge: REFRESH_COOKIE_MAX_AGE
+        });
+    }
+}
 
 export const load = async ({ fetch, cookies, url }) => {
     const auth_token = cookies.get("auth_token");
@@ -89,7 +127,7 @@ export const actions = {
         return message(userCreateForm, `User ${userCreateForm.data.email} created successfully!`);
     },
 
-    updateUser: async ({ fetch, cookies, request, url }) => {
+    updateUser: async ({ fetch, cookies, request, url, locals }) => {
         const auth_token = cookies.get("auth_token");
 
         if (!auth_token) {
@@ -140,6 +178,12 @@ export const actions = {
             });
         }
 
+        await refreshSessionIfCurrentUserChanged({
+            authUserId: locals.authenticatedUser?.id,
+            changedUserId: userUpdateForm.data.user_id,
+            cookies
+        });
+
         return message(userUpdateForm, `User updated successfully!`);
     },
 
@@ -165,7 +209,7 @@ export const actions = {
         return { success: true };
     },
 
-    toggleUserStatus: async ({ fetch, cookies, request, url }) => {
+    toggleUserStatus: async ({ fetch, cookies, request, url, locals }) => {
         const auth_token = cookies.get("auth_token");
 
         if (!auth_token) {
@@ -201,9 +245,15 @@ export const actions = {
             error(400, `Failed to toggle user status: ${JSON.stringify(apierror.detail)}`);
         }
 
+        await refreshSessionIfCurrentUserChanged({
+            authUserId: locals.authenticatedUser?.id,
+            changedUserId: user_id,
+            cookies
+        });
+
         return { success: true };
     },
-    assignRole: async ({ fetch, cookies, request, url }) => {
+    assignRole: async ({ fetch, cookies, request, url, locals }) => {
         const auth_token = cookies.get("auth_token");
 
         if (!auth_token) {
@@ -227,9 +277,16 @@ export const actions = {
                 error: `Failed to assign role: ${JSON.stringify(apierror.detail)}`
             });
         }
+
+        await refreshSessionIfCurrentUserChanged({
+            authUserId: locals.authenticatedUser?.id,
+            changedUserId: userAddRoleForm.data.user_id,
+            cookies
+        });
+
         return message(userAddRoleForm, `Role assigned successfully!`);
     },
-    removeRole: async ({ fetch, cookies, request, url }) => {
+    removeRole: async ({ fetch, cookies, request, url, locals }) => {
         const auth_token = cookies.get("auth_token");
 
         if (!auth_token) {
@@ -253,10 +310,17 @@ export const actions = {
                 error: `Failed to remove role: ${JSON.stringify(apierror.detail)}`
             });
         }
+
+        await refreshSessionIfCurrentUserChanged({
+            authUserId: locals.authenticatedUser?.id,
+            changedUserId: user_id,
+            cookies
+        });
+
         return { success: true };
     },
 
-    assignScopesToUser: async ({ fetch, cookies, request, url }) => {
+    assignScopesToUser: async ({ fetch, cookies, request, url, locals }) => {
         const auth_token = cookies.get("auth_token");
         if (!auth_token) {
             redirect(302, `/auth/login?redirectTo=${url.pathname}`);
@@ -289,10 +353,17 @@ export const actions = {
         if (apierror) {
             return fail(400, { error: `Failed to add scope: ${JSON.stringify(apierror.detail)}` });
         }
+
+        await refreshSessionIfCurrentUserChanged({
+            authUserId: locals.authenticatedUser?.id,
+            changedUserId: user_id,
+            cookies
+        });
+
         return { success: true };
     },
 
-    removeScope: async ({ fetch, cookies, request, url }) => {
+    removeScope: async ({ fetch, cookies, request, url, locals }) => {
         const auth_token = cookies.get("auth_token");
         if (!auth_token) {
             redirect(302, `/auth/login?redirectTo=${url.pathname}`);
@@ -314,6 +385,13 @@ export const actions = {
                 error: `Failed to remove scope: ${JSON.stringify(apierror.detail)}`
             });
         }
+
+        await refreshSessionIfCurrentUserChanged({
+            authUserId: locals.authenticatedUser?.id,
+            changedUserId: user_id,
+            cookies
+        });
+
         return { success: true };
     }
 } satisfies Actions;

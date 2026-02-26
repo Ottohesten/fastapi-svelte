@@ -1,4 +1,4 @@
-import { LoginService, UsersService } from "$lib/client/sdk.gen.js";
+import { LoginService } from "$lib/client/sdk.gen.js";
 import type { Actions, PageServerLoad } from "./$types";
 import { redirect, fail } from "@sveltejs/kit";
 import { superValidate, message } from "sveltekit-superforms";
@@ -66,14 +66,6 @@ export const actions = {
                 sameSite: "lax",
                 maxAge: 60 * 60 * 24 * 7
             });
-        }
-
-        const { data: userData, error: userError } = await UsersService.GetUserMe({
-            auth: data.access_token
-        });
-
-        if (userError) {
-            return fail(500, { form, message: "Login succeeded but user verification failed." });
         }
 
         const redirectTo = url.searchParams.get("redirectTo") || "/";

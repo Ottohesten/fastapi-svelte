@@ -4,7 +4,15 @@ from typing import Any
 from sqlmodel import Session, select
 
 from app.security import get_password_hash, verify_password
-from app.models import Item, ItemCreate, User, UserCreate, UserUpdate, RefreshToken
+from app.models import (
+    Item,
+    ItemCreate,
+    Role,
+    User,
+    UserCreate,
+    UserUpdate,
+    RefreshToken,
+)
 from hashlib import sha256
 from datetime import datetime, timezone
 
@@ -31,6 +39,20 @@ def update_user(session: Session, db_user: User, user_in: UserUpdate) -> Any:
     session.commit()
     session.refresh(db_user)
     return db_user
+
+
+def bump_user_auth_version(*, session: Session, user: User) -> User:
+    user.auth_version = (user.auth_version or 1) + 1
+    session.add(user)
+    return user
+
+
+def bump_auth_version_for_role_users(*, session: Session, role: Role) -> int:
+    users = session.exec(select(User).join(User.roles).where(Role.id == role.id)).all()
+    for user in users:
+        user.auth_version = (user.auth_version or 1) + 1
+        session.add(user)
+    return len(users)
 
 
 def get_user_by_email(*, session: Session, email: str) -> User | None:

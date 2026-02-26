@@ -1,5 +1,6 @@
 <script lang="ts">
   import * as Sheet from "$lib/components/ui/sheet";
+  import * as Select from "$lib/components/ui/select/index.js";
   import type { RecipePublic } from "$lib/client";
   import { pie as d3Pie, arc as d3Arc } from "d3-shape";
 
@@ -19,8 +20,17 @@
     proteinShare: number;
   };
 
+  type MacroKey = "carbohydrates" | "fat" | "protein";
+
+  type MacroSliceBase = {
+    key: MacroKey;
+    label: string;
+    color: string;
+    value: number;
+  };
+
   type PieSlice = {
-    key: "carbohydrates" | "fat" | "protein";
+    key: MacroKey;
     label: string;
     color: string;
     value: number;
@@ -37,9 +47,48 @@
     share: number;
   };
 
+  type MacroEnergyRow = {
+    key: MacroKey;
+    label: string;
+    color: string;
+    gramsTotal: number;
+    gramsPerServing: number;
+    caloriesTotal: number;
+    caloriesPerServing: number;
+    energyShareTotal: number;
+    energySharePerServing: number;
+    amdrMin: number;
+    amdrMax: number;
+    amdrCoverageMin: number;
+    amdrCoverageMax: number;
+    withinAmdr: boolean;
+  };
+
+  type MacroViewMode = "weight" | "energy";
+
   let { recipe }: { recipe: RecipePublic } = $props();
 
   let open = $state(false);
+  let macroViewMode: MacroViewMode = $state("energy");
+
+  const DAILY_CALORIE_REFERENCE = 2000;
+  const KCAL_PER_GRAM: Record<MacroKey, number> = {
+    carbohydrates: 4,
+    fat: 9,
+    protein: 4
+  };
+  const AMDR_RANGES: Record<MacroKey, { min: number; max: number }> = {
+    carbohydrates: { min: 45, max: 65 },
+    fat: { min: 20, max: 35 },
+    protein: { min: 10, max: 35 }
+  };
+  const macroViewOptions: { value: MacroViewMode; label: string }[] = [
+    { value: "energy", label: "By Energy + AMDR" },
+    { value: "weight", label: "By Weight (grams)" }
+  ];
+  const selectedMacroViewLabel = $derived(
+    macroViewOptions.find((option) => option.value === macroViewMode)?.label ?? "Macro View"
+  );
 
   function roundWhole(value: number | undefined): number {
     return Math.round(value ?? 0);
@@ -47,6 +96,40 @@
 
   function roundOne(value: number): number {
     return Math.round(value * 10) / 10;
+  }
+
+  function clamp(value: number, min: number, max: number): number {
+    return Math.min(Math.max(value, min), max);
+  }
+
+  function buildPieSlices(rawSlices: MacroSliceBase[], total: number): PieSlice[] {
+    const pieGenerator = d3Pie<MacroSliceBase>()
+      .value((slice) => slice.value)
+      .padAngle(0.012)
+      .sort(null);
+    const pieData = pieGenerator(rawSlices);
+    const arcGenerator = d3Arc<(typeof pieData)[number]>()
+      .innerRadius(46)
+      .outerRadius(88)
+      .cornerRadius(5);
+    const labelArc = d3Arc<(typeof pieData)[number]>().innerRadius(64).outerRadius(64);
+
+    return pieData.map((segment) => {
+      const slice = segment.data;
+      const percentage = total > 0 ? (slice.value / total) * 100 : 0;
+      const path = arcGenerator(segment) ?? "";
+      const [labelX, labelY] = labelArc.centroid(segment);
+      const showLabel = percentage >= 5 && slice.value > 0;
+
+      return {
+        ...slice,
+        percentage,
+        path,
+        labelX,
+        labelY,
+        showLabel
+      };
+    });
   }
 
   function topContributors(
@@ -107,55 +190,111 @@
       Math.max(recipe.total_protein ?? 0, 0)
   );
 
-  const pieSlices = $derived.by<PieSlice[]>(() => {
-    const rawSlices = [
+  const macroWeightSlices = $derived.by<PieSlice[]>(() => {
+    const rawSlices: MacroSliceBase[] = [
       {
-        key: "carbohydrates" as const,
+        key: "carbohydrates",
         label: "Carbs",
         color: "#2563eb",
         value: Math.max(recipe.total_carbohydrates ?? 0, 0)
       },
       {
-        key: "fat" as const,
+        key: "fat",
         label: "Fat",
         color: "#d97706",
         value: Math.max(recipe.total_fat ?? 0, 0)
       },
       {
-        key: "protein" as const,
+        key: "protein",
         label: "Protein",
         color: "#dc2626",
         value: Math.max(recipe.total_protein ?? 0, 0)
       }
     ];
 
-    const pieGenerator = d3Pie<(typeof rawSlices)[number]>()
-      .value((slice) => slice.value)
-      .padAngle(0.012)
-      .sort(null);
-    const pieData = pieGenerator(rawSlices);
-    const arcGenerator = d3Arc<(typeof pieData)[number]>()
-      .innerRadius(46)
-      .outerRadius(88)
-      .cornerRadius(5);
-    const labelArc = d3Arc<(typeof pieData)[number]>().innerRadius(64).outerRadius(64);
+    return buildPieSlices(rawSlices, totalMacroGrams);
+  });
 
-    return pieData.map((segment) => {
-      const slice = segment.data;
-      const percentage = totalMacroGrams > 0 ? (slice.value / totalMacroGrams) * 100 : 0;
-      const path = arcGenerator(segment) ?? "";
-      const [labelX, labelY] = labelArc.centroid(segment);
-      const showLabel = percentage >= 5 && slice.value > 0;
+  const macroEnergyRows = $derived.by<MacroEnergyRow[]>(() => {
+    const baseRows = [
+      {
+        key: "carbohydrates" as const,
+        label: "Carbs",
+        color: "#2563eb",
+        gramsTotal: Math.max(recipe.total_carbohydrates ?? 0, 0),
+        gramsPerServing: Math.max(recipe.carbohydrates_per_serving ?? 0, 0)
+      },
+      {
+        key: "fat" as const,
+        label: "Fat",
+        color: "#d97706",
+        gramsTotal: Math.max(recipe.total_fat ?? 0, 0),
+        gramsPerServing: Math.max(recipe.fat_per_serving ?? 0, 0)
+      },
+      {
+        key: "protein" as const,
+        label: "Protein",
+        color: "#dc2626",
+        gramsTotal: Math.max(recipe.total_protein ?? 0, 0),
+        gramsPerServing: Math.max(recipe.protein_per_serving ?? 0, 0)
+      }
+    ];
+
+    const totalMacroCalories = baseRows.reduce(
+      (sum, row) => sum + row.gramsTotal * KCAL_PER_GRAM[row.key],
+      0
+    );
+    const totalPerServingMacroCalories = baseRows.reduce(
+      (sum, row) => sum + row.gramsPerServing * KCAL_PER_GRAM[row.key],
+      0
+    );
+
+    return baseRows.map((row) => {
+      const caloriesTotal = row.gramsTotal * KCAL_PER_GRAM[row.key];
+      const caloriesPerServing = row.gramsPerServing * KCAL_PER_GRAM[row.key];
+      const energyShareTotal =
+        totalMacroCalories > 0 ? (caloriesTotal / totalMacroCalories) * 100 : 0;
+      const energySharePerServing =
+        totalPerServingMacroCalories > 0
+          ? (caloriesPerServing / totalPerServingMacroCalories) * 100
+          : 0;
+      const amdr = AMDR_RANGES[row.key];
+      const amdrMinKcal = (DAILY_CALORIE_REFERENCE * amdr.min) / 100;
+      const amdrMaxKcal = (DAILY_CALORIE_REFERENCE * amdr.max) / 100;
+      const lowerCoverage = amdrMaxKcal > 0 ? (caloriesPerServing / amdrMaxKcal) * 100 : 0;
+      const upperCoverage = amdrMinKcal > 0 ? (caloriesPerServing / amdrMinKcal) * 100 : 0;
 
       return {
-        ...slice,
-        percentage,
-        path,
-        labelX,
-        labelY,
-        showLabel
+        ...row,
+        caloriesTotal,
+        caloriesPerServing,
+        energyShareTotal,
+        energySharePerServing,
+        amdrMin: amdr.min,
+        amdrMax: amdr.max,
+        amdrCoverageMin: Math.min(lowerCoverage, upperCoverage),
+        amdrCoverageMax: Math.max(lowerCoverage, upperCoverage),
+        withinAmdr: energySharePerServing >= amdr.min && energySharePerServing <= amdr.max
       };
     });
+  });
+
+  const totalMacroEnergyCalories = $derived.by(() =>
+    macroEnergyRows.reduce((sum, row) => sum + row.caloriesTotal, 0)
+  );
+
+  const totalPerServingMacroCalories = $derived.by(() =>
+    macroEnergyRows.reduce((sum, row) => sum + row.caloriesPerServing, 0)
+  );
+
+  const macroEnergyPieSlices = $derived.by<PieSlice[]>(() => {
+    const rawSlices: MacroSliceBase[] = macroEnergyRows.map((row) => ({
+      key: row.key,
+      label: row.label,
+      color: row.color,
+      value: row.caloriesTotal
+    }));
+    return buildPieSlices(rawSlices, totalMacroEnergyCalories);
   });
 
   const topCarbSources = $derived.by(() =>
@@ -259,89 +398,272 @@
       <div
         class="rounded-xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-gray-900/40"
       >
-        <h3 class="mb-4 text-lg font-semibold text-gray-900 dark:text-gray-100">
-          Macro Distribution
-        </h3>
-        <div class="grid items-center gap-6 lg:grid-cols-[260px_1fr]">
-          <div class="mx-auto">
-            {#if totalMacroGrams > 0}
-              <svg viewBox="0 0 220 220" class="h-56 w-56">
-                <g transform="translate(110, 110)">
-                  {#each pieSlices as slice}
-                    {#if slice.path}
-                      <path d={slice.path} fill={slice.color} stroke="#0f172a" stroke-width="1.5"
-                      ></path>
-                      {#if slice.showLabel}
-                        <text
-                          x={slice.labelX}
-                          y={slice.labelY}
-                          text-anchor="middle"
-                          dominant-baseline="middle"
-                          class="fill-white text-[12px] font-semibold"
-                        >
-                          {roundWhole(slice.percentage)}%
-                        </text>
-                      {/if}
-                    {/if}
-                  {/each}
-                  <circle r="37" fill="rgba(2, 6, 23, 0.9)"></circle>
-                  <text
-                    text-anchor="middle"
-                    dominant-baseline="middle"
-                    y="-11"
-                    class="fill-slate-300 text-[8px] tracking-wide uppercase"
-                  >
-                    Total
-                  </text>
-                  <text
-                    text-anchor="middle"
-                    dominant-baseline="middle"
-                    y="-2"
-                    class="fill-slate-300 text-[8px] tracking-wide uppercase"
-                  >
-                    Macros
-                  </text>
-                  <text
-                    text-anchor="middle"
-                    dominant-baseline="middle"
-                    y="13"
-                    class="fill-white text-[14px] font-bold"
-                  >
-                    {roundWhole(totalMacroGrams)}g
-                  </text>
-                </g>
-              </svg>
-            {:else}
-              <div
-                class="flex h-56 w-56 items-center justify-center rounded-full border border-dashed border-gray-300 text-sm text-gray-500 dark:border-gray-700 dark:text-gray-400"
-              >
-                No macro data
-              </div>
-            {/if}
+        <div class="mb-4 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+          <div>
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100">
+              {macroViewMode === "energy"
+                ? "Macro Energy Distribution"
+                : "Macro Distribution (By Weight)"}
+            </h3>
+            <p class="mt-1 text-xs text-gray-600 dark:text-gray-400">
+              {#if macroViewMode === "energy"}
+                Based on energy (kcal): carbs/protein = 4 kcal per gram, fat = 9 kcal per gram.
+              {:else}
+                Based on macro grams (not calories): how total macro weight is split.
+              {/if}
+            </p>
           </div>
-
-          <div class="space-y-3">
-            {#each pieSlices as slice}
-              <div
-                class="flex items-center justify-between rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 dark:border-gray-800 dark:bg-gray-900/50"
-              >
-                <div class="flex items-center gap-2">
-                  <span class="h-3 w-3 rounded-full" style={`background-color: ${slice.color}`}
-                  ></span>
-                  <span class="text-sm font-medium text-gray-800 dark:text-gray-200"
-                    >{slice.label}</span
-                  >
-                </div>
-                <div class="text-right text-sm text-gray-700 dark:text-gray-300">
-                  <div class="font-semibold">{roundWhole(slice.value)}g</div>
-                  <div class="text-xs text-gray-500 dark:text-gray-400">
-                    {roundWhole(slice.percentage)}%
-                  </div>
-                </div>
-              </div>
-            {/each}
+          <div class="w-full sm:w-56">
+            <Select.Root type="single" bind:value={macroViewMode}>
+              <Select.Trigger id="macro-view-mode" class="h-9 w-full justify-between">
+                {selectedMacroViewLabel}
+              </Select.Trigger>
+              <Select.Content>
+                {#each macroViewOptions as option}
+                  <Select.Item value={option.value} label={option.label}>
+                    {option.label}
+                  </Select.Item>
+                {/each}
+              </Select.Content>
+            </Select.Root>
           </div>
         </div>
+
+        {#if macroViewMode === "energy"}
+          <div class="grid items-center gap-6 lg:grid-cols-[260px_1fr]">
+            <div class="mx-auto">
+              {#if totalMacroEnergyCalories > 0}
+                <svg viewBox="0 0 220 220" class="h-56 w-56">
+                  <g transform="translate(110, 110)">
+                    {#each macroEnergyPieSlices as slice}
+                      {#if slice.path}
+                        <path d={slice.path} fill={slice.color} stroke="#0f172a" stroke-width="1.5"
+                        ></path>
+                        {#if slice.showLabel}
+                          <text
+                            x={slice.labelX}
+                            y={slice.labelY}
+                            text-anchor="middle"
+                            dominant-baseline="middle"
+                            class="fill-white text-[12px] font-semibold"
+                          >
+                            {roundWhole(slice.percentage)}%
+                          </text>
+                        {/if}
+                      {/if}
+                    {/each}
+                    <circle r="37" fill="rgba(2, 6, 23, 0.9)"></circle>
+                    <text
+                      text-anchor="middle"
+                      dominant-baseline="middle"
+                      y="-6"
+                      class="fill-slate-300 text-[8px] tracking-wide uppercase"
+                    >
+                      Macro kcal
+                    </text>
+                    <text
+                      text-anchor="middle"
+                      dominant-baseline="middle"
+                      y="11"
+                      class="fill-white text-[14px] font-bold"
+                    >
+                      {roundWhole(totalMacroEnergyCalories)}
+                    </text>
+                  </g>
+                </svg>
+              {:else}
+                <div
+                  class="flex h-56 w-56 items-center justify-center rounded-full border border-dashed border-gray-300 text-sm text-gray-500 dark:border-gray-700 dark:text-gray-400"
+                >
+                  No macro energy data
+                </div>
+              {/if}
+            </div>
+
+            <div class="space-y-3">
+              {#each macroEnergyRows as macro}
+                <div
+                  class="rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 dark:border-gray-800 dark:bg-gray-900/50"
+                >
+                  <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-2">
+                      <span class="h-3 w-3 rounded-full" style={`background-color: ${macro.color}`}
+                      ></span>
+                      <span class="text-sm font-medium text-gray-800 dark:text-gray-200">
+                        {macro.label}
+                      </span>
+                    </div>
+                    <div class="text-right text-sm text-gray-700 dark:text-gray-300">
+                      <div class="font-semibold">{roundWhole(macro.caloriesTotal)} kcal</div>
+                      <div class="text-xs text-gray-500 dark:text-gray-400">
+                        {roundOne(macro.energyShareTotal)}% of macro energy
+                      </div>
+                    </div>
+                  </div>
+                  <p class="mt-1 text-xs text-gray-600 dark:text-gray-400">
+                    {roundOne(macro.gramsTotal)}g total, {roundOne(macro.gramsPerServing)}g per
+                    serving
+                  </p>
+                </div>
+              {/each}
+            </div>
+          </div>
+
+          <div class="mt-6 border-t border-gray-200 pt-5 dark:border-gray-800">
+            <div class="flex items-center justify-between gap-2">
+              <h4 class="text-sm font-semibold text-gray-900 dark:text-gray-100">
+                Per-Serving AMDR Alignment
+              </h4>
+              <span class="text-xs text-gray-500 dark:text-gray-400">
+                {roundWhole(totalPerServingMacroCalories)} kcal per serving
+              </span>
+            </div>
+            <p class="mt-1 text-xs text-gray-600 dark:text-gray-400">
+              AMDR ranges: carbs 45-65%, fat 20-35%, protein 10-35% of daily energy.
+              {DAILY_CALORIE_REFERENCE} kcal/day reference for contribution estimates.
+            </p>
+
+            <div class="mt-3 space-y-3">
+              {#each macroEnergyRows as macro}
+                <div
+                  class="rounded-lg border border-gray-200 bg-white p-3 dark:border-gray-800 dark:bg-gray-900/50"
+                >
+                  <div class="mb-2 flex items-center justify-between gap-2">
+                    <div class="flex items-center gap-2">
+                      <span class="h-3 w-3 rounded-full" style={`background-color: ${macro.color}`}
+                      ></span>
+                      <span class="text-sm font-medium text-gray-900 dark:text-gray-100">
+                        {macro.label}
+                      </span>
+                      <span class="text-xs text-gray-600 dark:text-gray-400">
+                        {roundOne(macro.energySharePerServing)}% of serving energy
+                      </span>
+                    </div>
+                    <span
+                      class={`inline-flex items-center rounded-full border px-2 py-0.5 text-[11px] font-medium ${
+                        macro.withinAmdr
+                          ? "border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-900/40 dark:bg-emerald-900/20 dark:text-emerald-300"
+                          : "border-amber-200 bg-amber-50 text-amber-700 dark:border-amber-900/40 dark:bg-amber-900/20 dark:text-amber-300"
+                      }`}
+                    >
+                      {macro.withinAmdr ? "Within AMDR" : "Outside AMDR"}
+                    </span>
+                  </div>
+
+                  <div
+                    class="relative h-2 overflow-hidden rounded-full bg-gray-200 dark:bg-gray-800"
+                  >
+                    <div
+                      class="absolute inset-y-0 rounded-full bg-emerald-300/70 dark:bg-emerald-500/40"
+                      style={`left: ${macro.amdrMin}%; width: ${macro.amdrMax - macro.amdrMin}%`}
+                    ></div>
+                    <div
+                      class="absolute -top-1 h-4 w-1 rounded-full"
+                      style={`left: calc(${clamp(macro.energySharePerServing, 0, 100)}% - 2px); background-color: ${macro.color};`}
+                    ></div>
+                  </div>
+
+                  <div
+                    class="mt-2 flex flex-wrap items-center justify-between gap-x-4 gap-y-1 text-xs"
+                  >
+                    <span class="text-gray-600 dark:text-gray-400">
+                      Target {macro.amdrMin}% - {macro.amdrMax}%
+                    </span>
+                    <span class="text-gray-700 dark:text-gray-300">
+                      {roundOne(macro.gramsPerServing)}g ({roundWhole(macro.caloriesPerServing)} kcal)
+                      / serving
+                    </span>
+                  </div>
+                  <p class="mt-1 text-xs text-gray-600 dark:text-gray-400">
+                    Serving contribution to daily AMDR range: {roundOne(macro.amdrCoverageMin)}% -
+                    {roundOne(macro.amdrCoverageMax)}%
+                  </p>
+                </div>
+              {/each}
+            </div>
+          </div>
+        {:else}
+          <div class="grid items-center gap-6 lg:grid-cols-[260px_1fr]">
+            <div class="mx-auto">
+              {#if totalMacroGrams > 0}
+                <svg viewBox="0 0 220 220" class="h-56 w-56">
+                  <g transform="translate(110, 110)">
+                    {#each macroWeightSlices as slice}
+                      {#if slice.path}
+                        <path d={slice.path} fill={slice.color} stroke="#0f172a" stroke-width="1.5"
+                        ></path>
+                        {#if slice.showLabel}
+                          <text
+                            x={slice.labelX}
+                            y={slice.labelY}
+                            text-anchor="middle"
+                            dominant-baseline="middle"
+                            class="fill-white text-[12px] font-semibold"
+                          >
+                            {roundWhole(slice.percentage)}%
+                          </text>
+                        {/if}
+                      {/if}
+                    {/each}
+                    <circle r="37" fill="rgba(2, 6, 23, 0.9)"></circle>
+                    <text
+                      text-anchor="middle"
+                      dominant-baseline="middle"
+                      y="-11"
+                      class="fill-slate-300 text-[8px] tracking-wide uppercase"
+                    >
+                      Total
+                    </text>
+                    <text
+                      text-anchor="middle"
+                      dominant-baseline="middle"
+                      y="-2"
+                      class="fill-slate-300 text-[8px] tracking-wide uppercase"
+                    >
+                      Macros
+                    </text>
+                    <text
+                      text-anchor="middle"
+                      dominant-baseline="middle"
+                      y="13"
+                      class="fill-white text-[14px] font-bold"
+                    >
+                      {roundWhole(totalMacroGrams)}g
+                    </text>
+                  </g>
+                </svg>
+              {:else}
+                <div
+                  class="flex h-56 w-56 items-center justify-center rounded-full border border-dashed border-gray-300 text-sm text-gray-500 dark:border-gray-700 dark:text-gray-400"
+                >
+                  No macro data
+                </div>
+              {/if}
+            </div>
+
+            <div class="space-y-3">
+              {#each macroWeightSlices as slice}
+                <div
+                  class="flex items-center justify-between rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 dark:border-gray-800 dark:bg-gray-900/50"
+                >
+                  <div class="flex items-center gap-2">
+                    <span class="h-3 w-3 rounded-full" style={`background-color: ${slice.color}`}
+                    ></span>
+                    <span class="text-sm font-medium text-gray-800 dark:text-gray-200"
+                      >{slice.label}</span
+                    >
+                  </div>
+                  <div class="text-right text-sm text-gray-700 dark:text-gray-300">
+                    <div class="font-semibold">{roundWhole(slice.value)}g</div>
+                    <div class="text-xs text-gray-500 dark:text-gray-400">
+                      {roundWhole(slice.percentage)}%
+                    </div>
+                  </div>
+                </div>
+              {/each}
+            </div>
+          </div>
+        {/if}
       </div>
 
       <div

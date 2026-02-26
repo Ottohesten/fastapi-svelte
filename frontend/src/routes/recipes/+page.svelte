@@ -1,6 +1,42 @@
 <script lang="ts">
   import Recipe from "$lib/components/Recipe.svelte";
-  let { data } = $props();
+  import { Input } from "$lib/components/ui/input";
+  import type { PageData } from "./$types";
+
+  let { data }: { data: PageData } = $props();
+  let searchQuery = $state("");
+
+  let filteredRecipes = $derived.by(() => {
+    const query = searchQuery.trim().toLowerCase();
+    if (!query) return data.recipes;
+
+    const ingredientTerms = query
+      .split(",")
+      .map((term) => term.trim())
+      .filter((term) => term.length > 0);
+
+    const isIngredientListSearch = query.includes(",");
+
+    return data.recipes.filter((recipe) => {
+      const ingredientTitles = recipe.ingredient_links.map((ingredientLink) =>
+        ingredientLink.ingredient.title.toLowerCase()
+      );
+
+      if (isIngredientListSearch) {
+        return ingredientTerms.every((term) =>
+          ingredientTitles.some((ingredientTitle) => ingredientTitle.includes(term))
+        );
+      }
+
+      const titleMatch = recipe.title.toLowerCase().includes(query);
+      const ownerMatch = (recipe.owner.full_name ?? "").toLowerCase().includes(query);
+      const ingredientMatch = ingredientTitles.some((ingredientTitle) =>
+        ingredientTitle.includes(query)
+      );
+
+      return titleMatch || ownerMatch || ingredientMatch;
+    });
+  });
 </script>
 
 <!-- {console.log(form)} -->
@@ -33,8 +69,21 @@
     {/if}
   </div>
 
+  <div class="mb-6">
+    <Input
+      type="search"
+      bind:value={searchQuery}
+      placeholder="Search by title/owner, or ingredients: olive oil, salmon, rice"
+      class="w-full sm:max-w-xl"
+      aria-label="Search recipes"
+    />
+    <p class="mt-2 text-sm text-gray-600">
+      Showing {filteredRecipes.length} of {data.recipes.length} recipes
+    </p>
+  </div>
+
   <div class="grid grid-cols-1 gap-4 sm:gap-6 md:grid-cols-2 xl:grid-cols-3">
-    {#each data.recipes as recipe}
+    {#each filteredRecipes as recipe}
       <Recipe
         {recipe}
         authenticatedUser={data.authenticatedUser
@@ -43,6 +92,12 @@
       />
     {/each}
   </div>
+
+  {#if filteredRecipes.length === 0}
+    <div class="mt-8 rounded-lg border border-dashed border-gray-300 bg-gray-50 p-6 text-center">
+      <p class="text-sm text-gray-600">No recipes match your search.</p>
+    </div>
+  {/if}
 </div>
 
 <!-- <form action="/recipes?/create" method="POST">

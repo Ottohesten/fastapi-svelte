@@ -1,7 +1,7 @@
 import uuid
 from fastapi import APIRouter, UploadFile, File
 from fastapi import HTTPException, Security
-from sqlmodel import select
+from sqlmodel import select, desc
 import cloudinary
 import cloudinary.uploader
 from app.config import get_settings
@@ -273,6 +273,7 @@ def _build_recipe_public(session: SessionDep, recipe: Recipe) -> RecipePublic:
             "servings": recipe.servings,
             "image": recipe.image,
             "owner": recipe.owner,
+            "created_at": recipe.created_at,
             "ingredient_links": recipe.ingredient_links,
             "sub_recipe_links": recipe.sub_recipe_links,
             "total_ingredients": _calculate_total_ingredients(session, recipe),
@@ -313,7 +314,9 @@ def get_recipes(session: SessionDep, skip: int = 0, limit: int = 100):
     Retrieve recipes.
     """
 
-    statement = select(Recipe).offset(skip).limit(limit)
+    statement = (
+        select(Recipe).order_by(desc(Recipe.created_at)).offset(skip).limit(limit)
+    )
     recipes = session.exec(statement).all()
 
     return [_build_recipe_public(session, recipe) for recipe in recipes]

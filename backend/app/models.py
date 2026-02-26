@@ -323,8 +323,8 @@ class RecipeSubRecipeLinkPublic(SQLModel):
 
 class RecipeBase(SQLModel):
     title: str = Field(max_length=255, min_length=1)
-    instructions: Optional[str] = Field(default=None, max_length=9999)
-    servings: int = Field(default=1)
+    instructions: str
+    servings: int
     image: Optional[str] = Field(default=None, max_length=1000)
 
 
@@ -336,6 +336,8 @@ class RecipeCreate(RecipeBase):
 class RecipePublic(RecipeBase):
     id: uuid.UUID
     owner: UserPublic
+    created_at: datetime
+
     ingredient_links: list[RecipeIngredientLinkPublic]
     sub_recipe_links: list[RecipeSubRecipeLinkPublic] = []
     # Required in public responses so OpenAPI/TS client do not mark it as optional.
@@ -442,6 +444,10 @@ class Recipe(RecipeBase, table=True):
 
     owner_id: uuid.UUID = Field(foreign_key="user.id", nullable=False)
     owner: User = Relationship(back_populates="recipes")
+    created_at: datetime = Field(
+        default=datetime.now(timezone.utc),
+        sa_column=Column(DateTime(timezone=True), nullable=False),
+    )
 
     # we will use this field to be able to scale the recipe, can not be less than 1
     servings: int = Field(default=1)

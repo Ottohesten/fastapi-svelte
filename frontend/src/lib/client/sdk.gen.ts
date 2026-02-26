@@ -2,8 +2,8 @@
 
 import { type Client, formDataBodySerializer, type Options as Options2, type TDataShape, urlSearchParamsBodySerializer } from './client';
 import { client } from './client.gen';
-import { getGameByGameSessionIdResponseTransformer, getGameResponseTransformer, postGameResponseTransformer } from './transformers.gen';
-import type { DeleteGameByGameSessionIdData, DeleteGameByGameSessionIdErrors, DeleteGameByGameSessionIdPlayerByGamePlayerIdData, DeleteGameByGameSessionIdPlayerByGamePlayerIdErrors, DeleteGameByGameSessionIdPlayerByGamePlayerIdResponses, DeleteGameByGameSessionIdResponses, DeleteGameByGameSessionIdTeamByGameTeamIdData, DeleteGameByGameSessionIdTeamByGameTeamIdErrors, DeleteGameByGameSessionIdTeamByGameTeamIdResponses, DeleteGameDeleteAllData, DeleteGameDeleteAllResponses, DeleteGameDrinksByDrinkIdData, DeleteGameDrinksByDrinkIdErrors, DeleteGameDrinksByDrinkIdResponses, DeleteIngredientsByIngredientIdData, DeleteIngredientsByIngredientIdErrors, DeleteIngredientsByIngredientIdResponses, DeleteRecipesByRecipeIdData, DeleteRecipesByRecipeIdErrors, DeleteRecipesByRecipeIdResponses, DeleteRolesByRoleIdData, DeleteRolesByRoleIdErrors, DeleteRolesByRoleIdResponses, DeleteUsersByUserIdData, DeleteUsersByUserIdErrors, DeleteUsersByUserIdResponses, DeleteUsersByUserIdRolesByRoleIdData, DeleteUsersByUserIdRolesByRoleIdErrors, DeleteUsersByUserIdRolesByRoleIdResponses, DeleteUsersByUserIdScopesData, DeleteUsersByUserIdScopesErrors, DeleteUsersByUserIdScopesResponses, DeleteUsersMeData, DeleteUsersMeResponses, GetGameByGameSessionIdData, GetGameByGameSessionIdErrors, GetGameByGameSessionIdResponses, GetGameByGameSessionIdUpdatesData, GetGameByGameSessionIdUpdatesErrors, GetGameByGameSessionIdUpdatesResponses, GetGameData, GetGameDrinksData, GetGameDrinksErrors, GetGameDrinksResponses, GetGameErrors, GetGameResponses, GetIngredientsByIngredientIdData, GetIngredientsByIngredientIdErrors, GetIngredientsByIngredientIdResponses, GetIngredientsData, GetIngredientsErrors, GetIngredientsResponses, GetRecipesByRecipeIdData, GetRecipesByRecipeIdErrors, GetRecipesByRecipeIdResponses, GetRecipesData, GetRecipesErrors, GetRecipesResponses, GetRolesByRoleIdData, GetRolesByRoleIdErrors, GetRolesByRoleIdResponses, GetRolesData, GetRolesResponses, GetRolesScopesAvailableData, GetRolesScopesAvailableResponses, GetRolesTemplatesData, GetRolesTemplatesResponses, GetUsersByUserIdData, GetUsersByUserIdErrors, GetUsersByUserIdResponses, GetUsersData, GetUsersErrors, GetUsersMeData, GetUsersMeErrors, GetUsersMeResponses, GetUsersResponses, GetUsersWithPermissionsData, GetUsersWithPermissionsErrors, GetUsersWithPermissionsResponses, GetUtilsHealthCheckData, GetUtilsHealthCheckResponses, GetUtilsSentryDebugData, GetUtilsSentryDebugResponses, PatchGameByGameSessionIdPlayerByGamePlayerIdData, PatchGameByGameSessionIdPlayerByGamePlayerIdDrinkData, PatchGameByGameSessionIdPlayerByGamePlayerIdDrinkErrors, PatchGameByGameSessionIdPlayerByGamePlayerIdDrinkResponses, PatchGameByGameSessionIdPlayerByGamePlayerIdErrors, PatchGameByGameSessionIdPlayerByGamePlayerIdResponses, PatchGameDrinksByDrinkIdData, PatchGameDrinksByDrinkIdErrors, PatchGameDrinksByDrinkIdResponses, PatchIngredientsByIngredientIdData, PatchIngredientsByIngredientIdErrors, PatchIngredientsByIngredientIdResponses, PatchRecipesByRecipeIdData, PatchRecipesByRecipeIdErrors, PatchRecipesByRecipeIdResponses, PatchUsersByUserIdData, PatchUsersByUserIdErrors, PatchUsersByUserIdResponses, PatchUsersMeData, PatchUsersMeErrors, PatchUsersMePasswordData, PatchUsersMePasswordErrors, PatchUsersMePasswordResponses, PatchUsersMeResponses, PostGameByGameSessionIdPlayerData, PostGameByGameSessionIdPlayerErrors, PostGameByGameSessionIdPlayerResponses, PostGameByGameSessionIdTeamData, PostGameByGameSessionIdTeamErrors, PostGameByGameSessionIdTeamResponses, PostGameData, PostGameDrinksData, PostGameDrinksErrors, PostGameDrinksResponses, PostGameErrors, PostGameResponses, PostIngredientsData, PostIngredientsErrors, PostIngredientsResponses, PostLoginAccessTokenData, PostLoginAccessTokenErrors, PostLoginAccessTokenResponses, PostLoginRefreshData, PostLoginRefreshErrors, PostLoginRefreshResponses, PostLoginTestTokenData, PostLoginTestTokenResponses, PostLogoutData, PostLogoutErrors, PostLogoutResponses, PostPasswordRecoveryByEmailData, PostPasswordRecoveryByEmailErrors, PostPasswordRecoveryByEmailResponses, PostPasswordRecoveryHtmlContentByEmailData, PostPasswordRecoveryHtmlContentByEmailErrors, PostPasswordRecoveryHtmlContentByEmailResponses, PostRecipesData, PostRecipesErrors, PostRecipesResponses, PostRecipesUploadImageData, PostRecipesUploadImageErrors, PostRecipesUploadImageResponses, PostResetPasswordData, PostResetPasswordErrors, PostResetPasswordResponses, PostRolesData, PostRolesErrors, PostRolesFromTemplateByTemplateKeyData, PostRolesFromTemplateByTemplateKeyErrors, PostRolesFromTemplateByTemplateKeyResponses, PostRolesResponses, PostUsersByUserIdRolesByRoleIdData, PostUsersByUserIdRolesByRoleIdErrors, PostUsersByUserIdRolesByRoleIdResponses, PostUsersByUserIdScopesData, PostUsersByUserIdScopesErrors, PostUsersByUserIdScopesResponses, PostUsersData, PostUsersErrors, PostUsersResponses, PostUsersSignupData, PostUsersSignupErrors, PostUsersSignupResponses, PutRolesByRoleIdData, PutRolesByRoleIdErrors, PutRolesByRoleIdResponses } from './types.gen';
+import { deleteRecipesByRecipeIdResponseTransformer, getGameByGameSessionIdResponseTransformer, getGameResponseTransformer, getRecipesByRecipeIdResponseTransformer, getRecipesResponseTransformer, patchRecipesByRecipeIdResponseTransformer, postGameResponseTransformer, postRecipesResponseTransformer } from './transformers.gen';
+import type { DeleteGameByGameSessionIdData, DeleteGameByGameSessionIdErrors, DeleteGameByGameSessionIdPlayerByGamePlayerIdData, DeleteGameByGameSessionIdPlayerByGamePlayerIdErrors, DeleteGameByGameSessionIdPlayerByGamePlayerIdResponses, DeleteGameByGameSessionIdResponses, DeleteGameByGameSessionIdTeamByGameTeamIdData, DeleteGameByGameSessionIdTeamByGameTeamIdErrors, DeleteGameByGameSessionIdTeamByGameTeamIdResponses, DeleteGameDeleteAllData, DeleteGameDeleteAllResponses, DeleteGameDrinksByDrinkIdData, DeleteGameDrinksByDrinkIdErrors, DeleteGameDrinksByDrinkIdResponses, DeleteIngredientsByIngredientIdData, DeleteIngredientsByIngredientIdErrors, DeleteIngredientsByIngredientIdResponses, DeleteRecipesByRecipeIdData, DeleteRecipesByRecipeIdErrors, DeleteRecipesByRecipeIdResponses, DeleteRolesByRoleIdData, DeleteRolesByRoleIdErrors, DeleteRolesByRoleIdResponses, DeleteUsersByUserIdData, DeleteUsersByUserIdErrors, DeleteUsersByUserIdResponses, DeleteUsersByUserIdRolesByRoleIdData, DeleteUsersByUserIdRolesByRoleIdErrors, DeleteUsersByUserIdRolesByRoleIdResponses, DeleteUsersByUserIdScopesData, DeleteUsersByUserIdScopesErrors, DeleteUsersByUserIdScopesResponses, DeleteUsersMeData, DeleteUsersMeResponses, GetGameByGameSessionIdData, GetGameByGameSessionIdErrors, GetGameByGameSessionIdResponses, GetGameByGameSessionIdUpdatesData, GetGameByGameSessionIdUpdatesErrors, GetGameByGameSessionIdUpdatesResponses, GetGameData, GetGameDrinksData, GetGameDrinksErrors, GetGameDrinksResponses, GetGameErrors, GetGameResponses, GetIngredientsByIngredientIdData, GetIngredientsByIngredientIdErrors, GetIngredientsByIngredientIdResponses, GetIngredientsData, GetIngredientsErrors, GetIngredientsResponses, GetRecipesByRecipeIdData, GetRecipesByRecipeIdErrors, GetRecipesByRecipeIdResponses, GetRecipesData, GetRecipesErrors, GetRecipesResponses, GetRolesByRoleIdData, GetRolesByRoleIdErrors, GetRolesByRoleIdResponses, GetRolesData, GetRolesResponses, GetRolesScopesAvailableData, GetRolesScopesAvailableResponses, GetRolesTemplatesData, GetRolesTemplatesResponses, GetUsersByUserIdData, GetUsersByUserIdErrors, GetUsersByUserIdResponses, GetUsersData, GetUsersErrors, GetUsersMeData, GetUsersMeErrors, GetUsersMeResponses, GetUsersResponses, GetUsersWithPermissionsData, GetUsersWithPermissionsErrors, GetUsersWithPermissionsResponses, GetUtilsHealthCheckData, GetUtilsHealthCheckResponses, PatchGameByGameSessionIdPlayerByGamePlayerIdData, PatchGameByGameSessionIdPlayerByGamePlayerIdDrinkData, PatchGameByGameSessionIdPlayerByGamePlayerIdDrinkErrors, PatchGameByGameSessionIdPlayerByGamePlayerIdDrinkResponses, PatchGameByGameSessionIdPlayerByGamePlayerIdErrors, PatchGameByGameSessionIdPlayerByGamePlayerIdResponses, PatchGameDrinksByDrinkIdData, PatchGameDrinksByDrinkIdErrors, PatchGameDrinksByDrinkIdResponses, PatchIngredientsByIngredientIdData, PatchIngredientsByIngredientIdErrors, PatchIngredientsByIngredientIdResponses, PatchRecipesByRecipeIdData, PatchRecipesByRecipeIdErrors, PatchRecipesByRecipeIdResponses, PatchUsersByUserIdData, PatchUsersByUserIdErrors, PatchUsersByUserIdResponses, PatchUsersMeData, PatchUsersMeErrors, PatchUsersMePasswordData, PatchUsersMePasswordErrors, PatchUsersMePasswordResponses, PatchUsersMeResponses, PostGameByGameSessionIdPlayerData, PostGameByGameSessionIdPlayerErrors, PostGameByGameSessionIdPlayerResponses, PostGameByGameSessionIdTeamData, PostGameByGameSessionIdTeamErrors, PostGameByGameSessionIdTeamResponses, PostGameData, PostGameDrinksData, PostGameDrinksErrors, PostGameDrinksResponses, PostGameErrors, PostGameResponses, PostIngredientsData, PostIngredientsErrors, PostIngredientsResponses, PostLoginAccessTokenData, PostLoginAccessTokenErrors, PostLoginAccessTokenResponses, PostLoginRefreshData, PostLoginRefreshErrors, PostLoginRefreshResponses, PostLoginTestTokenData, PostLoginTestTokenResponses, PostLogoutData, PostLogoutErrors, PostLogoutResponses, PostPasswordRecoveryByEmailData, PostPasswordRecoveryByEmailErrors, PostPasswordRecoveryByEmailResponses, PostPasswordRecoveryHtmlContentByEmailData, PostPasswordRecoveryHtmlContentByEmailErrors, PostPasswordRecoveryHtmlContentByEmailResponses, PostRecipesData, PostRecipesErrors, PostRecipesResponses, PostRecipesUploadImageData, PostRecipesUploadImageErrors, PostRecipesUploadImageResponses, PostResetPasswordData, PostResetPasswordErrors, PostResetPasswordResponses, PostRolesData, PostRolesErrors, PostRolesFromTemplateByTemplateKeyData, PostRolesFromTemplateByTemplateKeyErrors, PostRolesFromTemplateByTemplateKeyResponses, PostRolesResponses, PostUsersByUserIdRolesByRoleIdData, PostUsersByUserIdRolesByRoleIdErrors, PostUsersByUserIdRolesByRoleIdResponses, PostUsersByUserIdScopesData, PostUsersByUserIdScopesErrors, PostUsersByUserIdScopesResponses, PostUsersData, PostUsersErrors, PostUsersResponses, PostUsersSignupData, PostUsersSignupErrors, PostUsersSignupResponses, PutRolesByRoleIdData, PutRolesByRoleIdErrors, PutRolesByRoleIdResponses } from './types.gen';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean> = Options2<TData, ThrowOnError> & {
     /**
@@ -414,13 +414,6 @@ export class UtilsService {
     public static HealthCheck<ThrowOnError extends boolean = false>(options?: Options<GetUtilsHealthCheckData, ThrowOnError>) {
         return (options?.client ?? client).get<GetUtilsHealthCheckResponses, unknown, ThrowOnError>({ url: '/utils/health-check/', ...options });
     }
-
-    /**
-     * Trigger Error
-     */
-    public static TriggerError<ThrowOnError extends boolean = false>(options?: Options<GetUtilsSentryDebugData, ThrowOnError>) {
-        return (options?.client ?? client).get<GetUtilsSentryDebugResponses, unknown, ThrowOnError>({ url: '/utils/sentry-debug', ...options });
-    }
 }
 
 export class RecipesService {
@@ -448,7 +441,11 @@ export class RecipesService {
      * Retrieve recipes.
      */
     public static GetRecipes<ThrowOnError extends boolean = false>(options?: Options<GetRecipesData, ThrowOnError>) {
-        return (options?.client ?? client).get<GetRecipesResponses, GetRecipesErrors, ThrowOnError>({ url: '/recipes/', ...options });
+        return (options?.client ?? client).get<GetRecipesResponses, GetRecipesErrors, ThrowOnError>({
+            responseTransformer: getRecipesResponseTransformer,
+            url: '/recipes/',
+            ...options
+        });
     }
 
     /**
@@ -458,6 +455,7 @@ export class RecipesService {
      */
     public static CreateRecipe<ThrowOnError extends boolean = false>(options: Options<PostRecipesData, ThrowOnError>) {
         return (options.client ?? client).post<PostRecipesResponses, PostRecipesErrors, ThrowOnError>({
+            responseTransformer: postRecipesResponseTransformer,
             security: [{ scheme: 'bearer', type: 'http' }],
             url: '/recipes/',
             ...options,
@@ -475,6 +473,7 @@ export class RecipesService {
      */
     public static DeleteRecipe<ThrowOnError extends boolean = false>(options: Options<DeleteRecipesByRecipeIdData, ThrowOnError>) {
         return (options.client ?? client).delete<DeleteRecipesByRecipeIdResponses, DeleteRecipesByRecipeIdErrors, ThrowOnError>({
+            responseTransformer: deleteRecipesByRecipeIdResponseTransformer,
             security: [{ scheme: 'bearer', type: 'http' }],
             url: '/recipes/{recipe_id}',
             ...options
@@ -487,7 +486,11 @@ export class RecipesService {
      * Retrieve a recipe.
      */
     public static GetRecipe<ThrowOnError extends boolean = false>(options: Options<GetRecipesByRecipeIdData, ThrowOnError>) {
-        return (options.client ?? client).get<GetRecipesByRecipeIdResponses, GetRecipesByRecipeIdErrors, ThrowOnError>({ url: '/recipes/{recipe_id}', ...options });
+        return (options.client ?? client).get<GetRecipesByRecipeIdResponses, GetRecipesByRecipeIdErrors, ThrowOnError>({
+            responseTransformer: getRecipesByRecipeIdResponseTransformer,
+            url: '/recipes/{recipe_id}',
+            ...options
+        });
     }
 
     /**
@@ -497,6 +500,7 @@ export class RecipesService {
      */
     public static UpdateRecipe<ThrowOnError extends boolean = false>(options: Options<PatchRecipesByRecipeIdData, ThrowOnError>) {
         return (options.client ?? client).patch<PatchRecipesByRecipeIdResponses, PatchRecipesByRecipeIdErrors, ThrowOnError>({
+            responseTransformer: patchRecipesByRecipeIdResponseTransformer,
             security: [{ scheme: 'bearer', type: 'http' }],
             url: '/recipes/{recipe_id}',
             ...options,

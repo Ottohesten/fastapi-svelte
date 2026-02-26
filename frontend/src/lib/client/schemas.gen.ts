@@ -676,6 +676,12 @@ export const RecipeSchema = {
             type: 'string',
             format: 'uuid',
             title: 'Owner Id'
+        },
+        created_at: {
+            type: 'string',
+            format: 'date-time',
+            title: 'Created At',
+            default: '2026-02-26T14:37:28.085724Z'
         }
     },
     type: 'object',
@@ -696,21 +702,12 @@ export const RecipeCreateSchema = {
             title: 'Title'
         },
         instructions: {
-            anyOf: [
-                {
-                    type: 'string',
-                    maxLength: 9999
-                },
-                {
-                    type: 'null'
-                }
-            ],
+            type: 'string',
             title: 'Instructions'
         },
         servings: {
             type: 'integer',
-            title: 'Servings',
-            default: 1
+            title: 'Servings'
         },
         image: {
             anyOf: [
@@ -743,6 +740,8 @@ export const RecipeCreateSchema = {
     type: 'object',
     required: [
         'title',
+        'instructions',
+        'servings',
         'ingredients'
     ],
     title: 'RecipeCreate'
@@ -933,21 +932,12 @@ export const RecipePublicSchema = {
             title: 'Title'
         },
         instructions: {
-            anyOf: [
-                {
-                    type: 'string',
-                    maxLength: 9999
-                },
-                {
-                    type: 'null'
-                }
-            ],
+            type: 'string',
             title: 'Instructions'
         },
         servings: {
             type: 'integer',
-            title: 'Servings',
-            default: 1
+            title: 'Servings'
         },
         image: {
             anyOf: [
@@ -968,6 +958,11 @@ export const RecipePublicSchema = {
         },
         owner: {
             $ref: '#/components/schemas/UserPublic'
+        },
+        created_at: {
+            type: 'string',
+            format: 'date-time',
+            title: 'Created At'
         },
         ingredient_links: {
             items: {
@@ -1055,8 +1050,11 @@ export const RecipePublicSchema = {
     type: 'object',
     required: [
         'title',
+        'instructions',
+        'servings',
         'id',
         'owner',
+        'created_at',
         'ingredient_links',
         'total_ingredients',
         'total_calories',
@@ -1832,21 +1830,12 @@ export const RecipePublicWritableSchema = {
             title: 'Title'
         },
         instructions: {
-            anyOf: [
-                {
-                    type: 'string',
-                    maxLength: 9999
-                },
-                {
-                    type: 'null'
-                }
-            ],
+            type: 'string',
             title: 'Instructions'
         },
         servings: {
             type: 'integer',
-            title: 'Servings',
-            default: 1
+            title: 'Servings'
         },
         image: {
             anyOf: [
@@ -1867,6 +1856,11 @@ export const RecipePublicWritableSchema = {
         },
         owner: {
             $ref: '#/components/schemas/UserPublic'
+        },
+        created_at: {
+            type: 'string',
+            format: 'date-time',
+            title: 'Created At'
         },
         ingredient_links: {
             items: {
@@ -1894,8 +1888,11 @@ export const RecipePublicWritableSchema = {
     type: 'object',
     required: [
         'title',
+        'instructions',
+        'servings',
         'id',
         'owner',
+        'created_at',
         'ingredient_links',
         'total_ingredients'
     ],

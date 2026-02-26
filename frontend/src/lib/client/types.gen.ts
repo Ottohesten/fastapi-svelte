@@ -429,6 +429,10 @@ export type Recipe = {
      * Owner Id
      */
     owner_id: string;
+    /**
+     * Created At
+     */
+    created_at?: Date;
 };
 
 /**
@@ -442,11 +446,11 @@ export type RecipeCreate = {
     /**
      * Instructions
      */
-    instructions?: string | null;
+    instructions: string;
     /**
      * Servings
      */
-    servings?: number;
+    servings: number;
     /**
      * Image
      */
@@ -611,11 +615,11 @@ export type RecipePublic = {
     /**
      * Instructions
      */
-    instructions?: string | null;
+    instructions: string;
     /**
      * Servings
      */
-    servings?: number;
+    servings: number;
     /**
      * Image
      */
@@ -625,6 +629,10 @@ export type RecipePublic = {
      */
     id: string;
     owner: UserPublic;
+    /**
+     * Created At
+     */
+    created_at: Date;
     /**
      * Ingredient Links
      */
@@ -1155,11 +1163,11 @@ export type RecipePublicWritable = {
     /**
      * Instructions
      */
-    instructions?: string | null;
+    instructions: string;
     /**
      * Servings
      */
-    servings?: number;
+    servings: number;
     /**
      * Image
      */
@@ -1169,6 +1177,10 @@ export type RecipePublicWritable = {
      */
     id: string;
     owner: UserPublic;
+    /**
+     * Created At
+     */
+    created_at: Date;
     /**
      * Ingredient Links
      */
@@ -1823,26 +1835,6 @@ export type GetUtilsHealthCheckResponses = {
 };
 
 export type GetUtilsHealthCheckResponse = GetUtilsHealthCheckResponses[keyof GetUtilsHealthCheckResponses];
-
-export type GetUtilsSentryDebugData = {
-    body?: never;
-    path?: never;
-    query?: never;
-    url: '/utils/sentry-debug';
-};
-
-export type GetUtilsSentryDebugResponses = {
-    /**
-     * Response Utils-Trigger Error
-     *
-     * Successful Response
-     */
-    200: {
-        [key: string]: unknown;
-    };
-};
-
-export type GetUtilsSentryDebugResponse = GetUtilsSentryDebugResponses[keyof GetUtilsSentryDebugResponses];
 
 export type PostRecipesUploadImageData = {
     body: BodyRecipesUploadRecipeImage;

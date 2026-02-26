@@ -22,6 +22,18 @@ from app.utils import (
 router = APIRouter(tags=["login"])
 
 
+def _build_access_token_payload(user: User) -> dict[str, Any]:
+    return {
+        "sub": user.email,
+        "uid": str(user.id),
+        "is_superuser": user.is_superuser,
+        "is_active": user.is_active,
+        "full_name": user.full_name,
+        "scopes": list(get_user_effective_scopes(user)),
+        "auth_version": user.auth_version,
+    }
+
+
 @router.post("/login/access-token", response_model=Token)
 def login_access_token(
     session: SessionDep,
@@ -39,13 +51,10 @@ def login_access_token(
     elif not user.is_active:
         raise HTTPException(status_code=400, detail="Inactive user")
 
-    # Get user's effective scopes from roles + custom scopes
-    user_scopes = list(get_user_effective_scopes(user))
-
     access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
     refresh_token_expires = timedelta(days=settings.REFRESH_TOKEN_EXPIRE_DAYS)
     access_token = security.create_access_token(
-        data={"sub": user.email, "scopes": user_scopes},
+        data=_build_access_token_payload(user),
         expires_delta=access_token_expires,
     )
     refresh_token = security.create_refresh_token(
@@ -119,10 +128,9 @@ def refresh_access_token(
     user = db_crud.get_user_by_email(session=session, email=sub)
     if not user or not user.is_active:
         raise HTTPException(status_code=401, detail="Invalid user")
-    user_scopes = list(get_user_effective_scopes(user))
     access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
     new_access = security.create_access_token(
-        data={"sub": user.email, "scopes": user_scopes},
+        data=_build_access_token_payload(user),
         expires_delta=access_token_expires,
     )
     # Optionally rotate refresh token

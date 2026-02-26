@@ -63,13 +63,22 @@ async def get_current_user(
         if email is None:
             raise credentials_exception
         token_scopes = payload.get("scopes", [])
-        token_data = TokenData(email=email, scopes=token_scopes)
+        token_auth_version = payload.get("auth_version")
+        token_data = TokenData(
+            email=email, scopes=token_scopes, auth_version=token_auth_version
+        )
     except (InvalidTokenError, ValidationError) as e:
         print(f"Error: {e}")
         raise credentials_exception
 
     user = get_user_by_email(session=session, email=email)
     if user is None:
+        raise credentials_exception
+    # Enforce immediate token invalidation after auth/permission changes.
+    if (
+        token_data.auth_version is not None
+        and token_data.auth_version != user.auth_version
+    ):
         raise credentials_exception
     # user = session.get(User, token_data.sub) # we can access email in the token_data
     # if not user:

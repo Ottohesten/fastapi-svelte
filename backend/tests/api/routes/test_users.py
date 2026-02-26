@@ -467,3 +467,104 @@ def test_delete_user_without_privileges(
     )
     assert r.status_code == 403
     assert r.json()["detail"] == "Not enough permissions"
+
+
+def test_access_token_invalidated_after_scope_change(
+    client: TestClient, superuser_token_headers: dict[str, str], db: Session
+) -> None:
+    email = random_email()
+    password = random_lower_string()
+    user = db_crud.create_user(
+        session=db, user_create=UserCreate(email=email, password=password)
+    )
+
+    login = client.post(
+        "/login/access-token",
+        data={"username": email, "password": password},
+    )
+    assert login.status_code == 200
+    tokens = login.json()
+    old_access = tokens["access_token"]
+    refresh = tokens["refresh_token"]
+
+    add_scope = client.post(
+        f"/users/{user.id}/scopes",
+        headers=superuser_token_headers,
+        json=["recipes:read"],
+    )
+    assert add_scope.status_code == 200
+
+    stale_request = client.get(
+        "/users/me",
+        headers={"Authorization": f"Bearer {old_access}"},
+    )
+    assert stale_request.status_code == 401
+
+    refreshed = client.post("/login/refresh", json={"refresh_token": refresh})
+    assert refreshed.status_code == 200
+    new_access = refreshed.json()["access_token"]
+
+    me = client.get("/users/me", headers={"Authorization": f"Bearer {new_access}"})
+    assert me.status_code == 200
+    scopes = me.json().get("scopes", [])
+    assert "recipes:read" in scopes
+
+
+def test_access_token_invalidated_after_role_scope_change(
+    client: TestClient, superuser_token_headers: dict[str, str], db: Session
+) -> None:
+    email = random_email()
+    password = random_lower_string()
+    user = db_crud.create_user(
+        session=db, user_create=UserCreate(email=email, password=password)
+    )
+
+    role_name = f"role-{random_lower_string()}"
+    role_resp = client.post(
+        "/roles/",
+        headers=superuser_token_headers,
+        json={
+            "name": role_name,
+            "description": "test role",
+            "scopes": ["recipes:read"],
+        },
+    )
+    assert role_resp.status_code == 200
+    role_id = role_resp.json()["id"]
+
+    assign_role = client.post(
+        f"/users/{user.id}/roles/{role_id}",
+        headers=superuser_token_headers,
+    )
+    assert assign_role.status_code == 200
+
+    login = client.post(
+        "/login/access-token",
+        data={"username": email, "password": password},
+    )
+    assert login.status_code == 200
+    tokens = login.json()
+    old_access = tokens["access_token"]
+    refresh = tokens["refresh_token"]
+
+    role_update = client.put(
+        f"/roles/{role_id}",
+        headers=superuser_token_headers,
+        json={"scopes": ["ingredients:read"]},
+    )
+    assert role_update.status_code == 200
+
+    stale_request = client.get(
+        "/users/me",
+        headers={"Authorization": f"Bearer {old_access}"},
+    )
+    assert stale_request.status_code == 401
+
+    refreshed = client.post("/login/refresh", json={"refresh_token": refresh})
+    assert refreshed.status_code == 200
+    new_access = refreshed.json()["access_token"]
+
+    me = client.get("/users/me", headers={"Authorization": f"Bearer {new_access}"})
+    assert me.status_code == 200
+    scopes = me.json().get("scopes", [])
+    assert "ingredients:read" in scopes

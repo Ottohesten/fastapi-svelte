@@ -7,6 +7,7 @@ from typing import List
 from fastapi import APIRouter, HTTPException, Security
 from sqlmodel import select
 
+import app.db_crud as db_crud
 from app.deps import SessionDep, get_current_user
 from app.models import Role, User, Message, RoleCreate, RoleUpdate, RolePublic
 from app.permissions import AVAILABLE_SCOPES, ROLE_TEMPLATES, create_role_from_template
@@ -93,6 +94,7 @@ def update_role(
                 status_code=400, detail=f"Invalid scopes: {', '.join(invalid_scopes)}"
             )
         role.scopes = role_data.scopes
+        db_crud.bump_auth_version_for_role_users(session=session, role=role)
 
     if role_data.name is not None:
         # Check if new name conflicts
@@ -126,6 +128,7 @@ def delete_role(
     if not role:
         raise HTTPException(status_code=404, detail="Role not found")
 
+    db_crud.bump_auth_version_for_role_users(session=session, role=role)
     session.delete(role)
     session.commit()
 
@@ -148,8 +151,17 @@ def create_role_from_template_endpoint(
     current_user: User = Security(get_current_user, scopes=["roles:create"]),
 ):
     """Create a role from a predefined template"""
+    existing_role = session.exec(
+        select(Role).where(
+            Role.name == ROLE_TEMPLATES.get(template_key, {}).get("name")
+        )
+    ).first()
     try:
         role = create_role_from_template(session, template_key)
+        if existing_role:
+            db_crud.bump_auth_version_for_role_users(session=session, role=role)
+            session.commit()
+            session.refresh(role)
         return RolePublic(
             id=role.id,
             name=role.name,

@@ -39,6 +39,14 @@ class UserBase(SQLModel):
 class User(UserBase, table=True):
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
     hashed_password: str
+    auth_version: int = Field(
+        default=1,
+        ge=1,
+        description=(
+            "Monotonic version used to invalidate access tokens immediately "
+            "after permission/security changes."
+        ),
+    )
     items: list["Item"] = Relationship(back_populates="owner", cascade_delete=True)
     roles: list["Role"] = Relationship(back_populates="users", link_model=UserRoleLink)
     recipes: list["Recipe"] = Relationship(back_populates="owner")
@@ -139,6 +147,7 @@ class Token(SQLModel):
 class TokenData(SQLModel):
     email: str | None = None
     scopes: list[str] = []
+    auth_version: int | None = None
 
 
 class NewPassword(SQLModel):

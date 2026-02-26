@@ -173,6 +173,7 @@ def update_password_me(
         )
     hashed_password = get_password_hash(body.new_password)
     current_user.hashed_password = hashed_password
+    db_crud.bump_user_auth_version(session=session, user=current_user)
     session.add(current_user)
     session.commit()
     return Message(message="Password updated successfully")
@@ -281,11 +282,22 @@ def update_user(
                 status_code=409, detail="A user with this email already exists"
             )
 
+    update_fields = user_in.model_dump(exclude_unset=True)
+    should_bump_auth_version = any(
+        field in update_fields for field in ("password", "is_active", "is_superuser")
+    )
+
     db_user = db_crud.update_user(
         session=session,
         db_user=db_user,
         user_in=user_in,
     )
+
+    if should_bump_auth_version:
+        db_crud.bump_user_auth_version(session=session, user=db_user)
+        session.add(db_user)
+        session.commit()
+        session.refresh(db_user)
 
     return db_user
 
@@ -343,6 +355,7 @@ def assign_role_to_user(
         )
     if role not in user.roles:
         user.roles.append(role)
+        db_crud.bump_user_auth_version(session=session, user=user)
         session.add(user)
         session.commit()
         session.refresh(user)
@@ -373,6 +386,7 @@ def remove_role_from_user(
         )
     if role in user.roles:
         user.roles.remove(role)
+        db_crud.bump_user_auth_version(session=session, user=user)
         session.add(user)
         session.commit()
         session.refresh(user)
@@ -407,6 +421,7 @@ def assign_scopes_to_user(
 
     if modified:
         user.custom_scopes = current_scopes
+        db_crud.bump_user_auth_version(session=session, user=user)
         session.add(user)
         session.commit()
         session.refresh(user)
@@ -441,6 +456,7 @@ def remove_scopes_from_user(
 
     if modified:
         user.custom_scopes = current_scopes
+        db_crud.bump_user_auth_version(session=session, user=user)
         session.add(user)
         session.commit()
         session.refresh(user)

@@ -16,7 +16,7 @@
       >
     {/if}
   </div>
-  {#each [...data.game_sessions].reverse() as session}
+  {#each [...data.game_sessions] as session}
     <GameSession
       {session}
       authenticatedUser={data.authenticatedUser

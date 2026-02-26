@@ -1,7 +1,7 @@
 from fastapi import APIRouter, BackgroundTasks
 from fastapi import HTTPException, Security
 from fastapi.responses import StreamingResponse
-from sqlmodel import select, asc
+from sqlmodel import select, desc
 from app.deps import SessionDep, get_current_user
 from typing import Annotated
 import asyncio
@@ -63,7 +63,7 @@ def get_game_sessions(session: SessionDep, skip: int = 0, limit: int = 100):
     """
     statement = (
         select(GameSession)
-        .order_by(asc(GameSession.created_at))
+        .order_by(desc(GameSession.created_at))
         .offset(skip)
         .limit(limit)
     )

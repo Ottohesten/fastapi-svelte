@@ -240,7 +240,7 @@
               </h2>
             </div>
 
-            <div class="prose prose-lg dark:prose-invert max-w-none">
+            <div class="prose prose-lg dark:prose-invert recipe-instructions max-w-none">
               {@html data.recipe.instructions}
             </div>
           </div>

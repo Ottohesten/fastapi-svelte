@@ -138,6 +138,39 @@ a {
     @apply text-blue-600 no-underline hover:text-blue-700 hover:underline dark:text-blue-400 dark:hover:text-blue-300;
 }
 
+/* Compact recipe instructions overrides (more specific than `prose-lg`) */
+.recipe-instructions {
+    font-size: 1rem;
+    line-height: 1.5;
+    color: var(--tw-prose-body, #4b5563);
+}
+.recipe-instructions.prose-lg {
+    /* Slightly larger base than before for better readability */
+    font-size: 1rem;
+}
+.recipe-instructions p {
+    margin-top: 0.25rem;
+    margin-bottom: 0.25rem;
+}
+.recipe-instructions ul,
+.recipe-instructions ol {
+    padding-left: 1rem;
+    margin: 0.35rem 0;
+}
+.recipe-instructions li {
+    margin: 0 0 0.45rem 0;
+}
+.recipe-instructions h1,
+.recipe-instructions h2,
+.recipe-instructions h3,
+.recipe-instructions h4,
+.recipe-instructions h5,
+.recipe-instructions h6 {
+    line-height: 1.2;
+    margin-top: 0.25rem;
+    margin-bottom: 0.25rem;
+}
+
 /* Style inputs with errors */
 [data-fs-error] input,
 [data-fs-error] textarea,

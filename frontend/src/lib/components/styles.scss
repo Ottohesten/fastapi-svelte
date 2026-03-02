@@ -1,24 +1,31 @@
 /* Basic editor styles */
 .tiptap {
+    /* Slightly smaller base font to counter Tailwind `prose` defaults */
+    font-size: 0.95rem;
+    line-height: 1.45;
     :first-child {
         margin-top: 0;
     }
 
     /* Add general paragraph spacing control */
     p {
-        margin-top: 0.25rem;
-        margin-bottom: 0.25rem;
+        margin-top: 0.2rem;
+        margin-bottom: 0.2rem;
     }
 
-    /* List styles */
+    /* List styles: tighter spacing for compact lists */
     ul,
     ol {
-        padding: 0 1rem;
-        margin: 0.5rem 1rem 0.5rem 0.4rem;
+        padding-left: 1rem;
+        margin: 0.25rem 0 0.25rem 0;
+
+        li {
+            margin: 0 0 0.35rem 0;
+        }
 
         li p {
-            margin-top: 0.1em;
-            margin-bottom: 0.1em;
+            margin-top: 0.08em;
+            margin-bottom: 0.08em;
         }
     }
 
@@ -42,21 +49,21 @@
     }
 
     h1 {
-        font-size: 1.4rem;
+        font-size: 1.25rem;
     }
 
     h2 {
-        font-size: 1.2rem;
+        font-size: 1.05rem;
     }
 
     h3 {
-        font-size: 1.1rem;
+        font-size: 1rem;
     }
 
     h4,
     h5,
     h6 {
-        font-size: 1rem;
+        font-size: 0.95rem;
     }
 
     /* Code and preformatted text styles */

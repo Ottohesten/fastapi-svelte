@@ -149,8 +149,8 @@ a {
     font-size: 1rem;
 }
 .recipe-instructions p {
-    margin-top: 0.25rem;
-    margin-bottom: 0.25rem;
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
 }
 .recipe-instructions ul,
 .recipe-instructions ol {
@@ -167,8 +167,8 @@ a {
 .recipe-instructions h5,
 .recipe-instructions h6 {
     line-height: 1.2;
-    margin-top: 0.25rem;
-    margin-bottom: 0.25rem;
+    margin-top: 2rem;
+    margin-bottom: 1rem;
 }
 
 /* Style inputs with errors */

@@ -2,6 +2,7 @@
   import type { RecipePublic, UserMePublic } from "$lib/client";
   import RecipeIngredientsChecklist from "$lib/components/RecipeIngredientsChecklist.svelte";
   import RecipeNutritionSheet from "$lib/components/RecipeNutritionSheet.svelte";
+  import { Input } from "$lib/components/ui/input";
 
   type Props = {
     data: {
@@ -12,8 +13,69 @@
   };
 
   let { data }: Props = $props();
-  const subRecipeLinks = $derived(data.recipe.sub_recipe_links ?? []);
-  const totalIngredients = $derived(data.recipe.total_ingredients);
+
+  const baseServings = $derived.by(() => Math.max(data.recipe.servings ?? 1, 1));
+  let servingsInput = $state("");
+  $effect(() => {
+    servingsInput = String(baseServings);
+  });
+  const desiredServings = $derived.by(() => {
+    const parsed = Number(servingsInput);
+    return Number.isFinite(parsed) && parsed > 0 ? parsed : baseServings;
+  });
+  const scaleFactor = $derived.by(() => (baseServings > 0 ? desiredServings / baseServings : 1));
+
+  function formatAmount(value: number): string {
+    if (!Number.isFinite(value)) return "0";
+    if (Number.isInteger(value)) return String(value);
+    return value.toFixed(2).replace(/\.?0+$/, "");
+  }
+
+  function normalizeServingsInput() {
+    const parsed = Number(servingsInput);
+    if (!Number.isFinite(parsed) || parsed <= 0) {
+      servingsInput = String(baseServings);
+    }
+  }
+
+  function scaleValue(value: number): number {
+    return value * scaleFactor;
+  }
+
+  const scaledIngredients = $derived.by(() =>
+    data.recipe.total_ingredients.map((ingredient) => ({
+      ...ingredient,
+      amount: scaleValue(ingredient.amount),
+      grams: scaleValue(ingredient.grams),
+      calories: scaleValue(ingredient.calories),
+      carbohydrates: scaleValue(ingredient.carbohydrates),
+      fat: scaleValue(ingredient.fat),
+      protein: scaleValue(ingredient.protein),
+      sources: ingredient.sources.map((source) => ({
+        ...source,
+        amount: scaleValue(source.amount)
+      }))
+    }))
+  );
+
+  const subRecipeLinks = $derived.by(() =>
+    (data.recipe.sub_recipe_links ?? []).map((link) => ({
+      ...link,
+      scale_factor: scaleValue(link.scale_factor),
+      scaled_servings: scaleValue(link.scaled_servings)
+    }))
+  );
+
+  const scaledRecipe = $derived.by<RecipePublic>(() => ({
+    ...data.recipe,
+    servings: desiredServings,
+    total_ingredients: scaledIngredients,
+    total_calories: scaleValue(data.recipe.total_calories ?? 0),
+    total_carbohydrates: scaleValue(data.recipe.total_carbohydrates ?? 0),
+    total_fat: scaleValue(data.recipe.total_fat ?? 0),
+    total_protein: scaleValue(data.recipe.total_protein ?? 0),
+    calculated_weight: scaleValue(data.recipe.calculated_weight ?? 0)
+  }));
 
   // Simple step count - just count <li> elements in instructions
   const stepCount = $derived.by(() => {
@@ -48,7 +110,7 @@
           Back to Recipes
         </a>
         <div class="ml-auto flex items-center gap-2">
-          <RecipeNutritionSheet recipe={data.recipe} />
+          <RecipeNutritionSheet recipe={scaledRecipe} />
           {#if data.is_owner}
             <a
               href="/recipes/{data.recipe.id}/update"
@@ -83,7 +145,25 @@
               d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
             />
           </svg>
-          <span>{data.recipe.servings} servings</span>
+          <div class="flex flex-wrap items-center gap-2">
+            <span class="text-sm font-medium text-gray-700 dark:text-gray-200">Servings</span>
+            <Input
+              type="number"
+              min="1"
+              step="1"
+              inputmode="numeric"
+              aria-label="Servings"
+              class="h-8 w-20 text-center text-sm"
+              bind:value={servingsInput}
+              onblur={normalizeServingsInput}
+            />
+            <span class="text-xs text-gray-500 dark:text-gray-400">Base {baseServings}</span>
+            <span
+              class="rounded-full bg-blue-100 px-2 py-0.5 text-xs font-semibold text-blue-700 dark:bg-blue-900/30 dark:text-blue-200"
+            >
+              x{formatAmount(scaleFactor)}
+            </span>
+          </div>
         </div>
       </div>
     </div>
@@ -138,11 +218,11 @@
               </svg>
             </div>
             <div class="text-2xl font-bold text-gray-900 dark:text-gray-100">
-              {data.recipe.total_calories || 0}
+              {scaledRecipe.total_calories || 0}
             </div>
             <div class="text-sm text-gray-600 dark:text-gray-300">Total Calories</div>
             <div class="mt-1 text-xs text-gray-500 dark:text-gray-400">
-              {data.recipe.calories_per_100g || 0} cal/100g
+              {scaledRecipe.calories_per_100g || 0} cal/100g
             </div>
           </div>
           <div class="text-center">
@@ -162,7 +242,7 @@
               </svg>
             </div>
             <div class="text-2xl font-bold text-gray-900 dark:text-gray-100">
-              {data.recipe.calories_per_serving || 0}
+              {scaledRecipe.calories_per_serving || 0}
             </div>
             <div class="text-sm text-gray-600 dark:text-gray-300">Per Serving</div>
           </div>
@@ -183,7 +263,7 @@
               </svg>
             </div>
             <div class="text-2xl font-bold text-gray-900 dark:text-gray-100">
-              {data.recipe.calculated_weight || 0}g
+              {scaledRecipe.calculated_weight || 0}g
             </div>
             <div class="text-sm text-gray-600 dark:text-gray-300">Total Weight</div>
           </div>
@@ -204,7 +284,7 @@
               </svg>
             </div>
             <div class="text-2xl font-bold text-gray-900 dark:text-gray-100">
-              {totalIngredients.length}
+              {scaledIngredients.length}
             </div>
             <div class="text-sm text-gray-600 dark:text-gray-300">Ingredients</div>
           </div>
@@ -258,7 +338,7 @@
 
       <!-- Sidebar -->
       <div class="lg:sticky lg:top-8 lg:col-span-1 lg:self-start">
-        <RecipeIngredientsChecklist ingredients={data.recipe.total_ingredients} />
+        <RecipeIngredientsChecklist ingredients={scaledIngredients} />
 
         <div
           class="mt-4 rounded-xl border border-gray-300 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-900/40"
@@ -285,7 +365,8 @@
                     {subRecipeLink.sub_recipe.title}
                   </a>
                   <div class="mt-1 text-xs text-gray-600 dark:text-gray-400">
-                    Scale x{subRecipeLink.scale_factor} • {subRecipeLink.scaled_servings} servings
+                    Scale x{formatAmount(subRecipeLink.scale_factor)} •
+                    {formatAmount(subRecipeLink.scaled_servings)} servings
                   </div>
                 </div>
               {/each}

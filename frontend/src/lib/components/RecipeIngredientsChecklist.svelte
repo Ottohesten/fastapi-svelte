@@ -1,14 +1,18 @@
 <script lang="ts">
+  import { browser } from "$app/environment";
   import { Badge } from "$lib/components/ui/badge";
   import type { RecipeIngredientSourcePublic, RecipeIngredientTotalPublic } from "$lib/client";
 
   type Props = {
     ingredients: RecipeIngredientTotalPublic[];
+    recipeId: string;
   };
 
-  let { ingredients }: Props = $props();
+  let { ingredients, recipeId }: Props = $props();
 
   let checkedIngredients = $state<Set<string>>(new Set());
+  const STORAGE_PREFIX = "recipe-ingredient-checks:v1:";
+  const CHECK_TTL_MS = 12 * 60 * 60 * 1000;
   const ingredientCardBaseClass =
     "flex cursor-pointer items-start gap-2.5 rounded-lg border border-gray-300 p-2.5 transition-all hover:bg-gray-50 dark:border-gray-800 dark:hover:bg-gray-900/60";
   const ingredientCardCheckedClass =
@@ -44,12 +48,56 @@
       checkedIngredients.add(key);
     }
     checkedIngredients = new Set(checkedIngredients);
+    persistChecked();
+  }
+
+  function storageKey(id: string): string {
+    return `${STORAGE_PREFIX}${id}`;
+  }
+
+  function persistChecked() {
+    if (!browser) return;
+    const key = storageKey(recipeId);
+    const payload = {
+      version: 1,
+      expiresAt: Date.now() + CHECK_TTL_MS,
+      items: Array.from(checkedIngredients)
+    };
+    localStorage.setItem(key, JSON.stringify(payload));
+  }
+
+  function loadChecked() {
+    if (!browser) return new Set<string>();
+    const key = storageKey(recipeId);
+    const raw = localStorage.getItem(key);
+    if (!raw) return new Set<string>();
+
+    try {
+      const parsed = JSON.parse(raw) as { expiresAt?: number; items?: string[] };
+      if (!parsed?.expiresAt || parsed.expiresAt <= Date.now()) {
+        localStorage.removeItem(key);
+        return new Set<string>();
+      }
+      if (!Array.isArray(parsed.items)) return new Set<string>();
+      return new Set(parsed.items.filter((item) => typeof item === "string"));
+    } catch {
+      localStorage.removeItem(key);
+      return new Set<string>();
+    }
   }
 
   function formatAmount(value: number): string {
     if (Number.isInteger(value)) return String(value);
     return value.toFixed(2).replace(/\.?0+$/, "");
   }
+
+  $effect(() => {
+    if (!browser) return;
+    const loaded = loadChecked();
+    const validKeys = new Set(ingredients.map((ingredient) => ingredientKey(ingredient)));
+    const filtered = new Set([...loaded].filter((item) => validKeys.has(item)));
+    checkedIngredients = filtered;
+  });
 </script>
 
 <div

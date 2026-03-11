@@ -1,7 +1,10 @@
 <script lang="ts">
+  import { browser } from "$app/environment";
+  import { tick } from "svelte";
   import type { RecipePublic, UserMePublic } from "$lib/client";
   import RecipeIngredientsChecklist from "$lib/components/RecipeIngredientsChecklist.svelte";
   import RecipeNutritionSheet from "$lib/components/RecipeNutritionSheet.svelte";
+  import { Button } from "$lib/components/ui/button";
   import { Input } from "$lib/components/ui/input";
 
   type Props = {
@@ -15,6 +18,7 @@
   let { data }: Props = $props();
 
   const baseServings = $derived.by(() => Math.max(data.recipe.servings ?? 1, 1));
+  const recipeId = $derived.by(() => data.recipe.id);
   let servingsInput = $state("");
   $effect(() => {
     servingsInput = String(baseServings);
@@ -76,6 +80,211 @@
     total_protein: scaleValue(data.recipe.total_protein ?? 0),
     calculated_weight: scaleValue(data.recipe.calculated_weight ?? 0)
   }));
+
+  const INSTRUCTION_STORAGE_PREFIX = "recipe-instruction-checks:v1:";
+  const FOLLOW_ALONG_STORAGE_PREFIX = "recipe-follow-along:v1:";
+  const INSTRUCTION_TTL_MS = 12 * 60 * 60 * 1000;
+
+  let instructionsHtml = $state("");
+  let checkedSteps = $state<Set<string>>(new Set());
+  let instructionStepKeys = $state<string[]>([]);
+  let followAlongEnabled = $state(false);
+  let instructionsContainer: HTMLDivElement | null = $state(null);
+
+  function instructionStorageKey(id: string): string {
+    return `${INSTRUCTION_STORAGE_PREFIX}${id}`;
+  }
+
+  function followAlongStorageKey(id: string): string {
+    return `${FOLLOW_ALONG_STORAGE_PREFIX}${id}`;
+  }
+
+  function loadFollowAlongPreference(): boolean {
+    if (!browser) return false;
+    const raw = localStorage.getItem(followAlongStorageKey(recipeId));
+    return raw === "1";
+  }
+
+  function setFollowAlongEnabled(next: boolean) {
+    followAlongEnabled = next;
+    if (!browser) return;
+    localStorage.setItem(followAlongStorageKey(recipeId), next ? "1" : "0");
+  }
+
+  function persistInstructionChecks() {
+    if (!browser) return;
+    const payload = {
+      version: 1,
+      expiresAt: Date.now() + INSTRUCTION_TTL_MS,
+      items: Array.from(checkedSteps)
+    };
+    localStorage.setItem(instructionStorageKey(recipeId), JSON.stringify(payload));
+  }
+
+  function loadInstructionChecks(): Set<string> {
+    if (!browser) return new Set<string>();
+    const raw = localStorage.getItem(instructionStorageKey(recipeId));
+    if (!raw) return new Set<string>();
+
+    try {
+      const parsed = JSON.parse(raw) as { expiresAt?: number; items?: string[] };
+      if (!parsed?.expiresAt || parsed.expiresAt <= Date.now()) {
+        localStorage.removeItem(instructionStorageKey(recipeId));
+        return new Set<string>();
+      }
+      if (!Array.isArray(parsed.items)) return new Set<string>();
+      return new Set(parsed.items.filter((item) => typeof item === "string"));
+    } catch {
+      localStorage.removeItem(instructionStorageKey(recipeId));
+      return new Set<string>();
+    }
+  }
+
+  function buildCheckableInstructions(html: string) {
+    if (!browser) return { html, keys: [] as string[] };
+
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(html, "text/html");
+    const keys: string[] = [];
+
+    const lists = Array.from(doc.querySelectorAll("ol, ul"));
+    lists.forEach((list, listIndex) => {
+      const items = Array.from(list.querySelectorAll(":scope > li"));
+      items.forEach((li, itemIndex) => {
+        const stepIndex = itemIndex + 1;
+        const stepKey = `list-${listIndex + 1}-step-${stepIndex}`;
+        keys.push(stepKey);
+
+        const checkbox = doc.createElement("input");
+        checkbox.type = "checkbox";
+        checkbox.className = "recipe-step-checkbox";
+        checkbox.setAttribute("data-step-key", stepKey);
+        checkbox.setAttribute("aria-label", `Mark step ${stepIndex} complete`);
+        const indicator = doc.createElement("span");
+        indicator.className = "recipe-step-indicator";
+        if (list.tagName.toLowerCase() === "ol") {
+          indicator.textContent = String(stepIndex);
+        }
+
+        const wrapper = doc.createElement("div");
+        wrapper.className = "recipe-step-text";
+        while (li.firstChild) {
+          wrapper.appendChild(li.firstChild);
+        }
+
+        li.setAttribute("data-step-key", stepKey);
+        li.setAttribute("data-step-checked", "false");
+        li.appendChild(checkbox);
+        li.appendChild(indicator);
+        li.appendChild(wrapper);
+      });
+    });
+
+    return { html: doc.body.innerHTML, keys };
+  }
+
+  function handleInstructionChange(event: Event) {
+    if (!followAlongEnabled) return;
+    const target = event.target as HTMLInputElement | null;
+    if (!target || target.getAttribute("data-step-key") == null) return;
+    const key = target.getAttribute("data-step-key") ?? "";
+    if (!key) return;
+
+    if (target.checked) {
+      checkedSteps.add(key);
+    } else {
+      checkedSteps.delete(key);
+    }
+    checkedSteps = new Set(checkedSteps);
+    applyInstructionChecks();
+    persistInstructionChecks();
+  }
+
+  function handleInstructionClick(event: MouseEvent) {
+    if (!followAlongEnabled) return;
+    const target = event.target as HTMLElement | null;
+    if (!target) return;
+    if (target.closest("a")) return;
+    if (target instanceof HTMLInputElement && target.type === "checkbox") return;
+
+    const li = target.closest("li[data-step-key]") as HTMLLIElement | null;
+    if (!li) return;
+    const checkbox = li.querySelector<HTMLInputElement>("input.recipe-step-checkbox");
+    if (!checkbox) return;
+    checkbox.checked = !checkbox.checked;
+    checkbox.dispatchEvent(new Event("change", { bubbles: true }));
+  }
+
+  $effect(() => {
+    if (!browser) return;
+    checkedSteps = loadInstructionChecks();
+  });
+
+  $effect(() => {
+    if (!browser) return;
+    followAlongEnabled = loadFollowAlongPreference();
+  });
+
+  $effect(() => {
+    if (!browser) {
+      instructionsHtml = data.recipe.instructions ?? "";
+      instructionStepKeys = [];
+      return;
+    }
+    if (!followAlongEnabled) {
+      instructionsHtml = data.recipe.instructions ?? "";
+      instructionStepKeys = [];
+      return;
+    }
+    const { html, keys } = buildCheckableInstructions(data.recipe.instructions ?? "");
+    instructionsHtml = html;
+    instructionStepKeys = keys;
+  });
+
+  $effect(() => {
+    if (!browser || instructionStepKeys.length === 0) return;
+    const validKeys = new Set(instructionStepKeys);
+    const filtered = new Set([...checkedSteps].filter((key) => validKeys.has(key)));
+    if (filtered.size !== checkedSteps.size) {
+      checkedSteps = filtered;
+      persistInstructionChecks();
+    }
+  });
+
+  function applyInstructionChecks() {
+    if (!browser || !instructionsContainer) return;
+    const items = instructionsContainer.querySelectorAll("li[data-step-key]");
+    items.forEach((item) => {
+      const key = item.getAttribute("data-step-key") ?? "";
+      const isChecked = key ? checkedSteps.has(key) : false;
+      item.setAttribute("data-step-checked", isChecked ? "true" : "false");
+      const checkbox = item.querySelector<HTMLInputElement>("input.recipe-step-checkbox");
+      if (checkbox) checkbox.checked = isChecked;
+    });
+  }
+
+  $effect(() => {
+    if (!browser || !instructionsContainer) return;
+    const handleClick = (event: Event) => handleInstructionClick(event as MouseEvent);
+    const handleChange = (event: Event) => handleInstructionChange(event);
+    instructionsContainer.addEventListener("click", handleClick);
+    instructionsContainer.addEventListener("change", handleChange);
+
+    return () => {
+      instructionsContainer?.removeEventListener("click", handleClick);
+      instructionsContainer?.removeEventListener("change", handleChange);
+    };
+  });
+
+  $effect(() => {
+    if (!browser || !followAlongEnabled) return;
+    const _ = instructionsHtml;
+    const __ = checkedSteps;
+    void (async () => {
+      await tick();
+      applyInstructionChecks();
+    })();
+  });
 
   // Simple step count - just count <li> elements in instructions
   const stepCount = $derived.by(() => {
@@ -318,10 +527,23 @@
               <h2 class="text-xl font-bold text-gray-900 dark:text-gray-100">
                 Cooking Instructions
               </h2>
+              <Button
+                variant={followAlongEnabled ? "primary" : "outline"}
+                size="sm"
+                aria-pressed={followAlongEnabled}
+                onclick={() => setFollowAlongEnabled(!followAlongEnabled)}
+              >
+                {followAlongEnabled ? "Follow Along: On" : "Follow Along"}
+              </Button>
             </div>
 
             <div class="prose prose-lg dark:prose-invert recipe-instructions max-w-none">
-              {@html data.recipe.instructions}
+              <div
+                bind:this={instructionsContainer}
+                class={followAlongEnabled ? "follow-along" : ""}
+              >
+                {@html instructionsHtml}
+              </div>
             </div>
           </div>
         {:else}
@@ -338,7 +560,7 @@
 
       <!-- Sidebar -->
       <div class="lg:sticky lg:top-8 lg:col-span-1 lg:self-start">
-        <RecipeIngredientsChecklist ingredients={scaledIngredients} />
+        <RecipeIngredientsChecklist ingredients={scaledIngredients} recipeId={data.recipe.id} />
 
         <div
           class="mt-4 rounded-xl border border-gray-300 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-900/40"

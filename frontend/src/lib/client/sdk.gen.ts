@@ -443,6 +443,7 @@ export class RecipesService {
     public static GetRecipes<ThrowOnError extends boolean = false>(options?: Options<GetRecipesData, ThrowOnError>) {
         return (options?.client ?? client).get<GetRecipesResponses, GetRecipesErrors, ThrowOnError>({
             responseTransformer: getRecipesResponseTransformer,
+            security: [{ scheme: 'bearer', type: 'http' }],
             url: '/recipes/',
             ...options
         });
@@ -488,6 +489,7 @@ export class RecipesService {
     public static GetRecipe<ThrowOnError extends boolean = false>(options: Options<GetRecipesByRecipeIdData, ThrowOnError>) {
         return (options.client ?? client).get<GetRecipesByRecipeIdResponses, GetRecipesByRecipeIdErrors, ThrowOnError>({
             responseTransformer: getRecipesByRecipeIdResponseTransformer,
+            security: [{ scheme: 'bearer', type: 'http' }],
             url: '/recipes/{recipe_id}',
             ...options
         });

@@ -422,6 +422,10 @@ export type Recipe = {
      */
     image?: string | null;
     /**
+     * Is Hidden
+     */
+    is_hidden?: boolean;
+    /**
      * Id
      */
     id?: string;
@@ -456,6 +460,10 @@ export type RecipeCreate = {
      */
     image?: string | null;
     /**
+     * Is Hidden
+     */
+    is_hidden?: boolean;
+    /**
      * Ingredients
      */
     ingredients: Array<RecipeIngredientLinkCreate>;
@@ -463,6 +471,10 @@ export type RecipeCreate = {
      * Sub Recipes
      */
     sub_recipes?: Array<RecipeSubRecipeLinkCreate>;
+    /**
+     * Viewer Ids
+     */
+    viewer_ids?: Array<string> | null;
 };
 
 /**
@@ -625,6 +637,10 @@ export type RecipePublic = {
      */
     image?: string | null;
     /**
+     * Is Hidden
+     */
+    is_hidden?: boolean;
+    /**
      * Id
      */
     id: string;
@@ -633,6 +649,10 @@ export type RecipePublic = {
      * Created At
      */
     created_at: Date;
+    /**
+     * Viewer Ids
+     */
+    viewer_ids?: Array<string> | null;
     /**
      * Ingredient Links
      */
@@ -1173,6 +1193,10 @@ export type RecipePublicWritable = {
      */
     image?: string | null;
     /**
+     * Is Hidden
+     */
+    is_hidden?: boolean;
+    /**
      * Id
      */
     id: string;
@@ -1181,6 +1205,10 @@ export type RecipePublicWritable = {
      * Created At
      */
     created_at: Date;
+    /**
+     * Viewer Ids
+     */
+    viewer_ids?: Array<string> | null;
     /**
      * Ingredient Links
      */

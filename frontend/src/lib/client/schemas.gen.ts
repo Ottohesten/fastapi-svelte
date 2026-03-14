@@ -667,6 +667,11 @@ export const RecipeSchema = {
             ],
             title: 'Image'
         },
+        is_hidden: {
+            type: 'boolean',
+            title: 'Is Hidden',
+            default: false
+        },
         id: {
             type: 'string',
             format: 'uuid',
@@ -681,7 +686,7 @@ export const RecipeSchema = {
             type: 'string',
             format: 'date-time',
             title: 'Created At',
-            default: '2026-02-26T14:37:28.085724Z'
+            default: '2026-03-14T02:28:44.956495Z'
         }
     },
     type: 'object',
@@ -721,6 +726,11 @@ export const RecipeCreateSchema = {
             ],
             title: 'Image'
         },
+        is_hidden: {
+            type: 'boolean',
+            title: 'Is Hidden',
+            default: false
+        },
         ingredients: {
             items: {
                 $ref: '#/components/schemas/RecipeIngredientLinkCreate'
@@ -735,6 +745,21 @@ export const RecipeCreateSchema = {
             type: 'array',
             title: 'Sub Recipes',
             default: []
+        },
+        viewer_ids: {
+            anyOf: [
+                {
+                    items: {
+                        type: 'string',
+                        format: 'uuid'
+                    },
+                    type: 'array'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Viewer Ids'
         }
     },
     type: 'object',
@@ -951,6 +976,11 @@ export const RecipePublicSchema = {
             ],
             title: 'Image'
         },
+        is_hidden: {
+            type: 'boolean',
+            title: 'Is Hidden',
+            default: false
+        },
         id: {
             type: 'string',
             format: 'uuid',
@@ -963,6 +993,21 @@ export const RecipePublicSchema = {
             type: 'string',
             format: 'date-time',
             title: 'Created At'
+        },
+        viewer_ids: {
+            anyOf: [
+                {
+                    items: {
+                        type: 'string',
+                        format: 'uuid'
+                    },
+                    type: 'array'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Viewer Ids'
         },
         ingredient_links: {
             items: {
@@ -1849,6 +1894,11 @@ export const RecipePublicWritableSchema = {
             ],
             title: 'Image'
         },
+        is_hidden: {
+            type: 'boolean',
+            title: 'Is Hidden',
+            default: false
+        },
         id: {
             type: 'string',
             format: 'uuid',
@@ -1861,6 +1911,21 @@ export const RecipePublicWritableSchema = {
             type: 'string',
             format: 'date-time',
             title: 'Created At'
+        },
+        viewer_ids: {
+            anyOf: [
+                {
+                    items: {
+                        type: 'string',
+                        format: 'uuid'
+                    },
+                    type: 'array'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Viewer Ids'
         },
         ingredient_links: {
             items: {

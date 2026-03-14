@@ -12,6 +12,7 @@
       recipe: RecipePublic;
       authenticatedUser?: UserMePublic;
       is_owner: boolean;
+      can_edit: boolean;
     };
   };
 
@@ -320,7 +321,7 @@
         </a>
         <div class="ml-auto flex items-center gap-2">
           <RecipeNutritionSheet recipe={scaledRecipe} />
-          {#if data.is_owner}
+          {#if data.can_edit}
             <a
               href="/recipes/{data.recipe.id}/update"
               class="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-emerald-700"

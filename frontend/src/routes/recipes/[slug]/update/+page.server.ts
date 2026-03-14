@@ -1,4 +1,4 @@
-import { IngredientsService, RecipesService } from "$lib/client/sdk.gen.js";
+import { IngredientsService, RecipesService, UsersService } from "$lib/client/sdk.gen.js";
 import { redirect } from "@sveltejs/kit";
 import { error } from "@sveltejs/kit";
 import { zod4 as zod } from "sveltekit-superforms/adapters";
@@ -6,7 +6,7 @@ import { superValidate, fail } from "sveltekit-superforms";
 import type { Actions } from "./$types.js";
 import { RecipeSchema } from "$lib/schemas/schemas.js";
 
-export async function load({ fetch, params, locals, request, parent, url }) {
+export async function load({ fetch, params, locals, parent, url, cookies }) {
     const { authenticatedUser } = locals;
     const parent_data = await parent();
 
@@ -15,8 +15,15 @@ export async function load({ fetch, params, locals, request, parent, url }) {
         redirect(303, `/auth/login?redirectTo=${url.pathname}`);
     }
 
-    // if user is not superuser, or is not the owner of the recipe, return 403 forbidden
-    if (!authenticatedUser?.is_superuser && !parent_data.is_owner) {
+    const scopes = authenticatedUser?.scopes ?? [];
+    const canEdit =
+        !!authenticatedUser &&
+        (authenticatedUser.is_superuser ||
+            parent_data.is_owner ||
+            scopes.includes("recipes:update"));
+
+    // if user is not allowed to edit this recipe, return 403 forbidden
+    if (!canEdit) {
         error(403, "Forbidden");
     }
 
@@ -29,9 +36,26 @@ export async function load({ fetch, params, locals, request, parent, url }) {
         return error(404, JSON.stringify(apierror.detail));
     }
 
-    const { data: allRecipes, error: recipesError } = await RecipesService.GetRecipes({ fetch });
+    const auth_token = cookies.get("auth_token");
+    const headers = auth_token ? { Authorization: `Bearer ${auth_token}` } : undefined;
+
+    const { data: allRecipes, error: recipesError } = await RecipesService.GetRecipes({
+        fetch,
+        headers
+    });
     if (recipesError) {
         return error(404, JSON.stringify(recipesError.detail));
+    }
+
+    let users: any[] = [];
+    if (auth_token) {
+        const { data: usersData, error: usersError } = await UsersService.GetUsers({
+            auth: auth_token,
+            fetch
+        });
+        if (!usersError && usersData) {
+            users = usersData.data ?? [];
+        }
     }
 
     // Transform the backend ingredient_links to frontend ingredients format
@@ -54,7 +78,9 @@ export async function load({ fetch, params, locals, request, parent, url }) {
             sub_recipes: frontendSubRecipes,
             title: parent_data.recipe.title,
             instructions: parent_data.recipe.instructions ?? undefined,
-            servings: parent_data.recipe.servings ?? 1
+            servings: parent_data.recipe.servings ?? 1,
+            is_hidden: parent_data.recipe.is_hidden ?? false,
+            viewer_ids: parent_data.recipe.viewer_ids ?? []
         },
         zod(RecipeSchema)
     );
@@ -63,6 +89,7 @@ export async function load({ fetch, params, locals, request, parent, url }) {
         // Pass all ingredients - the frontend will filter them reactively
         ingredients: allIngredients,
         recipes: allRecipes,
+        users,
         form
     };
 }
@@ -125,7 +152,9 @@ export const actions = {
                 ingredients: ingredientsForBackend,
                 sub_recipes: subRecipesForBackend,
                 servings: form.data.servings,
-                image: imageUrl
+                image: imageUrl,
+                is_hidden: form.data.is_hidden,
+                viewer_ids: form.data.viewer_ids
             },
             path: { recipe_id }
         });

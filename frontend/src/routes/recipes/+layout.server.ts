@@ -1,8 +1,14 @@
 import { RecipesService, IngredientsService } from "$lib/client/sdk.gen.js";
 import { error } from "@sveltejs/kit";
 
-export const load = async ({ fetch, locals }) => {
-    const { data: recipes, error: recipeError } = await RecipesService.GetRecipes({});
+export const load = async ({ fetch, locals, cookies }) => {
+    const auth_token = cookies.get("auth_token");
+    const headers = auth_token ? { Authorization: `Bearer ${auth_token}` } : undefined;
+
+    const { data: recipes, error: recipeError } = await RecipesService.GetRecipes({
+        fetch,
+        headers
+    });
 
     if (recipeError) {
         error(404, JSON.stringify(recipeError.detail));

@@ -1,4 +1,4 @@
-import { IngredientsService, RecipesService } from "$lib/client/sdk.gen.js";
+import { IngredientsService, RecipesService, UsersService } from "$lib/client/sdk.gen.js";
 import { redirect } from "@sveltejs/kit";
 import type { Actions } from "./$types.js";
 import { zod4 as zod } from "sveltekit-superforms/adapters";
@@ -21,15 +21,27 @@ export const load = async ({ fetch, parent, cookies, url }) => {
         return error(404, JSON.stringify(apierror.detail));
     }
 
-    const { data: recipes, error: recipeError } = await RecipesService.GetRecipes({});
+    const { data: recipes, error: recipeError } = await RecipesService.GetRecipes({
+        headers: { Authorization: `Bearer ${auth_token}` }
+    });
     if (recipeError) {
         return error(404, JSON.stringify(recipeError.detail));
+    }
+
+    let users: any[] = [];
+    const { data: usersData, error: usersError } = await UsersService.GetUsers({
+        auth: auth_token,
+        fetch
+    });
+    if (!usersError && usersData) {
+        users = usersData.data ?? [];
     }
 
     const form = await superValidate(zod(RecipeSchema));
     return {
         ingredients: ingredients,
         recipes: recipes,
+        users,
         form
     };
 };
@@ -83,7 +95,9 @@ export const actions = {
                 ingredients: ingredientsForBackend,
                 sub_recipes: subRecipesForBackend,
                 servings: form.data.servings,
-                image: imageUrl
+                image: imageUrl,
+                is_hidden: form.data.is_hidden,
+                viewer_ids: form.data.viewer_ids
             }
         });
 

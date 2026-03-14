@@ -68,6 +68,9 @@
         !$formData.sub_recipes.some((selected: any) => selected.id === recipe.id)
     )
   );
+  let availableViewers = $derived(
+    (data.users ?? []).filter((user: any) => !($formData.viewer_ids ?? []).includes(user.id))
+  );
 
   // Function to clear form and localStorage
   function clearForm() {
@@ -102,6 +105,29 @@
     }
   });
 
+  function getUserLabel(user: any) {
+    const name = user.full_name?.trim();
+    return name ? `${name} (${user.email})` : user.email;
+  }
+
+  function findUserLabel(userId: string) {
+    const user = (data.users ?? []).find((u: any) => u.id === userId);
+    return user ? getUserLabel(user) : userId;
+  }
+
+  function addViewer() {
+    if (!selectedViewerId) return;
+    const current = $formData.viewer_ids ?? [];
+    if (!current.includes(selectedViewerId)) {
+      $formData.viewer_ids = current.concat(selectedViewerId);
+    }
+    selectedViewerId = "";
+  }
+
+  function removeViewer(viewerId: string) {
+    $formData.viewer_ids = ($formData.viewer_ids ?? []).filter((id: string) => id !== viewerId);
+  }
+
   // Ingredient dialog state
   let selectedIngredientId = $state<string>("");
   let ingredientAmount = $state<number>(1.0);
@@ -111,6 +137,9 @@
   // Sub-recipe state
   let selectedSubRecipeId = $state<string>("");
   let subRecipeScaleFactor = $state<number>(1.0);
+
+  // Viewer state
+  let selectedViewerId = $state<string>("");
 
   // Edit ingredient dialog state
   let editingIngredientId = $state<string | null>(null);
@@ -336,6 +365,91 @@
               </Control>
               <FieldErrors />
             </Field>
+
+            <!-- Visibility -->
+            <Field {form} name="is_hidden">
+              <Control>
+                {#snippet children({ props })}
+                  <label
+                    class="flex items-center gap-3 rounded-lg border border-gray-200 bg-white px-4 py-3 text-sm text-gray-700 shadow-sm transition-colors dark:border-gray-800 dark:bg-gray-900/40 dark:text-gray-200"
+                  >
+                    <input
+                      {...props}
+                      type="checkbox"
+                      class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-900"
+                      bind:checked={$formData.is_hidden}
+                    />
+                    <span>Hidden (only you and allowed viewers can see this recipe)</span>
+                  </label>
+                {/snippet}
+              </Control>
+              <FieldErrors />
+            </Field>
+
+            <!-- Allowed Viewers -->
+            <div class="space-y-3 rounded-lg border border-gray-200 p-4 dark:border-gray-800">
+              <div class="flex items-center justify-between">
+                <Label>Allowed Viewers</Label>
+                <span class="text-xs text-gray-500 dark:text-gray-400">
+                  {($formData.viewer_ids ?? []).length} selected
+                </span>
+              </div>
+
+              {#if (data.users ?? []).length === 0}
+                <p class="text-sm text-gray-500 dark:text-gray-400">
+                  You need the users:read scope to manage viewers.
+                </p>
+              {:else}
+                <div class="grid grid-cols-1 gap-3 md:grid-cols-[1fr_auto]">
+                  <Combobox
+                    items={availableViewers.map((user: any) => ({
+                      label: getUserLabel(user),
+                      value: user.id
+                    }))}
+                    bind:value={selectedViewerId}
+                    placeholder="Select a viewer..."
+                    searchPlaceholder="Type to filter users..."
+                    ariaLabel="Viewer"
+                    buttonClass="w-full justify-between"
+                    popoverClass="w-(--bits-popover-anchor-width)"
+                  />
+
+                  <button
+                    type="button"
+                    class="rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-medium text-white shadow-sm transition-colors hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none disabled:cursor-not-allowed disabled:bg-gray-300"
+                    disabled={!selectedViewerId}
+                    onclick={addViewer}
+                  >
+                    Add
+                  </button>
+                </div>
+
+                {#if ($formData.viewer_ids ?? []).length > 0}
+                  <div class="space-y-2">
+                    {#each $formData.viewer_ids as viewerId}
+                      <div
+                        class="flex items-center justify-between rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-700 shadow-sm dark:border-gray-800 dark:bg-gray-900/40 dark:text-gray-200"
+                      >
+                        <span class="truncate">{findUserLabel(viewerId)}</span>
+                        <button
+                          type="button"
+                          class="rounded-md px-2 py-1 text-xs font-medium text-red-600 hover:bg-red-50 dark:text-red-300 dark:hover:bg-red-900/30"
+                          onclick={() => removeViewer(viewerId)}
+                        >
+                          Remove
+                        </button>
+                      </div>
+                    {/each}
+                  </div>
+                {:else}
+                  <p class="text-sm text-gray-500 dark:text-gray-400">No viewers added.</p>
+                {/if}
+              {/if}
+
+              <p class="text-xs text-gray-500 dark:text-gray-400">
+                Viewer access only applies when the recipe is hidden.
+              </p>
+            </div>
 
             <!-- Instructions Field -->
             <Field {form} name="instructions">

@@ -42,6 +42,9 @@ class User(UserBase, table=True):
     items: list["Item"] = Relationship(back_populates="owner", cascade_delete=True)
     roles: list["Role"] = Relationship(back_populates="users", link_model=UserRoleLink)
     recipes: list["Recipe"] = Relationship(back_populates="owner")
+    recipe_viewer_links: list["RecipeViewerLink"] = Relationship(
+        back_populates="user", cascade_delete=True
+    )
     custom_scopes: list[str] = Field(
         default_factory=list,
         description="List of custom scopes that this user has access to",
@@ -326,17 +329,20 @@ class RecipeBase(SQLModel):
     instructions: str
     servings: int
     image: Optional[str] = Field(default=None, max_length=1000)
+    is_hidden: bool = Field(default=False)
 
 
 class RecipeCreate(RecipeBase):
     ingredients: list[RecipeIngredientLinkCreate]
     sub_recipes: list[RecipeSubRecipeLinkCreate] = []
+    viewer_ids: list[uuid.UUID] | None = None
 
 
 class RecipePublic(RecipeBase):
     id: uuid.UUID
     owner: UserPublic
     created_at: datetime
+    viewer_ids: list[uuid.UUID] | None = None
 
     ingredient_links: list[RecipeIngredientLinkPublic]
     sub_recipe_links: list[RecipeSubRecipeLinkPublic] = []
@@ -465,6 +471,9 @@ class Recipe(RecipeBase, table=True):
         sa_relationship_kwargs={"foreign_keys": "RecipeSubRecipeLink.sub_recipe_id"},
         cascade_delete=True,
     )
+    viewer_links: list["RecipeViewerLink"] = Relationship(
+        back_populates="recipe", cascade_delete=True
+    )
 
     # class Config:
     #     arbitrary_types_allowed = True
@@ -498,6 +507,18 @@ class RecipeSubRecipeLink(SQLModel, table=True):
         back_populates="parent_recipe_links",
         sa_relationship_kwargs={"foreign_keys": "RecipeSubRecipeLink.sub_recipe_id"},
     )
+
+
+class RecipeViewerLink(SQLModel, table=True):
+    recipe_id: uuid.UUID | None = Field(
+        default=None, foreign_key="recipe.id", primary_key=True
+    )
+    user_id: uuid.UUID | None = Field(
+        default=None, foreign_key="user.id", primary_key=True
+    )
+
+    recipe: "Recipe" = Relationship(back_populates="viewer_links")
+    user: "User" = Relationship(back_populates="recipe_viewer_links")
 
 
 #####################################################################################

@@ -11,6 +11,7 @@ from typing import Set, List
 AVAILABLE_SCOPES = {
     # Core content permissions
     "recipes:read",
+    "recipes:read_hidden",
     "recipes:create",
     "recipes:update",
     "recipes:delete",
@@ -80,6 +81,7 @@ ROLE_TEMPLATES = {
         "description": "Can moderate all recipe content",
         "scopes": [
             "recipes:read",
+            "recipes:read_hidden",
             "recipes:create",
             "recipes:update",
             "recipes:delete",
@@ -114,6 +116,7 @@ ROLE_TEMPLATES = {
         "description": "Can manage all content but not users",
         "scopes": [
             "recipes:read",
+            "recipes:read_hidden",
             "recipes:create",
             "recipes:update",
             "recipes:delete",
@@ -140,6 +143,7 @@ ROLE_TEMPLATES = {
             "roles:update",
             "roles:delete",
             "recipes:read",
+            "recipes:read_hidden",
             "recipes:create",
             "recipes:update",
             "recipes:delete",

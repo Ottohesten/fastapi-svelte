@@ -2,10 +2,11 @@ import uuid
 from fastapi import APIRouter, UploadFile, File
 from fastapi import HTTPException, Security
 from sqlmodel import select, desc
+from sqlalchemy import or_
 import cloudinary
 import cloudinary.uploader
 from app.config import get_settings
-from app.deps import SessionDep, get_current_user
+from app.deps import SessionDep, get_current_user, get_current_user_optional
 from app.models import (
     Recipe,
     RecipeCreate,
@@ -14,9 +15,11 @@ from app.models import (
     RecipeIngredientTotalPublic,
     RecipeSubRecipeLink,
     RecipePublic,
+    RecipeViewerLink,
     Ingredient,
     User,
 )
+from app.permissions import get_user_effective_scopes
 
 
 router = APIRouter(prefix="/recipes", tags=["recipes"])
@@ -263,7 +266,13 @@ def _calculate_total_ingredients(
     return result
 
 
-def _build_recipe_public(session: SessionDep, recipe: Recipe) -> RecipePublic:
+def _build_recipe_public(
+    session: SessionDep, recipe: Recipe, current_user: User | None = None
+) -> RecipePublic:
+    viewer_ids = None
+    if _should_include_viewer_ids(current_user, recipe):
+        viewer_ids = _get_viewer_ids(session, recipe.id)
+
     # Build full response payload including required aggregate fields.
     return RecipePublic.model_validate(
         {
@@ -272,13 +281,120 @@ def _build_recipe_public(session: SessionDep, recipe: Recipe) -> RecipePublic:
             "instructions": recipe.instructions,
             "servings": recipe.servings,
             "image": recipe.image,
+            "is_hidden": recipe.is_hidden,
             "owner": recipe.owner,
             "created_at": recipe.created_at,
             "ingredient_links": recipe.ingredient_links,
             "sub_recipe_links": recipe.sub_recipe_links,
             "total_ingredients": _calculate_total_ingredients(session, recipe),
+            "viewer_ids": viewer_ids,
         }
     )
+
+
+def _can_view_all_hidden(current_user: User | None) -> bool:
+    if not current_user:
+        return False
+    if current_user.is_superuser:
+        return True
+    return "recipes:read_hidden" in get_user_effective_scopes(current_user)
+
+
+def _is_allowed_viewer(
+    session: SessionDep, recipe_id: uuid.UUID, user_id: uuid.UUID
+) -> bool:
+    viewer_link = session.exec(
+        select(RecipeViewerLink).where(
+            RecipeViewerLink.recipe_id == recipe_id,
+            RecipeViewerLink.user_id == user_id,
+        )
+    ).first()
+    return viewer_link is not None
+
+
+def _can_view_recipe(
+    session: SessionDep, recipe: Recipe, current_user: User | None
+) -> bool:
+    if not recipe.is_hidden:
+        return True
+    if not current_user:
+        return False
+    if recipe.owner_id == current_user.id:
+        return True
+    if _can_view_all_hidden(current_user):
+        return True
+    return _is_allowed_viewer(session, recipe.id, current_user.id)
+
+
+def _should_include_viewer_ids(current_user: User | None, recipe: Recipe) -> bool:
+    if not current_user:
+        return False
+    if current_user.is_superuser or recipe.owner_id == current_user.id:
+        return True
+    return "recipes:read_hidden" in get_user_effective_scopes(current_user)
+
+
+def _can_edit_recipe(current_user: User, recipe: Recipe) -> bool:
+    if current_user.is_superuser:
+        return True
+    if recipe.owner_id == current_user.id:
+        return True
+    return "recipes:update" in get_user_effective_scopes(current_user)
+
+
+def _can_delete_recipe(current_user: User, recipe: Recipe) -> bool:
+    if current_user.is_superuser:
+        return True
+    if recipe.owner_id == current_user.id:
+        return True
+    return "recipes:delete" in get_user_effective_scopes(current_user)
+
+
+def _get_viewer_ids(session: SessionDep, recipe_id: uuid.UUID) -> list[uuid.UUID]:
+    return session.exec(
+        select(RecipeViewerLink.user_id).where(RecipeViewerLink.recipe_id == recipe_id)
+    ).all()
+
+
+def _validate_viewer_ids(
+    session: SessionDep, viewer_ids: set[uuid.UUID]
+) -> set[uuid.UUID]:
+    if not viewer_ids:
+        return set()
+    existing_ids = set(
+        session.exec(select(User.id).where(User.id.in_(viewer_ids))).all()
+    )
+    missing_ids = viewer_ids - existing_ids
+    if missing_ids:
+        missing_str = ", ".join(
+            str(viewer_id) for viewer_id in sorted(missing_ids, key=str)
+        )
+        raise HTTPException(
+            status_code=404, detail=f"Viewer(s) not found: {missing_str}"
+        )
+    return existing_ids
+
+
+def _sync_recipe_viewers(
+    session: SessionDep, recipe: Recipe, viewer_ids: set[uuid.UUID]
+) -> None:
+    viewer_ids.discard(recipe.owner_id)
+    viewer_ids = _validate_viewer_ids(session, viewer_ids)
+
+    existing_links = session.exec(
+        select(RecipeViewerLink).where(RecipeViewerLink.recipe_id == recipe.id)
+    ).all()
+    existing_ids = {link.user_id for link in existing_links if link.user_id}
+
+    to_remove = existing_ids - viewer_ids
+    to_add = viewer_ids - existing_ids
+
+    for link in existing_links:
+        if link.user_id in to_remove:
+            session.delete(link)
+
+    for viewer_id in to_add:
+        session.add(RecipeViewerLink(recipe_id=recipe.id, user_id=viewer_id))
 
 
 @router.post("/upload-image")
@@ -309,7 +425,12 @@ def upload_recipe_image(
 
 
 @router.get("/", response_model=list[RecipePublic])
-def get_recipes(session: SessionDep, skip: int = 0, limit: int = 100):
+def get_recipes(
+    session: SessionDep,
+    skip: int = 0,
+    limit: int = 100,
+    current_user: User | None = Security(get_current_user_optional),
+):
     """
     Retrieve recipes.
     """
@@ -317,13 +438,30 @@ def get_recipes(session: SessionDep, skip: int = 0, limit: int = 100):
     statement = (
         select(Recipe).order_by(desc(Recipe.created_at)).offset(skip).limit(limit)
     )
+    if not current_user:
+        statement = statement.where(Recipe.is_hidden.is_(False))
+    elif not _can_view_all_hidden(current_user):
+        viewer_subquery = select(RecipeViewerLink.recipe_id).where(
+            RecipeViewerLink.user_id == current_user.id
+        )
+        statement = statement.where(
+            or_(
+                Recipe.is_hidden.is_(False),
+                Recipe.owner_id == current_user.id,
+                Recipe.id.in_(viewer_subquery),
+            )
+        )
     recipes = session.exec(statement).all()
 
-    return [_build_recipe_public(session, recipe) for recipe in recipes]
+    return [_build_recipe_public(session, recipe, current_user) for recipe in recipes]
 
 
 @router.get("/{recipe_id}", response_model=RecipePublic)
-def get_recipe(session: SessionDep, recipe_id: str):
+def get_recipe(
+    session: SessionDep,
+    recipe_id: str,
+    current_user: User | None = Security(get_current_user_optional),
+):
     """
     Retrieve a recipe.
     """
@@ -338,7 +476,10 @@ def get_recipe(session: SessionDep, recipe_id: str):
     if not recipe:
         raise HTTPException(status_code=404, detail="Recipe not found")
 
-    return _build_recipe_public(session, recipe)
+    if not _can_view_recipe(session, recipe, current_user):
+        raise HTTPException(status_code=404, detail="Recipe not found")
+
+    return _build_recipe_public(session, recipe, current_user)
 
 
 @router.post("/", response_model=RecipePublic)
@@ -359,6 +500,7 @@ def create_recipe(
         owner_id=current_user.id,
         servings=recipe_in.servings,
         image=recipe_in.image,
+        is_hidden=recipe_in.is_hidden,
     )
 
     session.add(recipe)
@@ -394,10 +536,17 @@ def create_recipe(
             )
         )
 
+    if recipe_in.viewer_ids is not None:
+        viewer_ids = set(recipe_in.viewer_ids)
+        viewer_ids.discard(current_user.id)
+        viewer_ids = _validate_viewer_ids(session, viewer_ids)
+        for viewer_id in viewer_ids:
+            session.add(RecipeViewerLink(recipe_id=recipe.id, user_id=viewer_id))
+
     session.commit()
     session.refresh(recipe)
 
-    return _build_recipe_public(session, recipe)
+    return _build_recipe_public(session, recipe, current_user)
 
 
 @router.patch("/{recipe_id}", response_model=RecipePublic)
@@ -405,7 +554,7 @@ def update_recipe(
     session: SessionDep,
     recipe_id: str,
     recipe_in: RecipeCreate,
-    current_user: User = Security(get_current_user, scopes=["recipes:update"]),
+    current_user: User = Security(get_current_user),
 ):
     """
     Update a recipe.
@@ -415,6 +564,8 @@ def update_recipe(
     db_recipe = session.get(Recipe, recipe_id)
     if not db_recipe:
         raise HTTPException(status_code=404, detail="Recipe not found")
+    if not _can_edit_recipe(current_user, db_recipe):
+        raise HTTPException(status_code=403, detail="Not enough permissions")
 
     _validate_unique_sub_recipe_ids(recipe_in)
     _validate_sub_recipes_exist(session, recipe_in, db_recipe.id)
@@ -493,21 +644,25 @@ def update_recipe(
             )
 
     recipe_in_data = recipe_in.model_dump(
-        exclude_unset=True, exclude={"ingredients", "sub_recipes"}
+        exclude_unset=True, exclude={"ingredients", "sub_recipes", "viewer_ids"}
     )
     db_recipe.sqlmodel_update(recipe_in_data)
     session.add(db_recipe)
+
+    if recipe_in.viewer_ids is not None:
+        _sync_recipe_viewers(session, db_recipe, set(recipe_in.viewer_ids))
+
     session.commit()
     session.refresh(db_recipe)
 
-    return _build_recipe_public(session, db_recipe)
+    return _build_recipe_public(session, db_recipe, current_user)
 
 
 @router.delete("/{recipe_id}", response_model=Recipe)
 def delete_recipe(
     session: SessionDep,
     recipe_id: str,
-    current_user: User = Security(get_current_user, scopes=["recipes:delete"]),
+    current_user: User = Security(get_current_user),
 ):
     """
     Delete a recipe.
@@ -516,6 +671,8 @@ def delete_recipe(
     recipe = session.get(Recipe, recipe_id)
     if not recipe:
         raise HTTPException(status_code=404, detail="Recipe not found")
+    if not _can_delete_recipe(current_user, recipe):
+        raise HTTPException(status_code=403, detail="Not enough permissions")
 
     # Delete associated ingredient links first (optional since we have cascade_delete=True)
     # for link in recipe.ingredient_links:

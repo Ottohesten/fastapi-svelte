@@ -33,6 +33,11 @@ oauth2_scheme = OAuth2PasswordBearer(
     scopes={"me": "Read information about the current user."},
     # auto_error=False,
 )
+oauth2_scheme_optional = OAuth2PasswordBearer(
+    tokenUrl="/login/access-token",
+    scopes={"me": "Read information about the current user."},
+    auto_error=False,
+)
 
 # SessionDep: Session = Depends(get_db)
 # TokenDep: str =  Depends(oauth2_scheme)
@@ -85,6 +90,38 @@ async def get_current_user(
                 headers={"WWW-Authenticate": authenticate_value},
             )
     # print(f"User: {user}")
+    return user
+
+
+# Optional current user helper for partially public endpoints.
+async def get_current_user_optional(
+    session: SessionDep,
+    token: Annotated[str | None, Depends(oauth2_scheme_optional)],
+) -> User | None:
+    if not token:
+        return None
+
+    credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Could not validate credentials",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
+
+    try:
+        payload = jwt.decode(
+            token, settings.SECRET_KEY, algorithms=[security.ALGORITHM]
+        )
+        email: str = payload.get("sub")
+        if email is None:
+            raise credentials_exception
+    except (InvalidTokenError, ValidationError) as e:
+        print(f"Error: {e}")
+        raise credentials_exception
+
+    user = get_user_by_email(session=session, email=email)
+    if user is None:
+        raise credentials_exception
+
     return user
 
 

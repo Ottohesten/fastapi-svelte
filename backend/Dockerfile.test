@@ -1,0 +1,31 @@
+FROM python:3.13-slim
+
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
+
+ENV HOME=/tmp \
+    PATH="/app/backend/.venv/bin:$PATH" \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    UV_CACHE_DIR=/tmp/uv-cache \
+    UV_LINK_MODE=copy
+
+WORKDIR /app/backend
+
+COPY ./backend/pyproject.toml ./backend/uv.lock ./backend/README.md ./
+RUN --mount=type=cache,target=/root/.cache/uv \
+    uv sync --locked --no-install-project
+
+COPY ./backend/alembic.ini ./alembic.ini
+COPY ./backend/app ./app
+COPY ./backend/scripts ./scripts
+COPY ./backend/tests ./tests
+
+RUN --mount=type=cache,target=/root/.cache/uv \
+    uv sync --locked && \
+    groupadd --system --gid 10001 test-runner && \
+    useradd --system --uid 10001 --gid test-runner test-runner && \
+    chown -R test-runner:test-runner /app
+
+USER test-runner
+
+ENTRYPOINT ["bash", "scripts/test-entrypoint.sh"]

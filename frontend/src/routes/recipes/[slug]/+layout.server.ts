@@ -16,7 +16,7 @@ export const load = async ({ fetch, params, locals, cookies }) => {
     });
 
     if (apierror) {
-        error(response.status, apierror.detail?.toString());
+        error(response?.status ?? 502, apierror.detail?.toString());
     }
 
     const scopes = locals.authenticatedUser?.scopes ?? [];

@@ -45,7 +45,7 @@ export const actions = {
                 form,
                 typeof apierror.detail === "string" ? apierror.detail : "Login failed",
                 {
-                    status: (response.status || 400) as any
+                    status: (response?.status ?? 400) as any
                 }
             );
         }

@@ -13,7 +13,7 @@ export const load = async ({ fetch, params, locals }) => {
     });
 
     if (apierror) {
-        error(response.status, apierror.detail?.toString());
+        error(response?.status ?? 502, apierror.detail?.toString());
     }
 
     const {
@@ -23,7 +23,7 @@ export const load = async ({ fetch, params, locals }) => {
     } = await GameService.GetDrinks();
 
     if (drinksError) {
-        error(drinksResponse.status, drinksError.detail?.toString());
+        error(drinksResponse?.status ?? 502, drinksError.detail?.toString());
     }
 
     return {

@@ -51,6 +51,7 @@
     data.recipe.total_ingredients.map((ingredient) => ({
       ...ingredient,
       amount: scaleValue(ingredient.amount),
+      consumed_amount: scaleValue(ingredient.consumed_amount),
       grams: scaleValue(ingredient.grams),
       calories: scaleValue(ingredient.calories),
       carbohydrates: scaleValue(ingredient.carbohydrates),
@@ -58,7 +59,8 @@
       protein: scaleValue(ingredient.protein),
       sources: ingredient.sources.map((source) => ({
         ...source,
-        amount: scaleValue(source.amount)
+        amount: scaleValue(source.amount),
+        consumed_amount: scaleValue(source.consumed_amount)
       }))
     }))
   );

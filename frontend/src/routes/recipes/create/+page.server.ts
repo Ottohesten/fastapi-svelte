@@ -58,6 +58,7 @@ export const actions = {
         const ingredientsForBackend = form.data.ingredients.map((ingredient) => ({
             ingredient_id: ingredient.id,
             amount: ingredient.amount,
+            consumed_amount: ingredient.consumed_amount ?? null,
             unit: ingredient.unit
         }));
         const subRecipesForBackend = form.data.sub_recipes.map((recipe) => ({

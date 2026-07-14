@@ -162,6 +162,11 @@
                 {formatAmount(ingredient.amount)}
                 {ingredient.unit}
               </span>
+              {#if ingredient.consumed_amount < ingredient.amount}
+                <span class="ml-1 text-xs text-amber-700 dark:text-amber-300">
+                  · {formatAmount(ingredient.consumed_amount)}{ingredient.unit} consumed
+                </span>
+              {/if}
             </div>
             {#if hasSources}
               <div class="flex flex-wrap gap-1 sm:max-w-[13rem] sm:flex-col sm:items-end">

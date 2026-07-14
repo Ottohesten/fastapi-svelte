@@ -8,6 +8,7 @@
     id: string;
     title: string;
     amount: number;
+    consumedAmount: number;
     unit: string;
     grams: number;
     calories: number;
@@ -154,6 +155,7 @@
         id: item.ingredient_id,
         title: item.title,
         amount: item.amount,
+        consumedAmount: item.consumed_amount,
         unit: item.unit,
         grams: item.grams,
         calories: item.calories,
@@ -744,7 +746,8 @@
             <thead>
               <tr class="text-left text-xs text-gray-500 uppercase dark:text-gray-400">
                 <th class="px-3 py-1">Ingredient</th>
-                <th class="px-3 py-1">Used</th>
+                <th class="px-3 py-1">Required</th>
+                <th class="px-3 py-1">Consumed</th>
                 <th class="px-3 py-1">Calories</th>
                 <th class="px-3 py-1">Carbs</th>
                 <th class="px-3 py-1">Fat</th>
@@ -760,6 +763,10 @@
                   </td>
                   <td class="px-3 py-2 text-gray-700 dark:text-gray-300">
                     {roundOne(row.amount)}
+                    {row.unit}
+                  </td>
+                  <td class="px-3 py-2 text-gray-700 dark:text-gray-300">
+                    {roundOne(row.consumedAmount)}
                     {row.unit}
                     <span class="ml-1 text-xs text-gray-500 dark:text-gray-400">
                       ({roundWhole(row.grams)}g)

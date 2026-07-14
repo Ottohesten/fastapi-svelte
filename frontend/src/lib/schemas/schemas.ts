@@ -59,13 +59,28 @@ export const RecipeSchema = z.object({
     // ingredients: an array of objects that have an id and a title
     ingredients: z
         .array(
-            z.object({
-                id: z.string(),
-                title: z.string().optional(), // For display purposes only, not sent to backend
-                amount: z.number().min(0.1, "Amount must be at least 0.1").default(1),
-                // unit is enum of "g", "kg", "ml", "L", "pcs"
-                unit: z.enum(["g", "kg", "ml", "L", "pcs"]).default("g")
-            })
+            z
+                .object({
+                    id: z.string(),
+                    title: z.string().optional(), // For display purposes only, not sent to backend
+                    amount: z.number().min(0.1, "Amount must be at least 0.1").default(1),
+                    consumed_amount: z
+                        .number()
+                        .min(0, "Consumed amount cannot be negative")
+                        .nullable()
+                        .optional(),
+                    // unit is enum of "g", "kg", "ml", "L", "pcs"
+                    unit: z.enum(["g", "kg", "ml", "L", "pcs"]).default("g")
+                })
+                .refine(
+                    (ingredient) =>
+                        ingredient.consumed_amount == null ||
+                        ingredient.consumed_amount <= ingredient.amount,
+                    {
+                        message: "Consumed amount cannot exceed the required amount",
+                        path: ["consumed_amount"]
+                    }
+                )
         )
         .default([]),
     sub_recipes: z

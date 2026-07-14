@@ -319,7 +319,8 @@ def grant_custom_scope_to_user(session: Session, user: User, scope: str) -> bool
         return False
 
     if scope not in user.custom_scopes:
-        user.custom_scopes.append(scope)
+        # Plain JSON columns do not detect in-place list mutations reliably.
+        user.custom_scopes = [*user.custom_scopes, scope]
         session.add(user)
         session.commit()
         session.refresh(user)
@@ -332,7 +333,8 @@ def revoke_custom_scope_from_user(session: Session, user: User, scope: str) -> b
     Revoke an individual scope from a user
     """
     if scope in user.custom_scopes:
-        user.custom_scopes.remove(scope)
+        # Reassign so SQLAlchemy records the JSON column as changed.
+        user.custom_scopes = [item for item in user.custom_scopes if item != scope]
         session.add(user)
         session.commit()
         session.refresh(user)

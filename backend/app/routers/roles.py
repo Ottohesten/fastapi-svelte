@@ -59,6 +59,43 @@ def create_role(
     return role
 
 
+# Static role metadata routes must be registered before ``/{role_id}`` so
+# Starlette does not interpret paths such as ``/templates/`` as UUID values.
+@router.get("/templates/", response_model=dict)
+def list_role_templates(
+    current_user: User = Security(get_current_user, scopes=["roles:read"]),
+):
+    """List available role templates"""
+    return {"templates": ROLE_TEMPLATES}
+
+
+@router.post("/from-template/{template_key}", response_model=RolePublic)
+def create_role_from_template_endpoint(
+    template_key: str,
+    session: SessionDep,
+    current_user: User = Security(get_current_user, scopes=["roles:create"]),
+):
+    """Create a role from a predefined template"""
+    try:
+        role = create_role_from_template(session, template_key)
+        return RolePublic(
+            id=role.id,
+            name=role.name,
+            description=role.description,
+            scopes=role.scopes or [],
+        )
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+
+@router.get("/scopes/available", response_model=dict)
+def get_available_scopes(
+    current_user: User = Security(get_current_user, scopes=["roles:read"]),
+):
+    """List all available scopes"""
+    return {"scopes": sorted(list(AVAILABLE_SCOPES))}
+
+
 @router.get("/{role_id}", response_model=RolePublic)
 def get_role(
     role_id: uuid.UUID,
@@ -130,40 +167,3 @@ def delete_role(
     session.commit()
 
     return Message(message=f"Role '{role.name}' deleted successfully")
-
-
-# Role template endpoints
-@router.get("/templates/", response_model=dict)
-def list_role_templates(
-    current_user: User = Security(get_current_user, scopes=["roles:read"]),
-):
-    """List available role templates"""
-    return {"templates": ROLE_TEMPLATES}
-
-
-@router.post("/from-template/{template_key}", response_model=RolePublic)
-def create_role_from_template_endpoint(
-    template_key: str,
-    session: SessionDep,
-    current_user: User = Security(get_current_user, scopes=["roles:create"]),
-):
-    """Create a role from a predefined template"""
-    try:
-        role = create_role_from_template(session, template_key)
-        return RolePublic(
-            id=role.id,
-            name=role.name,
-            description=role.description,
-            scopes=role.scopes or [],
-        )
-    except ValueError as e:
-        raise HTTPException(status_code=400, detail=str(e))
-
-
-# Available scopes endpoint
-@router.get("/scopes/available", response_model=dict)
-def get_available_scopes(
-    current_user: User = Security(get_current_user, scopes=["roles:read"]),
-):
-    """List all available scopes"""
-    return {"scopes": sorted(list(AVAILABLE_SCOPES))}

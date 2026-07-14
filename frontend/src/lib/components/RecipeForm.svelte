@@ -13,7 +13,7 @@
   import { Combobox } from "$lib/components/ui/combobox";
   import { Field, Control, Label as SnapLabel, FieldErrors } from "formsnap";
 
-  import { Plus } from "lucide-svelte";
+  import { Plus } from "@lucide/svelte";
 
   interface Props {
     data: any;

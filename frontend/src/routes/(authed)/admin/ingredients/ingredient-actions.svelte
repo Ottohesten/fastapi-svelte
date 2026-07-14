@@ -1,6 +1,6 @@
 <script lang="ts">
   import Button, { buttonVariants } from "$lib/components/ui/button/button.svelte";
-  import { Pencil, Trash2 } from "lucide-svelte";
+  import { Pencil, Trash2 } from "@lucide/svelte";
   import { enhance } from "$app/forms";
   import * as Dialog from "$lib/components/ui/dialog/index.js";
   import { Input } from "$lib/components/ui/input";

@@ -2,16 +2,16 @@
   import * as Sidebar from "$lib/components/ui/sidebar/index.js";
   import { Collapsible } from "bits-ui";
   // import { Calendar } from 'bits-ui';
-  import Calendar from "lucide-svelte/icons/calendar";
-  import ChefHat from "lucide-svelte/icons/chef-hat";
-  import ChevronDown from "lucide-svelte/icons/chevron-down";
-  import House from "lucide-svelte/icons/house";
-  import Inbox from "lucide-svelte/icons/inbox";
-  import Search from "lucide-svelte/icons/search";
-  import Settings from "lucide-svelte/icons/settings";
-  import User from "lucide-svelte/icons/user";
-  import UtensilsCrossed from "lucide-svelte/icons/utensils-crossed";
-  import BookOpen from "lucide-svelte/icons/book-open";
+  import Calendar from "@lucide/svelte/icons/calendar";
+  import ChefHat from "@lucide/svelte/icons/chef-hat";
+  import ChevronDown from "@lucide/svelte/icons/chevron-down";
+  import House from "@lucide/svelte/icons/house";
+  import Inbox from "@lucide/svelte/icons/inbox";
+  import Search from "@lucide/svelte/icons/search";
+  import Settings from "@lucide/svelte/icons/settings";
+  import User from "@lucide/svelte/icons/user";
+  import UtensilsCrossed from "@lucide/svelte/icons/utensils-crossed";
+  import BookOpen from "@lucide/svelte/icons/book-open";
 
   const items = [
     // {

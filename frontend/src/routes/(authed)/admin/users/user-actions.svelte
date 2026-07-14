@@ -1,6 +1,6 @@
 <script lang="ts">
   import Button from "$lib/components/ui/button/button.svelte";
-  import { Pencil, Trash2, Shield, Plus, X, Award, Fingerprint, ListChecks } from "lucide-svelte";
+  import { Pencil, Trash2, Shield, Plus, X, Award, Fingerprint, ListChecks } from "@lucide/svelte";
   import { enhance } from "$app/forms";
   import * as Dialog from "$lib/components/ui/dialog";
   import * as Sheet from "$lib/components/ui/sheet";
@@ -9,7 +9,7 @@
   import { Field, Control, Label, FieldErrors } from "formsnap";
   import { zod4 as zodClient } from "sveltekit-superforms/adapters";
   import { UserUpdateSchema, UserAddRoleSchema } from "$lib/schemas/schemas.js";
-  import SuperDebug from "sveltekit-superforms/SuperDebug.svelte";
+  import SuperDebug from "sveltekit-superforms";
   import { untrack } from "svelte";
 
   import type { UserPublic, UserWithPermissionsPublic, RolePublic } from "$lib/client";

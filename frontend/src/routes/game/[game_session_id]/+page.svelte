@@ -21,7 +21,7 @@
   import { browser } from "$app/environment";
   import Button from "$lib/components/ui/button/button.svelte";
   import * as Select from "$lib/components/ui/select/index.js";
-  import { Pencil, Trash2 } from "lucide-svelte";
+  import { Pencil, Trash2 } from "@lucide/svelte";
   import { enhance } from "$app/forms";
   import {
     Dialog,

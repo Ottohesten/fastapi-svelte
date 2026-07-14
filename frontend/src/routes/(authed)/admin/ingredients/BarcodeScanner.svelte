@@ -3,7 +3,7 @@
   import { BrowserMultiFormatReader, type IScannerControls } from "@zxing/browser";
   import { Input } from "$lib/components/ui/input";
   import Button from "$lib/components/ui/button/button.svelte";
-  import { Camera, Keyboard, LoaderCircle } from "lucide-svelte";
+  import { Camera, Keyboard, LoaderCircle } from "@lucide/svelte";
 
   let { onDetected }: { onDetected: (barcode: string) => void } = $props();
 

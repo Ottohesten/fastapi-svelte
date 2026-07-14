@@ -1,5 +1,11 @@
 import uuid
-from pydantic import BaseModel, EmailStr, computed_field, field_validator
+from pydantic import (
+    BaseModel,
+    EmailStr,
+    computed_field,
+    field_validator,
+    model_validator,
+)
 from sqlmodel import Field, SQLModel, Relationship, Column, JSON
 from sqlalchemy import DateTime
 from typing import Optional
@@ -202,6 +208,14 @@ class RecipeIngredientLink(SQLModel, table=True):
     amount: float = Field(
         default=1.0, ge=0, description="Amount of the ingredient in the recipe"
     )
+    consumed_amount: float | None = Field(
+        default=None,
+        ge=0,
+        description=(
+            "Amount actually consumed, in the same unit as amount. "
+            "Null means the full amount is consumed."
+        ),
+    )
     unit: str = Field(
         default="g",
         max_length=10,
@@ -221,11 +235,25 @@ class RecipeIngredientLinkCreate(SQLModel):
     amount: float = Field(
         default=1.0, ge=0, description="Amount of the ingredient in the recipe"
     )
+    consumed_amount: float | None = Field(
+        default=None,
+        ge=0,
+        description=(
+            "Amount actually consumed, in the same unit as amount. "
+            "Null means the full amount is consumed."
+        ),
+    )
     unit: str = Field(
         default="g",
         max_length=10,
         description="Unit of the amount, e.g. g, ml, pcs, etc.",
     )
+
+    @model_validator(mode="after")
+    def validate_consumed_amount(self) -> "RecipeIngredientLinkCreate":
+        if self.consumed_amount is not None and self.consumed_amount > self.amount:
+            raise ValueError("Consumed amount cannot exceed the recipe amount")
+        return self
 
 
 class RecipeIngredientLinkPublic(SQLModel):
@@ -235,6 +263,7 @@ class RecipeIngredientLinkPublic(SQLModel):
 
     ingredient: "IngredientPublic"
     amount: float
+    consumed_amount: float | None
     unit: str = Field(
         default="g",
         max_length=10,
@@ -246,6 +275,9 @@ class RecipeIngredientSourcePublic(SQLModel):
     recipe_id: uuid.UUID
     recipe_title: str
     amount: float
+    consumed_amount: float = Field(
+        description="Amount used for nutrition, in the same unit as amount.",
+    )
     unit: str = Field(
         max_length=10,
         description="Unit of the amount, e.g. g, ml, pcs, etc.",
@@ -259,6 +291,9 @@ class RecipeIngredientTotalPublic(SQLModel):
     ingredient_id: uuid.UUID
     title: str
     amount: float
+    consumed_amount: float = Field(
+        description="Aggregated amount used for nutrition, in the same unit as amount.",
+    )
     unit: str = Field(
         max_length=10,
         description="Unit of the amount, e.g. g, ml, pcs, etc.",
@@ -327,7 +362,7 @@ class RecipeSubRecipeLinkPublic(SQLModel):
 class RecipeBase(SQLModel):
     title: str = Field(max_length=255, min_length=1)
     instructions: str
-    servings: int
+    servings: int = Field(ge=1)
     image: Optional[str] = Field(default=None, max_length=1000)
     is_hidden: bool = Field(default=False)
 
@@ -456,7 +491,7 @@ class Recipe(RecipeBase, table=True):
     )
 
     # we will use this field to be able to scale the recipe, can not be less than 1
-    servings: int = Field(default=1)
+    servings: int = Field(default=1, ge=1)
 
     ingredient_links: list[RecipeIngredientLink] = Relationship(
         back_populates="recipe", cascade_delete=True

@@ -191,6 +191,8 @@ def pytest_sessionstart(session: pytest.Session) -> None:
     compose_command = (
         "docker",
         "compose",
+        "--env-file",
+        "/dev/null",
         "--project-name",
         project_name,
         "--file",

@@ -5,6 +5,7 @@ repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 project_name="fastapi-svelte-tests-$(id -u)-$$"
 compose=(
     docker compose
+    --env-file /dev/null
     --project-name "$project_name"
     --file "$repo_root/compose.test.yaml"
 )

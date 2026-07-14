@@ -99,7 +99,12 @@ export const IngredientSchema = z.object({
         .number()
         .int()
         .positive("Weight per piece must be a positive integer")
-        .default(1)
+        .default(1),
+    barcode: z
+        .string()
+        .regex(/^\d{4,24}$/, "Barcode must contain between 4 and 24 digits")
+        .or(z.literal(""))
+        .optional()
 });
 
 export const IngredientUpdateSchema = IngredientSchema.extend({

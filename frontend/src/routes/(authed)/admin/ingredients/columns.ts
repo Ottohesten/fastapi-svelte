@@ -55,6 +55,11 @@ export const createColumns = (
         }
     },
     {
+        accessorKey: "barcode",
+        header: "Barcode",
+        cell: ({ row }) => row.getValue("barcode") || "—"
+    },
+    {
         id: "actions",
         header: () => {
             const actionsHeaderSnippet = createRawSnippet(() => {

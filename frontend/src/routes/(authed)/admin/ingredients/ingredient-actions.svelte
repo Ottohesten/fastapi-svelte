@@ -33,7 +33,8 @@
       carbohydrates: ingredient.carbohydrates,
       fat: ingredient.fat,
       protein: ingredient.protein,
-      weight_per_piece: ingredient.weight_per_piece
+      weight_per_piece: ingredient.weight_per_piece,
+      barcode: ingredient.barcode ?? ""
     }));
     editOpen = true;
   }
@@ -62,6 +63,7 @@
       </Dialog.Header>
       <form method="POST" action="?/update" use:formEnhance class="space-y-4 py-4">
         <input type="hidden" name="id" value={$formData.id} />
+        <input type="hidden" name="barcode" value={$formData.barcode ?? ""} />
 
         {#if $message && !$message.includes("successfully")}
           <div class="rounded-md border border-red-200 bg-red-50 p-3">

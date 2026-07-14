@@ -542,6 +542,19 @@ export const IngredientCreateSchema = {
             title: 'Weight Per Piece',
             description: 'Average weight per piece in grams (used when unit is \'pcs\')',
             default: 100
+        },
+        barcode: {
+            anyOf: [
+                {
+                    type: 'string',
+                    maxLength: 24
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Barcode',
+            description: 'Normalized product barcode, when imported from Open Food Facts'
         }
     },
     type: 'object',
@@ -577,6 +590,17 @@ export const IngredientPublicSchema = {
             type: 'integer',
             title: 'Weight Per Piece'
         },
+        barcode: {
+            anyOf: [
+                {
+                    type: 'string'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Barcode'
+        },
         id: {
             type: 'string',
             format: 'uuid',
@@ -591,6 +615,7 @@ export const IngredientPublicSchema = {
         'fat',
         'protein',
         'weight_per_piece',
+        'barcode',
         'id'
     ],
     title: 'IngredientPublic'
@@ -629,6 +654,102 @@ export const NewPasswordSchema = {
         'new_password'
     ],
     title: 'NewPassword'
+} as const;
+
+export const OpenFoodFactsProductPublicSchema = {
+    properties: {
+        barcode: {
+            type: 'string',
+            title: 'Barcode'
+        },
+        title: {
+            type: 'string',
+            title: 'Title'
+        },
+        brand: {
+            anyOf: [
+                {
+                    type: 'string'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Brand'
+        },
+        image_url: {
+            anyOf: [
+                {
+                    type: 'string'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Image Url'
+        },
+        calories: {
+            type: 'integer',
+            minimum: 0,
+            title: 'Calories'
+        },
+        carbohydrates: {
+            type: 'number',
+            minimum: 0,
+            title: 'Carbohydrates'
+        },
+        fat: {
+            type: 'number',
+            minimum: 0,
+            title: 'Fat'
+        },
+        protein: {
+            type: 'number',
+            minimum: 0,
+            title: 'Protein'
+        },
+        weight_per_piece: {
+            type: 'integer',
+            minimum: 1,
+            title: 'Weight Per Piece'
+        },
+        nutrition_basis: {
+            type: 'string',
+            title: 'Nutrition Basis'
+        },
+        missing_nutrients: {
+            items: {
+                type: 'string'
+            },
+            type: 'array',
+            title: 'Missing Nutrients'
+        },
+        existing_ingredient_id: {
+            anyOf: [
+                {
+                    type: 'string',
+                    format: 'uuid'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Existing Ingredient Id'
+        }
+    },
+    type: 'object',
+    required: [
+        'barcode',
+        'title',
+        'calories',
+        'carbohydrates',
+        'fat',
+        'protein',
+        'weight_per_piece',
+        'nutrition_basis',
+        'missing_nutrients'
+    ],
+    title: 'OpenFoodFactsProductPublic'
 } as const;
 
 export const RecipeSchema = {
@@ -686,7 +807,7 @@ export const RecipeSchema = {
             type: 'string',
             format: 'date-time',
             title: 'Created At',
-            default: '2026-03-14T02:28:44.956495Z'
+            default: '2026-07-14T00:05:15.085155Z'
         }
     },
     type: 'object',

@@ -337,6 +337,12 @@ export type IngredientCreate = {
      * Average weight per piece in grams (used when unit is 'pcs')
      */
     weight_per_piece?: number;
+    /**
+     * Barcode
+     *
+     * Normalized product barcode, when imported from Open Food Facts
+     */
+    barcode?: string | null;
 };
 
 /**
@@ -368,6 +374,10 @@ export type IngredientPublic = {
      */
     weight_per_piece: number;
     /**
+     * Barcode
+     */
+    barcode: string | null;
+    /**
      * Id
      */
     id: string;
@@ -395,6 +405,60 @@ export type NewPassword = {
      * New Password
      */
     new_password: string;
+};
+
+/**
+ * OpenFoodFactsProductPublic
+ */
+export type OpenFoodFactsProductPublic = {
+    /**
+     * Barcode
+     */
+    barcode: string;
+    /**
+     * Title
+     */
+    title: string;
+    /**
+     * Brand
+     */
+    brand?: string | null;
+    /**
+     * Image Url
+     */
+    image_url?: string | null;
+    /**
+     * Calories
+     */
+    calories: number;
+    /**
+     * Carbohydrates
+     */
+    carbohydrates: number;
+    /**
+     * Fat
+     */
+    fat: number;
+    /**
+     * Protein
+     */
+    protein: number;
+    /**
+     * Weight Per Piece
+     */
+    weight_per_piece: number;
+    /**
+     * Nutrition Basis
+     */
+    nutrition_basis: string;
+    /**
+     * Missing Nutrients
+     */
+    missing_nutrients: Array<string>;
+    /**
+     * Existing Ingredient Id
+     */
+    existing_ingredient_id?: string | null;
 };
 
 /**
@@ -2098,6 +2162,36 @@ export type PostIngredientsResponses = {
 };
 
 export type PostIngredientsResponse = PostIngredientsResponses[keyof PostIngredientsResponses];
+
+export type GetIngredientsBarcodeByBarcodeData = {
+    body?: never;
+    path: {
+        /**
+         * Barcode
+         */
+        barcode: string;
+    };
+    query?: never;
+    url: '/ingredients/barcode/{barcode}';
+};
+
+export type GetIngredientsBarcodeByBarcodeErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type GetIngredientsBarcodeByBarcodeError = GetIngredientsBarcodeByBarcodeErrors[keyof GetIngredientsBarcodeByBarcodeErrors];
+
+export type GetIngredientsBarcodeByBarcodeResponses = {
+    /**
+     * Successful Response
+     */
+    200: OpenFoodFactsProductPublic;
+};
+
+export type GetIngredientsBarcodeByBarcodeResponse = GetIngredientsBarcodeByBarcodeResponses[keyof GetIngredientsBarcodeByBarcodeResponses];
 
 export type DeleteIngredientsByIngredientIdData = {
     body?: never;

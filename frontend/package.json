@@ -28,6 +28,7 @@
         "@tiptap/extension-list-item": "^3.19.0",
         "@tiptap/extension-text-style": "^3.19.0",
         "@tiptap/starter-kit": "^3.19.0",
+        "@zxing/browser": "^0.2.1",
         "bits-ui": "^2.15.5",
         "clsx": "^2.1.1",
         "d3": "^7.9.0",

@@ -57,6 +57,7 @@ class Settings(BaseSettings):
         ]
 
     PROJECT_NAME: str
+    OPENFOODFACTS_USER_AGENT: str | None = None
     SENTRY_DSN: HttpUrl | None = None
     POSTGRES_SERVER: str
     POSTGRES_PORT: int

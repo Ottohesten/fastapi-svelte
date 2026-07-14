@@ -14,7 +14,11 @@ from tests.utils.user import authentication_token_from_email
 
 # @pytest.fixture(scope="session", autouse=True)
 @pytest.fixture(scope="function", autouse=True)
-def db() -> Generator[Session, None, None]:
+def db(request: pytest.FixtureRequest) -> Generator[Session | None, None, None]:
+    if request.node.get_closest_marker("no_db"):
+        yield None
+        return
+
     with Session(engine) as session:
         init_db(session)
         yield session

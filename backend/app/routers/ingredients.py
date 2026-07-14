@@ -1,5 +1,6 @@
 from fastapi import APIRouter
-from fastapi import HTTPException, Security
+from fastapi import HTTPException, Security, status
+from sqlalchemy.exc import IntegrityError
 from sqlmodel import select
 from app.deps import SessionDep, get_current_user
 
@@ -8,8 +9,14 @@ from app.models import (
     Ingredient,
     IngredientCreate,
     IngredientPublic,
+    OpenFoodFactsProductPublic,
     User,
     RecipeIngredientLink,
+)
+from app.openfoodfacts import (
+    OpenFoodFactsUnavailableError,
+    ProductNotFoundError,
+    lookup_product,
 )
 
 
@@ -26,6 +33,41 @@ def get_ingredients(session: SessionDep, skip: int = 0, limit: int = 100):
     ingredients = session.exec(statement).all()
 
     return ingredients
+
+
+@router.get("/barcode/{barcode}", response_model=OpenFoodFactsProductPublic)
+def get_ingredient_by_barcode(
+    session: SessionDep,
+    barcode: str,
+    current_user: User = Security(get_current_user, scopes=["ingredients:create"]),
+):
+    """Look up a packaged food in Open Food Facts by barcode."""
+    try:
+        normalized_barcode = IngredientCreate.normalize_barcode(barcode)
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+
+    if normalized_barcode is None:
+        raise HTTPException(status_code=422, detail="Barcode is required")
+
+    try:
+        product = lookup_product(normalized_barcode)
+    except ProductNotFoundError as exc:
+        raise HTTPException(
+            status_code=404, detail="Product not found in Open Food Facts"
+        ) from exc
+    except OpenFoodFactsUnavailableError as exc:
+        raise HTTPException(
+            status_code=503,
+            detail="Open Food Facts is temporarily unavailable. Please try again.",
+        ) from exc
+
+    existing = session.exec(
+        select(Ingredient).where(Ingredient.barcode == product.barcode)
+    ).first()
+    if existing:
+        product.existing_ingredient_id = existing.id
+    return product
 
 
 @router.get("/{ingredient_id}", response_model=IngredientPublic)
@@ -58,7 +100,14 @@ def create_ingredient(
     """
     ingredient = Ingredient.model_validate(ingredient_in)
     session.add(ingredient)
-    session.commit()
+    try:
+        session.commit()
+    except IntegrityError as exc:
+        session.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="An ingredient with this barcode already exists",
+        ) from exc
     session.refresh(ingredient)
 
     return ingredient
@@ -113,6 +162,13 @@ def update_ingredient(
     ingredient_data = ingredient_in.model_dump(exclude_unset=True)
     ingredient.sqlmodel_update(ingredient_data)
     session.add(ingredient)
-    session.commit()
+    try:
+        session.commit()
+    except IntegrityError as exc:
+        session.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="An ingredient with this barcode already exists",
+        ) from exc
     session.refresh(ingredient)
     return ingredient

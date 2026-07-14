@@ -261,3 +261,21 @@ This project is open source and available under the MIT License.
 - [FastAPI Documentation](https://fastapi.tiangolo.com/)
 - [SvelteKit Documentation](https://kit.svelte.dev/)
 - [SQLModel Documentation](https://sqlmodel.tiangolo.com/)
+
+## Open Food Facts barcode import
+
+Users with the `ingredients:create` permission can scan a packaged-food barcode from
+the ingredient administration page. The browser reads the barcode with the phone's
+rear camera, while the backend retrieves product and per-100g nutrition data from
+Open Food Facts. The values remain editable and must be reviewed before saving.
+
+Set `OPENFOODFACTS_USER_AGENT` in `.env` to identify your deployed app with a URL or
+contact address, for example:
+
+```dotenv
+OPENFOODFACTS_USER_AGENT="MyRecipeApp/1.0 (https://recipes.example.com)"
+```
+
+Camera access requires HTTPS in production (localhost is allowed during local
+development). If camera access is unavailable or denied, the scanner also accepts a
+barcode typed manually.

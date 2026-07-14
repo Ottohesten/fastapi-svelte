@@ -1,5 +1,5 @@
 import uuid
-from pydantic import BaseModel, EmailStr, computed_field
+from pydantic import BaseModel, EmailStr, computed_field, field_validator
 from sqlmodel import Field, SQLModel, Relationship, Column, JSON
 from sqlalchemy import DateTime
 from typing import Optional
@@ -550,7 +550,28 @@ class IngredientBase(SQLModel):
         ge=0,
         description="Average weight per piece in grams (used when unit is 'pcs')",
     )
-    # pass
+    barcode: str | None = Field(
+        default=None,
+        max_length=24,
+        description="Normalized product barcode, when imported from Open Food Facts",
+    )
+
+    @field_validator("barcode")
+    @classmethod
+    def normalize_barcode(cls, value: str | None) -> str | None:
+        if value is None or not value.strip():
+            return None
+
+        barcode = value.strip()
+        if not barcode.isdigit() or not 4 <= len(barcode) <= 24:
+            raise ValueError("Barcode must contain between 4 and 24 digits")
+
+        significant = barcode.lstrip("0") or "0"
+        if len(significant) <= 7:
+            return significant.zfill(8)
+        if 9 <= len(significant) <= 12:
+            return significant.zfill(13)
+        return barcode
 
 
 class IngredientCreate(IngredientBase):
@@ -566,6 +587,7 @@ class IngredientPublic(IngredientBase):
     fat: float
     protein: float
     weight_per_piece: int
+    barcode: str | None
     # recipes: list[RecipePublic]
 
 
@@ -605,11 +627,33 @@ class Ingredient(IngredientBase, table=True):
         description="Average weight per piece in grams (used when unit is 'pcs')",
         sa_column_kwargs={"server_default": "1"},
     )
+    barcode: str | None = Field(
+        default=None,
+        max_length=24,
+        index=True,
+        unique=True,
+        description="Normalized product barcode, when imported from Open Food Facts",
+    )
 
     # recipes: list["Recipe"] = Relationship(back_populates="ingredients", link_model=RecipeIngredientLink)
     recipe_links: list["RecipeIngredientLink"] = Relationship(
         back_populates="ingredient", cascade_delete=True
     )
+
+
+class OpenFoodFactsProductPublic(SQLModel):
+    barcode: str
+    title: str
+    brand: str | None = None
+    image_url: str | None = None
+    calories: int = Field(ge=0)
+    carbohydrates: float = Field(ge=0)
+    fat: float = Field(ge=0)
+    protein: float = Field(ge=0)
+    weight_per_piece: int = Field(ge=1)
+    nutrition_basis: str
+    missing_nutrients: list[str]
+    existing_ingredient_id: uuid.UUID | None = None
 
 
 # for H.C game

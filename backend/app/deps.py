@@ -63,6 +63,8 @@ async def get_current_user(
         payload = jwt.decode(
             token, settings.SECRET_KEY, algorithms=[security.ALGORITHM]
         )
+        if payload.get("type") != "access":
+            raise credentials_exception
         email: str = payload.get("sub")
         # print(f"payload: {payload}")
         if email is None:
@@ -111,6 +113,8 @@ async def get_current_user_optional(
         payload = jwt.decode(
             token, settings.SECRET_KEY, algorithms=[security.ALGORITHM]
         )
+        if payload.get("type") != "access":
+            raise credentials_exception
         email: str = payload.get("sub")
         if email is None:
             raise credentials_exception

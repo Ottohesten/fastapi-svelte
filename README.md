@@ -160,10 +160,54 @@ This will start the PostgreSQL database, backend API server, and frontend develo
 ## 🧪 Testing
 
 ### Backend Tests
+
+The canonical backend test command, also used by CI, runs pytest and PostgreSQL entirely in
+dedicated Docker containers:
+
+```bash
+./scripts/test-backend.sh
+```
+
+You can pass normal pytest arguments through the script, for example:
+
+```bash
+./scripts/test-backend.sh tests/test_recipe_consumption.py -v
+```
+
+CI also records backend line coverage and requires at least 70%:
+
+```bash
+./scripts/test-backend.sh --cov=app --cov-report=term-missing --cov-fail-under=70
+```
+
+The runner builds a dedicated Python 3.13 test image and starts an ephemeral PostgreSQL database in
+a uniquely named Compose project. It does not publish database ports, load `.env`, mount the source
+tree, or reuse the development database volume. Containers, the internal network, and the in-memory
+database are removed automatically after the run.
+
+For local development, pytest can also run directly from `backend/`:
+
 ```bash
 cd backend
 uv run pytest
+uv run pytest tests/api/routes/test_users.py -v
 ```
+
+Host-side pytest, including runs started from the VS Code Testing panel, automatically starts a
+dedicated PostgreSQL test container. The database is bound only to a random `127.0.0.1` port,
+migrated before collection, and removed after the session. Test-only settings are injected before
+the application is imported, so the development `.env`, database, and Docker volume are not used.
+Only one database-backed host test session can run per checkout at a time.
+
+Test discovery does not start Docker. A suite consisting only of tests marked `no_db` can also run
+without Docker:
+
+```bash
+cd backend
+uv run pytest -m no_db
+```
+
+Docker must be installed and running for database-backed host or Testing panel runs.
 
 ### Type Checking
 ```bash
@@ -279,3 +323,13 @@ OPENFOODFACTS_USER_AGENT="MyRecipeApp/1.0 (https://recipes.example.com)"
 Camera access requires HTTPS in production (localhost is allowed during local
 development). If camera access is unavailable or denied, the scanner also accepts a
 barcode typed manually.
+
+## Required and consumed ingredient amounts
+
+Recipe ingredients can optionally specify an amount actually consumed in addition to
+the amount required for cooking. Shopping and ingredient lists continue to show the
+full required amount, while calories, macros, and calculated recipe weight use the
+consumed amount. Leave it blank to treat the full amount as consumed.
+
+For example, a deep-frying recipe can require 1 L of oil but record 0.1 L as consumed,
+preventing the unused frying oil from being included in the recipe nutrition totals.

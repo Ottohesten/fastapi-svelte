@@ -8,10 +8,20 @@ on:
     branches:
       - main
 
+permissions:
+  contents: read
+
+concurrency:
+  group: backend-quality-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   format:
+    # This is an existing required ruleset check. Keep the name stable: the
+    # backend test step below makes test success part of the merge gate.
     name: Check code formatting
     runs-on: ubuntu-latest
+    timeout-minutes: 20
 
     steps:
       - name: Checkout code
@@ -20,7 +30,7 @@ jobs:
       - name: Setup uv
         uses: astral-sh/setup-uv@v7
         with:
-          python-version: ${{ matrix.python-version }}
+          python-version: "3.13"
           enable-cache: true
 
       - name: Install dependencies
@@ -33,3 +43,10 @@ jobs:
       - name: ruff format
         run: uv run ruff format --check .
         working-directory: ./backend
+
+      - name: Run isolated backend tests with coverage
+        run: >-
+          ./scripts/test-backend.sh
+          --cov=app
+          --cov-report=term-missing
+          --cov-fail-under=70

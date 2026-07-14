@@ -13,7 +13,7 @@
   import { Combobox } from "$lib/components/ui/combobox";
   import { Field, Control, Label as SnapLabel, FieldErrors } from "formsnap";
 
-  import { Plus } from "lucide-svelte";
+  import { Plus } from "@lucide/svelte";
 
   interface Props {
     data: any;
@@ -131,6 +131,7 @@
   // Ingredient dialog state
   let selectedIngredientId = $state<string>("");
   let ingredientAmount = $state<number>(1.0);
+  let ingredientConsumedAmount = $state<number | undefined>(undefined);
   let ingredientUnit = $state<string>("g");
   let open = $state(false);
 
@@ -144,8 +145,17 @@
   // Edit ingredient dialog state
   let editingIngredientId = $state<string | null>(null);
   let editAmount = $state<number>(1.0);
+  let editConsumedAmount = $state<number | undefined>(undefined);
   let editUnit = $state<string>("g");
   let editOpen = $state(false);
+
+  let ingredientConsumedAmountInvalid = $derived(
+    ingredientConsumedAmount !== undefined &&
+      (ingredientConsumedAmount < 0 || ingredientConsumedAmount > ingredientAmount)
+  );
+  let editConsumedAmountInvalid = $derived(
+    editConsumedAmount !== undefined && (editConsumedAmount < 0 || editConsumedAmount > editAmount)
+  );
 
   const units = [
     { value: "g", label: "grams (g)" },
@@ -484,7 +494,7 @@
                   <Plus class="h-4 w-4" />
                   Add Ingredient
                 </Dialog.Trigger>
-                <Dialog.Content class="sm:max-w-md">
+                <Dialog.Content class="sm:max-w-lg">
                   <Dialog.Header>
                     <Dialog.Title class="text-lg font-semibold text-gray-900 dark:text-gray-100">
                       Add Ingredient
@@ -538,6 +548,30 @@
                         </Select.Root>
                       </div>
                     </div>
+                    <div>
+                      <Label for="ingredient-consumed-amount" class="mb-2">
+                        Amount consumed <span class="font-normal text-gray-500">(optional)</span>
+                      </Label>
+                      <input
+                        id="ingredient-consumed-amount"
+                        type="number"
+                        min="0"
+                        max={ingredientAmount}
+                        step="0.1"
+                        class="w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-gray-900 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none dark:border-gray-800 dark:bg-gray-900/40 dark:text-gray-100 dark:focus:border-blue-400 dark:focus:ring-blue-400/20"
+                        bind:value={ingredientConsumedAmount}
+                        placeholder={`Defaults to the full ${ingredientAmount}${ingredientUnit}`}
+                      />
+                      <p class="mt-1.5 text-xs text-gray-500 dark:text-gray-400">
+                        Nutrition uses this amount. Leave blank when the full required amount is
+                        eaten.
+                      </p>
+                      {#if ingredientConsumedAmountInvalid}
+                        <p class="mt-1 text-xs text-red-600 dark:text-red-400">
+                          Consumed amount must be between 0 and {ingredientAmount}{ingredientUnit}.
+                        </p>
+                      {/if}
+                    </div>
                   </div>
                   <Dialog.Footer class="flex gap-3">
                     <button
@@ -547,6 +581,7 @@
                         // Reset form when canceling
                         selectedIngredientId = "";
                         ingredientAmount = 1.0;
+                        ingredientConsumedAmount = undefined;
                         ingredientUnit = "g";
                         open = false;
                       }}
@@ -558,7 +593,8 @@
                       class="flex-1 rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none disabled:cursor-not-allowed disabled:bg-gray-300"
                       disabled={!selectedIngredientId ||
                         !ingredientAmount ||
-                        ingredientAmount < 0.1}
+                        ingredientAmount < 0.1 ||
+                        ingredientConsumedAmountInvalid}
                       onclick={(event) => {
                         event.preventDefault();
                         const ingredient = data.ingredients.find(
@@ -571,17 +607,20 @@
                             title: ingredient.title,
                             calories: ingredient.calories,
                             amount: ingredientAmount,
+                            consumed_amount: ingredientConsumedAmount ?? null,
                             unit: ingredientUnit as "g" | "kg" | "ml" | "L" | "pcs"
                           };
                           $formData.ingredients = $formData.ingredients.concat({
                             id: ingredientLink.id,
                             title: ingredientLink.title, // Include title for display
                             amount: ingredientLink.amount,
+                            consumed_amount: ingredientLink.consumed_amount,
                             unit: ingredientLink.unit
                           });
                           // Reset form
                           selectedIngredientId = "";
                           ingredientAmount = 1.0;
+                          ingredientConsumedAmount = undefined;
                           ingredientUnit = "g";
                           open = false;
                         } else {
@@ -787,6 +826,9 @@
                       <span class="text-xs text-gray-500 dark:text-gray-400">
                         {ingredient.amount || 0}
                         {ingredient.unit || "units"}
+                        {#if ingredient.consumed_amount != null && ingredient.consumed_amount < ingredient.amount}
+                          · {ingredient.consumed_amount}{ingredient.unit} consumed
+                        {/if}
                       </span>
                     </div>
                   </div>
@@ -797,6 +839,7 @@
                       onclick={() => {
                         editingIngredientId = ingredient.id;
                         editAmount = ingredient.amount;
+                        editConsumedAmount = ingredient.consumed_amount ?? undefined;
                         editUnit = ingredient.unit;
                         editOpen = true;
                       }}
@@ -896,7 +939,7 @@
         Edit Ingredient
       </Dialog.Title>
       <Dialog.Description class="text-sm text-gray-600 dark:text-gray-300">
-        Update the amount and unit for this ingredient.
+        Update the required amount and, when needed, how much is actually consumed.
       </Dialog.Description>
     </Dialog.Header>
     <div class="space-y-4">
@@ -929,6 +972,29 @@
           </Select.Root>
         </div>
       </div>
+      <div>
+        <Label for="edit-ingredient-consumed-amount" class="mb-2">
+          Amount consumed <span class="font-normal text-gray-500">(optional)</span>
+        </Label>
+        <input
+          id="edit-ingredient-consumed-amount"
+          type="number"
+          min="0"
+          max={editAmount}
+          step="0.1"
+          class="w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-gray-900 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none dark:border-gray-800 dark:bg-gray-900/40 dark:text-gray-100 dark:focus:border-blue-400 dark:focus:ring-blue-400/20"
+          bind:value={editConsumedAmount}
+          placeholder={`Defaults to the full ${editAmount}${editUnit}`}
+        />
+        <p class="mt-1.5 text-xs text-gray-500 dark:text-gray-400">
+          Useful for frying oil, marinades, or anything that is required but only partly eaten.
+        </p>
+        {#if editConsumedAmountInvalid}
+          <p class="mt-1 text-xs text-red-600 dark:text-red-400">
+            Consumed amount must be between 0 and {editAmount}{editUnit}.
+          </p>
+        {/if}
+      </div>
     </div>
     <Dialog.Footer class="flex gap-3">
       <button
@@ -937,6 +1003,7 @@
         onclick={() => {
           editingIngredientId = null;
           editAmount = 1.0;
+          editConsumedAmount = undefined;
           editUnit = "g";
           editOpen = false;
         }}
@@ -946,7 +1013,7 @@
       <button
         type="button"
         class="flex-1 rounded-lg bg-emerald-600 px-4 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-emerald-700 focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 focus:outline-none disabled:cursor-not-allowed disabled:bg-gray-300"
-        disabled={!editAmount || editAmount < 0.1}
+        disabled={!editAmount || editAmount < 0.1 || editConsumedAmountInvalid}
         onclick={() => {
           if (editingIngredientId) {
             $formData.ingredients = $formData.ingredients.map((ing: any) => {
@@ -954,6 +1021,7 @@
                 return {
                   ...ing,
                   amount: editAmount,
+                  consumed_amount: editConsumedAmount ?? null,
                   unit: editUnit as "g" | "kg" | "ml" | "L" | "pcs"
                 };
               }
@@ -961,6 +1029,7 @@
             });
             editingIngredientId = null;
             editAmount = 1.0;
+            editConsumedAmount = undefined;
             editUnit = "g";
             editOpen = false;
           }

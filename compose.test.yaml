@@ -1,0 +1,63 @@
+name: fastapi-svelte-tests
+
+services:
+  test-db:
+    image: postgres:18
+    restart: "no"
+    environment:
+      PGDATA: /var/lib/postgresql/data/pgdata
+      POSTGRES_DB: app_test
+      POSTGRES_PASSWORD: test_runner_password
+      POSTGRES_USER: test_runner
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U test_runner -d app_test"]
+      interval: 1s
+      timeout: 5s
+      retries: 30
+    tmpfs:
+      - /var/lib/postgresql/data
+    networks:
+      - isolated-tests
+    security_opt:
+      - no-new-privileges:true
+
+  backend-tests:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile.test
+    depends_on:
+      test-db:
+        condition: service_healthy
+    restart: "no"
+    read_only: true
+    tmpfs:
+      - /tmp
+    environment:
+      APP_TEST_DATABASE_GUARD: isolated-compose-v1
+      BACKEND_CORS_ORIGINS: http://test.invalid
+      CLOUDINARY_API_KEY: test-cloudinary-key
+      CLOUDINARY_API_SECRET: test-cloudinary-secret
+      CLOUDINARY_CLOUD_NAME: test-cloudinary-cloud
+      COVERAGE_FILE: /tmp/.coverage
+      EMAIL_TEST_USER: test-user@example.com
+      ENVIRONMENT: local
+      FIRST_SUPERUSER: test-admin@example.com
+      FIRST_SUPERUSER_PASSWORD: Test-only-password-DO-NOT-USE-123!
+      FRONTEND_HOST: http://test.invalid
+      OPENFOODFACTS_USER_AGENT: fastapi-svelte-tests/1.0
+      POSTGRES_DB: app_test
+      POSTGRES_PASSWORD: test_runner_password
+      POSTGRES_PORT: "5432"
+      POSTGRES_SERVER: test-db
+      POSTGRES_USER: test_runner
+      PROJECT_NAME: FastAPI Svelte Tests
+      PYTEST_ADDOPTS: -p no:cacheprovider
+      SECRET_KEY: test-only-secret-key-that-must-never-be-used-elsewhere
+    networks:
+      - isolated-tests
+    security_opt:
+      - no-new-privileges:true
+
+networks:
+  isolated-tests:
+    internal: true

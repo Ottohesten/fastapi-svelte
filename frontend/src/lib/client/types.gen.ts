@@ -558,6 +558,12 @@ export type RecipeIngredientLinkCreate = {
      */
     amount?: number;
     /**
+     * Consumed Amount
+     *
+     * Amount actually consumed, in the same unit as amount. Null means the full amount is consumed.
+     */
+    consumed_amount?: number | null;
+    /**
      * Unit
      *
      * Unit of the amount, e.g. g, ml, pcs, etc.
@@ -576,6 +582,10 @@ export type RecipeIngredientLinkPublic = {
      * Amount
      */
     amount: number;
+    /**
+     * Consumed Amount
+     */
+    consumed_amount: number | null;
     /**
      * Unit
      *
@@ -600,6 +610,12 @@ export type RecipeIngredientSourcePublic = {
      * Amount
      */
     amount: number;
+    /**
+     * Consumed Amount
+     *
+     * Amount used for nutrition, in the same unit as amount.
+     */
+    consumed_amount: number;
     /**
      * Unit
      *
@@ -630,6 +646,12 @@ export type RecipeIngredientTotalPublic = {
      * Amount
      */
     amount: number;
+    /**
+     * Consumed Amount
+     *
+     * Aggregated amount used for nutrition, in the same unit as amount.
+     */
+    consumed_amount: number;
     /**
      * Unit
      *
@@ -1194,6 +1216,12 @@ export type RecipeIngredientTotalPublicWritable = {
      * Amount
      */
     amount: number;
+    /**
+     * Consumed Amount
+     *
+     * Aggregated amount used for nutrition, in the same unit as amount.
+     */
+    consumed_amount: number;
     /**
      * Unit
      *

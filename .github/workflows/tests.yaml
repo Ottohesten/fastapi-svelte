@@ -7,28 +7,27 @@ on:
   pull_request:
     branches:
       - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: backend-tests-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  build:
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: ["ubuntu-latest", "windows-latest", "macos-latest"]
-        python-version: ["3.13"]
+  backend-tests:
+    name: Backend tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
 
-      - name: Setup uv
-        uses: astral-sh/setup-uv@v7
-        with:
-          python-version: ${{ matrix.python-version }}
-          enable-cache: true
-
-      - name: Install dependencies
-        run: uv sync --dev --locked
-        working-directory: ./backend
-
-      - name: Run tests
-        run: uv run pytest -v
-        working-directory: ./backend
+      - name: Run backend tests in isolated containers
+        run: >-
+          ./scripts/test-backend.sh
+          --cov=app
+          --cov-report=term-missing
+          --cov-fail-under=70

@@ -1,7 +1,7 @@
 <script lang="ts">
   import { enhance } from "$app/forms";
   import type { GameSessionPublic, UserMePublic } from "$lib/client";
-  import { Trash, Trash2 } from "lucide-svelte";
+  import { Trash, Trash2 } from "@lucide/svelte";
 
   type Props = {
     session: GameSessionPublic;

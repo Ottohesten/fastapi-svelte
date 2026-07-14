@@ -13,7 +13,7 @@ export const load = async ({ fetch }) => {
     } = await GameService.GetDrinks({});
 
     if (drinksError) {
-        error(drinksResponse.status, drinksError.detail?.toString());
+        error(drinksResponse?.status ?? 502, drinksError.detail?.toString());
     }
 
     return {

@@ -13,7 +13,7 @@
   import { untrack } from "svelte";
   import { IngredientSchema, IngredientUpdateSchema } from "$lib/schemas/schemas.js";
   import { Field, Control, Label, FieldErrors } from "formsnap";
-  import { LoaderCircle, ScanLine, TriangleAlert } from "lucide-svelte";
+  import { LoaderCircle, ScanLine, TriangleAlert } from "@lucide/svelte";
   import type { OpenFoodFactsProductPublic } from "$lib/client";
   import BarcodeScanner from "./BarcodeScanner.svelte";
 

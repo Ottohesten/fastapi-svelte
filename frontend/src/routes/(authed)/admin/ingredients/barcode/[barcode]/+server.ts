@@ -20,7 +20,7 @@ export const GET: RequestHandler = async ({ cookies, params }) => {
             apiError && typeof apiError === "object" && "detail" in apiError
                 ? String(apiError.detail)
                 : "Product lookup failed";
-        return json({ detail }, { status: response.status || 502 });
+        return json({ detail }, { status: response?.status ?? 502 });
     }
 
     return json(data);

@@ -1,0 +1,10 @@
+services:
+  test-db:
+    networks:
+      - isolated-tests
+      - pytest-host
+    ports:
+      - "127.0.0.1:${TEST_DB_HOST_PORT:?}:5432"
+
+networks:
+  pytest-host:

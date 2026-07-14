@@ -20,17 +20,18 @@ def custom_generate_unique_id(route: APIRoute) -> str:
     return f"{route.tags[0]}-{route.name}"
 
 
-sentry_sdk.init(
-    dsn=str(settings.SENTRY_DSN),
-    # Add data like request headers and IP for users,
-    # see https://docs.sentry.io/platforms/python/data-management/data-collected/ for more info
-    send_default_pii=True,
-    # Set traces_sample_rate to 1.0 to capture 100%
-    # of transactions for tracing.
-    traces_sample_rate=1.0,
-    # Set environment to distinguish between different environments (e.g., development, staging, production)
-    environment=settings.ENVIRONMENT,
-)
+if settings.SENTRY_DSN:
+    sentry_sdk.init(
+        dsn=str(settings.SENTRY_DSN),
+        # Add data like request headers and IP for users,
+        # see https://docs.sentry.io/platforms/python/data-management/data-collected/ for more info
+        send_default_pii=True,
+        # Set traces_sample_rate to 1.0 to capture 100%
+        # of transactions for tracing.
+        traces_sample_rate=1.0,
+        # Distinguish events from local, staging, and production environments.
+        environment=settings.ENVIRONMENT,
+    )
 
 
 # app = FastAPI(dependencies=[Depends(oauth2_scheme)])

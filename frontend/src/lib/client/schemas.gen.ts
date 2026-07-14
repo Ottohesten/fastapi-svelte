@@ -64,7 +64,7 @@ export const Body_recipes_upload_recipe_imageSchema = {
     properties: {
         file: {
             type: 'string',
-            format: 'binary',
+            contentMediaType: 'application/octet-stream',
             title: 'File'
         }
     },
@@ -807,7 +807,7 @@ export const RecipeSchema = {
             type: 'string',
             format: 'date-time',
             title: 'Created At',
-            default: '2026-07-14T00:05:15.085155Z'
+            default: '2026-07-14T01:12:32.959645Z'
         }
     },
     type: 'object',
@@ -907,6 +907,19 @@ export const RecipeIngredientLinkCreateSchema = {
             description: 'Amount of the ingredient in the recipe',
             default: 1
         },
+        consumed_amount: {
+            anyOf: [
+                {
+                    type: 'number',
+                    minimum: 0
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Consumed Amount',
+            description: 'Amount actually consumed, in the same unit as amount. Null means the full amount is consumed.'
+        },
         unit: {
             type: 'string',
             maxLength: 10,
@@ -932,6 +945,17 @@ export const RecipeIngredientLinkPublicSchema = {
             type: 'number',
             title: 'Amount'
         },
+        consumed_amount: {
+            anyOf: [
+                {
+                    type: 'number'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Consumed Amount'
+        },
         unit: {
             type: 'string',
             maxLength: 10,
@@ -943,7 +967,8 @@ export const RecipeIngredientLinkPublicSchema = {
     type: 'object',
     required: [
         'ingredient',
-        'amount'
+        'amount',
+        'consumed_amount'
     ],
     title: 'RecipeIngredientLinkPublic',
     description: 'Public class for recipe ingredient link.'
@@ -964,6 +989,11 @@ export const RecipeIngredientSourcePublicSchema = {
             type: 'number',
             title: 'Amount'
         },
+        consumed_amount: {
+            type: 'number',
+            title: 'Consumed Amount',
+            description: 'Amount used for nutrition, in the same unit as amount.'
+        },
         unit: {
             type: 'string',
             maxLength: 10,
@@ -981,6 +1011,7 @@ export const RecipeIngredientSourcePublicSchema = {
         'recipe_id',
         'recipe_title',
         'amount',
+        'consumed_amount',
         'unit',
         'is_main_recipe'
     ],
@@ -1001,6 +1032,11 @@ export const RecipeIngredientTotalPublicSchema = {
         amount: {
             type: 'number',
             title: 'Amount'
+        },
+        consumed_amount: {
+            type: 'number',
+            title: 'Consumed Amount',
+            description: 'Aggregated amount used for nutrition, in the same unit as amount.'
         },
         unit: {
             type: 'string',
@@ -1056,6 +1092,7 @@ export const RecipeIngredientTotalPublicSchema = {
         'ingredient_id',
         'title',
         'amount',
+        'consumed_amount',
         'unit',
         'grams',
         'calories',
@@ -1932,6 +1969,11 @@ export const RecipeIngredientTotalPublicWritableSchema = {
             type: 'number',
             title: 'Amount'
         },
+        consumed_amount: {
+            type: 'number',
+            title: 'Consumed Amount',
+            description: 'Aggregated amount used for nutrition, in the same unit as amount.'
+        },
         unit: {
             type: 'string',
             maxLength: 10,
@@ -1976,6 +2018,7 @@ export const RecipeIngredientTotalPublicWritableSchema = {
         'ingredient_id',
         'title',
         'amount',
+        'consumed_amount',
         'unit',
         'grams',
         'calories',

@@ -25,6 +25,19 @@ from app.permissions import get_user_effective_scopes
 router = APIRouter(prefix="/recipes", tags=["recipes"])
 
 
+def _validate_ingredients(session: SessionDep, recipe_in: RecipeCreate) -> None:
+    ingredient_ids = [link.ingredient_id for link in recipe_in.ingredients]
+    if len(ingredient_ids) != len(set(ingredient_ids)):
+        raise HTTPException(
+            status_code=400,
+            detail="Each ingredient can only appear once in a recipe",
+        )
+
+    for ingredient_id in ingredient_ids:
+        if not session.get(Ingredient, ingredient_id):
+            raise HTTPException(status_code=404, detail="Ingredient not found")
+
+
 def _validate_unique_sub_recipe_ids(recipe_in: RecipeCreate) -> None:
     sub_recipe_ids = [link.sub_recipe_id for link in recipe_in.sub_recipes]
     if len(sub_recipe_ids) != len(set(sub_recipe_ids)):
@@ -130,12 +143,19 @@ def _add_ingredient_total(
     ],
     ingredient: Ingredient,
     amount: float,
+    consumed_amount: float | None,
     unit: str,
     source_recipe: Recipe,
     is_main_recipe: bool,
 ) -> None:
     normalized_amount, normalized_unit = _normalize_total_amount(amount, unit)
-    grams_contribution = _to_grams(normalized_amount, normalized_unit, ingredient)
+    effective_consumed_amount = amount if consumed_amount is None else consumed_amount
+    normalized_consumed_amount, _ = _normalize_total_amount(
+        effective_consumed_amount, unit
+    )
+    grams_contribution = _to_grams(
+        normalized_consumed_amount, normalized_unit, ingredient
+    )
     calories_contribution = (ingredient.calories * grams_contribution) / 100
     carbohydrates_contribution = (ingredient.carbohydrates * grams_contribution) / 100
     fat_contribution = (ingredient.fat * grams_contribution) / 100
@@ -145,6 +165,7 @@ def _add_ingredient_total(
     existing = totals.get(key)
     if existing:
         existing.amount += normalized_amount
+        existing.consumed_amount += normalized_consumed_amount
         existing.grams += grams_contribution
         existing.calories += calories_contribution
         existing.carbohydrates += carbohydrates_contribution
@@ -155,6 +176,7 @@ def _add_ingredient_total(
             ingredient_id=ingredient.id,
             title=ingredient.title,
             amount=normalized_amount,
+            consumed_amount=normalized_consumed_amount,
             unit=normalized_unit,
             grams=grams_contribution,
             calories=calories_contribution,
@@ -168,12 +190,14 @@ def _add_ingredient_total(
     existing_source = per_ingredient_sources.get(source_recipe.id)
     if existing_source:
         existing_source.amount += normalized_amount
+        existing_source.consumed_amount += normalized_consumed_amount
         return
 
     per_ingredient_sources[source_recipe.id] = RecipeIngredientSourcePublic(
         recipe_id=source_recipe.id,
         recipe_title=source_recipe.title,
         amount=normalized_amount,
+        consumed_amount=normalized_consumed_amount,
         unit=normalized_unit,
         is_main_recipe=is_main_recipe,
     )
@@ -199,6 +223,11 @@ def _collect_total_ingredients(
             source_totals,
             ingredient,
             ingredient_link.amount * scale,
+            (
+                ingredient_link.consumed_amount * scale
+                if ingredient_link.consumed_amount is not None
+                else None
+            ),
             ingredient_link.unit,
             source_recipe=recipe,
             is_main_recipe=recipe.id == root_recipe_id,
@@ -248,11 +277,13 @@ def _calculate_total_ingredients(
         sources = list(source_totals.get(key, {}).values())
         for source in sources:
             source.amount = round(source.amount, 2)
+            source.consumed_amount = round(source.consumed_amount, 2)
         sources.sort(
             key=lambda source: (not source.is_main_recipe, source.recipe_title.lower())
         )
         item.sources = sources
         item.amount = round(item.amount, 2)
+        item.consumed_amount = round(item.consumed_amount, 2)
         item.grams = round(item.grams, 2)
         item.calories = round(item.calories, 2)
         item.carbohydrates = round(item.carbohydrates, 2)
@@ -491,6 +522,7 @@ def create_recipe(
     """
     Create a new recipe.
     """
+    _validate_ingredients(session, recipe_in)
     _validate_unique_sub_recipe_ids(recipe_in)
 
     # create recipe without ingredients
@@ -507,15 +539,12 @@ def create_recipe(
     session.flush()
 
     for ingredient_link in recipe_in.ingredients:
-        ingredient = session.get(Ingredient, ingredient_link.ingredient_id)
-        if not ingredient:
-            raise HTTPException(status_code=404, detail="Ingredient not found")
-
         # create a new RecipeIngredientLink
         recipe_ingredient_link = RecipeIngredientLink(
             ingredient_id=ingredient_link.ingredient_id,
             recipe_id=recipe.id,  # Now recipe.id is valid
             amount=ingredient_link.amount,
+            consumed_amount=ingredient_link.consumed_amount,
             unit=ingredient_link.unit,
         )
         session.add(recipe_ingredient_link)
@@ -567,6 +596,7 @@ def update_recipe(
     if not _can_edit_recipe(current_user, db_recipe):
         raise HTTPException(status_code=403, detail="Not enough permissions")
 
+    _validate_ingredients(session, recipe_in)
     _validate_unique_sub_recipe_ids(recipe_in)
     _validate_sub_recipes_exist(session, recipe_in, db_recipe.id)
     _validate_no_sub_recipe_cycles(
@@ -602,6 +632,7 @@ def update_recipe(
         if existing_link:
             # Update existing link
             existing_link.amount = ingredient_link.amount
+            existing_link.consumed_amount = ingredient_link.consumed_amount
             existing_link.unit = ingredient_link.unit
         else:
             # Create new link
@@ -609,6 +640,7 @@ def update_recipe(
                 recipe_id=db_recipe.id,
                 ingredient_id=ingredient_link.ingredient_id,
                 amount=ingredient_link.amount,
+                consumed_amount=ingredient_link.consumed_amount,
                 unit=ingredient_link.unit,
             )
             session.add(new_link)

@@ -63,6 +63,7 @@ export async function load({ fetch, params, locals, parent, url, cookies }) {
         id: link.ingredient.id,
         title: link.ingredient.title, // Include title for display
         amount: link.amount,
+        consumed_amount: link.consumed_amount,
         unit: link.unit as "g" | "kg" | "ml" | "L" | "pcs"
     }));
     const subRecipeLinks = parent_data.recipe.sub_recipe_links ?? [];
@@ -110,6 +111,7 @@ export const actions = {
         const ingredientsForBackend = form.data.ingredients.map((ingredient) => ({
             ingredient_id: ingredient.id,
             amount: ingredient.amount,
+            consumed_amount: ingredient.consumed_amount ?? null,
             unit: ingredient.unit
         }));
         const subRecipesForBackend = form.data.sub_recipes.map((recipe) => ({

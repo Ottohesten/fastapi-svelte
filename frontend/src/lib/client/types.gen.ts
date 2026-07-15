@@ -5,6 +5,127 @@ export type ClientOptions = {
 };
 
 /**
+ * AnalyticsAudienceSplitPublic
+ */
+export type AnalyticsAudienceSplitPublic = {
+    /**
+     * Authenticated
+     */
+    authenticated: number;
+    /**
+     * Anonymous
+     */
+    anonymous: number;
+};
+
+/**
+ * AnalyticsDailyCountPublic
+ */
+export type AnalyticsDailyCountPublic = {
+    /**
+     * Page Views
+     */
+    page_views: number;
+    /**
+     * Browser Sessions
+     */
+    browser_sessions: number;
+    /**
+     * Date
+     */
+    date: Date;
+};
+
+/**
+ * AnalyticsEventBatchCreate
+ */
+export type AnalyticsEventBatchCreate = {
+    /**
+     * Events
+     */
+    events: Array<AnalyticsEventCreate>;
+};
+
+/**
+ * AnalyticsEventCreate
+ */
+export type AnalyticsEventCreate = {
+    metric: AnalyticsMetricName;
+    /**
+     * Route
+     */
+    route: string;
+    /**
+     * Authenticated
+     */
+    authenticated: boolean;
+};
+
+/**
+ * AnalyticsIngestResponse
+ */
+export type AnalyticsIngestResponse = {
+    /**
+     * Accepted
+     */
+    accepted: number;
+};
+
+/**
+ * AnalyticsMetricName
+ */
+export type AnalyticsMetricName = 'site.page_view' | 'site.browser_session.started';
+
+/**
+ * AnalyticsSummaryPublic
+ */
+export type AnalyticsSummaryPublic = {
+    /**
+     * Generated At
+     */
+    generated_at: Date;
+    last_24_hours: AnalyticsTotalsPublic;
+    last_7_days: AnalyticsTotalsPublic;
+    /**
+     * Daily Last 7 Days
+     */
+    daily_last_7_days: Array<AnalyticsDailyCountPublic>;
+    page_views_last_7_days_by_audience: AnalyticsAudienceSplitPublic;
+    /**
+     * Top Routes Last 7 Days
+     */
+    top_routes_last_7_days: Array<AnalyticsTopRoutePublic>;
+};
+
+/**
+ * AnalyticsTopRoutePublic
+ */
+export type AnalyticsTopRoutePublic = {
+    /**
+     * Route
+     */
+    route: string;
+    /**
+     * Page Views
+     */
+    page_views: number;
+};
+
+/**
+ * AnalyticsTotalsPublic
+ */
+export type AnalyticsTotalsPublic = {
+    /**
+     * Page Views
+     */
+    page_views: number;
+    /**
+     * Browser Sessions
+     */
+    browser_sessions: number;
+};
+
+/**
  * Body_login-login_access_token
  */
 export type BodyLoginLoginAccessToken = {
@@ -2826,6 +2947,76 @@ export type PostRolesResponses = {
 
 export type PostRolesResponse = PostRolesResponses[keyof PostRolesResponses];
 
+export type GetRolesTemplatesData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/roles/templates/';
+};
+
+export type GetRolesTemplatesResponses = {
+    /**
+     * Response Roles-List Role Templates
+     *
+     * Successful Response
+     */
+    200: {
+        [key: string]: unknown;
+    };
+};
+
+export type GetRolesTemplatesResponse = GetRolesTemplatesResponses[keyof GetRolesTemplatesResponses];
+
+export type PostRolesFromTemplateByTemplateKeyData = {
+    body?: never;
+    path: {
+        /**
+         * Template Key
+         */
+        template_key: string;
+    };
+    query?: never;
+    url: '/roles/from-template/{template_key}';
+};
+
+export type PostRolesFromTemplateByTemplateKeyErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type PostRolesFromTemplateByTemplateKeyError = PostRolesFromTemplateByTemplateKeyErrors[keyof PostRolesFromTemplateByTemplateKeyErrors];
+
+export type PostRolesFromTemplateByTemplateKeyResponses = {
+    /**
+     * Successful Response
+     */
+    200: RolePublic;
+};
+
+export type PostRolesFromTemplateByTemplateKeyResponse = PostRolesFromTemplateByTemplateKeyResponses[keyof PostRolesFromTemplateByTemplateKeyResponses];
+
+export type GetRolesScopesAvailableData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/roles/scopes/available';
+};
+
+export type GetRolesScopesAvailableResponses = {
+    /**
+     * Response Roles-Get Available Scopes
+     *
+     * Successful Response
+     */
+    200: {
+        [key: string]: unknown;
+    };
+};
+
+export type GetRolesScopesAvailableResponse = GetRolesScopesAvailableResponses[keyof GetRolesScopesAvailableResponses];
+
 export type DeleteRolesByRoleIdData = {
     body?: never;
     path: {
@@ -2916,72 +3107,49 @@ export type PutRolesByRoleIdResponses = {
 
 export type PutRolesByRoleIdResponse = PutRolesByRoleIdResponses[keyof PutRolesByRoleIdResponses];
 
-export type GetRolesTemplatesData = {
-    body?: never;
+export type PostAnalyticsEventsData = {
+    body: AnalyticsEventBatchCreate;
+    headers?: {
+        /**
+         * X-Analytics-Ingest-Token
+         */
+        'X-Analytics-Ingest-Token'?: string | null;
+    };
     path?: never;
     query?: never;
-    url: '/roles/templates/';
+    url: '/analytics/events';
 };
 
-export type GetRolesTemplatesResponses = {
-    /**
-     * Response Roles-List Role Templates
-     *
-     * Successful Response
-     */
-    200: {
-        [key: string]: unknown;
-    };
-};
-
-export type GetRolesTemplatesResponse = GetRolesTemplatesResponses[keyof GetRolesTemplatesResponses];
-
-export type PostRolesFromTemplateByTemplateKeyData = {
-    body?: never;
-    path: {
-        /**
-         * Template Key
-         */
-        template_key: string;
-    };
-    query?: never;
-    url: '/roles/from-template/{template_key}';
-};
-
-export type PostRolesFromTemplateByTemplateKeyErrors = {
+export type PostAnalyticsEventsErrors = {
     /**
      * Validation Error
      */
     422: HttpValidationError;
 };
 
-export type PostRolesFromTemplateByTemplateKeyError = PostRolesFromTemplateByTemplateKeyErrors[keyof PostRolesFromTemplateByTemplateKeyErrors];
+export type PostAnalyticsEventsError = PostAnalyticsEventsErrors[keyof PostAnalyticsEventsErrors];
 
-export type PostRolesFromTemplateByTemplateKeyResponses = {
+export type PostAnalyticsEventsResponses = {
     /**
      * Successful Response
      */
-    200: RolePublic;
+    202: AnalyticsIngestResponse;
 };
 
-export type PostRolesFromTemplateByTemplateKeyResponse = PostRolesFromTemplateByTemplateKeyResponses[keyof PostRolesFromTemplateByTemplateKeyResponses];
+export type PostAnalyticsEventsResponse = PostAnalyticsEventsResponses[keyof PostAnalyticsEventsResponses];
 
-export type GetRolesScopesAvailableData = {
+export type GetAnalyticsAdminSummaryData = {
     body?: never;
     path?: never;
     query?: never;
-    url: '/roles/scopes/available';
+    url: '/analytics/admin/summary';
 };
 
-export type GetRolesScopesAvailableResponses = {
+export type GetAnalyticsAdminSummaryResponses = {
     /**
-     * Response Roles-Get Available Scopes
-     *
      * Successful Response
      */
-    200: {
-        [key: string]: unknown;
-    };
+    200: AnalyticsSummaryPublic;
 };
 
-export type GetRolesScopesAvailableResponse = GetRolesScopesAvailableResponses[keyof GetRolesScopesAvailableResponses];
+export type GetAnalyticsAdminSummaryResponse = GetAnalyticsAdminSummaryResponses[keyof GetAnalyticsAdminSummaryResponses];

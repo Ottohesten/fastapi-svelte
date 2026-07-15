@@ -2,8 +2,8 @@
 
 import { type Client, type ClientMeta, formDataBodySerializer, type Options as Options2, type RequestResult, type TDataShape, urlSearchParamsBodySerializer } from './client';
 import { client } from './client.gen';
-import { deleteRecipesByRecipeIdResponseTransformer, getGameByGameSessionIdResponseTransformer, getGameResponseTransformer, getRecipesByRecipeIdResponseTransformer, getRecipesResponseTransformer, patchRecipesByRecipeIdResponseTransformer, postGameResponseTransformer, postRecipesResponseTransformer } from './transformers.gen';
-import type { DeleteGameByGameSessionIdData, DeleteGameByGameSessionIdErrors, DeleteGameByGameSessionIdPlayerByGamePlayerIdData, DeleteGameByGameSessionIdPlayerByGamePlayerIdErrors, DeleteGameByGameSessionIdPlayerByGamePlayerIdResponses, DeleteGameByGameSessionIdResponses, DeleteGameByGameSessionIdTeamByGameTeamIdData, DeleteGameByGameSessionIdTeamByGameTeamIdErrors, DeleteGameByGameSessionIdTeamByGameTeamIdResponses, DeleteGameDeleteAllData, DeleteGameDeleteAllResponses, DeleteGameDrinksByDrinkIdData, DeleteGameDrinksByDrinkIdErrors, DeleteGameDrinksByDrinkIdResponses, DeleteIngredientsByIngredientIdData, DeleteIngredientsByIngredientIdErrors, DeleteIngredientsByIngredientIdResponses, DeleteRecipesByRecipeIdData, DeleteRecipesByRecipeIdErrors, DeleteRecipesByRecipeIdResponses, DeleteRolesByRoleIdData, DeleteRolesByRoleIdErrors, DeleteRolesByRoleIdResponses, DeleteUsersByUserIdData, DeleteUsersByUserIdErrors, DeleteUsersByUserIdResponses, DeleteUsersByUserIdRolesByRoleIdData, DeleteUsersByUserIdRolesByRoleIdErrors, DeleteUsersByUserIdRolesByRoleIdResponses, DeleteUsersByUserIdScopesData, DeleteUsersByUserIdScopesErrors, DeleteUsersByUserIdScopesResponses, DeleteUsersMeData, DeleteUsersMeResponses, GetGameByGameSessionIdData, GetGameByGameSessionIdErrors, GetGameByGameSessionIdResponses, GetGameByGameSessionIdUpdatesData, GetGameByGameSessionIdUpdatesErrors, GetGameByGameSessionIdUpdatesResponses, GetGameData, GetGameDrinksData, GetGameDrinksErrors, GetGameDrinksResponses, GetGameErrors, GetGameResponses, GetIngredientsBarcodeByBarcodeData, GetIngredientsBarcodeByBarcodeErrors, GetIngredientsBarcodeByBarcodeResponses, GetIngredientsByIngredientIdData, GetIngredientsByIngredientIdErrors, GetIngredientsByIngredientIdResponses, GetIngredientsData, GetIngredientsErrors, GetIngredientsResponses, GetRecipesByRecipeIdData, GetRecipesByRecipeIdErrors, GetRecipesByRecipeIdResponses, GetRecipesData, GetRecipesErrors, GetRecipesResponses, GetRolesByRoleIdData, GetRolesByRoleIdErrors, GetRolesByRoleIdResponses, GetRolesData, GetRolesResponses, GetRolesScopesAvailableData, GetRolesScopesAvailableResponses, GetRolesTemplatesData, GetRolesTemplatesResponses, GetUsersByUserIdData, GetUsersByUserIdErrors, GetUsersByUserIdResponses, GetUsersData, GetUsersErrors, GetUsersMeData, GetUsersMeErrors, GetUsersMeResponses, GetUsersResponses, GetUsersWithPermissionsData, GetUsersWithPermissionsErrors, GetUsersWithPermissionsResponses, GetUtilsHealthCheckData, GetUtilsHealthCheckResponses, PatchGameByGameSessionIdPlayerByGamePlayerIdData, PatchGameByGameSessionIdPlayerByGamePlayerIdDrinkData, PatchGameByGameSessionIdPlayerByGamePlayerIdDrinkErrors, PatchGameByGameSessionIdPlayerByGamePlayerIdDrinkResponses, PatchGameByGameSessionIdPlayerByGamePlayerIdErrors, PatchGameByGameSessionIdPlayerByGamePlayerIdResponses, PatchGameDrinksByDrinkIdData, PatchGameDrinksByDrinkIdErrors, PatchGameDrinksByDrinkIdResponses, PatchIngredientsByIngredientIdData, PatchIngredientsByIngredientIdErrors, PatchIngredientsByIngredientIdResponses, PatchRecipesByRecipeIdData, PatchRecipesByRecipeIdErrors, PatchRecipesByRecipeIdResponses, PatchUsersByUserIdData, PatchUsersByUserIdErrors, PatchUsersByUserIdResponses, PatchUsersMeData, PatchUsersMeErrors, PatchUsersMePasswordData, PatchUsersMePasswordErrors, PatchUsersMePasswordResponses, PatchUsersMeResponses, PostGameByGameSessionIdPlayerData, PostGameByGameSessionIdPlayerErrors, PostGameByGameSessionIdPlayerResponses, PostGameByGameSessionIdTeamData, PostGameByGameSessionIdTeamErrors, PostGameByGameSessionIdTeamResponses, PostGameData, PostGameDrinksData, PostGameDrinksErrors, PostGameDrinksResponses, PostGameErrors, PostGameResponses, PostIngredientsData, PostIngredientsErrors, PostIngredientsResponses, PostLoginAccessTokenData, PostLoginAccessTokenErrors, PostLoginAccessTokenResponses, PostLoginRefreshData, PostLoginRefreshErrors, PostLoginRefreshResponses, PostLoginTestTokenData, PostLoginTestTokenResponses, PostLogoutData, PostLogoutErrors, PostLogoutResponses, PostPasswordRecoveryByEmailData, PostPasswordRecoveryByEmailErrors, PostPasswordRecoveryByEmailResponses, PostPasswordRecoveryHtmlContentByEmailData, PostPasswordRecoveryHtmlContentByEmailErrors, PostPasswordRecoveryHtmlContentByEmailResponses, PostRecipesData, PostRecipesErrors, PostRecipesResponses, PostRecipesUploadImageData, PostRecipesUploadImageErrors, PostRecipesUploadImageResponses, PostResetPasswordData, PostResetPasswordErrors, PostResetPasswordResponses, PostRolesData, PostRolesErrors, PostRolesFromTemplateByTemplateKeyData, PostRolesFromTemplateByTemplateKeyErrors, PostRolesFromTemplateByTemplateKeyResponses, PostRolesResponses, PostUsersByUserIdRolesByRoleIdData, PostUsersByUserIdRolesByRoleIdErrors, PostUsersByUserIdRolesByRoleIdResponses, PostUsersByUserIdScopesData, PostUsersByUserIdScopesErrors, PostUsersByUserIdScopesResponses, PostUsersData, PostUsersErrors, PostUsersResponses, PostUsersSignupData, PostUsersSignupErrors, PostUsersSignupResponses, PutRolesByRoleIdData, PutRolesByRoleIdErrors, PutRolesByRoleIdResponses } from './types.gen';
+import { deleteRecipesByRecipeIdResponseTransformer, getAnalyticsAdminSummaryResponseTransformer, getGameByGameSessionIdResponseTransformer, getGameResponseTransformer, getRecipesByRecipeIdResponseTransformer, getRecipesResponseTransformer, patchRecipesByRecipeIdResponseTransformer, postGameResponseTransformer, postRecipesResponseTransformer } from './transformers.gen';
+import type { DeleteGameByGameSessionIdData, DeleteGameByGameSessionIdErrors, DeleteGameByGameSessionIdPlayerByGamePlayerIdData, DeleteGameByGameSessionIdPlayerByGamePlayerIdErrors, DeleteGameByGameSessionIdPlayerByGamePlayerIdResponses, DeleteGameByGameSessionIdResponses, DeleteGameByGameSessionIdTeamByGameTeamIdData, DeleteGameByGameSessionIdTeamByGameTeamIdErrors, DeleteGameByGameSessionIdTeamByGameTeamIdResponses, DeleteGameDeleteAllData, DeleteGameDeleteAllResponses, DeleteGameDrinksByDrinkIdData, DeleteGameDrinksByDrinkIdErrors, DeleteGameDrinksByDrinkIdResponses, DeleteIngredientsByIngredientIdData, DeleteIngredientsByIngredientIdErrors, DeleteIngredientsByIngredientIdResponses, DeleteRecipesByRecipeIdData, DeleteRecipesByRecipeIdErrors, DeleteRecipesByRecipeIdResponses, DeleteRolesByRoleIdData, DeleteRolesByRoleIdErrors, DeleteRolesByRoleIdResponses, DeleteUsersByUserIdData, DeleteUsersByUserIdErrors, DeleteUsersByUserIdResponses, DeleteUsersByUserIdRolesByRoleIdData, DeleteUsersByUserIdRolesByRoleIdErrors, DeleteUsersByUserIdRolesByRoleIdResponses, DeleteUsersByUserIdScopesData, DeleteUsersByUserIdScopesErrors, DeleteUsersByUserIdScopesResponses, DeleteUsersMeData, DeleteUsersMeResponses, GetAnalyticsAdminSummaryData, GetAnalyticsAdminSummaryResponses, GetGameByGameSessionIdData, GetGameByGameSessionIdErrors, GetGameByGameSessionIdResponses, GetGameByGameSessionIdUpdatesData, GetGameByGameSessionIdUpdatesErrors, GetGameByGameSessionIdUpdatesResponses, GetGameData, GetGameDrinksData, GetGameDrinksErrors, GetGameDrinksResponses, GetGameErrors, GetGameResponses, GetIngredientsBarcodeByBarcodeData, GetIngredientsBarcodeByBarcodeErrors, GetIngredientsBarcodeByBarcodeResponses, GetIngredientsByIngredientIdData, GetIngredientsByIngredientIdErrors, GetIngredientsByIngredientIdResponses, GetIngredientsData, GetIngredientsErrors, GetIngredientsResponses, GetRecipesByRecipeIdData, GetRecipesByRecipeIdErrors, GetRecipesByRecipeIdResponses, GetRecipesData, GetRecipesErrors, GetRecipesResponses, GetRolesByRoleIdData, GetRolesByRoleIdErrors, GetRolesByRoleIdResponses, GetRolesData, GetRolesResponses, GetRolesScopesAvailableData, GetRolesScopesAvailableResponses, GetRolesTemplatesData, GetRolesTemplatesResponses, GetUsersByUserIdData, GetUsersByUserIdErrors, GetUsersByUserIdResponses, GetUsersData, GetUsersErrors, GetUsersMeData, GetUsersMeErrors, GetUsersMeResponses, GetUsersResponses, GetUsersWithPermissionsData, GetUsersWithPermissionsErrors, GetUsersWithPermissionsResponses, GetUtilsHealthCheckData, GetUtilsHealthCheckResponses, PatchGameByGameSessionIdPlayerByGamePlayerIdData, PatchGameByGameSessionIdPlayerByGamePlayerIdDrinkData, PatchGameByGameSessionIdPlayerByGamePlayerIdDrinkErrors, PatchGameByGameSessionIdPlayerByGamePlayerIdDrinkResponses, PatchGameByGameSessionIdPlayerByGamePlayerIdErrors, PatchGameByGameSessionIdPlayerByGamePlayerIdResponses, PatchGameDrinksByDrinkIdData, PatchGameDrinksByDrinkIdErrors, PatchGameDrinksByDrinkIdResponses, PatchIngredientsByIngredientIdData, PatchIngredientsByIngredientIdErrors, PatchIngredientsByIngredientIdResponses, PatchRecipesByRecipeIdData, PatchRecipesByRecipeIdErrors, PatchRecipesByRecipeIdResponses, PatchUsersByUserIdData, PatchUsersByUserIdErrors, PatchUsersByUserIdResponses, PatchUsersMeData, PatchUsersMeErrors, PatchUsersMePasswordData, PatchUsersMePasswordErrors, PatchUsersMePasswordResponses, PatchUsersMeResponses, PostAnalyticsEventsData, PostAnalyticsEventsErrors, PostAnalyticsEventsResponses, PostGameByGameSessionIdPlayerData, PostGameByGameSessionIdPlayerErrors, PostGameByGameSessionIdPlayerResponses, PostGameByGameSessionIdTeamData, PostGameByGameSessionIdTeamErrors, PostGameByGameSessionIdTeamResponses, PostGameData, PostGameDrinksData, PostGameDrinksErrors, PostGameDrinksResponses, PostGameErrors, PostGameResponses, PostIngredientsData, PostIngredientsErrors, PostIngredientsResponses, PostLoginAccessTokenData, PostLoginAccessTokenErrors, PostLoginAccessTokenResponses, PostLoginRefreshData, PostLoginRefreshErrors, PostLoginRefreshResponses, PostLoginTestTokenData, PostLoginTestTokenResponses, PostLogoutData, PostLogoutErrors, PostLogoutResponses, PostPasswordRecoveryByEmailData, PostPasswordRecoveryByEmailErrors, PostPasswordRecoveryByEmailResponses, PostPasswordRecoveryHtmlContentByEmailData, PostPasswordRecoveryHtmlContentByEmailErrors, PostPasswordRecoveryHtmlContentByEmailResponses, PostRecipesData, PostRecipesErrors, PostRecipesResponses, PostRecipesUploadImageData, PostRecipesUploadImageErrors, PostRecipesUploadImageResponses, PostResetPasswordData, PostResetPasswordErrors, PostResetPasswordResponses, PostRolesData, PostRolesErrors, PostRolesFromTemplateByTemplateKeyData, PostRolesFromTemplateByTemplateKeyErrors, PostRolesFromTemplateByTemplateKeyResponses, PostRolesResponses, PostUsersByUserIdRolesByRoleIdData, PostUsersByUserIdRolesByRoleIdErrors, PostUsersByUserIdRolesByRoleIdResponses, PostUsersByUserIdScopesData, PostUsersByUserIdScopesErrors, PostUsersByUserIdScopesResponses, PostUsersData, PostUsersErrors, PostUsersResponses, PostUsersSignupData, PostUsersSignupErrors, PostUsersSignupResponses, PutRolesByRoleIdData, PutRolesByRoleIdErrors, PutRolesByRoleIdResponses } from './types.gen';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean, TResponse = unknown> = Options2<TData, ThrowOnError, TResponse> & {
     /**
@@ -859,6 +859,45 @@ export class RolesService {
     }
 
     /**
+     * List Role Templates
+     *
+     * List available role templates
+     */
+    public static ListRoleTemplates<ThrowOnError extends boolean = false>(options?: Options<GetRolesTemplatesData, ThrowOnError>): RequestResult<GetRolesTemplatesResponses, unknown, ThrowOnError> {
+        return (options?.client ?? client).get<GetRolesTemplatesResponses, unknown, ThrowOnError>({
+            security: [{ scheme: 'bearer', type: 'http' }],
+            url: '/roles/templates/',
+            ...options
+        });
+    }
+
+    /**
+     * Create Role From Template Endpoint
+     *
+     * Create a role from a predefined template
+     */
+    public static CreateRoleFromTemplateEndpoint<ThrowOnError extends boolean = false>(options: Options<PostRolesFromTemplateByTemplateKeyData, ThrowOnError>): RequestResult<PostRolesFromTemplateByTemplateKeyResponses, PostRolesFromTemplateByTemplateKeyErrors, ThrowOnError> {
+        return (options.client ?? client).post<PostRolesFromTemplateByTemplateKeyResponses, PostRolesFromTemplateByTemplateKeyErrors, ThrowOnError>({
+            security: [{ scheme: 'bearer', type: 'http' }],
+            url: '/roles/from-template/{template_key}',
+            ...options
+        });
+    }
+
+    /**
+     * Get Available Scopes
+     *
+     * List all available scopes
+     */
+    public static GetAvailableScopes<ThrowOnError extends boolean = false>(options?: Options<GetRolesScopesAvailableData, ThrowOnError>): RequestResult<GetRolesScopesAvailableResponses, unknown, ThrowOnError> {
+        return (options?.client ?? client).get<GetRolesScopesAvailableResponses, unknown, ThrowOnError>({
+            security: [{ scheme: 'bearer', type: 'http' }],
+            url: '/roles/scopes/available',
+            ...options
+        });
+    }
+
+    /**
      * Delete Role
      *
      * Delete a role
@@ -900,42 +939,35 @@ export class RolesService {
             }
         });
     }
+}
 
+export class AnalyticsService {
     /**
-     * List Role Templates
+     * Ingest Analytics Events
      *
-     * List available role templates
+     * Add a batch to non-identifying hourly counters without retaining raw events.
      */
-    public static ListRoleTemplates<ThrowOnError extends boolean = false>(options?: Options<GetRolesTemplatesData, ThrowOnError>): RequestResult<GetRolesTemplatesResponses, unknown, ThrowOnError> {
-        return (options?.client ?? client).get<GetRolesTemplatesResponses, unknown, ThrowOnError>({
-            security: [{ scheme: 'bearer', type: 'http' }],
-            url: '/roles/templates/',
-            ...options
+    public static IngestAnalyticsEvents<ThrowOnError extends boolean = false>(options: Options<PostAnalyticsEventsData, ThrowOnError>): RequestResult<PostAnalyticsEventsResponses, PostAnalyticsEventsErrors, ThrowOnError> {
+        return (options.client ?? client).post<PostAnalyticsEventsResponses, PostAnalyticsEventsErrors, ThrowOnError>({
+            url: '/analytics/events',
+            ...options,
+            headers: {
+                'Content-Type': 'application/json',
+                ...options.headers
+            }
         });
     }
 
     /**
-     * Create Role From Template Endpoint
+     * Get Admin Analytics Summary
      *
-     * Create a role from a predefined template
+     * Return aggregate traffic data to active superusers only.
      */
-    public static CreateRoleFromTemplateEndpoint<ThrowOnError extends boolean = false>(options: Options<PostRolesFromTemplateByTemplateKeyData, ThrowOnError>): RequestResult<PostRolesFromTemplateByTemplateKeyResponses, PostRolesFromTemplateByTemplateKeyErrors, ThrowOnError> {
-        return (options.client ?? client).post<PostRolesFromTemplateByTemplateKeyResponses, PostRolesFromTemplateByTemplateKeyErrors, ThrowOnError>({
+    public static GetAdminAnalyticsSummary<ThrowOnError extends boolean = false>(options?: Options<GetAnalyticsAdminSummaryData, ThrowOnError>): RequestResult<GetAnalyticsAdminSummaryResponses, unknown, ThrowOnError> {
+        return (options?.client ?? client).get<GetAnalyticsAdminSummaryResponses, unknown, ThrowOnError>({
+            responseTransformer: getAnalyticsAdminSummaryResponseTransformer,
             security: [{ scheme: 'bearer', type: 'http' }],
-            url: '/roles/from-template/{template_key}',
-            ...options
-        });
-    }
-
-    /**
-     * Get Available Scopes
-     *
-     * List all available scopes
-     */
-    public static GetAvailableScopes<ThrowOnError extends boolean = false>(options?: Options<GetRolesScopesAvailableData, ThrowOnError>): RequestResult<GetRolesScopesAvailableResponses, unknown, ThrowOnError> {
-        return (options?.client ?? client).get<GetRolesScopesAvailableResponses, unknown, ThrowOnError>({
-            security: [{ scheme: 'bearer', type: 'http' }],
-            url: '/roles/scopes/available',
+            url: '/analytics/admin/summary',
             ...options
         });
     }

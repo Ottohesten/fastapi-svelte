@@ -1,169 +1,235 @@
 <script lang="ts">
   import "../app.css";
-  import ThemeToggle from "$lib/components/ThemeToggle.svelte";
-  import { page } from "$app/stores";
-  import { slide } from "svelte/transition";
+  import { afterNavigate } from "$app/navigation";
   import { onMount } from "svelte";
+  import { page } from "$app/stores";
+  import ChefHat from "@lucide/svelte/icons/chef-hat";
+  import LogIn from "@lucide/svelte/icons/log-in";
+  import LogOut from "@lucide/svelte/icons/log-out";
+  import Menu from "@lucide/svelte/icons/menu";
+  import ShieldCheck from "@lucide/svelte/icons/shield-check";
+  import ThemeToggle from "$lib/components/ThemeToggle.svelte";
+  import { Button, buttonVariants } from "$lib/components/ui/button";
+  import * as Sheet from "$lib/components/ui/sheet";
+  import {
+    BROWSER_SESSION_STORAGE_KEY,
+    buildPageMetrics,
+    postPageMetrics
+  } from "$lib/observability/page-metrics";
+  import { hasBrowserTelemetryOptOut } from "$lib/observability/sentry-config";
 
   let { children, data } = $props();
 
-  onMount(() => {
-    document.body.setAttribute("data-svelte-hydrated", "true");
-  });
-
-  // Mobile nav state
-  let mobileOpen = $state(false);
-
   type NavItem = { href: string; label: string; requiredScopes?: string | string[] };
-  const linksAuthConfig: NavItem[] = [
-    // { href: '/tiptap', label: 'Tiptap' },
+
+  const authenticatedLinks: NavItem[] = [
     { href: "/recipes", label: "Recipes", requiredScopes: "recipes:read" },
     { href: "/ingredients", label: "Ingredients", requiredScopes: "ingredients:read" },
-    { href: "/game", label: "Games" } // no scope required
+    { href: "/game", label: "Games" }
   ];
+  const anonymousLinks: NavItem[] = [
+    { href: "/", label: "Home" },
+    { href: "/game", label: "Game" }
+  ];
+
+  let mobileOpen = $state(false);
+
+  const isAdmin = $derived(
+    $page.url.pathname === "/admin" || $page.url.pathname.startsWith("/admin/")
+  );
+  const navigationLinks = $derived(
+    data.authenticatedUser
+      ? authenticatedLinks.filter((item) => hasRequiredScopes(item, data.scopes))
+      : anonymousLinks
+  );
+  let initialPageViewRecorded = false;
 
   function hasRequiredScopes(item: NavItem, scopes: string[] | undefined) {
     if (!item.requiredScopes) return true;
     if (!scopes) return false;
     return Array.isArray(item.requiredScopes)
-      ? item.requiredScopes.every((s) => scopes.includes(s))
+      ? item.requiredScopes.every((scope) => scopes.includes(scope))
       : scopes.includes(item.requiredScopes);
   }
 
-  // Reactive filtered auth links based on current scopes
-  const linksAuth: NavItem[] = $derived(
-    linksAuthConfig.filter((i) => hasRequiredScopes(i, data.scopes))
-  );
+  function isActive(href: string) {
+    return $page.url.pathname === href || $page.url.pathname.startsWith(`${href}/`);
+  }
 
-  const linksAnon = [
-    { href: "/", label: "Home" },
-    { href: "/game", label: "Game" }
-  ];
+  function recordPageView(routeId: string | null | undefined) {
+    if (!routeId || hasBrowserTelemetryOptOut(navigator)) return;
 
-  const isActive = (href: string) =>
-    $page.url.pathname === href || $page.url.pathname.startsWith(href + "/");
+    let browserSessionStarted = true;
+    try {
+      browserSessionStarted = sessionStorage.getItem(BROWSER_SESSION_STORAGE_KEY) === "1";
+    } catch {
+      // Some privacy modes disable session storage. Page views still remain useful.
+    }
+
+    const metrics = buildPageMetrics({
+      routeId,
+      browserSessionStarted
+    });
+
+    void postPageMetrics(metrics);
+
+    if (!browserSessionStarted) {
+      try {
+        sessionStorage.setItem(BROWSER_SESSION_STORAGE_KEY, "1");
+      } catch {
+        // Do not make telemetry a dependency of navigation.
+      }
+    }
+  }
+
+  afterNavigate(({ to, type }) => {
+    if (type === "enter") {
+      if (initialPageViewRecorded) return;
+      initialPageViewRecorded = true;
+    }
+
+    recordPageView(to?.route.id);
+  });
+
+  onMount(() => {
+    document.body.setAttribute("data-svelte-hydrated", "true");
+
+    // SvelteKit may finish its initial navigation before the afterNavigate callback is mounted.
+    if (!initialPageViewRecorded) {
+      initialPageViewRecorded = true;
+      recordPageView($page.route.id);
+    }
+  });
 </script>
 
-<header
-  class="sticky top-0 z-30 border-b border-gray-200 bg-white/70 backdrop-blur supports-backdrop-filter:bg-white/50 dark:border-gray-800 dark:bg-gray-900/60"
->
-  <div class="container flex h-16 items-center justify-between">
-    <!-- Brand -->
-    <a href="/" class="flex items-center gap-2 text-gray-900 no-underline dark:text-white">
-      <svg class="h-6 w-6 text-blue-600" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-        <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          stroke-width="2"
-          d="M3 7h18M5 7l1 12a2 2 0 002 2h8a2 2 0 002-2l1-12M8 7V5a4 4 0 118 0v2"
-        />
-      </svg>
-      <span class="max-w-[55vw] truncate text-lg font-semibold tracking-tight md:max-w-none"
-        >Internationaleregler</span
-      >
-    </a>
-
-    <!-- Nav links -->
-    <nav class="hidden gap-1 md:flex">
-      {#each data.authenticatedUser ? linksAuth : linksAnon as link}
-        <a
-          href={link.href}
-          class="rounded-md px-3 py-2 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-100 hover:text-gray-900 data-[active=true]:bg-gray-900 data-[active=true]:text-white dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-white"
-          data-active={isActive(link.href)}>{link.label}</a
-        >
-      {/each}
-    </nav>
-
-    <!-- Right actions -->
-    <div class="flex items-center gap-2">
-      <a
-        href="/admin"
-        class="hidden rounded-md px-3 py-2 text-sm text-gray-600 hover:bg-gray-100 hover:text-gray-900 md:inline dark:text-gray-300 dark:hover:bg-gray-800"
-        >Admin</a
-      >
-      <div class="hidden md:block"><ThemeToggle /></div>
-
-      <!-- Desktop auth actions -->
-      {#if !data.authenticatedUser}
-        <a
-          href="/auth/login"
-          class="hidden rounded-lg border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 md:inline dark:border-gray-700 dark:text-gray-200 dark:hover:bg-gray-800"
-          >Login</a
-        >
-      {:else}
-        <a
-          href="/auth/logout"
-          class="hidden rounded-lg bg-emerald-600 px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-emerald-700 md:inline"
-          >Logout</a
-        >
-      {/if}
-
-      <!-- Mobile menu toggle -->
-      <button
-        type="button"
-        class="inline-flex items-center justify-center rounded-md p-2 text-gray-600 hover:bg-gray-100 focus:ring-2 focus:ring-blue-500 focus:outline-none md:hidden dark:text-gray-300 dark:hover:bg-gray-800"
-        aria-label="Toggle menu"
-        aria-expanded={mobileOpen}
-        onclick={() => (mobileOpen = !mobileOpen)}
-      >
-        <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
-        </svg>
-      </button>
-    </div>
-  </div>
-</header>
-
-<!-- Mobile menu panel -->
-{#if mobileOpen}
-  <div
-    in:slide={{ duration: 180 }}
-    out:slide={{ duration: 140 }}
-    class="border-b border-gray-200 bg-white/95 backdrop-blur md:hidden dark:border-gray-800 dark:bg-gray-900/95"
-  >
-    <div class="container py-3">
-      <nav class="flex flex-col gap-1">
-        {#each data.authenticatedUser ? linksAuth : linksAnon as link}
-          <a
-            href={link.href}
-            class="rounded-md px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-200 dark:hover:bg-gray-800"
-            onclick={() => (mobileOpen = false)}>{link.label}</a
-          >
-        {/each}
-        {#if data.authenticatedUser}
-          <a
-            href="/admin"
-            class="rounded-md px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-200 dark:hover:bg-gray-800"
-            onclick={() => (mobileOpen = false)}>Admin</a
-          >
-        {/if}
-        <div class="my-2 h-px bg-gray-200 dark:bg-gray-800"></div>
-        <div class="flex items-center justify-between px-1">
-          <span class="text-sm text-gray-600 dark:text-gray-300">Theme</span>
-          <ThemeToggle />
-        </div>
-        <div class="mt-2 flex items-center gap-2 px-1">
-          {#if !data.authenticatedUser}
-            <a
-              href="/auth/login"
-              class="flex-1 rounded-lg border border-gray-300 px-3 py-1.5 text-center text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:text-gray-200 dark:hover:bg-gray-800"
-              onclick={() => (mobileOpen = false)}>Login</a
-            >
-          {:else}
-            <a
-              href="/auth/logout"
-              class="flex-1 rounded-lg bg-emerald-600 px-3 py-1.5 text-center text-sm font-medium text-white hover:bg-emerald-700"
-              onclick={() => (mobileOpen = false)}>Logout</a
-            >
-          {/if}
-        </div>
-      </nav>
-    </div>
-  </div>
-{/if}
-
-<main class="min-h-[calc(100vh-4rem)]">
+{#if isAdmin}
   {@render children()}
-</main>
+{:else}
+  <header
+    class="border-border/70 bg-background/85 supports-[backdrop-filter]:bg-background/70 sticky top-0 z-40 border-b backdrop-blur-xl"
+  >
+    <div class="container flex h-16 items-center gap-3">
+      <a
+        href="/"
+        class="text-foreground focus-visible:ring-ring flex min-w-0 items-center gap-2.5 rounded-lg font-semibold tracking-tight focus-visible:ring-2 focus-visible:outline-none"
+      >
+        <span
+          class="bg-primary text-primary-foreground grid size-9 shrink-0 place-items-center rounded-xl shadow-sm"
+        >
+          <ChefHat class="size-5" />
+        </span>
+        <span class="truncate text-base sm:text-lg">Internationaleregler</span>
+      </a>
 
-<!-- <Footer /> -->
+      <nav aria-label="Primary navigation" class="ml-auto hidden items-center gap-1 md:flex">
+        {#each navigationLinks as link (link.href)}
+          <Button
+            href={link.href}
+            variant={isActive(link.href) ? "secondary" : "ghost"}
+            size="sm"
+            aria-current={isActive(link.href) ? "page" : undefined}
+          >
+            {link.label}
+          </Button>
+        {/each}
+      </nav>
+
+      <div class="ml-auto hidden items-center gap-1 md:flex">
+        {#if data.authenticatedUser?.is_superuser}
+          <Button href="/admin" variant="ghost" size="sm">
+            <ShieldCheck />
+            Admin
+          </Button>
+        {/if}
+        <ThemeToggle />
+        {#if data.authenticatedUser}
+          <Button href="/auth/logout" variant="outline" size="sm">
+            <LogOut />
+            Logout
+          </Button>
+        {:else}
+          <Button href="/auth/login" size="sm">
+            <LogIn />
+            Login
+          </Button>
+        {/if}
+      </div>
+
+      <Sheet.Root bind:open={mobileOpen}>
+        <Sheet.Trigger
+          class={buttonVariants({ variant: "ghost", size: "icon", class: "ml-auto md:hidden" })}
+          aria-label="Open navigation"
+          title="Open navigation"
+        >
+          <Menu class="size-5" />
+        </Sheet.Trigger>
+        <Sheet.Content
+          side="left"
+          class="flex w-[88vw] flex-col p-0 sm:max-w-sm"
+          data-sveltekit-replacestate
+        >
+          <Sheet.Header class="border-border border-b px-5 py-5 pr-12 text-left">
+            <Sheet.Title class="flex items-center gap-2.5">
+              <span
+                class="bg-primary text-primary-foreground grid size-9 place-items-center rounded-xl"
+              >
+                <ChefHat class="size-5" />
+              </span>
+              Internationaleregler
+            </Sheet.Title>
+            <Sheet.Description>Navigate the site and manage your account.</Sheet.Description>
+          </Sheet.Header>
+
+          <nav aria-label="Mobile navigation" class="flex flex-col gap-1 p-4">
+            {#each navigationLinks as link (link.href)}
+              <Button
+                href={link.href}
+                variant={isActive(link.href) ? "secondary" : "ghost"}
+                class="h-12 w-full justify-start px-4 text-base"
+                aria-current={isActive(link.href) ? "page" : undefined}
+              >
+                {link.label}
+              </Button>
+            {/each}
+            {#if data.authenticatedUser?.is_superuser}
+              <Button
+                href="/admin"
+                variant="ghost"
+                class="h-12 w-full justify-start px-4 text-base"
+              >
+                <ShieldCheck />
+                Admin
+              </Button>
+            {/if}
+          </nav>
+
+          <div class="border-border mt-auto space-y-4 border-t p-4">
+            <div class="flex min-h-11 items-center justify-between gap-3 px-2">
+              <div>
+                <p class="text-sm font-medium">Appearance</p>
+                <p class="text-muted-foreground text-xs">Light, dark, or system</p>
+              </div>
+              <ThemeToggle />
+            </div>
+
+            {#if data.authenticatedUser}
+              <Button href="/auth/logout" variant="outline" class="h-11 w-full">
+                <LogOut />
+                Logout
+              </Button>
+            {:else}
+              <Button href="/auth/login" class="h-11 w-full">
+                <LogIn />
+                Login
+              </Button>
+            {/if}
+          </div>
+        </Sheet.Content>
+      </Sheet.Root>
+    </div>
+  </header>
+
+  <main class="min-h-[calc(100svh-4rem)]">
+    {@render children()}
+  </main>
+{/if}

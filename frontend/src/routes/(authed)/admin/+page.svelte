@@ -1,98 +1,313 @@
 <script lang="ts">
-  let { data } = $props();
+  import { goto } from "$app/navigation";
+  import { onMount, untrack } from "svelte";
+  import { isTrafficData, type TrafficData } from "$lib/analytics";
+  import * as Card from "$lib/components/ui/card";
+  import { Button } from "$lib/components/ui/button";
+  import AdminPageHeader from "$lib/components/AdminPageHeader.svelte";
+  import TrafficOverview from "./TrafficOverview.svelte";
+  import {
+    ArrowRight,
+    BookOpen,
+    ChefHat,
+    CircleAlert,
+    Gamepad2,
+    GlassWater,
+    ScanBarcode,
+    UserRoundX,
+    Users
+  } from "@lucide/svelte";
+  import type { PageData } from "./$types.js";
 
-  // Placeholder stats — replace with real data from loaders/endpoints later
-  let stats = {
-    users: "—",
-    games: "—",
-    recipes: "—"
-  };
+  const TRAFFIC_REFRESH_INTERVAL_MS = 30_000;
+  const TRAFFIC_REFRESH_TIMEOUT_MS = 5_000;
+
+  let { data }: { data: PageData } = $props();
+
+  let traffic = $state<TrafficData | null>(untrack(() => data.traffic));
+  let trafficRefresh: AbortController | null = null;
+  let trafficGeneration = 0;
+
+  $effect(() => {
+    const loadedTraffic = data.traffic;
+    trafficGeneration += 1;
+    trafficRefresh?.abort();
+    traffic = loadedTraffic;
+  });
+
+  async function refreshTraffic() {
+    if (trafficRefresh) return;
+
+    const controller = new AbortController();
+    trafficRefresh = controller;
+    const refreshGeneration = trafficGeneration;
+    const timeout = window.setTimeout(() => controller.abort(), TRAFFIC_REFRESH_TIMEOUT_MS);
+
+    try {
+      const response = await fetch("/admin/analytics/summary", {
+        headers: { accept: "application/json" },
+        cache: "no-store",
+        signal: controller.signal
+      });
+      if (response.redirected || response.status === 401) {
+        traffic = null;
+        await goto("/auth/login?redirectTo=%2Fadmin");
+        return;
+      }
+      if (response.status === 403) {
+        traffic = null;
+        await goto("/");
+        return;
+      }
+      if (!response.ok) return;
+
+      const refreshedTraffic: unknown = await response.json();
+      if (
+        trafficRefresh === controller &&
+        trafficGeneration === refreshGeneration &&
+        isTrafficData(refreshedTraffic)
+      ) {
+        traffic = refreshedTraffic;
+      }
+    } catch {
+      // Keep showing the most recently loaded aggregate if a refresh fails.
+    } finally {
+      window.clearTimeout(timeout);
+      if (trafficRefresh === controller) {
+        trafficRefresh = null;
+      }
+    }
+  }
+
+  onMount(() => {
+    if (traffic === null) void refreshTraffic();
+
+    const refreshWhenVisible = () => {
+      if (document.visibilityState === "visible") void refreshTraffic();
+    };
+    const interval = window.setInterval(refreshWhenVisible, TRAFFIC_REFRESH_INTERVAL_MS);
+    document.addEventListener("visibilitychange", refreshWhenVisible);
+
+    return () => {
+      window.clearInterval(interval);
+      document.removeEventListener("visibilitychange", refreshWhenVisible);
+      trafficRefresh?.abort();
+    };
+  });
+
+  const unavailable = (value: number | null) => value === null;
+  const count = (value: number | null) => value?.toLocaleString("en-DK") ?? "—";
+
+  let attentionItems = $derived([
+    {
+      label: "Inactive accounts",
+      description: "Accounts that are currently unable to sign in.",
+      value: data.metrics.users.attention,
+      href: "/admin/users",
+      icon: UserRoundX
+    },
+    {
+      label: "Hidden recipes",
+      description: "Recipes currently hidden from their regular audience.",
+      value: data.metrics.recipes.attention,
+      href: "/recipes",
+      icon: BookOpen
+    },
+    {
+      label: "Ingredients without barcodes",
+      description: "Catalog items that were added without a product barcode.",
+      value: data.metrics.ingredients.attention,
+      href: "/admin/ingredients",
+      icon: ScanBarcode
+    },
+    {
+      label: "Sessions without players",
+      description: "Game sessions that do not have any players yet.",
+      value: data.metrics.sessions.attention,
+      href: "/game",
+      icon: Gamepad2
+    }
+  ]);
 </script>
 
-<main class="p-6">
-  <header class="mb-6">
-    <h1 class="text-3xl font-semibold">Administration</h1>
-    <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
-      Welcome to the admin dashboard. Use these tools to manage users, game data, content, and site
-      settings.
-    </p>
-  </header>
+<div class="mx-auto max-w-7xl space-y-8">
+  <AdminPageHeader
+    title="Administration"
+    description="Keep an eye on the catalog, accounts, and game data from one place."
+  />
 
-  <section class="mb-6 grid grid-cols-1 gap-4 md:grid-cols-3">
-    <div
-      class="rounded-lg border border-gray-200 bg-white p-5 shadow-sm md:col-span-2 dark:border-gray-800 dark:bg-gray-900/50 dark:shadow-none"
-    >
-      <h2 class="mb-3 text-lg font-medium">Overview</h2>
-      <div class="flex gap-4">
-        <div class="flex-1 rounded bg-gray-50 p-4 dark:bg-gray-900/30">
-          <div class="text-xs text-gray-500">Users</div>
-          <div class="text-2xl font-bold">{stats.users}</div>
-        </div>
-        <div class="flex-1 rounded bg-gray-50 p-4 dark:bg-gray-900/30">
-          <div class="text-xs text-gray-500">Game Sessions</div>
-          <div class="text-2xl font-bold">{stats.games}</div>
-        </div>
-        <div class="flex-1 rounded bg-gray-50 p-4 dark:bg-gray-900/30">
-          <div class="text-xs text-gray-500">Recipes</div>
-          <div class="text-2xl font-bold">{stats.recipes}</div>
-        </div>
-      </div>
-
-      <div class="mt-4 text-sm text-gray-600">
-        This page is a centralized place for administrative actions. Connect real metrics by
-        returning values from this page's loader.
+  <section aria-labelledby="overview-heading" class="space-y-4">
+    <div class="flex items-center justify-between gap-4">
+      <div>
+        <h2 id="overview-heading" class="mb-0 text-lg font-semibold">Overview</h2>
+        <p class="text-muted-foreground text-sm">Live totals from the application database.</p>
       </div>
     </div>
 
-    <aside
-      class="rounded-lg border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-900/50 dark:shadow-none"
-    >
-      <h3 class="text-md mb-3 font-medium">Quick Actions</h3>
-      <div class="flex flex-col gap-2">
-        <a
-          href="/admin/users"
-          class="block rounded bg-sky-500 px-3 py-2 text-left text-white hover:bg-sky-600"
-          >Manage Users</a
-        >
-        <a
-          href="/admin/roles"
-          class="block rounded border border-gray-600 px-3 py-2 text-left text-gray-100 hover:bg-gray-700"
-          >Manage Roles</a
-        >
-        <a
-          href="/admin/game"
-          class="block rounded border border-gray-600 px-3 py-2 text-left text-gray-100 hover:bg-gray-700"
-          >Game Data</a
-        >
-        <a
-          href="/admin/recipes"
-          class="block rounded border border-gray-600 px-3 py-2 text-left text-gray-100 hover:bg-gray-700"
-          >Recipes & Ingredients</a
-        >
-      </div>
-    </aside>
+    <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <Card.Root>
+        <Card.Header>
+          <Card.Title>Users</Card.Title>
+          <Card.Description>Registered accounts</Card.Description>
+          <Card.Action class="bg-primary/10 text-primary rounded-lg p-2">
+            <Users class="size-5" />
+          </Card.Action>
+        </Card.Header>
+        <Card.Content>
+          <p class="text-3xl font-semibold tabular-nums">{count(data.metrics.users.total)}</p>
+          {#if unavailable(data.metrics.users.total)}
+            <p class="text-muted-foreground mt-1 text-xs">Temporarily unavailable</p>
+          {/if}
+        </Card.Content>
+        <Card.Footer>
+          <Button href="/admin/users" variant="ghost" size="sm" class="-ml-3">
+            Manage users <ArrowRight />
+          </Button>
+        </Card.Footer>
+      </Card.Root>
+
+      <Card.Root>
+        <Card.Header>
+          <Card.Title>Recipes</Card.Title>
+          <Card.Description>Recipes in the collection</Card.Description>
+          <Card.Action class="bg-primary/10 text-primary rounded-lg p-2">
+            <BookOpen class="size-5" />
+          </Card.Action>
+        </Card.Header>
+        <Card.Content>
+          <p class="text-3xl font-semibold tabular-nums">{count(data.metrics.recipes.total)}</p>
+          {#if unavailable(data.metrics.recipes.total)}
+            <p class="text-muted-foreground mt-1 text-xs">Temporarily unavailable</p>
+          {/if}
+        </Card.Content>
+        <Card.Footer>
+          <Button href="/recipes" variant="ghost" size="sm" class="-ml-3">
+            Browse recipes <ArrowRight />
+          </Button>
+        </Card.Footer>
+      </Card.Root>
+
+      <Card.Root>
+        <Card.Header>
+          <Card.Title>Ingredients</Card.Title>
+          <Card.Description>Cataloged ingredients</Card.Description>
+          <Card.Action class="bg-primary/10 text-primary rounded-lg p-2">
+            <ChefHat class="size-5" />
+          </Card.Action>
+        </Card.Header>
+        <Card.Content>
+          <p class="text-3xl font-semibold tabular-nums">{count(data.metrics.ingredients.total)}</p>
+          {#if unavailable(data.metrics.ingredients.total)}
+            <p class="text-muted-foreground mt-1 text-xs">Temporarily unavailable</p>
+          {/if}
+        </Card.Content>
+        <Card.Footer>
+          <Button href="/admin/ingredients" variant="ghost" size="sm" class="-ml-3">
+            Manage ingredients <ArrowRight />
+          </Button>
+        </Card.Footer>
+      </Card.Root>
+
+      <Card.Root>
+        <Card.Header>
+          <Card.Title>Game sessions</Card.Title>
+          <Card.Description>Created game sessions</Card.Description>
+          <Card.Action class="bg-primary/10 text-primary rounded-lg p-2">
+            <Gamepad2 class="size-5" />
+          </Card.Action>
+        </Card.Header>
+        <Card.Content>
+          <p class="text-3xl font-semibold tabular-nums">{count(data.metrics.sessions.total)}</p>
+          {#if unavailable(data.metrics.sessions.total)}
+            <p class="text-muted-foreground mt-1 text-xs">Temporarily unavailable</p>
+          {/if}
+        </Card.Content>
+        <Card.Footer>
+          <Button href="/game" variant="ghost" size="sm" class="-ml-3">
+            View sessions <ArrowRight />
+          </Button>
+        </Card.Footer>
+      </Card.Root>
+    </div>
   </section>
 
-  <section class="grid grid-cols-1 gap-4 md:grid-cols-2">
-    <div
-      class="rounded-lg border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-900/50 dark:shadow-none"
-    >
-      <h3 class="text-md mb-2 font-medium">Helpful Tips</h3>
-      <ul class="ml-5 list-disc text-sm text-gray-300">
-        <li>Use the dedicated endpoints to seed or import initial game data.</li>
-        <li>Review user activity before changing roles or permissions.</li>
-        <li>Back up important data before running destructive operations.</li>
-      </ul>
-    </div>
+  <TrafficOverview {traffic} />
 
-    <div
-      class="rounded-lg border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-900/50 dark:shadow-none"
-    >
-      <h3 class="text-md mb-2 font-medium">Recent Activity</h3>
-      <div class="text-sm text-gray-300">
-        No recent activity to show. Add an activity feed or audit logs endpoint and render items
-        here.
+  <div class="grid gap-6 xl:grid-cols-[minmax(0,1.35fr)_minmax(18rem,0.65fr)]">
+    <section aria-labelledby="attention-heading" class="space-y-4">
+      <div>
+        <h2 id="attention-heading" class="mb-0 text-lg font-semibold">Things to review</h2>
+        <p class="text-muted-foreground text-sm">
+          Useful catalog and account details that may need attention.
+        </p>
       </div>
-    </div>
-  </section>
-</main>
+
+      <Card.Root>
+        <Card.Content class="grid gap-1 p-0">
+          {#each attentionItems as item}
+            <a
+              href={item.href}
+              class="hover:bg-muted/60 focus-visible:ring-ring flex items-center gap-3 rounded-lg p-4 transition-colors focus-visible:ring-2 focus-visible:outline-none"
+            >
+              <span class="bg-muted text-muted-foreground rounded-lg p-2">
+                <item.icon class="size-4" />
+              </span>
+              <span class="min-w-0 flex-1">
+                <span class="block font-medium">{item.label}</span>
+                <span class="text-muted-foreground block text-xs sm:text-sm">
+                  {item.description}
+                </span>
+              </span>
+              <span class="flex items-center gap-2">
+                {#if item.value === null}
+                  <CircleAlert class="text-muted-foreground size-4" aria-label="Unavailable" />
+                  <span class="sr-only">Unavailable</span>
+                {:else}
+                  <span class="text-lg font-semibold tabular-nums">{item.value}</span>
+                {/if}
+                <ArrowRight class="text-muted-foreground size-4" />
+              </span>
+            </a>
+          {/each}
+        </Card.Content>
+      </Card.Root>
+    </section>
+
+    <section aria-labelledby="manage-heading" class="space-y-4">
+      <div>
+        <h2 id="manage-heading" class="mb-0 text-lg font-semibold">Quick management</h2>
+        <p class="text-muted-foreground text-sm">Jump directly to common admin tasks.</p>
+      </div>
+
+      <Card.Root>
+        <Card.Content class="grid gap-2">
+          <Button href="/admin/users" variant="outline" class="h-auto justify-start py-3">
+            <Users />
+            <span class="text-left">
+              <span class="block">Users and permissions</span>
+              <span class="text-muted-foreground block text-xs font-normal">Manage access</span>
+            </span>
+          </Button>
+          <Button href="/admin/ingredients" variant="outline" class="h-auto justify-start py-3">
+            <ScanBarcode />
+            <span class="text-left">
+              <span class="block">Ingredient catalog</span>
+              <span class="text-muted-foreground block text-xs font-normal"
+                >Add or scan products</span
+              >
+            </span>
+          </Button>
+          <Button href="/admin/game/drinks" variant="outline" class="h-auto justify-start py-3">
+            <GlassWater />
+            <span class="text-left">
+              <span class="block">Game drinks</span>
+              <span class="text-muted-foreground block text-xs font-normal"
+                >Maintain drink options</span
+              >
+            </span>
+          </Button>
+        </Card.Content>
+      </Card.Root>
+    </section>
+  </div>
+</div>

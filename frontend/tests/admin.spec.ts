@@ -6,6 +6,7 @@ test.describe("Admin Dashboard", () => {
     test("should load admin dashboard", async ({ page }) => {
         await page.goto("/admin");
         await expect(page.getByRole("heading", { name: "Administration" })).toBeVisible();
+        await expect(page.getByRole("heading", { name: "Traffic" })).toBeVisible();
     });
 
     test.describe("Users Management", () => {

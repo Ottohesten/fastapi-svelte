@@ -8,8 +8,8 @@ import Content from "./dialog-content.svelte";
 import Description from "./dialog-description.svelte";
 import Trigger from "./dialog-trigger.svelte";
 import Close from "./dialog-close.svelte";
+import Root from "./dialog-root.svelte";
 
-const Root = DialogPrimitive.Root;
 const Portal = DialogPrimitive.Portal;
 
 export {

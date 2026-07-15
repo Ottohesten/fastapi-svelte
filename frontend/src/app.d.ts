@@ -14,7 +14,9 @@ declare global {
             } | null;
         }
         // interface PageData {}
-        // interface PageState {}
+        interface PageState {
+            shallowOverlays?: string[];
+        }
         // interface Platform {}
     }
 }

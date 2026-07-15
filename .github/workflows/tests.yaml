@@ -13,7 +13,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: backend-tests-${{ github.workflow }}-${{ github.ref }}
+  group: unit-tests-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -31,3 +31,29 @@ jobs:
           --cov=app
           --cov-report=term-missing
           --cov-fail-under=70
+
+  frontend-tests:
+    name: Frontend checks and unit tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+
+      - name: Install frontend dependencies
+        run: bun ci
+
+      - name: Check Svelte and TypeScript
+        run: bun run check
+
+      - name: Run frontend unit tests
+        run: bun run test:unit
+
+      - name: Build frontend
+        run: bun run build

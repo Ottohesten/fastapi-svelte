@@ -486,7 +486,7 @@ class Recipe(RecipeBase, table=True):
     owner_id: uuid.UUID = Field(foreign_key="user.id", nullable=False)
     owner: User = Relationship(back_populates="recipes")
     created_at: datetime = Field(
-        default=datetime.now(timezone.utc),
+        default_factory=lambda: datetime.now(timezone.utc),
         sa_column=Column(DateTime(timezone=True), nullable=False),
     )
 
@@ -747,7 +747,7 @@ class GameSession(GameSessionBase, table=True):
     owner_id: uuid.UUID = Field(foreign_key="user.id", nullable=False)
     owner: User = Relationship(back_populates="game_sessions")
     created_at: datetime = Field(
-        default=datetime.now(timezone.utc),
+        default_factory=lambda: datetime.now(timezone.utc),
         sa_column=Column(DateTime(timezone=True), nullable=False),
     )
 

@@ -132,6 +132,7 @@ def _set_test_environment(*, guard: str, host: str, port: str) -> None:
 
     # Prevent optional integrations from inheriting real host credentials.
     for variable in (
+        "ANALYTICS_INGEST_TOKEN",
         "EMAILS_FROM_EMAIL",
         "SENTRY_DSN",
         "SMTP_HOST",

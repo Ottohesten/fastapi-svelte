@@ -6,6 +6,7 @@ from fastapi.routing import APIRoute
 
 from app.config import settings
 from app.routers import (
+    analytics,
     users,
     login,
     recipes,
@@ -54,3 +55,4 @@ app.include_router(recipes.router)
 app.include_router(ingredients.router)
 app.include_router(game.router)
 app.include_router(roles.router)
+app.include_router(analytics.router)

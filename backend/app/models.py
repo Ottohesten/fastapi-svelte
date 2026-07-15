@@ -1,15 +1,18 @@
 import uuid
+import re
+from enum import StrEnum
 from pydantic import (
     BaseModel,
     EmailStr,
+    StrictBool,
     computed_field,
     field_validator,
     model_validator,
 )
 from sqlmodel import Field, SQLModel, Relationship, Column, JSON
-from sqlalchemy import DateTime
+from sqlalchemy import BigInteger, CheckConstraint, DateTime
 from typing import Optional
-from datetime import datetime, timezone
+from datetime import date, datetime, timezone
 # from permissions.roles import Role
 
 
@@ -938,6 +941,99 @@ class Drink(DrinkBase, table=True):
 
 #####################################################################################
 #
+
+
+class AnalyticsMetricName(StrEnum):
+    PAGE_VIEW = "site.page_view"
+    BROWSER_SESSION_STARTED = "site.browser_session.started"
+
+
+_SVELTE_ROUTE_PARAMETER = (
+    r"(?:\.\.\.)?[A-Za-z_][A-Za-z0-9_]*"
+    r"(?:=[A-Za-z_][A-Za-z0-9_]*)?"
+)
+_SVELTE_ROUTE_SEGMENT = (
+    rf"(?:[A-Za-z0-9._~-]+|\[{_SVELTE_ROUTE_PARAMETER}\]|"
+    rf"\[\[{_SVELTE_ROUTE_PARAMETER}\]\])"
+)
+_SVELTE_ROUTE_TEMPLATE = re.compile(
+    rf"^/(?:{_SVELTE_ROUTE_SEGMENT}(?:/{_SVELTE_ROUTE_SEGMENT})*)?$"
+)
+
+
+class AnalyticsEventCreate(SQLModel):
+    metric: AnalyticsMetricName
+    route: str = Field(min_length=1, max_length=200)
+    authenticated: StrictBool
+
+    @field_validator("route")
+    @classmethod
+    def validate_route_template(cls, value: str) -> str:
+        if not _SVELTE_ROUTE_TEMPLATE.fullmatch(value):
+            raise ValueError("Route must be a valid Svelte route template")
+        return value
+
+
+class AnalyticsEventBatchCreate(SQLModel):
+    events: list[AnalyticsEventCreate] = Field(min_length=1, max_length=50)
+
+
+class AnalyticsIngestResponse(SQLModel):
+    accepted: int = Field(ge=0)
+
+
+class AnalyticsTotalsPublic(SQLModel):
+    page_views: int = Field(ge=0)
+    browser_sessions: int = Field(ge=0)
+
+
+class AnalyticsDailyCountPublic(AnalyticsTotalsPublic):
+    date: date
+
+
+class AnalyticsAudienceSplitPublic(SQLModel):
+    authenticated: int = Field(ge=0)
+    anonymous: int = Field(ge=0)
+
+
+class AnalyticsTopRoutePublic(SQLModel):
+    route: str
+    page_views: int = Field(ge=0)
+
+
+class AnalyticsSummaryPublic(SQLModel):
+    generated_at: datetime
+    last_24_hours: AnalyticsTotalsPublic
+    last_7_days: AnalyticsTotalsPublic
+    daily_last_7_days: list[AnalyticsDailyCountPublic]
+    page_views_last_7_days_by_audience: AnalyticsAudienceSplitPublic
+    top_routes_last_7_days: list[AnalyticsTopRoutePublic]
+
+
+class AnalyticsHourlyBucket(SQLModel, table=True):
+    __tablename__ = "analytics_hourly_bucket"
+    __table_args__ = (
+        CheckConstraint(
+            "metric_name IN ('site.page_view', 'site.browser_session.started')",
+            name="ck_analytics_hourly_bucket_metric_name",
+        ),
+        CheckConstraint(
+            "event_count >= 0",
+            name="ck_analytics_hourly_bucket_event_count_nonnegative",
+        ),
+    )
+
+    bucket_start: datetime = Field(
+        sa_column=Column(DateTime(timezone=True), primary_key=True, nullable=False)
+    )
+    metric_name: str = Field(primary_key=True, max_length=40)
+    route: str = Field(primary_key=True, max_length=200)
+    authenticated: bool = Field(primary_key=True)
+    event_count: int = Field(
+        default=0,
+        ge=0,
+        sa_column=Column(BigInteger, nullable=False, server_default="0"),
+    )
 
 
 # Generic message

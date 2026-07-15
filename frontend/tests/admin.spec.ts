@@ -55,12 +55,12 @@ test.describe("Admin Dashboard", () => {
     test.describe("Game Management", () => {
         test("should display sessions page", async ({ page }) => {
             await page.goto("/admin/game/sessions");
-            await expect(page.getByText("This is the admin sessions page")).toBeVisible();
+            await expect(page.getByRole("heading", { name: "Game sessions" })).toBeVisible();
         });
 
         test("should display players page", async ({ page }) => {
             await page.goto("/admin/game/players");
-            await expect(page.getByText("This is the admin players page")).toBeVisible();
+            await expect(page.getByRole("heading", { name: "Players" })).toBeVisible();
         });
 
         test("should display drinks page", async ({ page }) => {

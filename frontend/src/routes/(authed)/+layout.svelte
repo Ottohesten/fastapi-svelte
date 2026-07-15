@@ -1,30 +1,33 @@
 <script lang="ts">
-  import * as Sidebar from "$lib/components/ui/sidebar/index.js";
+  import AdminBreadcrumbs from "$lib/components/AdminBreadcrumbs.svelte";
   import AppSidebar from "$lib/components/AppSidebar.svelte";
-  import { Trigger as SidebarTrigger } from "$lib/components/ui/sidebar/index.js";
-  import SidebarSwipeGesture from "$lib/components/ui/sidebar/sidebar-swipe-gesture.svelte";
+  import { Separator } from "$lib/components/ui/separator/index.js";
+  import * as Sidebar from "$lib/components/ui/sidebar/index.js";
 
-  let { children } = $props();
+  let { children, data } = $props();
 </script>
 
-<!-- <div class="flex h-screen"> -->
-<div class="flex min-h-screen">
-  <Sidebar.Provider>
-    <SidebarSwipeGesture />
-    <AppSidebar />
-    <main class="w-full">
-      <!-- Mobile Top Bar -->
-      <div
-        class="sticky top-0 z-0 flex items-center gap-2 border-b border-gray-200 bg-white/80 p-3 backdrop-blur supports-backdrop-filter:bg-white/60 md:hidden dark:border-gray-800 dark:bg-gray-900/60"
+<Sidebar.Provider style="--sidebar-width: 17rem; --sidebar-width-icon: 3rem;">
+  <AppSidebar user={data.authenticatedUser} />
+  <Sidebar.Inset>
+    <header
+      class="border-border/70 bg-background/90 supports-backdrop-filter:bg-background/75 sticky top-0 z-30 flex h-14 shrink-0 items-center gap-2 border-b px-4 backdrop-blur"
+    >
+      <Sidebar.Trigger class="-ml-1 size-8" />
+      <Separator orientation="vertical" class="mr-1 h-4" />
+      <AdminBreadcrumbs />
+      <a
+        href="/"
+        class="text-muted-foreground hover:text-foreground ml-auto hidden text-xs font-medium transition-colors sm:block"
       >
-        <SidebarTrigger class="h-9 w-9" />
-        <span class="text-sm font-medium text-gray-700 dark:text-gray-200">Admin</span>
-      </div>
+        View site
+      </a>
+    </header>
 
-      <div class="p-3 md:p-4 lg:p-6">
+    <div class="flex flex-1 flex-col p-4 sm:p-6 lg:p-8">
+      <div class="mx-auto w-full max-w-[96rem]">
         {@render children?.()}
       </div>
-    </main>
-  </Sidebar.Provider>
-</div>
-1
+    </div>
+  </Sidebar.Inset>
+</Sidebar.Provider>

@@ -1,7 +1,9 @@
 <script lang="ts">
   import Button, { buttonVariants } from "$lib/components/ui/button/button.svelte";
-  import { Pencil, Trash2 } from "@lucide/svelte";
+  import { Pencil, Trash2, TriangleAlert } from "@lucide/svelte";
   import { enhance } from "$app/forms";
+  import * as Alert from "$lib/components/ui/alert/index.js";
+  import * as AlertDialog from "$lib/components/ui/alert-dialog/index.js";
   import * as Dialog from "$lib/components/ui/dialog/index.js";
   import { Input } from "$lib/components/ui/input";
   import { Field, Control, Label, FieldErrors } from "formsnap";
@@ -46,8 +48,10 @@
     <Dialog.Trigger
       class={buttonVariants({ variant: "ghost", size: "sm", class: "p-2" })}
       onclick={openEdit}
+      aria-label={`Edit ${drink.name}`}
+      title="Edit drink"
     >
-      <Pencil class="" />
+      <Pencil />
     </Dialog.Trigger>
     <Dialog.Content class="sm:max-w-[425px]">
       <Dialog.Header>
@@ -58,9 +62,11 @@
         <input type="hidden" name="id" value={$formData.id} />
 
         {#if $message && !$message.includes("successfully")}
-          <div class="rounded-md border border-red-200 bg-red-50 p-3">
-            <p class="text-sm text-red-600">{$message}</p>
-          </div>
+          <Alert.Root variant="destructive">
+            <TriangleAlert />
+            <Alert.Title>Unable to update drink</Alert.Title>
+            <Alert.Description>{$message}</Alert.Description>
+          </Alert.Root>
         {/if}
 
         <Field form={updateForm} name="name">
@@ -80,24 +86,35 @@
     </Dialog.Content>
   </Dialog.Root>
 
-  <form action="?/deleteDrink" method="POST" use:enhance>
-    <input type="hidden" name="drink_id" value={drink.id} />
-    <Button
-      variant="ghost"
-      title="Delete drink"
-      size="sm"
-      class="p-2 text-red-600 hover:bg-red-100 hover:text-red-700"
-      type="submit"
-      onclick={(e) => {
-        const confirmed = confirm(
-          `Are you sure you want to delete drink "${drink.name}"? This action cannot be undone.`
-        );
-        if (!confirmed) {
-          e.preventDefault();
-        }
-      }}
-    >
-      <Trash2 class="" />
-    </Button>
-  </form>
+  <AlertDialog.Root>
+    <AlertDialog.Trigger>
+      {#snippet child({ props })}
+        <Button
+          {...props}
+          variant="ghost"
+          title="Delete drink"
+          aria-label={`Delete ${drink.name}`}
+          size="sm"
+          class="text-destructive hover:bg-destructive/10 hover:text-destructive p-2"
+        >
+          <Trash2 />
+        </Button>
+      {/snippet}
+    </AlertDialog.Trigger>
+    <AlertDialog.Content>
+      <AlertDialog.Header>
+        <AlertDialog.Title>Delete {drink.name}?</AlertDialog.Title>
+        <AlertDialog.Description>
+          This permanently removes the drink from the game catalogue. This action cannot be undone.
+        </AlertDialog.Description>
+      </AlertDialog.Header>
+      <AlertDialog.Footer>
+        <AlertDialog.Cancel>Cancel</AlertDialog.Cancel>
+        <form action="?/deleteDrink" method="POST" use:enhance>
+          <input type="hidden" name="drink_id" value={drink.id} />
+          <AlertDialog.Action type="submit" variant="destructive">Delete drink</AlertDialog.Action>
+        </form>
+      </AlertDialog.Footer>
+    </AlertDialog.Content>
+  </AlertDialog.Root>
 </div>

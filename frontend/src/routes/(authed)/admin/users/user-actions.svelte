@@ -2,14 +2,15 @@
   import Button from "$lib/components/ui/button/button.svelte";
   import { Pencil, Trash2, Shield, Plus, X, Award, Fingerprint, ListChecks } from "@lucide/svelte";
   import { enhance } from "$app/forms";
+  import * as AlertDialog from "$lib/components/ui/alert-dialog/index.js";
   import * as Dialog from "$lib/components/ui/dialog";
   import * as Sheet from "$lib/components/ui/sheet";
   import * as Select from "$lib/components/ui/select/index.js";
+  import { Checkbox } from "$lib/components/ui/checkbox/index.js";
   import { Input } from "$lib/components/ui/input/index.js";
   import { Field, Control, Label, FieldErrors } from "formsnap";
   import { zod4 as zodClient } from "sveltekit-superforms/adapters";
   import { UserUpdateSchema, UserAddRoleSchema } from "$lib/schemas/schemas.js";
-  import SuperDebug from "sveltekit-superforms";
   import { untrack } from "svelte";
 
   import type { UserPublic, UserWithPermissionsPublic, RolePublic } from "$lib/client";
@@ -118,21 +119,20 @@
   }
 </script>
 
-<!-- <SuperDebug {userUpdateForm} /> -->
-
 <div class="flex items-center justify-end space-x-0">
   {#if permissions}
     <Sheet.Root bind:open={permsOpen}>
       <Button
         variant="ghost"
         title="View permissions"
+        aria-label={`View permissions for ${user.email}`}
         size="sm"
         class="p-2"
         onclick={() => (permsOpen = true)}
       >
         <Shield />
       </Button>
-      <Sheet.Content side="right" class="w-full sm:max-w-xl">
+      <Sheet.Content side="right" class="max-w-[100dvw] min-w-0 w-full overflow-y-auto sm:max-w-xl">
         <div class="space-y-6">
           <div>
             <h2 class="text-xl font-bold tracking-tight">User permissions</h2>
@@ -158,7 +158,7 @@
                       {r.name}
                       <button
                         type="submit"
-                        class="ml-2 rounded-full p-0.5 opacity-60 transition-all group-hover:opacity-100 hover:bg-red-200 hover:text-red-700 hover:opacity-100"
+                        class="hover:bg-destructive/10 hover:text-destructive ml-2 rounded-full p-0.5 opacity-60 transition-all group-hover:opacity-100 hover:opacity-100"
                         aria-label="Remove role {r.name}"
                         title="Remove role"
                       >
@@ -180,7 +180,7 @@
                 class="flex items-center gap-2"
               >
                 <input type="hidden" name="user_id" value={user.id} />
-                <div class="flex-1">
+                <div class="min-w-0 flex-1">
                   <!-- Hide Field wrapper complexity from visual layout -->
                   <Field form={userAddRoleForm} name="role_id">
                     <Control>
@@ -235,7 +235,8 @@
                       {s}
                       <button
                         type="submit"
-                        class="ml-2 rounded-full p-0.5 opacity-60 transition-all group-hover:opacity-100 hover:bg-red-200 hover:text-red-700 hover:opacity-100"
+                        class="hover:bg-destructive/10 hover:text-destructive ml-2 rounded-full p-0.5 opacity-60 transition-all group-hover:opacity-100 hover:opacity-100"
+                        aria-label={`Remove scope ${s}`}
                         title="Remove scope"
                       >
                         <X class="h-3 w-3" />
@@ -255,7 +256,7 @@
               class="mt-2 flex w-full items-center gap-2"
             >
               <input type="hidden" name="user_id" value={user.id} />
-              <div class="flex-1">
+              <div class="min-w-0 flex-1">
                 <Select.Root type="single" name="scope" bind:value={selectedScope}>
                   <Select.Trigger class="h-9 w-full">
                     {selectedScope || "Select a scope"}
@@ -275,6 +276,7 @@
                 variant="secondary"
                 class="h-9 px-3"
                 disabled={!selectedScope}
+                aria-label="Add custom scope"
               >
                 <Plus class="h-4 w-4" />
               </Button>
@@ -307,8 +309,15 @@
     </Sheet.Root>
   {/if}
   {#if userUpdateForm && userUpdateFormData && userUpdateEnhance}
-    <Button variant="ghost" title="Edit user" size="sm" class="p-2" onclick={openEditDialog}>
-      <Pencil class="" />
+    <Button
+      variant="ghost"
+      title="Edit user"
+      aria-label={`Edit ${user.email}`}
+      size="sm"
+      class="p-2"
+      onclick={openEditDialog}
+    >
+      <Pencil />
     </Button>
 
     <Dialog.Root bind:open={editDialogOpen}>
@@ -329,7 +338,7 @@
               <Field form={userUpdateForm} name="email">
                 <Control>
                   {#snippet children({ props })}
-                    <Label class="mb-1 block text-sm font-medium text-gray-700">Email</Label>
+                    <Label class="mb-1 block text-sm font-medium">Email</Label>
                     <Input
                       {...props}
                       type="email"
@@ -345,7 +354,7 @@
               <Field form={userUpdateForm} name="full_name">
                 <Control>
                   {#snippet children({ props })}
-                    <Label class="mb-1 block text-sm font-medium text-gray-700">Full Name</Label>
+                    <Label class="mb-1 block text-sm font-medium">Full Name</Label>
                     <Input
                       {...props}
                       type="text"
@@ -361,9 +370,7 @@
               <Field form={userUpdateForm} name="password">
                 <Control>
                   {#snippet children({ props })}
-                    <Label class="mb-1 block text-sm font-medium text-gray-700"
-                      >New Password (optional)</Label
-                    >
+                    <Label class="mb-1 block text-sm font-medium">New Password (optional)</Label>
                     <Input
                       {...props}
                       type="password"
@@ -380,9 +387,7 @@
               <Field form={userUpdateForm} name="confirm_password">
                 <Control>
                   {#snippet children({ props })}
-                    <Label class="mb-1 block text-sm font-medium text-gray-700"
-                      >Confirm New Password</Label
-                    >
+                    <Label class="mb-1 block text-sm font-medium">Confirm New Password</Label>
                     <Input
                       {...props}
                       type="password"
@@ -395,19 +400,13 @@
                 <FieldErrors />
               </Field>
 
-              <!-- Checkboxes -->
               <div class="space-y-3">
                 <Field form={userUpdateForm} name="is_active">
                   <Control>
                     {#snippet children({ props })}
-                      <div class="flex items-center">
-                        <input
-                          {...props}
-                          type="checkbox"
-                          bind:checked={$userUpdateFormData!.is_active}
-                          class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-2 focus:ring-blue-500/20"
-                        />
-                        <Label class="ml-2 block text-sm text-gray-700">Active User</Label>
+                      <div class="flex items-center gap-2">
+                        <Checkbox {...props} bind:checked={$userUpdateFormData!.is_active} />
+                        <Label for={props.id} class="text-sm">Active user</Label>
                       </div>
                     {/snippet}
                   </Control>
@@ -417,14 +416,9 @@
                 <Field form={userUpdateForm} name="is_superuser">
                   <Control>
                     {#snippet children({ props })}
-                      <div class="flex items-center">
-                        <input
-                          {...props}
-                          type="checkbox"
-                          bind:checked={$userUpdateFormData!.is_superuser}
-                          class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-2 focus:ring-blue-500/20"
-                        />
-                        <Label class="ml-2 block text-sm text-gray-700">Superuser</Label>
+                      <div class="flex items-center gap-2">
+                        <Checkbox {...props} bind:checked={$userUpdateFormData!.is_superuser} />
+                        <Label for={props.id} class="text-sm">Superuser</Label>
                       </div>
                     {/snippet}
                   </Control>
@@ -445,29 +439,46 @@
       </Dialog.Content>
     </Dialog.Root>
   {:else}
-    <Button variant="ghost" title="Edit user" size="sm" class="p-2">
-      <Pencil class="" />
+    <Button
+      variant="ghost"
+      title="Edit user"
+      aria-label={`Edit ${user.email}`}
+      size="sm"
+      class="p-2"
+    >
+      <Pencil />
     </Button>
   {/if}
 
-  <form action="?/deleteUser" method="POST" use:enhance>
-    <input type="hidden" name="user_id" value={user.id} />
-    <Button
-      variant="ghost"
-      title="Delete user"
-      size="sm"
-      class="p-2 text-red-600 hover:bg-red-100 hover:text-red-700"
-      type="submit"
-      onclick={(e) => {
-        const confirmed = confirm(
-          `Are you sure you want to delete user "${user.email}"? This action cannot be undone.`
-        );
-        if (!confirmed) {
-          e.preventDefault();
-        }
-      }}
-    >
-      <Trash2 class="" />
-    </Button>
-  </form>
+  <AlertDialog.Root>
+    <AlertDialog.Trigger>
+      {#snippet child({ props })}
+        <Button
+          {...props}
+          variant="ghost"
+          title="Delete user"
+          aria-label={`Delete ${user.email}`}
+          size="sm"
+          class="text-destructive hover:bg-destructive/10 hover:text-destructive p-2"
+        >
+          <Trash2 />
+        </Button>
+      {/snippet}
+    </AlertDialog.Trigger>
+    <AlertDialog.Content>
+      <AlertDialog.Header>
+        <AlertDialog.Title>Delete {user.email}?</AlertDialog.Title>
+        <AlertDialog.Description>
+          This permanently removes the account and its access. This action cannot be undone.
+        </AlertDialog.Description>
+      </AlertDialog.Header>
+      <AlertDialog.Footer>
+        <AlertDialog.Cancel>Cancel</AlertDialog.Cancel>
+        <form action="?/deleteUser" method="POST" use:enhance>
+          <input type="hidden" name="user_id" value={user.id} />
+          <AlertDialog.Action type="submit" variant="destructive">Delete user</AlertDialog.Action>
+        </form>
+      </AlertDialog.Footer>
+    </AlertDialog.Content>
+  </AlertDialog.Root>
 </div>

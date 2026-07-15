@@ -1,57 +1,108 @@
 <script lang="ts">
   import { onMount } from "svelte";
-  const getPref = () => localStorage.getItem("theme");
-  const setPref = (v: "light" | "dark" | "system") => localStorage.setItem("theme", v);
+  import Check from "@lucide/svelte/icons/check";
+  import Monitor from "@lucide/svelte/icons/monitor";
+  import Moon from "@lucide/svelte/icons/moon";
+  import Sun from "@lucide/svelte/icons/sun";
+  import { Button } from "$lib/components/ui/button";
+  import * as DropdownMenu from "$lib/components/ui/dropdown-menu";
 
-  let theme: "light" | "dark" | "system" = "system";
-  let systemMedia: MediaQueryList | null = null;
-  let systemListener: ((e: MediaQueryListEvent) => void) | null = null;
+  type Theme = "light" | "dark" | "system";
 
-  function ensureSystemMedia() {
-    if (!systemMedia) systemMedia = window.matchMedia("(prefers-color-scheme: dark)");
-    return systemMedia;
+  const options: { value: Theme; label: string; icon: typeof Sun }[] = [
+    { value: "light", label: "Light", icon: Sun },
+    { value: "dark", label: "Dark", icon: Moon },
+    { value: "system", label: "System", icon: Monitor }
+  ];
+
+  let theme = $state<Theme>("system");
+  let systemMedia: MediaQueryList;
+
+  function isTheme(value: string | null): value is Theme {
+    return value === "light" || value === "dark" || value === "system";
   }
 
-  function apply(t: "light" | "dark" | "system") {
-    const media = ensureSystemMedia();
-    const shouldDark = t === "dark" || (t === "system" && media.matches);
-    document.documentElement.classList.toggle("dark", shouldDark);
+  function applyTheme(value: Theme) {
+    const dark = value === "dark" || (value === "system" && systemMedia.matches);
+    document.documentElement.classList.toggle("dark", dark);
+    document.documentElement.style.colorScheme = dark ? "dark" : "light";
+    document
+      .querySelector('meta[name="theme-color"]')
+      ?.setAttribute("content", dark ? "#0b1220" : "#ffffff");
+  }
 
-    // Manage listener: attach only in system mode; detach otherwise
-    if (t === "system") {
-      if (!systemListener) {
-        systemListener = (e: MediaQueryListEvent) => {
-          document.documentElement.classList.toggle("dark", e.matches);
-        };
-        media.addEventListener("change", systemListener);
-      }
-    } else if (systemListener) {
-      media.removeEventListener("change", systemListener);
-      systemListener = null;
-    }
+  function setTheme(value: Theme) {
+    theme = value;
+    localStorage.setItem("theme", value);
+    applyTheme(value);
+    window.dispatchEvent(new CustomEvent<Theme>("app-theme-change", { detail: value }));
   }
 
   onMount(() => {
-    const saved = getPref();
-    if (saved === "light" || saved === "dark" || saved === "system") theme = saved;
-    apply(theme);
+    systemMedia = window.matchMedia("(prefers-color-scheme: dark)");
+    const saved = localStorage.getItem("theme");
+    theme = isTheme(saved) ? saved : "system";
+    applyTheme(theme);
+
+    const handleSystemChange = () => {
+      if (theme === "system") applyTheme(theme);
+    };
+    const handleThemeChange = (event: Event) => {
+      const value = (event as CustomEvent<Theme>).detail;
+      if (!isTheme(value)) return;
+      theme = value;
+      applyTheme(value);
+    };
+    const handleStorage = (event: StorageEvent) => {
+      if (event.key !== "theme" || !isTheme(event.newValue)) return;
+      theme = event.newValue;
+      applyTheme(theme);
+    };
+
+    systemMedia.addEventListener("change", handleSystemChange);
+    window.addEventListener("app-theme-change", handleThemeChange);
+    window.addEventListener("storage", handleStorage);
+
+    return () => {
+      systemMedia.removeEventListener("change", handleSystemChange);
+      window.removeEventListener("app-theme-change", handleThemeChange);
+      window.removeEventListener("storage", handleStorage);
+    };
   });
 </script>
 
-<label class="sr-only" for="theme-select">Theme</label>
-<select
-  id="theme-select"
-  bind:value={theme}
-  aria-label="Theme"
-  class="inline-flex items-center rounded-md border border-gray-300 bg-white/70 px-2.5 py-1.5 text-sm text-gray-700 shadow-sm backdrop-blur transition-colors hover:bg-gray-100 dark:border-gray-700 dark:bg-gray-800/60 dark:text-gray-200 dark:hover:bg-gray-800"
-  onchange={(e) => {
-    const v = (e.target as HTMLSelectElement).value as "light" | "dark" | "system";
-    theme = v;
-    setPref(theme);
-    apply(theme);
-  }}
->
-  <option value="light">Light</option>
-  <option value="dark">Dark</option>
-  <option value="system">System</option>
-</select>
+<DropdownMenu.Root>
+  <DropdownMenu.Trigger>
+    {#snippet child({ props })}
+      <Button
+        {...props}
+        variant="ghost"
+        size="icon"
+        class="relative"
+        aria-label="Change color theme"
+        title="Change color theme"
+      >
+        {#if theme === "light"}
+          <Sun />
+        {:else if theme === "dark"}
+          <Moon />
+        {:else}
+          <Monitor />
+        {/if}
+      </Button>
+    {/snippet}
+  </DropdownMenu.Trigger>
+  <DropdownMenu.Content align="end" class="w-40">
+    <DropdownMenu.Label>Appearance</DropdownMenu.Label>
+    <DropdownMenu.Separator />
+    {#each options as option (option.value)}
+      <DropdownMenu.Item onclick={() => setTheme(option.value)}>
+        <option.icon />
+        <span>{option.label}</span>
+        {#if theme === option.value}
+          <Check class="ml-auto" />
+        {/if}
+      </DropdownMenu.Item>
+    {/each}
+  </DropdownMenu.Content>
+</DropdownMenu.Root>

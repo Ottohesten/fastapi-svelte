@@ -23,12 +23,9 @@ def custom_generate_unique_id(route: APIRoute) -> str:
 if settings.SENTRY_DSN:
     sentry_sdk.init(
         dsn=str(settings.SENTRY_DSN),
-        # Add data like request headers and IP for users,
-        # see https://docs.sentry.io/platforms/python/data-management/data-collected/ for more info
-        send_default_pii=True,
-        # Set traces_sample_rate to 1.0 to capture 100%
-        # of transactions for tracing.
-        traces_sample_rate=1.0,
+        send_default_pii=settings.SENTRY_SEND_DEFAULT_PII,
+        traces_sample_rate=settings.SENTRY_TRACES_SAMPLE_RATE,
+        enable_metrics=False,
         # Distinguish events from local, staging, and production environments.
         environment=settings.ENVIRONMENT,
     )

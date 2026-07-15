@@ -10,7 +10,7 @@
         "sourceMap": true,
         "strict": true,
         "moduleResolution": "bundler",
-        "types": ["node"]
+        "types": ["node", "bun"]
     },
     "include": [
         "src/**/*.d.ts",

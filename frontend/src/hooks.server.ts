@@ -1,9 +1,11 @@
 import { redirect, type Handle } from "@sveltejs/kit";
+import { sequence } from "@sveltejs/kit/hooks";
+import * as Sentry from "@sentry/sveltekit";
 import { LoginService, UsersService } from "$lib/client";
 
 // Server handle: hydrate authenticatedUser from /users/me and manage token refresh
 
-export const handle: Handle = async ({ event, resolve }) => {
+const authenticationHandle: Handle = async ({ event, resolve }) => {
     let auth_token = event.cookies.get("auth_token");
 
     if (event.url.pathname.startsWith("/.well-known/appspecific/com.chrome.devtools")) {
@@ -133,3 +135,6 @@ export const handle: Handle = async ({ event, resolve }) => {
     });
     return response;
 };
+
+export const handle = sequence(Sentry.sentryHandle(), authenticationHandle);
+export const handleError = Sentry.handleErrorWithSentry();

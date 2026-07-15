@@ -7,7 +7,9 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 from typing import Literal, Any, Annotated
 
 from pydantic import (
+    Field,
     PostgresDsn,
+    SecretStr,
     computed_field,
     model_validator,
     BeforeValidator,
@@ -63,6 +65,11 @@ class Settings(BaseSettings):
     PROJECT_NAME: str
     OPENFOODFACTS_USER_AGENT: str | None = None
     SENTRY_DSN: HttpUrl | None = None
+    SENTRY_TRACES_SAMPLE_RATE: float = Field(default=0.1, ge=0, le=1)
+    SENTRY_SEND_DEFAULT_PII: bool = False
+    ANALYTICS_INGEST_TOKEN: SecretStr | None = Field(
+        default=None, min_length=32, max_length=256
+    )
     POSTGRES_SERVER: str
     POSTGRES_PORT: int
     POSTGRES_USER: str

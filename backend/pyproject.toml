@@ -9,7 +9,7 @@ dependencies = [
     "bcrypt==4.0.1",
     "cloudinary>=1.44.1",
     "emails>=0.6",
-    "fastapi[standard]>=0.128.0",
+    "fastapi[standard]>=0.139.0",
     "httpx>=0.28.1",
     "passlib>=1.7.4",
     "psycopg[binary]>=3.3.2",

@@ -23,7 +23,7 @@
         "@sentry/sveltekit": "^10.65.0",
         "@sveltejs/adapter-node": "^5.5.7",
         "@sveltejs/kit": "^2.69.3",
-        "@tanstack/table-core": "^8.21.3",
+        "@tanstack/table-core": "^9.1.2",
         "@tiptap/core": "^3.27.4",
         "@tiptap/extension-color": "^3.27.4",
         "@tiptap/extension-list": "^3.27.4",

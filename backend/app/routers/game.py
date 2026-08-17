@@ -264,9 +264,7 @@ def create_game_player(
     session: SessionDep,
     game_session_id: str,
     game_player_in: GamePlayerCreate,
-    current_user: User = Security(
-        get_current_user, scopes=["games:update", "players:create"]
-    ),
+    current_user: User = Security(get_current_user, scopes=["games:update"]),
 ):
     """
     Create a new game player.
@@ -280,6 +278,13 @@ def create_game_player(
 
     if not game_session:
         raise HTTPException(status_code=404, detail="Game session not found")
+
+    if game_player_in.team_id is not None:
+        team = session.get(GameTeam, game_player_in.team_id)
+        if not team or team.game_session_id != game_session.id:
+            raise HTTPException(
+                status_code=404, detail="Game team not found in this game session"
+            )
 
     # game_player = GamePlayer(
     #     name=game_player_in.name,
@@ -451,44 +456,56 @@ def update_game_player(
         raise HTTPException(
             status_code=404, detail="Game player not found in this game session"
         )
+
+    if game_player_in.team_id is not None:
+        team = session.get(GameTeam, game_player_in.team_id)
+        if not team or team.game_session_id != game_session.id:
+            raise HTTPException(
+                status_code=404, detail="Game team not found in this game session"
+            )
+
     drink_links = game_player_in.drinks
-    # print(drink_links)
-    if drink_links:
-        # Process each drink link
-        for drink_link in drink_links:
-            # Check if the drink itself exists
-            drink = session.get(Drink, drink_link.drink_id)
+    if drink_links is not None:
+        requested_amounts = {
+            drink_link.drink_id: drink_link.amount for drink_link in drink_links
+        }
+        existing_links = session.exec(
+            select(GamePlayerDrinkLink).where(
+                GamePlayerDrinkLink.game_player_id == game_player.id
+            )
+        ).all()
+        existing_by_drink_id = {link.drink_id: link for link in existing_links}
+
+        for drink_id, amount in requested_amounts.items():
+            drink = session.get(Drink, drink_id)
             if not drink:
                 raise HTTPException(
                     status_code=404,
-                    detail=f"Drink with id {drink_link.drink_id} not found",
+                    detail=f"Drink with id {drink_id} not found",
                 )
 
-            # Find if a link already exists between this player and this drink
-            statement = select(GamePlayerDrinkLink).where(
-                GamePlayerDrinkLink.game_player_id == game_player.id,
-                GamePlayerDrinkLink.drink_id == drink_link.drink_id,
-            )
-            existing_link = session.exec(statement).one_or_none()
+            existing_link = existing_by_drink_id.pop(drink_id, None)
+            if amount < 1:
+                if existing_link:
+                    session.delete(existing_link)
+                continue
 
             if existing_link:
-                if drink_link.amount < 1:
-                    # if amount is less than 1 (most likely 0), delete the link
-                    session.delete(existing_link)
-                    print("Deleting link")
-                    continue
-                # If the link exists, update its amount
-                existing_link.amount = drink_link.amount
+                existing_link.amount = amount
                 session.add(existing_link)
             else:
-                print("Creating new link")
-                # If the link does not exist, create a new one
-                new_link = GamePlayerDrinkLink(
-                    game_player_id=game_player.id,
-                    drink_id=drink_link.drink_id,
-                    amount=drink_link.amount,
+                session.add(
+                    GamePlayerDrinkLink(
+                        game_player_id=game_player.id,
+                        drink_id=drink_id,
+                        amount=amount,
+                    )
                 )
-                session.add(new_link)
+
+        # The editor sends the complete selected list. Links omitted from an explicit list
+        # should therefore be removed, while an omitted `drinks` field leaves them untouched.
+        for obsolete_link in existing_by_drink_id.values():
+            session.delete(obsolete_link)
 
     # update the game player
     game_player_data = game_player_in.model_dump(exclude_unset=True, exclude={"drinks"})

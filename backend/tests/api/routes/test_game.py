@@ -221,6 +221,57 @@ def test_team_and_player_lifecycle(
     assert delete_team_response.status_code == 200
 
 
+def test_game_update_scope_can_create_session_players(
+    client: TestClient,
+    db: Session,
+    superuser_token_headers: dict[str, str],
+) -> None:
+    game = _create_game(client, superuser_token_headers)
+    manager_headers = _headers_with_scopes(client, db, ["games:update"])
+
+    response = client.post(
+        f"/game/{game['id']}/player",
+        headers=manager_headers,
+        json={"name": "Game manager"},
+    )
+
+    assert response.status_code == 200
+    assert response.json()["name"] == "Game manager"
+
+
+def test_player_rejects_team_from_another_session(
+    client: TestClient, superuser_token_headers: dict[str, str]
+) -> None:
+    first_game = _create_game(
+        client,
+        superuser_token_headers,
+        title="First",
+        teams=[{"name": "First team"}],
+    )
+    second_game = _create_game(
+        client,
+        superuser_token_headers,
+        title="Second",
+        teams=[{"name": "Second team"}],
+    )
+    second_team_id = second_game["teams"][0]["id"]
+
+    create_response = client.post(
+        f"/game/{first_game['id']}/player",
+        headers=superuser_token_headers,
+        json={"name": "Alice", "team_id": second_team_id},
+    )
+    assert create_response.status_code == 404
+
+    player = _create_player(client, superuser_token_headers, first_game["id"])
+    update_response = client.patch(
+        f"/game/{first_game['id']}/player/{player['id']}",
+        headers=superuser_token_headers,
+        json={"team_id": second_team_id},
+    )
+    assert update_response.status_code == 404
+
+
 def test_player_from_another_session_is_rejected(
     client: TestClient, superuser_token_headers: dict[str, str]
 ) -> None:
@@ -258,6 +309,14 @@ def test_player_drink_links_can_be_created_updated_and_removed(
     assert add_response.status_code == 200
     assert add_response.json()["drink_links"][0]["amount"] == 2
 
+    rename_response = client.patch(
+        f"/game/{game['id']}/player/{player['id']}",
+        headers=superuser_token_headers,
+        json={"name": "Alice renamed"},
+    )
+    assert rename_response.status_code == 200
+    assert rename_response.json()["drink_links"][0]["amount"] == 2
+
     update_response = client.patch(
         f"/game/{game['id']}/player/{player['id']}",
         headers=superuser_token_headers,
@@ -279,6 +338,24 @@ def test_player_drink_links_can_be_created_updated_and_removed(
     )
     assert remove_response.status_code == 200
     assert remove_response.json()["drink_links"] == []
+
+    readd_response = client.patch(
+        f"/game/{game['id']}/player/{player['id']}",
+        headers=superuser_token_headers,
+        json={
+            "name": "Alice",
+            "drinks": [{"drink_id": drink["id"], "amount": 1}],
+        },
+    )
+    assert readd_response.status_code == 200
+
+    clear_response = client.patch(
+        f"/game/{game['id']}/player/{player['id']}",
+        headers=superuser_token_headers,
+        json={"name": "Alice", "drinks": []},
+    )
+    assert clear_response.status_code == 200
+    assert clear_response.json()["drink_links"] == []
 
 
 def test_player_drink_endpoint_increments_amount(

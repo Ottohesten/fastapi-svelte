@@ -1027,9 +1027,12 @@
           <div class="rounded-lg border border-gray-200 p-6 shadow-sm dark:border-gray-800">
             <div class="mb-4 flex items-start justify-between">
               <div>
-                <h3 class="font-semibold text-gray-800 dark:text-gray-100">
+                <a
+                  href={`/game/${gameSession?.id}/player/${player.playerId}`}
+                  class="font-semibold text-gray-800 underline-offset-4 hover:underline dark:text-gray-100"
+                >
                   {player.name}
-                </h3>
+                </a>
                 <p class="text-sm" style="color: {colorScale(player.teamName)}">
                   Team: {player.teamName}
                 </p>
@@ -1086,12 +1089,22 @@
           >
             <div class="mb-6 flex items-start justify-between">
               <div>
-                <h3
-                  class="text-2xl font-semibold dark:text-gray-100"
-                  style="color: {colorScale(team.name)}"
-                >
-                  {team.name}
-                </h3>
+                {#if team.id}
+                  <a
+                    href={`/game/${gameSession?.id}/team/${team.id}`}
+                    class="text-2xl font-semibold underline-offset-4 hover:underline dark:text-gray-100"
+                    style="color: {colorScale(team.name)}"
+                  >
+                    {team.name}
+                  </a>
+                {:else}
+                  <h3
+                    class="text-2xl font-semibold dark:text-gray-100"
+                    style="color: {colorScale(team.name)}"
+                  >
+                    {team.name}
+                  </h3>
+                {/if}
                 <div class="mt-2 flex gap-6 text-sm text-gray-600 dark:text-gray-300">
                   <span><strong>{team.playerCount}</strong> players</span>
                   <span><strong>{team.totalDrinks}</strong> total drinks</span>
@@ -1143,8 +1156,12 @@
                     class="rounded border border-gray-200 bg-white p-3 shadow-sm dark:border-gray-800 dark:bg-gray-900/60"
                   >
                     <div class="flex items-center justify-between">
-                      <span class="font-medium text-gray-800 dark:text-gray-100">{player.name}</span
+                      <a
+                        href={`/game/${gameSession?.id}/player/${player.playerId}`}
+                        class="font-medium text-gray-800 underline-offset-4 hover:underline dark:text-gray-100"
                       >
+                        {player.name}
+                      </a>
                       <span class="text-lg font-bold text-gray-700 dark:text-gray-200"
                         >{player.totalDrinks}</span
                       >

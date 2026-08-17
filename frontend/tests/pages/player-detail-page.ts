@@ -7,16 +7,22 @@ export class PlayerDetailPage {
 
     constructor(page: Page) {
         this.page = page;
-        this.heading = page.getByRole("heading", { name: /Edit Player:/i });
-        this.updatePlayerButton = page.getByRole("button", { name: "Update Player" });
+        this.heading = page.getByRole("heading", { level: 1 });
+        this.updatePlayerButton = page.getByRole("button", { name: "Update player" });
     }
 
     async expectLoaded(playerName: string) {
-        await expect(this.heading).toBeVisible();
-        await expect(
-            this.page.getByRole("heading", { name: `Edit Player: ${playerName}` })
-        ).toBeVisible();
+        await expect(this.heading).toHaveText(playerName);
         await expect(this.page).toHaveURL(/\/game\/[^/]+\/player\/[^/]+$/);
+    }
+
+    async selectTeam(teamName: string) {
+        await this.page.getByLabel("Team", { exact: true }).click();
+        await this.page.getByRole("option", { name: teamName, exact: true }).click();
+    }
+
+    async expectTeam(teamName: string) {
+        await expect(this.page.getByText(teamName, { exact: true }).first()).toBeVisible();
     }
 
     async hasAvailableDrinks() {

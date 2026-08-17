@@ -56,12 +56,16 @@ export class GameEditPage {
     }
 
     async deleteTeam(teamName: string) {
-        await this.teamCard(teamName).getByRole("button", { name: "Delete" }).click();
+        await this.teamCard(teamName).getByRole("button", { name: "Delete", exact: true }).click();
+        await this.page.getByRole("button", { name: "Delete team", exact: true }).click();
         await expect(this.teamCard(teamName)).toHaveCount(0);
     }
 
     async deletePlayer(playerName: string) {
-        await this.playerCard(playerName).getByRole("button", { name: "Delete" }).click();
+        await this.playerCard(playerName)
+            .getByRole("button", { name: "Delete", exact: true })
+            .click();
+        await this.page.getByRole("button", { name: "Delete player", exact: true }).click();
         await expect(this.playerCard(playerName)).toHaveCount(0);
     }
 
@@ -98,6 +102,11 @@ export class GameEditPage {
         await expect(this.page).toHaveURL(/\/game\/[^/]+\/player\/[^/]+$/);
     }
 
+    async openTeamDetails(teamName: string) {
+        await this.teamCard(teamName).locator("a").first().click();
+        await expect(this.page).toHaveURL(/\/game\/[^/]+\/team\/[^/]+$/);
+    }
+
     async gotoDashboard() {
         await this.page.goto(this.page.url().replace(/\/update$/, ""));
         await expect(this.page).toHaveURL(/\/game\/[^/]+$/);
@@ -106,13 +115,13 @@ export class GameEditPage {
     private teamCard(teamName: string) {
         return this.page
             .getByRole("heading", { name: teamName, exact: true })
-            .locator("xpath=ancestor::div[contains(@class, 'surface-2')][1]");
+            .locator("xpath=ancestor::*[@data-testid='team-card'][1]");
     }
 
     private playerCard(playerName: string) {
         return this.page
             .getByRole("heading", { name: playerName, exact: true })
-            .locator("xpath=ancestor::div[contains(@class, 'surface-2')][1]");
+            .locator("xpath=ancestor::*[@data-testid='player-card'][1]");
     }
 }
 

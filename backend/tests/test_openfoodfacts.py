@@ -29,7 +29,7 @@ def test_parse_v36_product() -> None:
                             "energy-kcal": {"value": 539, "unit": "kcal"},
                             "carbohydrates": {"value": 57.5, "unit": "g"},
                             "fat": {"value": 30.9, "unit": "g"},
-                            "protein": {"value": 6.3, "unit": "g"},
+                            "proteins": {"value": 6.3, "unit": "g"},
                         },
                     }
                 },
@@ -73,7 +73,7 @@ def test_parse_legacy_product_uses_generic_name_and_serving_weight() -> None:
                     "energy-kcal_100g": "420",
                     "carbohydrates_100g": "64.5",
                     "fat_100g": "12.25",
-                    "protein_100g": "8",
+                    "proteins_100g": "8",
                 },
             }
         },
@@ -104,7 +104,7 @@ def test_parse_product_converts_kilojoules_and_nutrient_units() -> None:
                             "energy-kj": {"value": 418.4, "unit": "kJ"},
                             "carbohydrates": {"value": 1000, "unit": "mg"},
                             "fat": {"value": 1_000_000, "unit": "µg"},
-                            "protein": {"value_computed": 2.5, "unit": "g"},
+                            "proteins": {"value_computed": 2.5, "unit": "g"},
                         },
                     }
                 },
@@ -136,7 +136,7 @@ def test_product_draft_preserves_basis_sizes_and_unknown_macros() -> None:
                         "per": "serving",
                         "nutrients": {
                             "energy-kcal": {"value": 300, "unit": "kcal"},
-                            "protein": {"value": 12, "unit": "g"},
+                            "proteins": {"value": 12, "unit": "g"},
                         },
                     }
                 },
@@ -187,7 +187,7 @@ def test_product_draft_pairs_legacy_values_with_per_100g_basis() -> None:
                 "nutrition": {"aggregated_set": {"per": "serving"}},
                 "nutriments": {
                     "energy-kcal_100g": 210,
-                    "protein_100g": 8,
+                    "proteins_100g": 8,
                 },
             }
         },

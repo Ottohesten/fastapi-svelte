@@ -42,6 +42,12 @@ class UnsupportedNutritionBasisError(Exception):
     pass
 
 
+def _upstream_nutrient_names(name: str) -> tuple[str, ...]:
+    # Open Food Facts calls this nutrient "proteins" in both its current and legacy
+    # payloads. Keep accepting the singular spelling for older/cached payloads.
+    return ("proteins", "protein") if name == "protein" else (name,)
+
+
 def _number(value: Any) -> float | None:
     try:
         parsed = float(value)
@@ -87,7 +93,12 @@ def _nested_nutrient(product: dict[str, Any], name: str) -> float | None:
     nutrients = aggregated.get("nutrients", {})
     if not isinstance(nutrients, dict):
         return None
-    nutrient = nutrients.get(name, {})
+    nutrient: Any = None
+    for upstream_name in _upstream_nutrient_names(name):
+        candidate = nutrients.get(upstream_name)
+        if isinstance(candidate, dict):
+            nutrient = candidate
+            break
     if not isinstance(nutrient, dict):
         return None
 
@@ -106,7 +117,14 @@ def _legacy_nutrient(product: dict[str, Any], name: str) -> float | None:
     nutriments = product.get("nutriments", {})
     if not isinstance(nutriments, dict):
         return None
-    value = nutriments.get(f"{name}_100g")
+    value = next(
+        (
+            nutriments[f"{upstream_name}_100g"]
+            for upstream_name in _upstream_nutrient_names(name)
+            if f"{upstream_name}_100g" in nutriments
+        ),
+        None,
+    )
     if name == "energy-kcal":
         return _number(value)
     return _number(value)
@@ -212,7 +230,9 @@ def _draft_nutrition(
 
     nutriments = product.get("nutriments")
     has_legacy_values = isinstance(nutriments, dict) and any(
-        f"{name}_100g" in nutriments for name in (*names, "energy-kj")
+        f"{upstream_name}_100g" in nutriments
+        for name in (*names, "energy-kj")
+        for upstream_name in _upstream_nutrient_names(name)
     )
     if has_legacy_values:
         return ProductNutritionBasis.PER_100G, nutrients

@@ -1,6 +1,6 @@
 import logging
 from dataclasses import dataclass
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from typing import Any
 
@@ -9,7 +9,7 @@ import jwt
 from jinja2 import Template
 from jwt.exceptions import InvalidTokenError
 
-import app.security as security
+from app import security
 from app.config import settings
 
 logging.basicConfig(level=logging.INFO)
@@ -38,10 +38,12 @@ def send_email(
     html_content: str = "",
 ) -> None:
     assert settings.emails_enabled, "no provided configuration for email variables"
+    email_from = settings.EMAILS_FROM_EMAIL
+    assert email_from is not None, "no provided sender email address"
     message = emails.Message(
         subject=subject,
         html=html_content,
-        mail_from=(settings.EMAILS_FROM_NAME, settings.EMAILS_FROM_EMAIL),
+        mail_from=(settings.EMAILS_FROM_NAME, email_from),
     )
     smtp_options = {"host": settings.SMTP_HOST, "port": settings.SMTP_PORT}
     if settings.SMTP_TLS:
@@ -103,7 +105,7 @@ def generate_new_account_email(
 
 def generate_password_reset_token(email: str) -> str:
     delta = timedelta(hours=settings.EMAIL_RESET_TOKEN_EXPIRE_HOURS)
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     expires = now + delta
     exp = expires.timestamp()
     encoded_jwt = jwt.encode(

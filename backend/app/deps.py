@@ -1,25 +1,25 @@
 from collections.abc import Generator
 from typing import Annotated
-import jwt
 
-from fastapi import Depends, HTTPException, status, Security
-from pydantic import ValidationError
-from sqlmodel import Session, SQLModel
+import jwt
+from fastapi import Depends, HTTPException, Security, status
 from fastapi.security import OAuth2PasswordBearer, SecurityScopes
 from jwt.exceptions import InvalidTokenError
-from app.models import User, TokenData
+from pydantic import ValidationError
+from sqlmodel import Session, SQLModel
+
+from app import security
 from app.config import settings
-import app.security as security
 from app.db import engine
 from app.db_crud import get_user_by_email
-
+from app.models import TokenData, User
 
 # def get_db():
 #     with Session(engine) as session:
 #         yield session
 
 
-def get_db() -> Generator[Session, None, None]:
+def get_db() -> Generator[Session]:
     with Session(engine) as session:
         yield session
 
@@ -65,9 +65,9 @@ async def get_current_user(
         )
         if payload.get("type") != "access":
             raise credentials_exception
-        email: str = payload.get("sub")
+        email = payload.get("sub")
         # print(f"payload: {payload}")
-        if email is None:
+        if not isinstance(email, str):
             raise credentials_exception
         token_scopes = payload.get("scopes", [])
         token_data = TokenData(email=email, scopes=token_scopes)
@@ -115,8 +115,8 @@ async def get_current_user_optional(
         )
         if payload.get("type") != "access":
             raise credentials_exception
-        email: str = payload.get("sub")
-        if email is None:
+        email = payload.get("sub")
+        if not isinstance(email, str):
             raise credentials_exception
     except (InvalidTokenError, ValidationError) as e:
         print(f"Error: {e}")

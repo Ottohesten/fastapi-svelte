@@ -6,7 +6,6 @@ from pydantic import ValidationError
 from app.models import Ingredient, Recipe, RecipeIngredientLinkCreate
 from app.routers.recipes import _add_ingredient_total
 
-
 pytestmark = pytest.mark.no_db
 
 

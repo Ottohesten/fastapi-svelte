@@ -1,17 +1,16 @@
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from typing import Annotated, Any
 
-from fastapi import APIRouter, Depends, HTTPException, Security, Response
+from fastapi import APIRouter, Depends, HTTPException, Response, Security
 from fastapi.responses import HTMLResponse
 from fastapi.security import OAuth2PasswordRequestForm
 
-import app.db_crud as db_crud
-from app.deps import CurrentUser, SessionDep, get_current_user
-import app.security as security
+from app import db_crud, security
 from app.config import settings
-from app.security import get_password_hash
-from app.models import Message, NewPassword, Token, UserPublic, User, RefreshRequest
+from app.deps import CurrentUser, SessionDep, get_current_user
+from app.models import Message, NewPassword, RefreshRequest, Token, User, UserPublic
 from app.permissions import get_user_effective_scopes
+from app.security import get_password_hash
 from app.utils import (
     generate_password_reset_token,
     generate_reset_password_email,
@@ -56,7 +55,7 @@ def login_access_token(
         session=session,
         user_id=user.id,
         token=refresh_token,
-        expires_at=datetime.now(timezone.utc) + refresh_token_expires,
+        expires_at=datetime.now(UTC) + refresh_token_expires,
     )
     # HTTP-only cookie for refresh token (optional; primary flow uses body to rotate)
     response.set_cookie(
@@ -110,8 +109,8 @@ def refresh_access_token(
         expires_at = rec.expires_at
         # Normalize legacy/naive timestamps to UTC for comparison.
         if expires_at.tzinfo is None:
-            expires_at = expires_at.replace(tzinfo=timezone.utc)
-        if expires_at <= datetime.now(timezone.utc):
+            expires_at = expires_at.replace(tzinfo=UTC)
+        if expires_at <= datetime.now(UTC):
             raise HTTPException(status_code=401, detail="Refresh token expired")
     except (InvalidTokenError, HTTPException):
         raise
@@ -135,7 +134,7 @@ def refresh_access_token(
         session=session,
         old_token=token_to_use,
         new_token=new_refresh,
-        new_expires_at=(datetime.now(timezone.utc) + refresh_token_expires),
+        new_expires_at=(datetime.now(UTC) + refresh_token_expires),
     )
     response.set_cookie(
         key="refresh_token",

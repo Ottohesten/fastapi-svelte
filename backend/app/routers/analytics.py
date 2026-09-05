@@ -18,7 +18,6 @@ from app.models import (
     User,
 )
 
-
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/analytics", tags=["analytics"])
 

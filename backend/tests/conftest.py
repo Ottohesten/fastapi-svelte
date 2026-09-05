@@ -55,7 +55,7 @@ def reset_test_database() -> None:
 
 
 @pytest.fixture(scope="session")
-def prepared_database() -> Generator[None, None, None]:
+def prepared_database() -> Generator[None]:
     """Create one clean, seeded baseline for the entire test session."""
     from sqlmodel import Session
 
@@ -71,7 +71,7 @@ def prepared_database() -> Generator[None, None, None]:
 
 
 @pytest.fixture(scope="function", autouse=True)
-def db(request: pytest.FixtureRequest) -> Generator[Session | None, None, None]:
+def db(request: pytest.FixtureRequest) -> Generator[Session | None]:
     """Give each database test a transaction and roll it back afterwards."""
     if request.node.get_closest_marker("no_db"):
         yield None
@@ -90,7 +90,7 @@ def db(request: pytest.FixtureRequest) -> Generator[Session | None, None, None]:
     transaction = connection.begin()
     session = Session(bind=connection, join_transaction_mode="create_savepoint")
 
-    def override_get_db() -> Generator[Session, None, None]:
+    def override_get_db() -> Generator[Session]:
         yield session
 
     app.dependency_overrides[get_db] = override_get_db
@@ -105,7 +105,7 @@ def db(request: pytest.FixtureRequest) -> Generator[Session | None, None, None]:
 
 
 @pytest.fixture(scope="session")
-def session_client() -> Generator[TestClient, None, None]:
+def session_client() -> Generator[TestClient]:
     """Reuse the application client while keeping per-test cookie state separate."""
     from fastapi.testclient import TestClient
 
@@ -116,7 +116,7 @@ def session_client() -> Generator[TestClient, None, None]:
 
 
 @pytest.fixture(scope="function")
-def client(session_client: TestClient) -> Generator[TestClient, None, None]:
+def client(session_client: TestClient) -> Generator[TestClient]:
     session_client.cookies.clear()
     try:
         yield session_client

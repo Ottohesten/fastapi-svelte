@@ -13,7 +13,6 @@ from typing import IO
 
 import pytest
 
-
 REPOSITORY_ROOT = Path(__file__).resolve().parent.parent
 BACKEND_ROOT = REPOSITORY_ROOT / "backend"
 COMPOSE_FILES = (

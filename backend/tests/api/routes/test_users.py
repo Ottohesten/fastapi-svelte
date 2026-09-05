@@ -5,8 +5,8 @@ from sqlmodel import Session, select
 
 from app import db_crud
 from app.config import settings
-from app.security import verify_password
 from app.models import User, UserCreate
+from app.security import verify_password
 from tests.utils.utils import random_email, random_lower_string
 
 

@@ -13,7 +13,6 @@ from app.security import (
     verify_password,
 )
 
-
 pytestmark = pytest.mark.no_db
 
 

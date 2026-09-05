@@ -4,33 +4,33 @@ from typing import Annotated, Any
 from fastapi import APIRouter, HTTPException, Security, status
 from sqlmodel import func, select
 
-import app.db_crud as db_crud
+from app import db_crud
+from app.config import settings
 from app.deps import (
     CurrentUser,
     SessionDep,
     get_current_active_user,
     get_current_user,
 )
-from app.config import settings
-from app.security import get_password_hash, verify_password
 from app.models import (
     HTTPExceptionDetail,
     Message,
+    Role,
+    RolePublic,
     UpdatePassword,
     User,
     UserCreate,
-    UserPublic,
     UserMePublic,
-    Role,
-    RolePublic,
-    UserWithPermissionsPublic,
-    UsersWithPermissionsPublic,
+    UserPublic,
     UserRegister,
     UsersPublic,
+    UsersWithPermissionsPublic,
     UserUpdate,
     UserUpdateMe,
+    UserWithPermissionsPublic,
 )
 from app.permissions import get_user_effective_scopes
+from app.security import get_password_hash, verify_password
 from app.utils import generate_new_account_email, send_email
 
 router = APIRouter(prefix="/users", tags=["users"])

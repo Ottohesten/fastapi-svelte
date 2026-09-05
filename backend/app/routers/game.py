@@ -1,35 +1,35 @@
-from fastapi import APIRouter, BackgroundTasks
-from fastapi import HTTPException, Security
-from fastapi.responses import StreamingResponse
-from sqlmodel import select, desc
-from app.deps import SessionDep, get_current_user
-from typing import Annotated
 import asyncio
 import json
-from datetime import datetime, timezone
-
-from app.models import (
-    GameSession,
-    GameSessionCreate,
-    GameSessionPublic,
-    GamePlayer,
-    GamePlayerCreate,
-    GamePlayerUpdate,
-    GamePlayerPublic,
-    GameTeam,
-    GameTeamCreate,
-    GameTeamPublic,
-    Drink,
-    DrinkPublic,
-    DrinkCreate,
-    GamePlayerDrinkLink,
-    GamePlayerDrinkLinkCreate,
-    User,
-)
-from app.permissions import get_user_effective_scopes
 
 # Store active SSE connections for each game session
 from collections import defaultdict
+from datetime import UTC, datetime
+from typing import Annotated
+
+from fastapi import APIRouter, BackgroundTasks, HTTPException, Security
+from fastapi.responses import StreamingResponse
+from sqlmodel import desc, select
+
+from app.deps import SessionDep, get_current_user
+from app.models import (
+    Drink,
+    DrinkCreate,
+    DrinkPublic,
+    GamePlayer,
+    GamePlayerCreate,
+    GamePlayerDrinkLink,
+    GamePlayerDrinkLinkCreate,
+    GamePlayerPublic,
+    GamePlayerUpdate,
+    GameSession,
+    GameSessionCreate,
+    GameSessionPublic,
+    GameTeam,
+    GameTeamCreate,
+    GameTeamPublic,
+    User,
+)
+from app.permissions import get_user_effective_scopes
 
 game_session_subscribers = defaultdict(list)
 
@@ -41,7 +41,7 @@ async def broadcast_game_update(game_session_id: str, event_type: str):
         # Create the message to send
         message = {
             "type": event_type,
-            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "timestamp": datetime.now(UTC).isoformat(),
             "game_session_id": game_session_id,
         }
 
@@ -629,9 +629,9 @@ async def game_session_updates(game_session_id: str):
                     # Wait for a message with a timeout for heartbeat
                     message = await asyncio.wait_for(queue.get(), timeout=30.0)
                     yield f"data: {json.dumps(message)}\n\n"
-                except asyncio.TimeoutError:
+                except TimeoutError:
                     # Send heartbeat to keep connection alive
-                    yield f"data: {json.dumps({'type': 'heartbeat', 'timestamp': datetime.now(timezone.utc).isoformat()})}\n\n"
+                    yield f"data: {json.dumps({'type': 'heartbeat', 'timestamp': datetime.now(UTC).isoformat()})}\n\n"
 
         except asyncio.CancelledError:
             # Client disconnected

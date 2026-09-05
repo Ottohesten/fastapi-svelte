@@ -1,21 +1,19 @@
-import secrets
 import os
-
-
-from pydantic_core import MultiHostUrl
-from pydantic_settings import BaseSettings, SettingsConfigDict
-from typing import Literal, Any, Annotated
+import secrets
+from typing import Annotated, Any, Literal
 
 from pydantic import (
+    AnyUrl,
+    BeforeValidator,
     Field,
+    HttpUrl,
     PostgresDsn,
     SecretStr,
     computed_field,
     model_validator,
-    BeforeValidator,
-    AnyUrl,
-    HttpUrl,
 )
+from pydantic_core import MultiHostUrl
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 def parse_cors(v: Any) -> list[str] | str:

@@ -2,15 +2,14 @@ from __future__ import annotations
 
 from collections.abc import Callable
 from dataclasses import dataclass
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 
 import jwt
 import pytest
 from fastapi.testclient import TestClient
 from sqlmodel import Session
 
-import app.db_crud as db_crud
-import app.security as security
+from app import db_crud, security
 from app.config import settings
 from app.models import User, UserCreate
 from tests.utils.utils import random_email, random_lower_string
@@ -246,7 +245,7 @@ def test_refresh_rejects_database_expired_token(
     refresh_token = _login(client, credentials)["refresh_token"]
     record = db_crud.get_refresh_token(session=db, token=refresh_token)
     assert record is not None
-    record.expires_at = datetime.now(timezone.utc) - timedelta(seconds=1)
+    record.expires_at = datetime.now(UTC) - timedelta(seconds=1)
     db.add(record)
     db.commit()
 

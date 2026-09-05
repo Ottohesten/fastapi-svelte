@@ -3,6 +3,7 @@ import "dotenv/config";
 
 const frontendPort = Number(process.env.PLAYWRIGHT_PORT ?? "5173");
 const frontendUrl = `http://localhost:${frontendPort}`;
+const useProductionPreview = process.env.PLAYWRIGHT_USE_PREVIEW === "true";
 /**
  * Read environment variables from file.
  * https://github.com/motdotla/dotenv
@@ -81,7 +82,9 @@ export default defineConfig({
 
     /* Run your local dev server before starting the tests */
     webServer: {
-        command: `bun run dev -- --host 127.0.0.1 --port ${frontendPort} --strictPort`,
+        command: useProductionPreview
+            ? `bun run build && bun run preview -- --host 127.0.0.1 --port ${frontendPort} --strictPort`
+            : `bun run dev -- --host 127.0.0.1 --port ${frontendPort} --strictPort`,
         url: frontendUrl,
         reuseExistingServer: !process.env.CI
     }

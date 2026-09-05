@@ -12,6 +12,7 @@
         "format": "prettier --write .",
         "lint": "prettier --check .",
         "test": "bunx playwright test",
+        "test:rich-editor:production": "PLAYWRIGHT_USE_PREVIEW=true bunx playwright test tests/rich-editor.spec.ts --workers=1",
         "test:unit": "bun test src/lib",
         "test:ui": "bunx playwright test --ui",
         "generate-client": "openapi-ts"
@@ -24,12 +25,11 @@
         "@sveltejs/adapter-node": "^5.5.7",
         "@sveltejs/kit": "^2.70.3",
         "@tanstack/table-core": "^8.21.3",
-        "@tiptap/core": "^3.31.3",
-        "@tiptap/extension-color": "^3.31.3",
-        "@tiptap/extension-list": "^3.31.3",
-        "@tiptap/extension-list-item": "^3.31.3",
-        "@tiptap/extension-text-style": "^3.31.3",
-        "@tiptap/starter-kit": "^3.31.3",
+        "@tiptap/core": "3.31.3",
+        "@tiptap/extension-color": "3.31.3",
+        "@tiptap/extension-text-style": "3.31.3",
+        "@tiptap/pm": "3.31.3",
+        "@tiptap/starter-kit": "3.31.3",
         "@zxing/browser": "^0.2.1",
         "bits-ui": "^2.19.0",
         "clsx": "^2.1.1",
@@ -46,7 +46,9 @@
         "zod": "^4.5.4"
     },
     "overrides": {
-        "prosemirror-model": "1.25.11"
+        "prosemirror-model": "1.25.11",
+        "prosemirror-transform": "1.12.0",
+        "prosemirror-view": "1.42.3"
     },
     "devDependencies": {
         "@hey-api/openapi-ts": "0.99.0",

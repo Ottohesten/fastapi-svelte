@@ -26,14 +26,28 @@ export default defineConfig(async ({ mode }) => {
             sveltekit(),
             tailwindcss()
         ],
-        // resolve: {
-        //     alias: {
-        //         // formsnap's package.json only provides a "svelte" export condition
-        //         // which some resolvers don't honor. Point the bare import to the
-        //         // built svelte entry so Vite can resolve it reliably on all hosts.
-        //         formsnap: path.resolve(rootDir, "node_modules", "formsnap", "dist", "index.js")
-        //     }
-        // },
+        resolve: {
+            // ProseMirror objects rely on module identity. A second copy in a production chunk
+            // makes otherwise valid nodes fail with "Can not convert ... to a Fragment", so
+            // always resolve Tiptap's complete ProseMirror graph from this project root.
+            dedupe: [
+                "@tiptap/core",
+                "@tiptap/pm",
+                "prosemirror-changeset",
+                "prosemirror-commands",
+                "prosemirror-dropcursor",
+                "prosemirror-gapcursor",
+                "prosemirror-history",
+                "prosemirror-inputrules",
+                "prosemirror-keymap",
+                "prosemirror-model",
+                "prosemirror-schema-list",
+                "prosemirror-state",
+                "prosemirror-tables",
+                "prosemirror-transform",
+                "prosemirror-view"
+            ]
+        },
         server: {
             fs: {
                 // Allow Bun hoisted deps from repo root (e.g. ../node_modules/.bun/@sveltejs+kit...)

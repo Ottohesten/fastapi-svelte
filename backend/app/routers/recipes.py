@@ -1,26 +1,30 @@
 import uuid
-from fastapi import APIRouter, UploadFile, File
-from fastapi import HTTPException, Security
-from sqlmodel import select, desc
-from sqlalchemy import or_
+
 import cloudinary
 import cloudinary.uploader
+from fastapi import APIRouter, File, HTTPException, Security, UploadFile
+from sqlalchemy import or_
+from sqlmodel import col, desc, select
+
 from app.config import get_settings
 from app.deps import SessionDep, get_current_user, get_current_user_optional
 from app.models import (
+    Ingredient,
     Recipe,
     RecipeCreate,
     RecipeIngredientLink,
     RecipeIngredientSourcePublic,
     RecipeIngredientTotalPublic,
-    RecipeSubRecipeLink,
     RecipePublic,
+    RecipeSubRecipeLink,
     RecipeViewerLink,
-    Ingredient,
     User,
 )
 from app.permissions import get_user_effective_scopes
-
+from app.recipe_service import (
+    can_view_all_hidden_recipes,
+    can_view_recipe,
+)
 
 router = APIRouter(prefix="/recipes", tags=["recipes"])
 
@@ -324,11 +328,7 @@ def _build_recipe_public(
 
 
 def _can_view_all_hidden(current_user: User | None) -> bool:
-    if not current_user:
-        return False
-    if current_user.is_superuser:
-        return True
-    return "recipes:read_hidden" in get_user_effective_scopes(current_user)
+    return can_view_all_hidden_recipes(current_user)
 
 
 def _is_allowed_viewer(
@@ -346,15 +346,7 @@ def _is_allowed_viewer(
 def _can_view_recipe(
     session: SessionDep, recipe: Recipe, current_user: User | None
 ) -> bool:
-    if not recipe.is_hidden:
-        return True
-    if not current_user:
-        return False
-    if recipe.owner_id == current_user.id:
-        return True
-    if _can_view_all_hidden(current_user):
-        return True
-    return _is_allowed_viewer(session, recipe.id, current_user.id)
+    return can_view_recipe(session, recipe, current_user)
 
 
 def _should_include_viewer_ids(current_user: User | None, recipe: Recipe) -> bool:
@@ -382,9 +374,12 @@ def _can_delete_recipe(current_user: User, recipe: Recipe) -> bool:
 
 
 def _get_viewer_ids(session: SessionDep, recipe_id: uuid.UUID) -> list[uuid.UUID]:
-    return session.exec(
-        select(RecipeViewerLink.user_id).where(RecipeViewerLink.recipe_id == recipe_id)
+    viewer_ids = session.exec(
+        select(col(RecipeViewerLink.user_id)).where(
+            col(RecipeViewerLink.recipe_id) == recipe_id
+        )
     ).all()
+    return [viewer_id for viewer_id in viewer_ids if viewer_id is not None]
 
 
 def _validate_viewer_ids(
@@ -393,7 +388,7 @@ def _validate_viewer_ids(
     if not viewer_ids:
         return set()
     existing_ids = set(
-        session.exec(select(User.id).where(User.id.in_(viewer_ids))).all()
+        session.exec(select(col(User.id)).where(col(User.id).in_(viewer_ids))).all()
     )
     missing_ids = viewer_ids - existing_ids
     if missing_ids:
@@ -470,16 +465,16 @@ def get_recipes(
         select(Recipe).order_by(desc(Recipe.created_at)).offset(skip).limit(limit)
     )
     if not current_user:
-        statement = statement.where(Recipe.is_hidden.is_(False))
+        statement = statement.where(col(Recipe.is_hidden).is_(False))
     elif not _can_view_all_hidden(current_user):
-        viewer_subquery = select(RecipeViewerLink.recipe_id).where(
-            RecipeViewerLink.user_id == current_user.id
+        viewer_subquery = select(col(RecipeViewerLink.recipe_id)).where(
+            col(RecipeViewerLink.user_id) == current_user.id
         )
         statement = statement.where(
             or_(
-                Recipe.is_hidden.is_(False),
-                Recipe.owner_id == current_user.id,
-                Recipe.id.in_(viewer_subquery),
+                col(Recipe.is_hidden).is_(False),
+                col(Recipe.owner_id) == current_user.id,
+                col(Recipe.id).in_(viewer_subquery),
             )
         )
     recipes = session.exec(statement).all()

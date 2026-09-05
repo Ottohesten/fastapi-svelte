@@ -4,10 +4,11 @@ import pytest
 from app.openfoodfacts import (
     OpenFoodFactsUnavailableError,
     ProductNotFoundError,
+    UnsupportedNutritionBasisError,
     lookup_product,
     parse_product,
+    parse_product_draft,
 )
-
 
 pytestmark = pytest.mark.no_db
 
@@ -120,6 +121,139 @@ def test_parse_product_converts_kilojoules_and_nutrient_units() -> None:
     assert product.missing_nutrients == []
 
 
+def test_product_draft_preserves_basis_sizes_and_unknown_macros() -> None:
+    product = parse_product_draft(
+        {
+            "product": {
+                "code": "12345678",
+                "product_name": "One portion",
+                "product_quantity": "0.5",
+                "product_quantity_unit": "kg",
+                "serving_quantity": 250,
+                "serving_quantity_unit": "ml",
+                "nutrition": {
+                    "aggregated_set": {
+                        "per": "serving",
+                        "nutrients": {
+                            "energy-kcal": {"value": 300, "unit": "kcal"},
+                            "protein": {"value": 12, "unit": "g"},
+                        },
+                    }
+                },
+            }
+        },
+        "12345678",
+    )
+
+    assert product.nutrition_basis == "per_serving"
+    assert product.calories == 300
+    assert product.carbohydrates is None
+    assert product.fat is None
+    assert product.protein == 12
+    assert product.serving_size == 250
+    assert product.serving_size_unit == "ml"
+    assert product.package_size == 500
+    assert product.package_size_unit == "g"
+    assert product.missing_nutrients == ["carbohydrates", "fat"]
+
+
+def test_product_draft_does_not_mix_serving_and_legacy_100g_values() -> None:
+    product = parse_product_draft(
+        {
+            "product": {
+                "product_name": "Mixed payload",
+                "nutrition": {
+                    "aggregated_set": {
+                        "per": "serving",
+                        "nutrients": {"energy-kcal": {"value": 200, "unit": "kcal"}},
+                    }
+                },
+                "nutriments": {"fat_100g": 99},
+            }
+        },
+        "12345678",
+    )
+
+    assert product.calories == 200
+    assert product.fat is None
+    assert "fat" in product.missing_nutrients
+
+
+def test_product_draft_pairs_legacy_values_with_per_100g_basis() -> None:
+    product = parse_product_draft(
+        {
+            "product": {
+                "product_name": "Legacy fallback",
+                "nutrition": {"aggregated_set": {"per": "serving"}},
+                "nutriments": {
+                    "energy-kcal_100g": 210,
+                    "protein_100g": 8,
+                },
+            }
+        },
+        "12345678",
+    )
+
+    assert product.nutrition_basis == "per_100g"
+    assert product.calories == 210
+    assert product.protein == 8
+
+
+def test_product_draft_requires_known_basis_for_nested_values() -> None:
+    with pytest.raises(UnsupportedNutritionBasisError):
+        parse_product_draft(
+            {
+                "product": {
+                    "product_name": "Unknown basis",
+                    "nutrition": {
+                        "aggregated_set": {
+                            "per": "prepared portion",
+                            "nutrients": {
+                                "energy-kcal": {"value": 200, "unit": "kcal"}
+                            },
+                        }
+                    },
+                }
+            },
+            "12345678",
+        )
+
+
+def test_product_draft_does_not_guess_missing_size_unit() -> None:
+    product = parse_product_draft(
+        {
+            "product": {
+                "product_name": "No size unit",
+                "product_quantity": 500,
+                "nutriments": {"energy-kcal_100g": 200},
+            }
+        },
+        "12345678",
+    )
+
+    assert product.package_size is None
+    assert product.package_size_unit is None
+
+
+def test_product_draft_rejects_non_finite_upstream_numbers_as_missing() -> None:
+    product = parse_product_draft(
+        {
+            "product": {
+                "product_name": "Impossible payload",
+                "nutriments": {
+                    "energy-kcal_100g": "NaN",
+                    "fat_100g": "Infinity",
+                },
+            }
+        },
+        "12345678",
+    )
+
+    assert product.calories is None
+    assert product.fat is None
+    assert {"calories", "fat"}.issubset(product.missing_nutrients)
+
+
 def test_parse_product_falls_back_to_generated_title_and_minimum_weight() -> None:
     product = parse_product(
         {
@@ -194,6 +328,38 @@ def test_lookup_handles_invalid_json() -> None:
     with httpx.Client(transport=transport) as client:
         with pytest.raises(OpenFoodFactsUnavailableError):
             lookup_product("12345678", client)
+
+
+def test_lookup_handles_json_with_invalid_top_level_shape() -> None:
+    transport = httpx.MockTransport(
+        lambda request: httpx.Response(200, json=[], request=request)
+    )
+    with httpx.Client(transport=transport) as client:
+        with pytest.raises(OpenFoodFactsUnavailableError):
+            lookup_product("12345678", client)
+
+
+def test_product_draft_ignores_malformed_optional_upstream_fields() -> None:
+    product = parse_product_draft(
+        {
+            "product": {
+                "product_name": "Safe draft",
+                "brands": {"unexpected": "shape"},
+                "image_front_url": ["unexpected"],
+                "nutrition": {
+                    "aggregated_set": {
+                        "per": "100g",
+                        "nutrients": [],
+                    }
+                },
+            }
+        },
+        "12345678",
+    )
+
+    assert product.brand is None
+    assert product.image_url is None
+    assert product.calories is None
 
 
 def test_lookup_handles_network_error() -> None:

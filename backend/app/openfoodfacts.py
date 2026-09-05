@@ -1,10 +1,16 @@
+import math
 from typing import Any
 
 import httpx
 
 from app.config import settings
-from app.models import OpenFoodFactsProductPublic
-
+from app.models import (
+    NutritionSizeUnit,
+    OpenFoodFactsProductPublic,
+    ProductBarcodePreviewPublic,
+    ProductNutritionBasis,
+    normalize_food_barcode,
+)
 
 OPENFOODFACTS_API_URL = "https://world.openfoodfacts.org/api/v3.6/product"
 REQUESTED_FIELDS = ",".join(
@@ -32,12 +38,16 @@ class OpenFoodFactsUnavailableError(Exception):
     pass
 
 
+class UnsupportedNutritionBasisError(Exception):
+    pass
+
+
 def _number(value: Any) -> float | None:
     try:
         parsed = float(value)
     except (TypeError, ValueError):
         return None
-    return parsed if parsed >= 0 else None
+    return parsed if math.isfinite(parsed) and parsed >= 0 else None
 
 
 def _grams(value: Any, unit: Any) -> float | None:
@@ -45,7 +55,7 @@ def _grams(value: Any, unit: Any) -> float | None:
     if amount is None:
         return None
 
-    normalized_unit = str(unit or "g").strip().lower()
+    normalized_unit = str(unit or "").strip().lower()
     factors = {
         "kg": 1000,
         "g": 1,
@@ -54,7 +64,17 @@ def _grams(value: Any, unit: Any) -> float | None:
         "ug": 0.000001,
     }
     factor = factors.get(normalized_unit)
-    return amount * factor if factor is not None else None
+    if factor is None:
+        return None
+    result = amount * factor
+    return result if math.isfinite(result) else None
+
+
+def _optional_text(value: Any, max_length: int) -> str | None:
+    if not isinstance(value, str):
+        return None
+    normalized = value.strip()
+    return normalized[:max_length] or None
 
 
 def _nested_nutrient(product: dict[str, Any], name: str) -> float | None:
@@ -64,7 +84,10 @@ def _nested_nutrient(product: dict[str, Any], name: str) -> float | None:
     aggregated = nutrition.get("aggregated_set", {})
     if not isinstance(aggregated, dict):
         return None
-    nutrient = aggregated.get("nutrients", {}).get(name, {})
+    nutrients = aggregated.get("nutrients", {})
+    if not isinstance(nutrients, dict):
+        return None
+    nutrient = nutrients.get(name, {})
     if not isinstance(nutrient, dict):
         return None
 
@@ -81,6 +104,8 @@ def _nested_nutrient(product: dict[str, Any], name: str) -> float | None:
 
 def _legacy_nutrient(product: dict[str, Any], name: str) -> float | None:
     nutriments = product.get("nutriments", {})
+    if not isinstance(nutriments, dict):
+        return None
     value = nutriments.get(f"{name}_100g")
     if name == "energy-kcal":
         return _number(value)
@@ -103,6 +128,147 @@ def _weight_per_piece(product: dict[str, Any]) -> int:
     return 1
 
 
+def _size(
+    product: dict[str, Any], prefix: str
+) -> tuple[float | None, NutritionSizeUnit | None]:
+    amount = _number(product.get(f"{prefix}_quantity"))
+    if amount is None or amount <= 0:
+        return None, None
+    raw_unit = str(product.get(f"{prefix}_quantity_unit") or "").strip().lower()
+    if raw_unit in {"g", "gram", "grams"}:
+        return amount, NutritionSizeUnit.GRAM
+    if raw_unit in {"kg", "kilogram", "kilograms"}:
+        converted = amount * 1000
+        return (
+            (converted, NutritionSizeUnit.GRAM)
+            if math.isfinite(converted)
+            else (None, None)
+        )
+    if raw_unit in {"ml", "milliliter", "milliliters", "millilitre"}:
+        return amount, NutritionSizeUnit.MILLILITER
+    if raw_unit in {"l", "liter", "liters", "litre", "litres"}:
+        converted = amount * 1000
+        return (
+            (converted, NutritionSizeUnit.MILLILITER)
+            if math.isfinite(converted)
+            else (None, None)
+        )
+    return None, None
+
+
+def _reported_nutrition_basis(
+    product: dict[str, Any],
+) -> ProductNutritionBasis | None:
+    nutrition = product.get("nutrition")
+    aggregated = (
+        nutrition.get("aggregated_set", {}) if isinstance(nutrition, dict) else {}
+    )
+    if not isinstance(aggregated, dict):
+        return None
+    raw_basis = str(aggregated.get("per") or "").strip().casefold()
+    if not raw_basis:
+        return None
+    normalized = raw_basis.replace("_", "").replace("-", "").replace(" ", "")
+    if normalized in {"100g", "100gram", "100grams"}:
+        return ProductNutritionBasis.PER_100G
+    if normalized in {"100ml", "100milliliter", "100milliliters"}:
+        return ProductNutritionBasis.PER_100ML
+    if normalized in {"serving", "portion"}:
+        return ProductNutritionBasis.PER_SERVING
+    if normalized in {"product", "package", "pack", "unit"}:
+        return ProductNutritionBasis.PER_PACKAGE
+    raise UnsupportedNutritionBasisError(
+        f"Unsupported Open Food Facts nutrition basis: {raw_basis}"
+    )
+
+
+def _draft_nutrition(
+    product: dict[str, Any],
+) -> tuple[ProductNutritionBasis, dict[str, float | None]]:
+    nutrition = product.get("nutrition")
+    aggregated = (
+        nutrition.get("aggregated_set", {}) if isinstance(nutrition, dict) else {}
+    )
+    nested_nutrients = (
+        aggregated.get("nutrients") if isinstance(aggregated, dict) else None
+    )
+    names = ("energy-kcal", "carbohydrates", "fat", "protein")
+    if isinstance(nested_nutrients, dict):
+        basis = _reported_nutrition_basis(product)
+        if basis is None:
+            raise UnsupportedNutritionBasisError(
+                "Open Food Facts did not report a basis for its nutrition values"
+            )
+        nutrients = {name: _nested_nutrient(product, name) for name in names}
+        if nutrients["energy-kcal"] is None:
+            nutrients["energy-kcal"] = _nested_nutrient(product, "energy-kj")
+        return basis, nutrients
+
+    nutrients = {name: _legacy_nutrient(product, name) for name in names}
+    if nutrients["energy-kcal"] is None:
+        kilojoules = _legacy_nutrient(product, "energy-kj")
+        if kilojoules is not None:
+            nutrients["energy-kcal"] = kilojoules / 4.184
+
+    nutriments = product.get("nutriments")
+    has_legacy_values = isinstance(nutriments, dict) and any(
+        f"{name}_100g" in nutriments for name in (*names, "energy-kj")
+    )
+    if has_legacy_values:
+        return ProductNutritionBasis.PER_100G, nutrients
+
+    return _reported_nutrition_basis(
+        product
+    ) or ProductNutritionBasis.PER_100G, nutrients
+
+
+def parse_product_draft(
+    payload: dict[str, Any], requested_barcode: str
+) -> ProductBarcodePreviewPublic:
+    """Preserve Open Food Facts' exact basis and unknown nutrient values."""
+    product = payload.get("product")
+    if not isinstance(product, dict):
+        raise ProductNotFoundError
+
+    title = product.get("product_name") or product.get("generic_name")
+    if not isinstance(title, str) or not title.strip():
+        title = f"Product {product.get('code') or requested_barcode}"
+
+    nutrition_basis, nutrients = _draft_nutrition(product)
+    serving_size, serving_unit = _size(product, "serving")
+    package_size, package_unit = _size(product, "product")
+    field_names = {
+        "energy-kcal": "calories",
+        "carbohydrates": "carbohydrates",
+        "fat": "fat",
+        "protein": "protein",
+    }
+    missing = [field_names[name] for name, value in nutrients.items() if value is None]
+
+    raw_barcode = str(product.get("code") or requested_barcode)
+    try:
+        barcode = normalize_food_barcode(raw_barcode) or requested_barcode
+    except ValueError:
+        barcode = requested_barcode
+
+    return ProductBarcodePreviewPublic(
+        barcode=barcode,
+        title=title.strip()[:255],
+        brand=_optional_text(product.get("brands"), 255),
+        image_url=_optional_text(product.get("image_front_url"), 1000),
+        nutrition_basis=nutrition_basis,
+        calories=nutrients["energy-kcal"],
+        carbohydrates=nutrients["carbohydrates"],
+        fat=nutrients["fat"],
+        protein=nutrients["protein"],
+        serving_size=serving_size,
+        serving_size_unit=serving_unit,
+        package_size=package_size,
+        package_size_unit=package_unit,
+        missing_nutrients=missing,
+    )
+
+
 def parse_product(
     payload: dict[str, Any], requested_barcode: str
 ) -> OpenFoodFactsProductPublic:
@@ -123,15 +289,15 @@ def parse_product(
     aggregated = (
         nutrition.get("aggregated_set", {}) if isinstance(nutrition, dict) else {}
     )
-    nutrition_basis = aggregated.get("per") or "100g"
+    nutrition_basis = (
+        aggregated.get("per") if isinstance(aggregated, dict) else None
+    ) or "100g"
 
     return OpenFoodFactsProductPublic(
         barcode=str(product.get("code") or requested_barcode),
         title=title.strip()[:255],
-        brand=(str(product["brands"]).strip() or None)
-        if product.get("brands")
-        else None,
-        image_url=product.get("image_front_url"),
+        brand=_optional_text(product.get("brands"), 255),
+        image_url=_optional_text(product.get("image_front_url"), 1000),
         calories=round(nutrients["energy-kcal"] or 0),
         carbohydrates=round(nutrients["carbohydrates"] or 0, 2),
         fat=round(nutrients["fat"] or 0, 2),
@@ -142,9 +308,7 @@ def parse_product(
     )
 
 
-def lookup_product(
-    barcode: str, client: httpx.Client | None = None
-) -> OpenFoodFactsProductPublic:
+def _lookup_payload(barcode: str, client: httpx.Client | None = None) -> dict[str, Any]:
     owns_client = client is None
     if client is None:
         client = httpx.Client(timeout=8, follow_redirects=True)
@@ -174,4 +338,19 @@ def lookup_product(
     except ValueError as exc:
         raise OpenFoodFactsUnavailableError from exc
 
-    return parse_product(payload, barcode)
+    if not isinstance(payload, dict):
+        raise OpenFoodFactsUnavailableError
+
+    return payload
+
+
+def lookup_product(
+    barcode: str, client: httpx.Client | None = None
+) -> OpenFoodFactsProductPublic:
+    return parse_product(_lookup_payload(barcode, client), barcode)
+
+
+def lookup_product_draft(
+    barcode: str, client: httpx.Client | None = None
+) -> ProductBarcodePreviewPublic:
+    return parse_product_draft(_lookup_payload(barcode, client), barcode)

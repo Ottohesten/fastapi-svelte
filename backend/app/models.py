@@ -1,18 +1,31 @@
-import uuid
 import re
+import uuid
+from datetime import UTC, date, datetime
 from enum import StrEnum
+from typing import Annotated, Literal, Optional
+
 from pydantic import (
     BaseModel,
     EmailStr,
+    FiniteFloat,
     StrictBool,
     computed_field,
     field_validator,
     model_validator,
 )
-from sqlmodel import Field, SQLModel, Relationship, Column, JSON
-from sqlalchemy import BigInteger, CheckConstraint, DateTime
-from typing import Optional
-from datetime import date, datetime, timezone
+from pydantic import (
+    Field as PydanticField,
+)
+from sqlalchemy import (
+    BigInteger,
+    CheckConstraint,
+    DateTime,
+    Index,
+    String,
+    UniqueConstraint,
+)
+from sqlmodel import JSON, Column, Field, Relationship, SQLModel
+
 # from permissions.roles import Role
 
 
@@ -51,6 +64,12 @@ class User(UserBase, table=True):
     items: list["Item"] = Relationship(back_populates="owner", cascade_delete=True)
     roles: list["Role"] = Relationship(back_populates="users", link_model=UserRoleLink)
     recipes: list["Recipe"] = Relationship(back_populates="owner")
+    products: list["Product"] = Relationship(
+        back_populates="owner", cascade_delete=True
+    )
+    nutrition_entries: list["NutritionEntry"] = Relationship(
+        back_populates="owner", cascade_delete=True
+    )
     recipe_viewer_links: list["RecipeViewerLink"] = Relationship(
         back_populates="user", cascade_delete=True
     )
@@ -82,7 +101,7 @@ class UserRegister(SQLModel):
 class UserUpdate(UserBase):
     email: EmailStr | None = Field(default=None, max_length=255)
     password: str | None = Field(default=None, min_length=8, max_length=40)
-    full_name: Optional[str] = Field(default=None, max_length=255)
+    full_name: str | None = Field(default=None, max_length=255)
 
 
 class UserUpdateMe(SQLModel):
@@ -345,7 +364,7 @@ class RecipeSubRecipePublic(SQLModel):
     id: uuid.UUID
     title: str
     servings: int
-    image: Optional[str] = None
+    image: str | None = None
 
 
 class RecipeSubRecipeLinkPublic(SQLModel):
@@ -366,7 +385,7 @@ class RecipeBase(SQLModel):
     title: str = Field(max_length=255, min_length=1)
     instructions: str
     servings: int = Field(ge=1)
-    image: Optional[str] = Field(default=None, max_length=1000)
+    image: str | None = Field(default=None, max_length=1000)
     is_hidden: bool = Field(default=False)
 
 
@@ -484,12 +503,12 @@ class Recipe(RecipeBase, table=True):
 
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
     title: str = Field(max_length=255)
-    instructions: Optional[str] = Field(default=None, max_length=9999)
+    instructions: str | None = Field(default=None, max_length=9999)
 
     owner_id: uuid.UUID = Field(foreign_key="user.id", nullable=False)
     owner: User = Relationship(back_populates="recipes")
     created_at: datetime = Field(
-        default_factory=lambda: datetime.now(timezone.utc),
+        default_factory=lambda: datetime.now(UTC),
         sa_column=Column(DateTime(timezone=True), nullable=False),
     )
 
@@ -563,6 +582,23 @@ class RecipeViewerLink(SQLModel, table=True):
 # Ingredients
 
 
+def normalize_food_barcode(value: str | None) -> str | None:
+    """Normalize UPC/EAN-style barcodes shared by ingredients and products."""
+    if value is None or not value.strip():
+        return None
+
+    barcode = value.strip()
+    if not barcode.isdigit() or not 4 <= len(barcode) <= 24:
+        raise ValueError("Barcode must contain between 4 and 24 digits")
+
+    significant = barcode.lstrip("0") or "0"
+    if len(significant) <= 7:
+        return significant.zfill(8)
+    if 9 <= len(significant) <= 12:
+        return significant.zfill(13)
+    return barcode
+
+
 class IngredientBase(SQLModel):
     title: str = Field(max_length=255, min_length=1)
     calories: int = Field(
@@ -597,19 +633,7 @@ class IngredientBase(SQLModel):
     @field_validator("barcode")
     @classmethod
     def normalize_barcode(cls, value: str | None) -> str | None:
-        if value is None or not value.strip():
-            return None
-
-        barcode = value.strip()
-        if not barcode.isdigit() or not 4 <= len(barcode) <= 24:
-            raise ValueError("Barcode must contain between 4 and 24 digits")
-
-        significant = barcode.lstrip("0") or "0"
-        if len(significant) <= 7:
-            return significant.zfill(8)
-        if 9 <= len(significant) <= 12:
-            return significant.zfill(13)
-        return barcode
+        return normalize_food_barcode(value)
 
 
 class IngredientCreate(IngredientBase):
@@ -694,6 +718,530 @@ class OpenFoodFactsProductPublic(SQLModel):
     existing_ingredient_id: uuid.UUID | None = None
 
 
+#####################################################################################
+# Personal products and nutrition diary
+
+
+class ProductNutritionBasis(StrEnum):
+    PER_100G = "per_100g"
+    PER_100ML = "per_100ml"
+    PER_SERVING = "per_serving"
+    PER_PACKAGE = "per_package"
+
+
+class NutritionSizeUnit(StrEnum):
+    GRAM = "g"
+    MILLILITER = "ml"
+
+
+class NutritionMealType(StrEnum):
+    BREAKFAST = "breakfast"
+    LUNCH = "lunch"
+    DINNER = "dinner"
+    SNACK = "snack"
+
+
+class NutritionSourceType(StrEnum):
+    RECIPE = "recipe"
+    PRODUCT = "product"
+    INGREDIENT = "ingredient"
+    MANUAL = "manual"
+
+
+class NutritionEntryUnit(StrEnum):
+    SERVING = "serving"
+    GRAM = "g"
+    MILLILITER = "ml"
+    PIECE = "piece"
+    PACKAGE = "package"
+
+
+class ProductBase(SQLModel):
+    title: str = Field(min_length=1, max_length=255)
+    brand: str | None = Field(default=None, max_length=255)
+    barcode: str | None = Field(default=None, max_length=24)
+    image_url: str | None = Field(default=None, max_length=1000)
+    nutrition_basis: ProductNutritionBasis = ProductNutritionBasis.PER_100G
+    calories: FiniteFloat = Field(ge=0)
+    carbohydrates: FiniteFloat | None = Field(default=None, ge=0)
+    fat: FiniteFloat | None = Field(default=None, ge=0)
+    protein: FiniteFloat | None = Field(default=None, ge=0)
+    serving_size: FiniteFloat | None = Field(default=None, gt=0)
+    serving_size_unit: NutritionSizeUnit | None = None
+    package_size: FiniteFloat | None = Field(default=None, gt=0)
+    package_size_unit: NutritionSizeUnit | None = None
+
+    @field_validator("title")
+    @classmethod
+    def normalize_title(cls, value: str) -> str:
+        title = value.strip()
+        if not title:
+            raise ValueError("Product title cannot be blank")
+        return title
+
+    @field_validator("barcode")
+    @classmethod
+    def normalize_barcode(cls, value: str | None) -> str | None:
+        return normalize_food_barcode(value)
+
+    @model_validator(mode="after")
+    def validate_size_pairs(self) -> "ProductBase":
+        if (self.serving_size is None) != (self.serving_size_unit is None):
+            raise ValueError(
+                "Serving size and serving size unit must be provided together"
+            )
+        if (self.package_size is None) != (self.package_size_unit is None):
+            raise ValueError(
+                "Package size and package size unit must be provided together"
+            )
+        return self
+
+
+class ProductCreate(ProductBase):
+    pass
+
+
+class ProductUpdate(SQLModel):
+    title: str | None = Field(default=None, min_length=1, max_length=255)
+    brand: str | None = Field(default=None, max_length=255)
+    barcode: str | None = Field(default=None, max_length=24)
+    image_url: str | None = Field(default=None, max_length=1000)
+    nutrition_basis: ProductNutritionBasis | None = None
+    calories: FiniteFloat | None = Field(default=None, ge=0)
+    carbohydrates: FiniteFloat | None = Field(default=None, ge=0)
+    fat: FiniteFloat | None = Field(default=None, ge=0)
+    protein: FiniteFloat | None = Field(default=None, ge=0)
+    serving_size: FiniteFloat | None = Field(default=None, gt=0)
+    serving_size_unit: NutritionSizeUnit | None = None
+    package_size: FiniteFloat | None = Field(default=None, gt=0)
+    package_size_unit: NutritionSizeUnit | None = None
+
+    @field_validator("title")
+    @classmethod
+    def normalize_title(cls, value: str | None) -> str | None:
+        if value is None:
+            return None
+        title = value.strip()
+        if not title:
+            raise ValueError("Product title cannot be blank")
+        return title
+
+    @field_validator("barcode")
+    @classmethod
+    def normalize_barcode(cls, value: str | None) -> str | None:
+        return normalize_food_barcode(value)
+
+
+class Product(ProductBase, table=True):
+    __table_args__ = (
+        UniqueConstraint("owner_id", "barcode", name="uq_product_owner_barcode"),
+        CheckConstraint(
+            "calories >= 0 AND calories < 'Infinity'::double precision",
+            name="ck_product_calories_finite_nonnegative",
+        ),
+        CheckConstraint(
+            "carbohydrates IS NULL OR (carbohydrates >= 0 AND "
+            "carbohydrates < 'Infinity'::double precision)",
+            name="ck_product_carbohydrates_finite_nonnegative",
+        ),
+        CheckConstraint(
+            "fat IS NULL OR (fat >= 0 AND fat < 'Infinity'::double precision)",
+            name="ck_product_fat_finite_nonnegative",
+        ),
+        CheckConstraint(
+            "protein IS NULL OR (protein >= 0 AND "
+            "protein < 'Infinity'::double precision)",
+            name="ck_product_protein_finite_nonnegative",
+        ),
+        CheckConstraint(
+            "((serving_size IS NULL AND serving_size_unit IS NULL) OR "
+            "(serving_size > 0 AND serving_size < 'Infinity'::double precision "
+            "AND serving_size_unit IS NOT NULL))",
+            name="ck_product_serving_size_pair",
+        ),
+        CheckConstraint(
+            "((package_size IS NULL AND package_size_unit IS NULL) OR "
+            "(package_size > 0 AND package_size < 'Infinity'::double precision "
+            "AND package_size_unit IS NOT NULL))",
+            name="ck_product_package_size_pair",
+        ),
+        CheckConstraint(
+            "nutrition_basis IN ('per_100g', 'per_100ml', 'per_serving', "
+            "'per_package')",
+            name="ck_product_nutrition_basis",
+        ),
+        CheckConstraint(
+            "serving_size_unit IS NULL OR serving_size_unit IN ('g', 'ml')",
+            name="ck_product_serving_size_unit",
+        ),
+        CheckConstraint(
+            "package_size_unit IS NULL OR package_size_unit IN ('g', 'ml')",
+            name="ck_product_package_size_unit",
+        ),
+        Index("ix_product_owner_title", "owner_id", "title"),
+    )
+
+    id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
+    owner_id: uuid.UUID = Field(
+        foreign_key="user.id", nullable=False, ondelete="CASCADE"
+    )
+    nutrition_basis: ProductNutritionBasis = Field(
+        sa_column=Column(String(20), nullable=False)
+    )
+    serving_size_unit: NutritionSizeUnit | None = Field(
+        default=None, sa_column=Column(String(2), nullable=True)
+    )
+    package_size_unit: NutritionSizeUnit | None = Field(
+        default=None, sa_column=Column(String(2), nullable=True)
+    )
+    created_at: datetime = Field(
+        default_factory=lambda: datetime.now(UTC),
+        sa_column=Column(DateTime(timezone=True), nullable=False),
+    )
+    updated_at: datetime = Field(
+        default_factory=lambda: datetime.now(UTC),
+        sa_column=Column(DateTime(timezone=True), nullable=False),
+    )
+
+    owner: User = Relationship(back_populates="products")
+    nutrition_entries: list["NutritionEntry"] = Relationship(back_populates="product")
+
+
+class ProductPublic(ProductBase):
+    id: uuid.UUID
+    owner_id: uuid.UUID
+    created_at: datetime
+    updated_at: datetime
+
+
+class ProductBarcodePreviewPublic(SQLModel):
+    barcode: str
+    title: str
+    brand: str | None = None
+    image_url: str | None = None
+    nutrition_basis: ProductNutritionBasis
+    calories: FiniteFloat | None = Field(default=None, ge=0)
+    carbohydrates: FiniteFloat | None = Field(default=None, ge=0)
+    fat: FiniteFloat | None = Field(default=None, ge=0)
+    protein: FiniteFloat | None = Field(default=None, ge=0)
+    serving_size: FiniteFloat | None = Field(default=None, gt=0)
+    serving_size_unit: NutritionSizeUnit | None = None
+    package_size: FiniteFloat | None = Field(default=None, gt=0)
+    package_size_unit: NutritionSizeUnit | None = None
+    missing_nutrients: list[str]
+    needs_review: bool = True
+    existing_product_id: uuid.UUID | None = None
+
+
+class NutritionEntry(SQLModel, table=True):
+    __table_args__ = (
+        CheckConstraint(
+            "quantity > 0 AND quantity < 'Infinity'::double precision",
+            name="ck_nutrition_entry_quantity_finite_positive",
+        ),
+        CheckConstraint(
+            "calories >= 0 AND calories < 'Infinity'::double precision",
+            name="ck_nutrition_entry_calories_finite_nonnegative",
+        ),
+        CheckConstraint(
+            "carbohydrates IS NULL OR (carbohydrates >= 0 AND "
+            "carbohydrates < 'Infinity'::double precision)",
+            name="ck_nutrition_entry_carbohydrates_finite_nonnegative",
+        ),
+        CheckConstraint(
+            "fat IS NULL OR (fat >= 0 AND fat < 'Infinity'::double precision)",
+            name="ck_nutrition_entry_fat_finite_nonnegative",
+        ),
+        CheckConstraint(
+            "protein IS NULL OR (protein >= 0 AND "
+            "protein < 'Infinity'::double precision)",
+            name="ck_nutrition_entry_protein_finite_nonnegative",
+        ),
+        CheckConstraint(
+            "((CASE WHEN recipe_id IS NULL THEN 0 ELSE 1 END) + "
+            "(CASE WHEN product_id IS NULL THEN 0 ELSE 1 END) + "
+            "(CASE WHEN ingredient_id IS NULL THEN 0 ELSE 1 END)) <= 1",
+            name="ck_nutrition_entry_at_most_one_source",
+        ),
+        CheckConstraint(
+            "recipe_id IS NULL OR source_type = 'recipe'",
+            name="ck_nutrition_entry_recipe_source",
+        ),
+        CheckConstraint(
+            "product_id IS NULL OR source_type = 'product'",
+            name="ck_nutrition_entry_product_source",
+        ),
+        CheckConstraint(
+            "ingredient_id IS NULL OR source_type = 'ingredient'",
+            name="ck_nutrition_entry_ingredient_source",
+        ),
+        CheckConstraint(
+            "source_type != 'manual' OR "
+            "(recipe_id IS NULL AND product_id IS NULL AND ingredient_id IS NULL)",
+            name="ck_nutrition_entry_manual_has_no_source",
+        ),
+        CheckConstraint(
+            "meal_type IN ('breakfast', 'lunch', 'dinner', 'snack')",
+            name="ck_nutrition_entry_meal_type",
+        ),
+        CheckConstraint(
+            "source_type IN ('recipe', 'product', 'ingredient', 'manual')",
+            name="ck_nutrition_entry_source_type",
+        ),
+        CheckConstraint(
+            "unit IN ('serving', 'g', 'ml', 'piece', 'package')",
+            name="ck_nutrition_entry_unit",
+        ),
+        Index(
+            "ix_nutrition_entry_owner_date_meal_created",
+            "owner_id",
+            "log_date",
+            "meal_type",
+            "created_at",
+        ),
+    )
+
+    id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
+    owner_id: uuid.UUID = Field(
+        foreign_key="user.id", nullable=False, ondelete="CASCADE"
+    )
+    log_date: date
+    meal_type: NutritionMealType = Field(sa_column=Column(String(16), nullable=False))
+    note: str | None = Field(default=None, max_length=500)
+    source_type: NutritionSourceType = Field(
+        sa_column=Column(String(16), nullable=False)
+    )
+    recipe_id: uuid.UUID | None = Field(
+        default=None, foreign_key="recipe.id", ondelete="SET NULL"
+    )
+    product_id: uuid.UUID | None = Field(
+        default=None, foreign_key="product.id", ondelete="SET NULL"
+    )
+    ingredient_id: uuid.UUID | None = Field(
+        default=None, foreign_key="ingredient.id", ondelete="SET NULL"
+    )
+    title_snapshot: str = Field(min_length=1, max_length=255)
+    brand_snapshot: str | None = Field(default=None, max_length=255)
+    quantity: FiniteFloat = Field(gt=0)
+    unit: NutritionEntryUnit = Field(sa_column=Column(String(16), nullable=False))
+    calories: FiniteFloat = Field(ge=0)
+    carbohydrates: FiniteFloat | None = Field(default=None, ge=0)
+    fat: FiniteFloat | None = Field(default=None, ge=0)
+    protein: FiniteFloat | None = Field(default=None, ge=0)
+    created_at: datetime = Field(
+        default_factory=lambda: datetime.now(UTC),
+        sa_column=Column(DateTime(timezone=True), nullable=False),
+    )
+    updated_at: datetime = Field(
+        default_factory=lambda: datetime.now(UTC),
+        sa_column=Column(DateTime(timezone=True), nullable=False),
+    )
+
+    owner: User = Relationship(back_populates="nutrition_entries")
+    product: Product | None = Relationship(back_populates="nutrition_entries")
+
+
+class NutritionEntryCreateBase(SQLModel):
+    log_date: date
+    meal_type: NutritionMealType
+    note: str | None = Field(default=None, max_length=500)
+    quantity: FiniteFloat = Field(gt=0)
+    unit: NutritionEntryUnit
+
+
+class RecipeNutritionEntryCreate(NutritionEntryCreateBase):
+    source_type: Literal["recipe"]
+    source_id: uuid.UUID
+
+
+class ProductNutritionEntryCreate(NutritionEntryCreateBase):
+    source_type: Literal["product"]
+    source_id: uuid.UUID
+
+
+class IngredientNutritionEntryCreate(NutritionEntryCreateBase):
+    source_type: Literal["ingredient"]
+    source_id: uuid.UUID
+
+
+class ManualNutritionEntryCreate(NutritionEntryCreateBase):
+    source_type: Literal["manual"]
+    title: str = Field(min_length=1, max_length=255)
+    brand: str | None = Field(default=None, max_length=255)
+    calories: FiniteFloat = Field(ge=0)
+    carbohydrates: FiniteFloat | None = Field(default=None, ge=0)
+    fat: FiniteFloat | None = Field(default=None, ge=0)
+    protein: FiniteFloat | None = Field(default=None, ge=0)
+
+    @field_validator("title")
+    @classmethod
+    def normalize_title(cls, value: str) -> str:
+        title = value.strip()
+        if not title:
+            raise ValueError("Food title cannot be blank")
+        return title
+
+
+NutritionEntryCreate = Annotated[
+    RecipeNutritionEntryCreate
+    | ProductNutritionEntryCreate
+    | IngredientNutritionEntryCreate
+    | ManualNutritionEntryCreate,
+    PydanticField(discriminator="source_type"),
+]
+
+
+class NutritionEntriesBatchCreate(SQLModel):
+    entries: list[NutritionEntryCreate] = Field(min_length=1, max_length=50)
+
+
+class NutritionEntryMoveUpdate(SQLModel):
+    log_date: date | None = None
+    meal_type: NutritionMealType | None = None
+    note: str | None = Field(default=None, max_length=500)
+
+    @model_validator(mode="after")
+    def reject_explicit_null_location(self) -> "NutritionEntryMoveUpdate":
+        for field_name in ("log_date", "meal_type"):
+            if (
+                field_name in self.model_fields_set
+                and getattr(self, field_name) is None
+            ):
+                raise ValueError(f"{field_name} cannot be null")
+        return self
+
+
+class NutritionEntryPublic(SQLModel):
+    id: uuid.UUID
+    owner_id: uuid.UUID
+    log_date: date
+    meal_type: NutritionMealType
+    note: str | None
+    source_type: NutritionSourceType
+    source_id: uuid.UUID | None
+    source_available: bool
+    title: str
+    brand: str | None
+    quantity: float
+    unit: NutritionEntryUnit
+    calories: float
+    carbohydrates: float | None
+    fat: float | None
+    protein: float | None
+    created_at: datetime
+    updated_at: datetime
+
+
+class NutritionCommonEntryPublic(SQLModel):
+    source_type: NutritionSourceType
+    source_id: uuid.UUID | None
+    title: str
+    brand: str | None
+    quantity: float
+    unit: NutritionEntryUnit
+    calories: float
+    carbohydrates: float | None
+    fat: float | None
+    protein: float | None
+    use_count: int = Field(ge=2)
+    last_used_at: datetime
+
+
+class NutritionCommonEntriesPublic(SQLModel):
+    entries: list[NutritionCommonEntryPublic]
+
+
+class NutritionTotalsPublic(SQLModel):
+    calories: float = 0
+    carbohydrates: float = 0
+    fat: float = 0
+    protein: float = 0
+    carbohydrates_unknown: bool = False
+    fat_unknown: bool = False
+    protein_unknown: bool = False
+    incomplete_entry_count: int = 0
+    missing_nutrients: list[str] = Field(default_factory=list)
+
+
+class NutritionMealGroupPublic(SQLModel):
+    meal_type: NutritionMealType
+    totals: NutritionTotalsPublic
+    entries: list[NutritionEntryPublic]
+
+
+class NutritionDayPublic(SQLModel):
+    log_date: date
+    totals: NutritionTotalsPublic
+    groups: list[NutritionMealGroupPublic]
+
+
+class NutritionEntryBatchPublic(SQLModel):
+    entries: list[NutritionEntryPublic]
+
+
+class QuickAddPreviewRequest(SQLModel):
+    text: str = Field(min_length=1, max_length=4000)
+    log_date: date
+    default_meal: NutritionMealType
+
+
+class NutritionCatalogRecipePublic(SQLModel):
+    id: uuid.UUID
+    title: str
+    servings: int
+    calories: float
+    carbohydrates: float
+    fat: float
+    protein: float
+
+
+class NutritionCatalogIngredientPublic(SQLModel):
+    id: uuid.UUID
+    title: str
+    calories: float
+    carbohydrates: float
+    fat: float
+    protein: float
+    weight_per_piece: float | None
+
+
+class NutritionCatalogPublic(SQLModel):
+    recipes: list[NutritionCatalogRecipePublic]
+    products: list[ProductPublic]
+    ingredients: list[NutritionCatalogIngredientPublic]
+
+
+class QuickAddCandidatePublic(SQLModel):
+    source_type: NutritionSourceType
+    source_id: uuid.UUID
+    title: str
+    similarity: float | None = None
+
+
+class QuickAddPreviewRowPublic(SQLModel):
+    line_number: int
+    original_text: str
+    meal_type: NutritionMealType
+    status: str
+    source_type: NutritionSourceType | None = None
+    source_id: uuid.UUID | None = None
+    title: str | None = None
+    quantity: float | None = None
+    unit: NutritionEntryUnit | None = None
+    calories: float | None = None
+    carbohydrates: float | None = None
+    fat: float | None = None
+    protein: float | None = None
+    candidates: list[QuickAddCandidatePublic] = Field(default_factory=list)
+    error_code: str | None = None
+    message: str | None = None
+
+
+class QuickAddPreviewPublic(SQLModel):
+    rows: list[QuickAddPreviewRowPublic]
+    can_confirm: bool
+
+
 # for H.C game
 
 """
@@ -711,7 +1259,7 @@ class GameSessionBase(SQLModel):
 
 
 class GameSessionCreate(GameSessionBase):
-    teams: Optional[list["GameTeamCreate"]] = None
+    teams: list["GameTeamCreate"] | None = None
 
 
 class GameSessionPublic(GameSessionBase):
@@ -750,14 +1298,14 @@ class GameSession(GameSessionBase, table=True):
     owner_id: uuid.UUID = Field(foreign_key="user.id", nullable=False)
     owner: User = Relationship(back_populates="game_sessions")
     created_at: datetime = Field(
-        default_factory=lambda: datetime.now(timezone.utc),
+        default_factory=lambda: datetime.now(UTC),
         sa_column=Column(DateTime(timezone=True), nullable=False),
     )
 
-    teams: Optional[list["GameTeam"]] = Relationship(
+    teams: list["GameTeam"] | None = Relationship(
         back_populates="game_session", cascade_delete=True
     )
-    players: Optional[list["GamePlayer"]] = Relationship(
+    players: list["GamePlayer"] | None = Relationship(
         back_populates="game_session", cascade_delete=True
     )
 
@@ -814,7 +1362,7 @@ class GamePlayerCreate(GamePlayerBase):
     Create class for game player
     """
 
-    team_id: Optional[uuid.UUID] = None
+    team_id: uuid.UUID | None = None
 
 
 class GamePlayerUpdate(GamePlayerBase):
@@ -822,9 +1370,9 @@ class GamePlayerUpdate(GamePlayerBase):
     Update class for game player, can update name and team, can not change game session
     """
 
-    name: Optional[str] = None
-    team_id: Optional[uuid.UUID] = None
-    drinks: Optional[list[GamePlayerDrinkLinkCreate]] = None
+    name: str | None = None
+    team_id: uuid.UUID | None = None
+    drinks: list[GamePlayerDrinkLinkCreate] | None = None
 
     # be able to add drinks to the player
 
@@ -837,7 +1385,7 @@ class GamePlayerPublic(GamePlayerBase):
     id: uuid.UUID
     # game_session: GameSessionPublic
     game_session_id: uuid.UUID
-    team_id: Optional[uuid.UUID] = None
+    team_id: uuid.UUID | None = None
     team: Optional["GameTeamPlayerPublic"] = None
     drink_links: list["GamePlayerDrinkLinkPublic"]
 
@@ -855,7 +1403,7 @@ class GamePlayer(GamePlayerBase, table=True):
     game_session_id: uuid.UUID = Field(foreign_key="gamesession.id", nullable=False)
     game_session: GameSession = Relationship(back_populates="players")
 
-    team_id: Optional[uuid.UUID] = Field(
+    team_id: uuid.UUID | None = Field(
         default=None, foreign_key="gameteam.id", nullable=True
     )
     team: Optional["GameTeam"] = Relationship(
@@ -902,7 +1450,7 @@ class GameTeam(GameTeamBase, table=True):
 
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
     name: str = Field(max_length=255, min_length=1)
-    players: Optional[list["GamePlayer"]] = Relationship(back_populates="team")
+    players: list["GamePlayer"] | None = Relationship(back_populates="team")
 
     game_session_id: uuid.UUID = Field(
         default=None, foreign_key="gamesession.id", nullable=False
@@ -1061,7 +1609,7 @@ class RefreshToken(SQLModel, table=True):
     )
     jti: uuid.UUID = Field(default_factory=uuid.uuid4, index=True)
     created_at: datetime = Field(
-        default_factory=lambda: datetime.now(timezone.utc),
+        default_factory=lambda: datetime.now(UTC),
         sa_column=Column(DateTime(timezone=True), nullable=False),
     )
     expires_at: datetime = Field(

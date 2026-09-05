@@ -1,7 +1,7 @@
-from fastapi import APIRouter
-from fastapi import HTTPException, Security, status
+from fastapi import APIRouter, HTTPException, Security, status
 from sqlalchemy.exc import IntegrityError
 from sqlmodel import select
+
 from app.deps import SessionDep, get_current_user
 
 # from app.models import Recipe, RecipeCreate, RecipePublic
@@ -10,15 +10,14 @@ from app.models import (
     IngredientCreate,
     IngredientPublic,
     OpenFoodFactsProductPublic,
-    User,
     RecipeIngredientLink,
+    User,
 )
 from app.openfoodfacts import (
     OpenFoodFactsUnavailableError,
     ProductNotFoundError,
     lookup_product,
 )
-
 
 router = APIRouter(prefix="/ingredients", tags=["ingredients"])
 
@@ -61,6 +60,16 @@ def get_ingredient_by_barcode(
             status_code=503,
             detail="Open Food Facts is temporarily unavailable. Please try again.",
         ) from exc
+
+    normalized_basis = product.nutrition_basis.casefold().replace("_", "")
+    if normalized_basis not in {"100g", "per100g"}:
+        raise HTTPException(
+            status_code=422,
+            detail=(
+                "This product's nutrition is not reported per 100 g. "
+                "Save it in the personal product catalog instead."
+            ),
+        )
 
     existing = session.exec(
         select(Ingredient).where(Ingredient.barcode == product.barcode)

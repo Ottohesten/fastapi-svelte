@@ -17,6 +17,7 @@ test.describe("shallow overlay routing", () => {
 
     test("browser history closes and restores the mobile navigation", async ({ page }) => {
         await page.goto("/");
+        await page.waitForSelector('body[data-svelte-hydrated="true"]');
         const initialUrl = page.url();
 
         await page.getByRole("button", { name: "Open navigation" }).click();
@@ -46,6 +47,7 @@ test.describe("shallow overlay routing", () => {
 
     test("browser history closes the admin mobile sidebar", async ({ page }) => {
         await page.goto("/admin/users");
+        await page.waitForSelector('body[data-svelte-hydrated="true"]');
         const initialUrl = page.url();
 
         await page.getByRole("button", { name: "Toggle Sidebar" }).click();
@@ -61,6 +63,7 @@ test.describe("shallow overlay routing", () => {
 
     test("browser history closes and restores an admin dialog", async ({ page }) => {
         await page.goto("/admin/users");
+        await page.waitForSelector('body[data-svelte-hydrated="true"]');
         const initialUrl = page.url();
 
         await page.getByRole("button", { name: "Add User" }).click();

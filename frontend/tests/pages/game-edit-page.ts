@@ -29,13 +29,13 @@ export class GameEditPage {
         await this.playerNameInput.fill(player.name);
         await this.playerTeamSelect.click();
         await this.page.getByRole("option", { name: player.teamName, exact: true }).click();
-        await this.addPlayerButton.click();
-        await expect(this.page.getByText(player.name, { exact: true })).toBeVisible();
+        await this.submitAction(this.addPlayerButton, "addPlayer");
+        await expect(this.playerCard(player.name)).toBeVisible();
     }
 
     async addPlayerWithoutTeam(playerName: string) {
         await this.playerNameInput.fill(playerName);
-        await this.addPlayerButton.click();
+        await this.submitAction(this.addPlayerButton, "addPlayer");
         await expect(this.playerCard(playerName)).toBeVisible();
     }
 
@@ -51,7 +51,7 @@ export class GameEditPage {
 
     async addTeam(teamName: string) {
         await this.teamNameInput.fill(teamName);
-        await this.addTeamButton.click();
+        await this.submitAction(this.addTeamButton, "addTeam");
         await expect(this.teamCard(teamName)).toBeVisible();
     }
 
@@ -103,7 +103,11 @@ export class GameEditPage {
     }
 
     async openTeamDetails(teamName: string) {
-        await this.teamCard(teamName).locator("a").first().click();
+        const link = this.teamCard(teamName).locator("a").first();
+        const href = await link.getAttribute("href");
+        if (!href) throw new Error(`Could not resolve the detail URL for team ${teamName}`);
+
+        await this.page.goto(href);
         await expect(this.page).toHaveURL(/\/game\/[^/]+\/team\/[^/]+$/);
     }
 
@@ -122,6 +126,21 @@ export class GameEditPage {
         return this.page
             .getByRole("heading", { name: playerName, exact: true })
             .locator("xpath=ancestor::*[@data-testid='player-card'][1]");
+    }
+
+    private async submitAction(button: Locator, action: string) {
+        const currentPath = new URL(this.page.url()).pathname;
+        await Promise.all([
+            this.page.waitForResponse((response) => {
+                const requestUrl = new URL(response.url());
+                return (
+                    response.request().method() === "POST" &&
+                    requestUrl.pathname === currentPath &&
+                    requestUrl.search.includes(`?/${action}`)
+                );
+            }),
+            button.click()
+        ]);
     }
 }
 

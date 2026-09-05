@@ -65,7 +65,7 @@
   >
     <div class="bg-primary/15 absolute -top-16 -right-16 size-48 rounded-full blur-3xl"></div>
     <div class="relative flex flex-col gap-5 sm:flex-row sm:items-center">
-      <Avatar.Root class="size-16 border-4 border-background shadow-sm sm:size-20">
+      <Avatar.Root class="border-background size-16 border-4 shadow-sm sm:size-20">
         <Avatar.Fallback
           class="bg-primary text-primary-foreground text-xl font-semibold sm:text-2xl"
         >
@@ -154,7 +154,7 @@
   <div class="grid gap-6 xl:grid-cols-[minmax(0,1.2fr)_minmax(19rem,0.8fr)]">
     <Card.Root>
       <Card.Header>
-        <Card.Title>Team roster</Card.Title>
+        <Card.Title role="heading" aria-level={2}>Team roster</Card.Title>
         <Card.Description>Players are ordered by their recorded drink total.</Card.Description>
       </Card.Header>
       <Card.Content>
@@ -202,7 +202,7 @@
 
     <Card.Root>
       <Card.Header>
-        <Card.Title>Drink breakdown</Card.Title>
+        <Card.Title role="heading" aria-level={2}>Drink breakdown</Card.Title>
         <Card.Description>Combined totals across the team.</Card.Description>
       </Card.Header>
       <Card.Content>

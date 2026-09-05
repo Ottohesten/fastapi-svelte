@@ -3,6 +3,9 @@ import { GameEditPage } from "./pages/game-edit-page";
 import { PlayerDetailPage } from "./pages/player-detail-page";
 import { randomPlayerName, randomTeamName } from "./utils/random";
 
+// Each test provisions and tears down a complete session through the UI.
+test.setTimeout(60_000);
+
 test.describe("Game detail page", () => {
     test("loads dashboard", async ({ gamePage, sessionTitle }) => {
         await gamePage.expectLoaded(sessionTitle);

@@ -15,7 +15,9 @@ test.describe("Admin Dashboard", () => {
             await expect(page.getByRole("heading", { name: "User Management" })).toBeVisible();
             await expect(page.getByRole("button", { name: "Add User" })).toBeVisible();
             // Ensure superuser is present in the table
-            await expect(page.getByRole("cell", { name: firstSuperuser })).toBeVisible();
+            await expect(
+                page.getByRole("cell", { name: firstSuperuser, exact: true })
+            ).toBeVisible();
         });
 
         test("create a new user successfully", async ({ page }) => {
@@ -26,19 +28,16 @@ test.describe("Admin Dashboard", () => {
             const password = randomPassword();
             const fullName = "Test User Admin";
 
-            await page.getByRole("button", { name: "Add User" }).click();
+            await page.getByRole("button", { name: "Add User", exact: true }).click();
+            const dialog = page.getByRole("dialog", { name: "Create New User" });
+            await expect(dialog).toBeVisible();
 
-            // Wait for the dialog title to be visible - this is usually the most reliable hook for modal dialogs
-            // await expect(page.getByText("Create New User", { exact: true })).toBeVisible();
+            await dialog.getByLabel(/^Email \*$/i).fill(email);
+            await dialog.getByLabel(/^Full Name \*$/i).fill(fullName);
+            await dialog.getByLabel(/^Password \*$/i).fill(password);
+            await dialog.getByLabel(/^Confirm Password \*$/i).fill(password);
 
-            // Use getByLabel with regex for better resilience
-            await page.getByLabel(/Email/i).fill(email);
-            await page.getByLabel(/Full Name/i).fill(fullName);
-            // For Password, explicitly targeting the first password field
-            await page.getByLabel(/^Password/i).fill(password);
-            await page.getByLabel(/Confirm Password/i).fill(password);
-
-            await page.getByRole("button", { name: "Create User" }).click();
+            await dialog.getByRole("button", { name: "Create User", exact: true }).click();
 
             // verify that the new user was created successfully
             // await expect(page.getByText("User created successfully")).toBeVisible();

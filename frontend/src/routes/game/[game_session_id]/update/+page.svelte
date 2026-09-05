@@ -197,7 +197,7 @@
             {/if}
 
             <Field form={teamForm} name="name">
-              <Control>
+              <Control id="new-team-name">
                 {#snippet children({ props })}
                   <div class="space-y-2">
                     <Label for="new-team-name">Team Name</Label>
@@ -241,7 +241,7 @@
             {/if}
 
             <Field form={playerForm} name="name">
-              <Control>
+              <Control id="new-player-name">
                 {#snippet children({ props })}
                   <div class="space-y-2">
                     <Label for="new-player-name">Player Name</Label>
@@ -261,7 +261,7 @@
             </Field>
 
             <Field form={playerForm} name="team_id">
-              <Control>
+              <Control id="new-player-team">
                 {#snippet children({ props })}
                   <div class="space-y-2">
                     <Label for="new-player-team">Team (Optional)</Label>

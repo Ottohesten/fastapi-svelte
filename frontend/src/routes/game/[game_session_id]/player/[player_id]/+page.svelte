@@ -105,7 +105,7 @@
   >
     <div class="bg-primary/15 absolute -top-16 -right-16 size-48 rounded-full blur-3xl"></div>
     <div class="relative flex flex-col gap-5 sm:flex-row sm:items-center">
-      <Avatar.Root class="size-16 border-4 border-background shadow-sm sm:size-20">
+      <Avatar.Root class="border-background size-16 border-4 shadow-sm sm:size-20">
         <Avatar.Fallback
           class="bg-primary text-primary-foreground text-xl font-semibold sm:text-2xl"
         >
@@ -236,7 +236,7 @@
           </Card.Header>
           <Card.Content class="space-y-5">
             <Field {form} name="name">
-              <Control>
+              <Control id="player-name">
                 {#snippet children({ props })}
                   <div class="space-y-2">
                     <Label for="player-name">Player name</Label>
@@ -256,7 +256,7 @@
             </Field>
 
             <Field {form} name="team_id">
-              <Control>
+              <Control id="player-team">
                 {#snippet children({ props })}
                   <div class="space-y-2">
                     <Label for="player-team">Team</Label>

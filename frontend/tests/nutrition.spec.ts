@@ -188,6 +188,9 @@ test.describe("personal nutrition", () => {
             await gotoHydrated(page, "/products");
             await page.getByRole("button", { name: "Scan", exact: true }).click();
             const scanDialog = page.getByRole("dialog", { name: "Scan a product" });
+            await expect(
+                scanDialog.getByRole("button", { name: "Take or choose photo" })
+            ).toBeVisible();
             await scanDialog.getByPlaceholder("Enter barcode manually").fill(barcode);
             await scanDialog.getByRole("button", { name: "Look up" }).click();
 

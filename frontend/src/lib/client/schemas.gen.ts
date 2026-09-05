@@ -764,6 +764,59 @@ export const IngredientCreateSchema = {
     title: 'IngredientCreate'
 } as const;
 
+export const IngredientNutritionEntryCreateSchema = {
+    properties: {
+        log_date: {
+            type: 'string',
+            format: 'date',
+            title: 'Log Date'
+        },
+        meal_type: {
+            $ref: '#/components/schemas/NutritionMealType'
+        },
+        note: {
+            anyOf: [
+                {
+                    type: 'string',
+                    maxLength: 500
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Note'
+        },
+        quantity: {
+            type: 'number',
+            exclusiveMinimum: 0,
+            title: 'Quantity'
+        },
+        unit: {
+            $ref: '#/components/schemas/NutritionEntryUnit'
+        },
+        source_type: {
+            type: 'string',
+            const: 'ingredient',
+            title: 'Source Type'
+        },
+        source_id: {
+            type: 'string',
+            format: 'uuid',
+            title: 'Source Id'
+        }
+    },
+    type: 'object',
+    required: [
+        'log_date',
+        'meal_type',
+        'quantity',
+        'unit',
+        'source_type',
+        'source_id'
+    ],
+    title: 'IngredientNutritionEntryCreate'
+} as const;
+
 export const IngredientPublicSchema = {
     properties: {
         title: {
@@ -821,6 +874,114 @@ export const IngredientPublicSchema = {
     title: 'IngredientPublic'
 } as const;
 
+export const ManualNutritionEntryCreateSchema = {
+    properties: {
+        log_date: {
+            type: 'string',
+            format: 'date',
+            title: 'Log Date'
+        },
+        meal_type: {
+            $ref: '#/components/schemas/NutritionMealType'
+        },
+        note: {
+            anyOf: [
+                {
+                    type: 'string',
+                    maxLength: 500
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Note'
+        },
+        quantity: {
+            type: 'number',
+            exclusiveMinimum: 0,
+            title: 'Quantity'
+        },
+        unit: {
+            $ref: '#/components/schemas/NutritionEntryUnit'
+        },
+        source_type: {
+            type: 'string',
+            const: 'manual',
+            title: 'Source Type'
+        },
+        title: {
+            type: 'string',
+            maxLength: 255,
+            minLength: 1,
+            title: 'Title'
+        },
+        brand: {
+            anyOf: [
+                {
+                    type: 'string',
+                    maxLength: 255
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Brand'
+        },
+        calories: {
+            type: 'number',
+            minimum: 0,
+            title: 'Calories'
+        },
+        carbohydrates: {
+            anyOf: [
+                {
+                    type: 'number',
+                    minimum: 0
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Carbohydrates'
+        },
+        fat: {
+            anyOf: [
+                {
+                    type: 'number',
+                    minimum: 0
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Fat'
+        },
+        protein: {
+            anyOf: [
+                {
+                    type: 'number',
+                    minimum: 0
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Protein'
+        }
+    },
+    type: 'object',
+    required: [
+        'log_date',
+        'meal_type',
+        'quantity',
+        'unit',
+        'source_type',
+        'title',
+        'calories'
+    ],
+    title: 'ManualNutritionEntryCreate'
+} as const;
+
 export const MessageSchema = {
     properties: {
         message: {
@@ -854,6 +1015,650 @@ export const NewPasswordSchema = {
         'new_password'
     ],
     title: 'NewPassword'
+} as const;
+
+export const NutritionCatalogIngredientPublicSchema = {
+    properties: {
+        id: {
+            type: 'string',
+            format: 'uuid',
+            title: 'Id'
+        },
+        title: {
+            type: 'string',
+            title: 'Title'
+        },
+        calories: {
+            type: 'number',
+            title: 'Calories'
+        },
+        carbohydrates: {
+            type: 'number',
+            title: 'Carbohydrates'
+        },
+        fat: {
+            type: 'number',
+            title: 'Fat'
+        },
+        protein: {
+            type: 'number',
+            title: 'Protein'
+        },
+        weight_per_piece: {
+            anyOf: [
+                {
+                    type: 'number'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Weight Per Piece'
+        }
+    },
+    type: 'object',
+    required: [
+        'id',
+        'title',
+        'calories',
+        'carbohydrates',
+        'fat',
+        'protein',
+        'weight_per_piece'
+    ],
+    title: 'NutritionCatalogIngredientPublic'
+} as const;
+
+export const NutritionCatalogPublicSchema = {
+    properties: {
+        recipes: {
+            items: {
+                $ref: '#/components/schemas/NutritionCatalogRecipePublic'
+            },
+            type: 'array',
+            title: 'Recipes'
+        },
+        products: {
+            items: {
+                $ref: '#/components/schemas/ProductPublic'
+            },
+            type: 'array',
+            title: 'Products'
+        },
+        ingredients: {
+            items: {
+                $ref: '#/components/schemas/NutritionCatalogIngredientPublic'
+            },
+            type: 'array',
+            title: 'Ingredients'
+        }
+    },
+    type: 'object',
+    required: [
+        'recipes',
+        'products',
+        'ingredients'
+    ],
+    title: 'NutritionCatalogPublic'
+} as const;
+
+export const NutritionCatalogRecipePublicSchema = {
+    properties: {
+        id: {
+            type: 'string',
+            format: 'uuid',
+            title: 'Id'
+        },
+        title: {
+            type: 'string',
+            title: 'Title'
+        },
+        servings: {
+            type: 'integer',
+            title: 'Servings'
+        },
+        calories: {
+            type: 'number',
+            title: 'Calories'
+        },
+        carbohydrates: {
+            type: 'number',
+            title: 'Carbohydrates'
+        },
+        fat: {
+            type: 'number',
+            title: 'Fat'
+        },
+        protein: {
+            type: 'number',
+            title: 'Protein'
+        }
+    },
+    type: 'object',
+    required: [
+        'id',
+        'title',
+        'servings',
+        'calories',
+        'carbohydrates',
+        'fat',
+        'protein'
+    ],
+    title: 'NutritionCatalogRecipePublic'
+} as const;
+
+export const NutritionCommonEntriesPublicSchema = {
+    properties: {
+        entries: {
+            items: {
+                $ref: '#/components/schemas/NutritionCommonEntryPublic'
+            },
+            type: 'array',
+            title: 'Entries'
+        }
+    },
+    type: 'object',
+    required: [
+        'entries'
+    ],
+    title: 'NutritionCommonEntriesPublic'
+} as const;
+
+export const NutritionCommonEntryPublicSchema = {
+    properties: {
+        source_type: {
+            $ref: '#/components/schemas/NutritionSourceType'
+        },
+        source_id: {
+            anyOf: [
+                {
+                    type: 'string',
+                    format: 'uuid'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Source Id'
+        },
+        title: {
+            type: 'string',
+            title: 'Title'
+        },
+        brand: {
+            anyOf: [
+                {
+                    type: 'string'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Brand'
+        },
+        quantity: {
+            type: 'number',
+            title: 'Quantity'
+        },
+        unit: {
+            $ref: '#/components/schemas/NutritionEntryUnit'
+        },
+        calories: {
+            type: 'number',
+            title: 'Calories'
+        },
+        carbohydrates: {
+            anyOf: [
+                {
+                    type: 'number'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Carbohydrates'
+        },
+        fat: {
+            anyOf: [
+                {
+                    type: 'number'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Fat'
+        },
+        protein: {
+            anyOf: [
+                {
+                    type: 'number'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Protein'
+        },
+        use_count: {
+            type: 'integer',
+            minimum: 2,
+            title: 'Use Count'
+        },
+        last_used_at: {
+            type: 'string',
+            format: 'date-time',
+            title: 'Last Used At'
+        }
+    },
+    type: 'object',
+    required: [
+        'source_type',
+        'source_id',
+        'title',
+        'brand',
+        'quantity',
+        'unit',
+        'calories',
+        'carbohydrates',
+        'fat',
+        'protein',
+        'use_count',
+        'last_used_at'
+    ],
+    title: 'NutritionCommonEntryPublic'
+} as const;
+
+export const NutritionDayPublicSchema = {
+    properties: {
+        log_date: {
+            type: 'string',
+            format: 'date',
+            title: 'Log Date'
+        },
+        totals: {
+            $ref: '#/components/schemas/NutritionTotalsPublic'
+        },
+        groups: {
+            items: {
+                $ref: '#/components/schemas/NutritionMealGroupPublic'
+            },
+            type: 'array',
+            title: 'Groups'
+        }
+    },
+    type: 'object',
+    required: [
+        'log_date',
+        'totals',
+        'groups'
+    ],
+    title: 'NutritionDayPublic'
+} as const;
+
+export const NutritionEntriesBatchCreateSchema = {
+    properties: {
+        entries: {
+            items: {
+                oneOf: [
+                    {
+                        $ref: '#/components/schemas/RecipeNutritionEntryCreate'
+                    },
+                    {
+                        $ref: '#/components/schemas/ProductNutritionEntryCreate'
+                    },
+                    {
+                        $ref: '#/components/schemas/IngredientNutritionEntryCreate'
+                    },
+                    {
+                        $ref: '#/components/schemas/ManualNutritionEntryCreate'
+                    }
+                ],
+                discriminator: {
+                    propertyName: 'source_type',
+                    mapping: {
+                        ingredient: '#/components/schemas/IngredientNutritionEntryCreate',
+                        manual: '#/components/schemas/ManualNutritionEntryCreate',
+                        product: '#/components/schemas/ProductNutritionEntryCreate',
+                        recipe: '#/components/schemas/RecipeNutritionEntryCreate'
+                    }
+                }
+            },
+            type: 'array',
+            maxItems: 50,
+            minItems: 1,
+            title: 'Entries'
+        }
+    },
+    type: 'object',
+    required: [
+        'entries'
+    ],
+    title: 'NutritionEntriesBatchCreate'
+} as const;
+
+export const NutritionEntryBatchPublicSchema = {
+    properties: {
+        entries: {
+            items: {
+                $ref: '#/components/schemas/NutritionEntryPublic'
+            },
+            type: 'array',
+            title: 'Entries'
+        }
+    },
+    type: 'object',
+    required: [
+        'entries'
+    ],
+    title: 'NutritionEntryBatchPublic'
+} as const;
+
+export const NutritionEntryMoveUpdateSchema = {
+    properties: {
+        log_date: {
+            anyOf: [
+                {
+                    type: 'string',
+                    format: 'date'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Log Date'
+        },
+        meal_type: {
+            anyOf: [
+                {
+                    $ref: '#/components/schemas/NutritionMealType'
+                },
+                {
+                    type: 'null'
+                }
+            ]
+        },
+        note: {
+            anyOf: [
+                {
+                    type: 'string',
+                    maxLength: 500
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Note'
+        }
+    },
+    type: 'object',
+    title: 'NutritionEntryMoveUpdate'
+} as const;
+
+export const NutritionEntryPublicSchema = {
+    properties: {
+        id: {
+            type: 'string',
+            format: 'uuid',
+            title: 'Id'
+        },
+        owner_id: {
+            type: 'string',
+            format: 'uuid',
+            title: 'Owner Id'
+        },
+        log_date: {
+            type: 'string',
+            format: 'date',
+            title: 'Log Date'
+        },
+        meal_type: {
+            $ref: '#/components/schemas/NutritionMealType'
+        },
+        note: {
+            anyOf: [
+                {
+                    type: 'string'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Note'
+        },
+        source_type: {
+            $ref: '#/components/schemas/NutritionSourceType'
+        },
+        source_id: {
+            anyOf: [
+                {
+                    type: 'string',
+                    format: 'uuid'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Source Id'
+        },
+        source_available: {
+            type: 'boolean',
+            title: 'Source Available'
+        },
+        title: {
+            type: 'string',
+            title: 'Title'
+        },
+        brand: {
+            anyOf: [
+                {
+                    type: 'string'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Brand'
+        },
+        quantity: {
+            type: 'number',
+            title: 'Quantity'
+        },
+        unit: {
+            $ref: '#/components/schemas/NutritionEntryUnit'
+        },
+        calories: {
+            type: 'number',
+            title: 'Calories'
+        },
+        carbohydrates: {
+            anyOf: [
+                {
+                    type: 'number'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Carbohydrates'
+        },
+        fat: {
+            anyOf: [
+                {
+                    type: 'number'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Fat'
+        },
+        protein: {
+            anyOf: [
+                {
+                    type: 'number'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Protein'
+        },
+        created_at: {
+            type: 'string',
+            format: 'date-time',
+            title: 'Created At'
+        },
+        updated_at: {
+            type: 'string',
+            format: 'date-time',
+            title: 'Updated At'
+        }
+    },
+    type: 'object',
+    required: [
+        'id',
+        'owner_id',
+        'log_date',
+        'meal_type',
+        'note',
+        'source_type',
+        'source_id',
+        'source_available',
+        'title',
+        'brand',
+        'quantity',
+        'unit',
+        'calories',
+        'carbohydrates',
+        'fat',
+        'protein',
+        'created_at',
+        'updated_at'
+    ],
+    title: 'NutritionEntryPublic'
+} as const;
+
+export const NutritionEntryUnitSchema = {
+    type: 'string',
+    enum: [
+        'serving',
+        'g',
+        'ml',
+        'piece',
+        'package'
+    ],
+    title: 'NutritionEntryUnit'
+} as const;
+
+export const NutritionMealGroupPublicSchema = {
+    properties: {
+        meal_type: {
+            $ref: '#/components/schemas/NutritionMealType'
+        },
+        totals: {
+            $ref: '#/components/schemas/NutritionTotalsPublic'
+        },
+        entries: {
+            items: {
+                $ref: '#/components/schemas/NutritionEntryPublic'
+            },
+            type: 'array',
+            title: 'Entries'
+        }
+    },
+    type: 'object',
+    required: [
+        'meal_type',
+        'totals',
+        'entries'
+    ],
+    title: 'NutritionMealGroupPublic'
+} as const;
+
+export const NutritionMealTypeSchema = {
+    type: 'string',
+    enum: [
+        'breakfast',
+        'lunch',
+        'dinner',
+        'snack'
+    ],
+    title: 'NutritionMealType'
+} as const;
+
+export const NutritionSizeUnitSchema = {
+    type: 'string',
+    enum: [
+        'g',
+        'ml'
+    ],
+    title: 'NutritionSizeUnit'
+} as const;
+
+export const NutritionSourceTypeSchema = {
+    type: 'string',
+    enum: [
+        'recipe',
+        'product',
+        'ingredient',
+        'manual'
+    ],
+    title: 'NutritionSourceType'
+} as const;
+
+export const NutritionTotalsPublicSchema = {
+    properties: {
+        calories: {
+            type: 'number',
+            title: 'Calories',
+            default: 0
+        },
+        carbohydrates: {
+            type: 'number',
+            title: 'Carbohydrates',
+            default: 0
+        },
+        fat: {
+            type: 'number',
+            title: 'Fat',
+            default: 0
+        },
+        protein: {
+            type: 'number',
+            title: 'Protein',
+            default: 0
+        },
+        carbohydrates_unknown: {
+            type: 'boolean',
+            title: 'Carbohydrates Unknown',
+            default: false
+        },
+        fat_unknown: {
+            type: 'boolean',
+            title: 'Fat Unknown',
+            default: false
+        },
+        protein_unknown: {
+            type: 'boolean',
+            title: 'Protein Unknown',
+            default: false
+        },
+        incomplete_entry_count: {
+            type: 'integer',
+            title: 'Incomplete Entry Count',
+            default: 0
+        },
+        missing_nutrients: {
+            items: {
+                type: 'string'
+            },
+            type: 'array',
+            title: 'Missing Nutrients'
+        }
+    },
+    type: 'object',
+    title: 'NutritionTotalsPublic'
 } as const;
 
 export const OpenFoodFactsProductPublicSchema = {
@@ -950,6 +1755,936 @@ export const OpenFoodFactsProductPublicSchema = {
         'missing_nutrients'
     ],
     title: 'OpenFoodFactsProductPublic'
+} as const;
+
+export const ProductBarcodePreviewPublicSchema = {
+    properties: {
+        barcode: {
+            type: 'string',
+            title: 'Barcode'
+        },
+        title: {
+            type: 'string',
+            title: 'Title'
+        },
+        brand: {
+            anyOf: [
+                {
+                    type: 'string'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Brand'
+        },
+        image_url: {
+            anyOf: [
+                {
+                    type: 'string'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Image Url'
+        },
+        nutrition_basis: {
+            $ref: '#/components/schemas/ProductNutritionBasis'
+        },
+        calories: {
+            anyOf: [
+                {
+                    type: 'number',
+                    minimum: 0
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Calories'
+        },
+        carbohydrates: {
+            anyOf: [
+                {
+                    type: 'number',
+                    minimum: 0
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Carbohydrates'
+        },
+        fat: {
+            anyOf: [
+                {
+                    type: 'number',
+                    minimum: 0
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Fat'
+        },
+        protein: {
+            anyOf: [
+                {
+                    type: 'number',
+                    minimum: 0
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Protein'
+        },
+        serving_size: {
+            anyOf: [
+                {
+                    type: 'number',
+                    exclusiveMinimum: 0
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Serving Size'
+        },
+        serving_size_unit: {
+            anyOf: [
+                {
+                    $ref: '#/components/schemas/NutritionSizeUnit'
+                },
+                {
+                    type: 'null'
+                }
+            ]
+        },
+        package_size: {
+            anyOf: [
+                {
+                    type: 'number',
+                    exclusiveMinimum: 0
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Package Size'
+        },
+        package_size_unit: {
+            anyOf: [
+                {
+                    $ref: '#/components/schemas/NutritionSizeUnit'
+                },
+                {
+                    type: 'null'
+                }
+            ]
+        },
+        missing_nutrients: {
+            items: {
+                type: 'string'
+            },
+            type: 'array',
+            title: 'Missing Nutrients'
+        },
+        needs_review: {
+            type: 'boolean',
+            title: 'Needs Review',
+            default: true
+        },
+        existing_product_id: {
+            anyOf: [
+                {
+                    type: 'string',
+                    format: 'uuid'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Existing Product Id'
+        }
+    },
+    type: 'object',
+    required: [
+        'barcode',
+        'title',
+        'nutrition_basis',
+        'missing_nutrients'
+    ],
+    title: 'ProductBarcodePreviewPublic'
+} as const;
+
+export const ProductCreateSchema = {
+    properties: {
+        title: {
+            type: 'string',
+            maxLength: 255,
+            minLength: 1,
+            title: 'Title'
+        },
+        brand: {
+            anyOf: [
+                {
+                    type: 'string',
+                    maxLength: 255
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Brand'
+        },
+        barcode: {
+            anyOf: [
+                {
+                    type: 'string',
+                    maxLength: 24
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Barcode'
+        },
+        image_url: {
+            anyOf: [
+                {
+                    type: 'string',
+                    maxLength: 1000
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Image Url'
+        },
+        nutrition_basis: {
+            $ref: '#/components/schemas/ProductNutritionBasis',
+            default: 'per_100g'
+        },
+        calories: {
+            type: 'number',
+            minimum: 0,
+            title: 'Calories'
+        },
+        carbohydrates: {
+            anyOf: [
+                {
+                    type: 'number',
+                    minimum: 0
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Carbohydrates'
+        },
+        fat: {
+            anyOf: [
+                {
+                    type: 'number',
+                    minimum: 0
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Fat'
+        },
+        protein: {
+            anyOf: [
+                {
+                    type: 'number',
+                    minimum: 0
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Protein'
+        },
+        serving_size: {
+            anyOf: [
+                {
+                    type: 'number',
+                    exclusiveMinimum: 0
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Serving Size'
+        },
+        serving_size_unit: {
+            anyOf: [
+                {
+                    $ref: '#/components/schemas/NutritionSizeUnit'
+                },
+                {
+                    type: 'null'
+                }
+            ]
+        },
+        package_size: {
+            anyOf: [
+                {
+                    type: 'number',
+                    exclusiveMinimum: 0
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Package Size'
+        },
+        package_size_unit: {
+            anyOf: [
+                {
+                    $ref: '#/components/schemas/NutritionSizeUnit'
+                },
+                {
+                    type: 'null'
+                }
+            ]
+        }
+    },
+    type: 'object',
+    required: [
+        'title',
+        'calories'
+    ],
+    title: 'ProductCreate'
+} as const;
+
+export const ProductNutritionBasisSchema = {
+    type: 'string',
+    enum: [
+        'per_100g',
+        'per_100ml',
+        'per_serving',
+        'per_package'
+    ],
+    title: 'ProductNutritionBasis'
+} as const;
+
+export const ProductNutritionEntryCreateSchema = {
+    properties: {
+        log_date: {
+            type: 'string',
+            format: 'date',
+            title: 'Log Date'
+        },
+        meal_type: {
+            $ref: '#/components/schemas/NutritionMealType'
+        },
+        note: {
+            anyOf: [
+                {
+                    type: 'string',
+                    maxLength: 500
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Note'
+        },
+        quantity: {
+            type: 'number',
+            exclusiveMinimum: 0,
+            title: 'Quantity'
+        },
+        unit: {
+            $ref: '#/components/schemas/NutritionEntryUnit'
+        },
+        source_type: {
+            type: 'string',
+            const: 'product',
+            title: 'Source Type'
+        },
+        source_id: {
+            type: 'string',
+            format: 'uuid',
+            title: 'Source Id'
+        }
+    },
+    type: 'object',
+    required: [
+        'log_date',
+        'meal_type',
+        'quantity',
+        'unit',
+        'source_type',
+        'source_id'
+    ],
+    title: 'ProductNutritionEntryCreate'
+} as const;
+
+export const ProductPublicSchema = {
+    properties: {
+        title: {
+            type: 'string',
+            maxLength: 255,
+            minLength: 1,
+            title: 'Title'
+        },
+        brand: {
+            anyOf: [
+                {
+                    type: 'string',
+                    maxLength: 255
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Brand'
+        },
+        barcode: {
+            anyOf: [
+                {
+                    type: 'string',
+                    maxLength: 24
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Barcode'
+        },
+        image_url: {
+            anyOf: [
+                {
+                    type: 'string',
+                    maxLength: 1000
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Image Url'
+        },
+        nutrition_basis: {
+            $ref: '#/components/schemas/ProductNutritionBasis',
+            default: 'per_100g'
+        },
+        calories: {
+            type: 'number',
+            minimum: 0,
+            title: 'Calories'
+        },
+        carbohydrates: {
+            anyOf: [
+                {
+                    type: 'number',
+                    minimum: 0
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Carbohydrates'
+        },
+        fat: {
+            anyOf: [
+                {
+                    type: 'number',
+                    minimum: 0
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Fat'
+        },
+        protein: {
+            anyOf: [
+                {
+                    type: 'number',
+                    minimum: 0
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Protein'
+        },
+        serving_size: {
+            anyOf: [
+                {
+                    type: 'number',
+                    exclusiveMinimum: 0
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Serving Size'
+        },
+        serving_size_unit: {
+            anyOf: [
+                {
+                    $ref: '#/components/schemas/NutritionSizeUnit'
+                },
+                {
+                    type: 'null'
+                }
+            ]
+        },
+        package_size: {
+            anyOf: [
+                {
+                    type: 'number',
+                    exclusiveMinimum: 0
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Package Size'
+        },
+        package_size_unit: {
+            anyOf: [
+                {
+                    $ref: '#/components/schemas/NutritionSizeUnit'
+                },
+                {
+                    type: 'null'
+                }
+            ]
+        },
+        id: {
+            type: 'string',
+            format: 'uuid',
+            title: 'Id'
+        },
+        owner_id: {
+            type: 'string',
+            format: 'uuid',
+            title: 'Owner Id'
+        },
+        created_at: {
+            type: 'string',
+            format: 'date-time',
+            title: 'Created At'
+        },
+        updated_at: {
+            type: 'string',
+            format: 'date-time',
+            title: 'Updated At'
+        }
+    },
+    type: 'object',
+    required: [
+        'title',
+        'calories',
+        'id',
+        'owner_id',
+        'created_at',
+        'updated_at'
+    ],
+    title: 'ProductPublic'
+} as const;
+
+export const ProductUpdateSchema = {
+    properties: {
+        title: {
+            anyOf: [
+                {
+                    type: 'string',
+                    maxLength: 255,
+                    minLength: 1
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Title'
+        },
+        brand: {
+            anyOf: [
+                {
+                    type: 'string',
+                    maxLength: 255
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Brand'
+        },
+        barcode: {
+            anyOf: [
+                {
+                    type: 'string',
+                    maxLength: 24
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Barcode'
+        },
+        image_url: {
+            anyOf: [
+                {
+                    type: 'string',
+                    maxLength: 1000
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Image Url'
+        },
+        nutrition_basis: {
+            anyOf: [
+                {
+                    $ref: '#/components/schemas/ProductNutritionBasis'
+                },
+                {
+                    type: 'null'
+                }
+            ]
+        },
+        calories: {
+            anyOf: [
+                {
+                    type: 'number',
+                    minimum: 0
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Calories'
+        },
+        carbohydrates: {
+            anyOf: [
+                {
+                    type: 'number',
+                    minimum: 0
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Carbohydrates'
+        },
+        fat: {
+            anyOf: [
+                {
+                    type: 'number',
+                    minimum: 0
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Fat'
+        },
+        protein: {
+            anyOf: [
+                {
+                    type: 'number',
+                    minimum: 0
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Protein'
+        },
+        serving_size: {
+            anyOf: [
+                {
+                    type: 'number',
+                    exclusiveMinimum: 0
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Serving Size'
+        },
+        serving_size_unit: {
+            anyOf: [
+                {
+                    $ref: '#/components/schemas/NutritionSizeUnit'
+                },
+                {
+                    type: 'null'
+                }
+            ]
+        },
+        package_size: {
+            anyOf: [
+                {
+                    type: 'number',
+                    exclusiveMinimum: 0
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Package Size'
+        },
+        package_size_unit: {
+            anyOf: [
+                {
+                    $ref: '#/components/schemas/NutritionSizeUnit'
+                },
+                {
+                    type: 'null'
+                }
+            ]
+        }
+    },
+    type: 'object',
+    title: 'ProductUpdate'
+} as const;
+
+export const QuickAddCandidatePublicSchema = {
+    properties: {
+        source_type: {
+            $ref: '#/components/schemas/NutritionSourceType'
+        },
+        source_id: {
+            type: 'string',
+            format: 'uuid',
+            title: 'Source Id'
+        },
+        title: {
+            type: 'string',
+            title: 'Title'
+        },
+        similarity: {
+            anyOf: [
+                {
+                    type: 'number'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Similarity'
+        }
+    },
+    type: 'object',
+    required: [
+        'source_type',
+        'source_id',
+        'title'
+    ],
+    title: 'QuickAddCandidatePublic'
+} as const;
+
+export const QuickAddPreviewPublicSchema = {
+    properties: {
+        rows: {
+            items: {
+                $ref: '#/components/schemas/QuickAddPreviewRowPublic'
+            },
+            type: 'array',
+            title: 'Rows'
+        },
+        can_confirm: {
+            type: 'boolean',
+            title: 'Can Confirm'
+        }
+    },
+    type: 'object',
+    required: [
+        'rows',
+        'can_confirm'
+    ],
+    title: 'QuickAddPreviewPublic'
+} as const;
+
+export const QuickAddPreviewRequestSchema = {
+    properties: {
+        text: {
+            type: 'string',
+            maxLength: 4000,
+            minLength: 1,
+            title: 'Text'
+        },
+        log_date: {
+            type: 'string',
+            format: 'date',
+            title: 'Log Date'
+        },
+        default_meal: {
+            $ref: '#/components/schemas/NutritionMealType'
+        }
+    },
+    type: 'object',
+    required: [
+        'text',
+        'log_date',
+        'default_meal'
+    ],
+    title: 'QuickAddPreviewRequest'
+} as const;
+
+export const QuickAddPreviewRowPublicSchema = {
+    properties: {
+        line_number: {
+            type: 'integer',
+            title: 'Line Number'
+        },
+        original_text: {
+            type: 'string',
+            title: 'Original Text'
+        },
+        meal_type: {
+            $ref: '#/components/schemas/NutritionMealType'
+        },
+        status: {
+            type: 'string',
+            title: 'Status'
+        },
+        source_type: {
+            anyOf: [
+                {
+                    $ref: '#/components/schemas/NutritionSourceType'
+                },
+                {
+                    type: 'null'
+                }
+            ]
+        },
+        source_id: {
+            anyOf: [
+                {
+                    type: 'string',
+                    format: 'uuid'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Source Id'
+        },
+        title: {
+            anyOf: [
+                {
+                    type: 'string'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Title'
+        },
+        quantity: {
+            anyOf: [
+                {
+                    type: 'number'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Quantity'
+        },
+        unit: {
+            anyOf: [
+                {
+                    $ref: '#/components/schemas/NutritionEntryUnit'
+                },
+                {
+                    type: 'null'
+                }
+            ]
+        },
+        calories: {
+            anyOf: [
+                {
+                    type: 'number'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Calories'
+        },
+        carbohydrates: {
+            anyOf: [
+                {
+                    type: 'number'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Carbohydrates'
+        },
+        fat: {
+            anyOf: [
+                {
+                    type: 'number'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Fat'
+        },
+        protein: {
+            anyOf: [
+                {
+                    type: 'number'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Protein'
+        },
+        candidates: {
+            items: {
+                $ref: '#/components/schemas/QuickAddCandidatePublic'
+            },
+            type: 'array',
+            title: 'Candidates'
+        },
+        error_code: {
+            anyOf: [
+                {
+                    type: 'string'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Error Code'
+        },
+        message: {
+            anyOf: [
+                {
+                    type: 'string'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Message'
+        }
+    },
+    type: 'object',
+    required: [
+        'line_number',
+        'original_text',
+        'meal_type',
+        'status'
+    ],
+    title: 'QuickAddPreviewRowPublic'
 } as const;
 
 export const RecipeSchema = {
@@ -1305,6 +3040,59 @@ export const RecipeIngredientTotalPublicSchema = {
         'has_overlap'
     ],
     title: 'RecipeIngredientTotalPublic'
+} as const;
+
+export const RecipeNutritionEntryCreateSchema = {
+    properties: {
+        log_date: {
+            type: 'string',
+            format: 'date',
+            title: 'Log Date'
+        },
+        meal_type: {
+            $ref: '#/components/schemas/NutritionMealType'
+        },
+        note: {
+            anyOf: [
+                {
+                    type: 'string',
+                    maxLength: 500
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Note'
+        },
+        quantity: {
+            type: 'number',
+            exclusiveMinimum: 0,
+            title: 'Quantity'
+        },
+        unit: {
+            $ref: '#/components/schemas/NutritionEntryUnit'
+        },
+        source_type: {
+            type: 'string',
+            const: 'recipe',
+            title: 'Source Type'
+        },
+        source_id: {
+            type: 'string',
+            format: 'uuid',
+            title: 'Source Id'
+        }
+    },
+    type: 'object',
+    required: [
+        'log_date',
+        'meal_type',
+        'quantity',
+        'unit',
+        'source_type',
+        'source_id'
+    ],
+    title: 'RecipeNutritionEntryCreate'
 } as const;
 
 export const RecipePublicSchema = {

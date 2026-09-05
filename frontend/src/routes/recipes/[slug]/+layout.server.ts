@@ -26,10 +26,12 @@ export const load = async ({ fetch, params, locals, cookies }) => {
     const can_edit =
         !!locals.authenticatedUser &&
         (locals.authenticatedUser.is_superuser || is_owner || scopes.includes("recipes:update"));
+    const can_log = !!locals.authenticatedUser && scopes.includes("nutrition:use");
 
     return {
         recipe: data,
         is_owner,
-        can_edit
+        can_edit,
+        can_log
     };
 };

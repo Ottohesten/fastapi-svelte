@@ -6,12 +6,14 @@
   import * as Popover from "$lib/components/ui/popover/index.js";
   import { Button } from "$lib/components/ui/button/index.js";
   import { cn } from "$lib/utils.js";
+  import type { ControlAttrs } from "formsnap";
 
   export interface ComboboxItem {
     value: string;
     label: string;
     disabled?: boolean;
-    meta?: any;
+    keywords?: string[];
+    meta?: unknown;
   }
   interface Props {
     items: ComboboxItem[];
@@ -25,6 +27,7 @@
     buttonClass?: string;
     popoverClass?: string;
     disabled?: boolean;
+    controlProps?: Partial<ControlAttrs>;
   }
 
   let {
@@ -38,7 +41,8 @@
     onSelect,
     buttonClass = "w-[200px] justify-between",
     popoverClass = "w-(--bits-popover-anchor-width)",
-    disabled = false
+    disabled = false,
+    controlProps = {}
   }: Props = $props();
 
   let open = $state(false);
@@ -70,6 +74,7 @@
       {#snippet child({ props })}
         <Button
           {...props}
+          {...controlProps}
           variant="outline"
           class={cn(buttonClass, "relative", !selectedLabel && "text-muted-foreground")}
           role="combobox"
@@ -93,6 +98,7 @@
                 value={item.label}
                 data-value={item.value}
                 disabled={item.disabled}
+                keywords={item.keywords}
                 onSelect={() => select(item.value)}
                 class="w-full"
               >

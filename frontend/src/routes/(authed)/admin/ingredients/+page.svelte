@@ -17,7 +17,7 @@
   import { Field, Control, Label, FieldErrors } from "formsnap";
   import { CircleCheck, LoaderCircle, ScanLine, TriangleAlert } from "@lucide/svelte";
   import type { OpenFoodFactsProductPublic } from "$lib/client";
-  import BarcodeScanner from "./BarcodeScanner.svelte";
+  import BarcodeScanner from "$lib/components/BarcodeScanner.svelte";
 
   let open = $state(false);
   let scanMode = $state(false);

@@ -467,6 +467,34 @@ export type IngredientCreate = {
 };
 
 /**
+ * IngredientNutritionEntryCreate
+ */
+export type IngredientNutritionEntryCreate = {
+    /**
+     * Log Date
+     */
+    log_date: Date;
+    meal_type: NutritionMealType;
+    /**
+     * Note
+     */
+    note?: string | null;
+    /**
+     * Quantity
+     */
+    quantity: number;
+    unit: NutritionEntryUnit;
+    /**
+     * Source Type
+     */
+    source_type: 'ingredient';
+    /**
+     * Source Id
+     */
+    source_id: string;
+};
+
+/**
  * IngredientPublic
  */
 export type IngredientPublic = {
@@ -505,6 +533,54 @@ export type IngredientPublic = {
 };
 
 /**
+ * ManualNutritionEntryCreate
+ */
+export type ManualNutritionEntryCreate = {
+    /**
+     * Log Date
+     */
+    log_date: Date;
+    meal_type: NutritionMealType;
+    /**
+     * Note
+     */
+    note?: string | null;
+    /**
+     * Quantity
+     */
+    quantity: number;
+    unit: NutritionEntryUnit;
+    /**
+     * Source Type
+     */
+    source_type: 'manual';
+    /**
+     * Title
+     */
+    title: string;
+    /**
+     * Brand
+     */
+    brand?: string | null;
+    /**
+     * Calories
+     */
+    calories: number;
+    /**
+     * Carbohydrates
+     */
+    carbohydrates?: number | null;
+    /**
+     * Fat
+     */
+    fat?: number | null;
+    /**
+     * Protein
+     */
+    protein?: number | null;
+};
+
+/**
  * Message
  */
 export type Message = {
@@ -526,6 +602,343 @@ export type NewPassword = {
      * New Password
      */
     new_password: string;
+};
+
+/**
+ * NutritionCatalogIngredientPublic
+ */
+export type NutritionCatalogIngredientPublic = {
+    /**
+     * Id
+     */
+    id: string;
+    /**
+     * Title
+     */
+    title: string;
+    /**
+     * Calories
+     */
+    calories: number;
+    /**
+     * Carbohydrates
+     */
+    carbohydrates: number;
+    /**
+     * Fat
+     */
+    fat: number;
+    /**
+     * Protein
+     */
+    protein: number;
+    /**
+     * Weight Per Piece
+     */
+    weight_per_piece: number | null;
+};
+
+/**
+ * NutritionCatalogPublic
+ */
+export type NutritionCatalogPublic = {
+    /**
+     * Recipes
+     */
+    recipes: Array<NutritionCatalogRecipePublic>;
+    /**
+     * Products
+     */
+    products: Array<ProductPublic>;
+    /**
+     * Ingredients
+     */
+    ingredients: Array<NutritionCatalogIngredientPublic>;
+};
+
+/**
+ * NutritionCatalogRecipePublic
+ */
+export type NutritionCatalogRecipePublic = {
+    /**
+     * Id
+     */
+    id: string;
+    /**
+     * Title
+     */
+    title: string;
+    /**
+     * Servings
+     */
+    servings: number;
+    /**
+     * Calories
+     */
+    calories: number;
+    /**
+     * Carbohydrates
+     */
+    carbohydrates: number;
+    /**
+     * Fat
+     */
+    fat: number;
+    /**
+     * Protein
+     */
+    protein: number;
+};
+
+/**
+ * NutritionCommonEntriesPublic
+ */
+export type NutritionCommonEntriesPublic = {
+    /**
+     * Entries
+     */
+    entries: Array<NutritionCommonEntryPublic>;
+};
+
+/**
+ * NutritionCommonEntryPublic
+ */
+export type NutritionCommonEntryPublic = {
+    source_type: NutritionSourceType;
+    /**
+     * Source Id
+     */
+    source_id: string | null;
+    /**
+     * Title
+     */
+    title: string;
+    /**
+     * Brand
+     */
+    brand: string | null;
+    /**
+     * Quantity
+     */
+    quantity: number;
+    unit: NutritionEntryUnit;
+    /**
+     * Calories
+     */
+    calories: number;
+    /**
+     * Carbohydrates
+     */
+    carbohydrates: number | null;
+    /**
+     * Fat
+     */
+    fat: number | null;
+    /**
+     * Protein
+     */
+    protein: number | null;
+    /**
+     * Use Count
+     */
+    use_count: number;
+    /**
+     * Last Used At
+     */
+    last_used_at: Date;
+};
+
+/**
+ * NutritionDayPublic
+ */
+export type NutritionDayPublic = {
+    /**
+     * Log Date
+     */
+    log_date: Date;
+    totals: NutritionTotalsPublic;
+    /**
+     * Groups
+     */
+    groups: Array<NutritionMealGroupPublic>;
+};
+
+/**
+ * NutritionEntriesBatchCreate
+ */
+export type NutritionEntriesBatchCreate = {
+    /**
+     * Entries
+     */
+    entries: Array<RecipeNutritionEntryCreate | ProductNutritionEntryCreate | IngredientNutritionEntryCreate | ManualNutritionEntryCreate>;
+};
+
+/**
+ * NutritionEntryBatchPublic
+ */
+export type NutritionEntryBatchPublic = {
+    /**
+     * Entries
+     */
+    entries: Array<NutritionEntryPublic>;
+};
+
+/**
+ * NutritionEntryMoveUpdate
+ */
+export type NutritionEntryMoveUpdate = {
+    /**
+     * Log Date
+     */
+    log_date?: Date | null;
+    meal_type?: NutritionMealType | null;
+    /**
+     * Note
+     */
+    note?: string | null;
+};
+
+/**
+ * NutritionEntryPublic
+ */
+export type NutritionEntryPublic = {
+    /**
+     * Id
+     */
+    id: string;
+    /**
+     * Owner Id
+     */
+    owner_id: string;
+    /**
+     * Log Date
+     */
+    log_date: Date;
+    meal_type: NutritionMealType;
+    /**
+     * Note
+     */
+    note: string | null;
+    source_type: NutritionSourceType;
+    /**
+     * Source Id
+     */
+    source_id: string | null;
+    /**
+     * Source Available
+     */
+    source_available: boolean;
+    /**
+     * Title
+     */
+    title: string;
+    /**
+     * Brand
+     */
+    brand: string | null;
+    /**
+     * Quantity
+     */
+    quantity: number;
+    unit: NutritionEntryUnit;
+    /**
+     * Calories
+     */
+    calories: number;
+    /**
+     * Carbohydrates
+     */
+    carbohydrates: number | null;
+    /**
+     * Fat
+     */
+    fat: number | null;
+    /**
+     * Protein
+     */
+    protein: number | null;
+    /**
+     * Created At
+     */
+    created_at: Date;
+    /**
+     * Updated At
+     */
+    updated_at: Date;
+};
+
+/**
+ * NutritionEntryUnit
+ */
+export type NutritionEntryUnit = 'serving' | 'g' | 'ml' | 'piece' | 'package';
+
+/**
+ * NutritionMealGroupPublic
+ */
+export type NutritionMealGroupPublic = {
+    meal_type: NutritionMealType;
+    totals: NutritionTotalsPublic;
+    /**
+     * Entries
+     */
+    entries: Array<NutritionEntryPublic>;
+};
+
+/**
+ * NutritionMealType
+ */
+export type NutritionMealType = 'breakfast' | 'lunch' | 'dinner' | 'snack';
+
+/**
+ * NutritionSizeUnit
+ */
+export type NutritionSizeUnit = 'g' | 'ml';
+
+/**
+ * NutritionSourceType
+ */
+export type NutritionSourceType = 'recipe' | 'product' | 'ingredient' | 'manual';
+
+/**
+ * NutritionTotalsPublic
+ */
+export type NutritionTotalsPublic = {
+    /**
+     * Calories
+     */
+    calories?: number;
+    /**
+     * Carbohydrates
+     */
+    carbohydrates?: number;
+    /**
+     * Fat
+     */
+    fat?: number;
+    /**
+     * Protein
+     */
+    protein?: number;
+    /**
+     * Carbohydrates Unknown
+     */
+    carbohydrates_unknown?: boolean;
+    /**
+     * Fat Unknown
+     */
+    fat_unknown?: boolean;
+    /**
+     * Protein Unknown
+     */
+    protein_unknown?: boolean;
+    /**
+     * Incomplete Entry Count
+     */
+    incomplete_entry_count?: number;
+    /**
+     * Missing Nutrients
+     */
+    missing_nutrients?: Array<string>;
 };
 
 /**
@@ -580,6 +993,372 @@ export type OpenFoodFactsProductPublic = {
      * Existing Ingredient Id
      */
     existing_ingredient_id?: string | null;
+};
+
+/**
+ * ProductBarcodePreviewPublic
+ */
+export type ProductBarcodePreviewPublic = {
+    /**
+     * Barcode
+     */
+    barcode: string;
+    /**
+     * Title
+     */
+    title: string;
+    /**
+     * Brand
+     */
+    brand?: string | null;
+    /**
+     * Image Url
+     */
+    image_url?: string | null;
+    nutrition_basis: ProductNutritionBasis;
+    /**
+     * Calories
+     */
+    calories?: number | null;
+    /**
+     * Carbohydrates
+     */
+    carbohydrates?: number | null;
+    /**
+     * Fat
+     */
+    fat?: number | null;
+    /**
+     * Protein
+     */
+    protein?: number | null;
+    /**
+     * Serving Size
+     */
+    serving_size?: number | null;
+    serving_size_unit?: NutritionSizeUnit | null;
+    /**
+     * Package Size
+     */
+    package_size?: number | null;
+    package_size_unit?: NutritionSizeUnit | null;
+    /**
+     * Missing Nutrients
+     */
+    missing_nutrients: Array<string>;
+    /**
+     * Needs Review
+     */
+    needs_review?: boolean;
+    /**
+     * Existing Product Id
+     */
+    existing_product_id?: string | null;
+};
+
+/**
+ * ProductCreate
+ */
+export type ProductCreate = {
+    /**
+     * Title
+     */
+    title: string;
+    /**
+     * Brand
+     */
+    brand?: string | null;
+    /**
+     * Barcode
+     */
+    barcode?: string | null;
+    /**
+     * Image Url
+     */
+    image_url?: string | null;
+    nutrition_basis?: ProductNutritionBasis;
+    /**
+     * Calories
+     */
+    calories: number;
+    /**
+     * Carbohydrates
+     */
+    carbohydrates?: number | null;
+    /**
+     * Fat
+     */
+    fat?: number | null;
+    /**
+     * Protein
+     */
+    protein?: number | null;
+    /**
+     * Serving Size
+     */
+    serving_size?: number | null;
+    serving_size_unit?: NutritionSizeUnit | null;
+    /**
+     * Package Size
+     */
+    package_size?: number | null;
+    package_size_unit?: NutritionSizeUnit | null;
+};
+
+/**
+ * ProductNutritionBasis
+ */
+export type ProductNutritionBasis = 'per_100g' | 'per_100ml' | 'per_serving' | 'per_package';
+
+/**
+ * ProductNutritionEntryCreate
+ */
+export type ProductNutritionEntryCreate = {
+    /**
+     * Log Date
+     */
+    log_date: Date;
+    meal_type: NutritionMealType;
+    /**
+     * Note
+     */
+    note?: string | null;
+    /**
+     * Quantity
+     */
+    quantity: number;
+    unit: NutritionEntryUnit;
+    /**
+     * Source Type
+     */
+    source_type: 'product';
+    /**
+     * Source Id
+     */
+    source_id: string;
+};
+
+/**
+ * ProductPublic
+ */
+export type ProductPublic = {
+    /**
+     * Title
+     */
+    title: string;
+    /**
+     * Brand
+     */
+    brand?: string | null;
+    /**
+     * Barcode
+     */
+    barcode?: string | null;
+    /**
+     * Image Url
+     */
+    image_url?: string | null;
+    nutrition_basis?: ProductNutritionBasis;
+    /**
+     * Calories
+     */
+    calories: number;
+    /**
+     * Carbohydrates
+     */
+    carbohydrates?: number | null;
+    /**
+     * Fat
+     */
+    fat?: number | null;
+    /**
+     * Protein
+     */
+    protein?: number | null;
+    /**
+     * Serving Size
+     */
+    serving_size?: number | null;
+    serving_size_unit?: NutritionSizeUnit | null;
+    /**
+     * Package Size
+     */
+    package_size?: number | null;
+    package_size_unit?: NutritionSizeUnit | null;
+    /**
+     * Id
+     */
+    id: string;
+    /**
+     * Owner Id
+     */
+    owner_id: string;
+    /**
+     * Created At
+     */
+    created_at: Date;
+    /**
+     * Updated At
+     */
+    updated_at: Date;
+};
+
+/**
+ * ProductUpdate
+ */
+export type ProductUpdate = {
+    /**
+     * Title
+     */
+    title?: string | null;
+    /**
+     * Brand
+     */
+    brand?: string | null;
+    /**
+     * Barcode
+     */
+    barcode?: string | null;
+    /**
+     * Image Url
+     */
+    image_url?: string | null;
+    nutrition_basis?: ProductNutritionBasis | null;
+    /**
+     * Calories
+     */
+    calories?: number | null;
+    /**
+     * Carbohydrates
+     */
+    carbohydrates?: number | null;
+    /**
+     * Fat
+     */
+    fat?: number | null;
+    /**
+     * Protein
+     */
+    protein?: number | null;
+    /**
+     * Serving Size
+     */
+    serving_size?: number | null;
+    serving_size_unit?: NutritionSizeUnit | null;
+    /**
+     * Package Size
+     */
+    package_size?: number | null;
+    package_size_unit?: NutritionSizeUnit | null;
+};
+
+/**
+ * QuickAddCandidatePublic
+ */
+export type QuickAddCandidatePublic = {
+    source_type: NutritionSourceType;
+    /**
+     * Source Id
+     */
+    source_id: string;
+    /**
+     * Title
+     */
+    title: string;
+    /**
+     * Similarity
+     */
+    similarity?: number | null;
+};
+
+/**
+ * QuickAddPreviewPublic
+ */
+export type QuickAddPreviewPublic = {
+    /**
+     * Rows
+     */
+    rows: Array<QuickAddPreviewRowPublic>;
+    /**
+     * Can Confirm
+     */
+    can_confirm: boolean;
+};
+
+/**
+ * QuickAddPreviewRequest
+ */
+export type QuickAddPreviewRequest = {
+    /**
+     * Text
+     */
+    text: string;
+    /**
+     * Log Date
+     */
+    log_date: Date;
+    default_meal: NutritionMealType;
+};
+
+/**
+ * QuickAddPreviewRowPublic
+ */
+export type QuickAddPreviewRowPublic = {
+    /**
+     * Line Number
+     */
+    line_number: number;
+    /**
+     * Original Text
+     */
+    original_text: string;
+    meal_type: NutritionMealType;
+    /**
+     * Status
+     */
+    status: string;
+    source_type?: NutritionSourceType | null;
+    /**
+     * Source Id
+     */
+    source_id?: string | null;
+    /**
+     * Title
+     */
+    title?: string | null;
+    /**
+     * Quantity
+     */
+    quantity?: number | null;
+    unit?: NutritionEntryUnit | null;
+    /**
+     * Calories
+     */
+    calories?: number | null;
+    /**
+     * Carbohydrates
+     */
+    carbohydrates?: number | null;
+    /**
+     * Fat
+     */
+    fat?: number | null;
+    /**
+     * Protein
+     */
+    protein?: number | null;
+    /**
+     * Candidates
+     */
+    candidates?: Array<QuickAddCandidatePublic>;
+    /**
+     * Error Code
+     */
+    error_code?: string | null;
+    /**
+     * Message
+     */
+    message?: string | null;
 };
 
 /**
@@ -821,6 +1600,34 @@ export type RecipeIngredientTotalPublic = {
      * Has Overlap
      */
     readonly has_overlap: boolean;
+};
+
+/**
+ * RecipeNutritionEntryCreate
+ */
+export type RecipeNutritionEntryCreate = {
+    /**
+     * Log Date
+     */
+    log_date: Date;
+    meal_type: NutritionMealType;
+    /**
+     * Note
+     */
+    note?: string | null;
+    /**
+     * Quantity
+     */
+    quantity: number;
+    unit: NutritionEntryUnit;
+    /**
+     * Source Type
+     */
+    source_type: 'recipe';
+    /**
+     * Source Id
+     */
+    source_id: string;
 };
 
 /**
@@ -3153,3 +3960,469 @@ export type GetAnalyticsAdminSummaryResponses = {
 };
 
 export type GetAnalyticsAdminSummaryResponse = GetAnalyticsAdminSummaryResponses[keyof GetAnalyticsAdminSummaryResponses];
+
+export type GetProductsData = {
+    body?: never;
+    path?: never;
+    query?: {
+        /**
+         * Query
+         */
+        query?: string | null;
+        /**
+         * Skip
+         */
+        skip?: number;
+        /**
+         * Limit
+         */
+        limit?: number;
+    };
+    url: '/products/';
+};
+
+export type GetProductsErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type GetProductsError = GetProductsErrors[keyof GetProductsErrors];
+
+export type GetProductsResponses = {
+    /**
+     * Response Products-Get Products
+     *
+     * Successful Response
+     */
+    200: Array<ProductPublic>;
+};
+
+export type GetProductsResponse = GetProductsResponses[keyof GetProductsResponses];
+
+export type PostProductsData = {
+    body: ProductCreate;
+    path?: never;
+    query?: never;
+    url: '/products/';
+};
+
+export type PostProductsErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type PostProductsError = PostProductsErrors[keyof PostProductsErrors];
+
+export type PostProductsResponses = {
+    /**
+     * Successful Response
+     */
+    201: ProductPublic;
+};
+
+export type PostProductsResponse = PostProductsResponses[keyof PostProductsResponses];
+
+export type GetProductsBarcodeByBarcodeData = {
+    body?: never;
+    path: {
+        /**
+         * Barcode
+         */
+        barcode: string;
+    };
+    query?: never;
+    url: '/products/barcode/{barcode}';
+};
+
+export type GetProductsBarcodeByBarcodeErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type GetProductsBarcodeByBarcodeError = GetProductsBarcodeByBarcodeErrors[keyof GetProductsBarcodeByBarcodeErrors];
+
+export type GetProductsBarcodeByBarcodeResponses = {
+    /**
+     * Successful Response
+     */
+    200: ProductBarcodePreviewPublic;
+};
+
+export type GetProductsBarcodeByBarcodeResponse = GetProductsBarcodeByBarcodeResponses[keyof GetProductsBarcodeByBarcodeResponses];
+
+export type DeleteProductsByProductIdData = {
+    body?: never;
+    path: {
+        /**
+         * Product Id
+         */
+        product_id: string;
+    };
+    query?: never;
+    url: '/products/{product_id}';
+};
+
+export type DeleteProductsByProductIdErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type DeleteProductsByProductIdError = DeleteProductsByProductIdErrors[keyof DeleteProductsByProductIdErrors];
+
+export type DeleteProductsByProductIdResponses = {
+    /**
+     * Successful Response
+     */
+    200: ProductPublic;
+};
+
+export type DeleteProductsByProductIdResponse = DeleteProductsByProductIdResponses[keyof DeleteProductsByProductIdResponses];
+
+export type GetProductsByProductIdData = {
+    body?: never;
+    path: {
+        /**
+         * Product Id
+         */
+        product_id: string;
+    };
+    query?: never;
+    url: '/products/{product_id}';
+};
+
+export type GetProductsByProductIdErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type GetProductsByProductIdError = GetProductsByProductIdErrors[keyof GetProductsByProductIdErrors];
+
+export type GetProductsByProductIdResponses = {
+    /**
+     * Successful Response
+     */
+    200: ProductPublic;
+};
+
+export type GetProductsByProductIdResponse = GetProductsByProductIdResponses[keyof GetProductsByProductIdResponses];
+
+export type PatchProductsByProductIdData = {
+    body: ProductUpdate;
+    path: {
+        /**
+         * Product Id
+         */
+        product_id: string;
+    };
+    query?: never;
+    url: '/products/{product_id}';
+};
+
+export type PatchProductsByProductIdErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type PatchProductsByProductIdError = PatchProductsByProductIdErrors[keyof PatchProductsByProductIdErrors];
+
+export type PatchProductsByProductIdResponses = {
+    /**
+     * Successful Response
+     */
+    200: ProductPublic;
+};
+
+export type PatchProductsByProductIdResponse = PatchProductsByProductIdResponses[keyof PatchProductsByProductIdResponses];
+
+export type GetNutritionDayByLogDateData = {
+    body?: never;
+    path: {
+        /**
+         * Log Date
+         */
+        log_date: Date;
+    };
+    query?: never;
+    url: '/nutrition/day/{log_date}';
+};
+
+export type GetNutritionDayByLogDateErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type GetNutritionDayByLogDateError = GetNutritionDayByLogDateErrors[keyof GetNutritionDayByLogDateErrors];
+
+export type GetNutritionDayByLogDateResponses = {
+    /**
+     * Successful Response
+     */
+    200: NutritionDayPublic;
+};
+
+export type GetNutritionDayByLogDateResponse = GetNutritionDayByLogDateResponses[keyof GetNutritionDayByLogDateResponses];
+
+export type GetNutritionCatalogData = {
+    body?: never;
+    path?: never;
+    query?: {
+        /**
+         * Query
+         */
+        query?: string | null;
+        /**
+         * Limit
+         */
+        limit?: number;
+    };
+    url: '/nutrition/catalog';
+};
+
+export type GetNutritionCatalogErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type GetNutritionCatalogError = GetNutritionCatalogErrors[keyof GetNutritionCatalogErrors];
+
+export type GetNutritionCatalogResponses = {
+    /**
+     * Successful Response
+     */
+    200: NutritionCatalogPublic;
+};
+
+export type GetNutritionCatalogResponse = GetNutritionCatalogResponses[keyof GetNutritionCatalogResponses];
+
+export type GetNutritionCommonEntriesData = {
+    body?: never;
+    path?: never;
+    query?: {
+        /**
+         * Limit
+         */
+        limit?: number;
+    };
+    url: '/nutrition/common-entries';
+};
+
+export type GetNutritionCommonEntriesErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type GetNutritionCommonEntriesError = GetNutritionCommonEntriesErrors[keyof GetNutritionCommonEntriesErrors];
+
+export type GetNutritionCommonEntriesResponses = {
+    /**
+     * Successful Response
+     */
+    200: NutritionCommonEntriesPublic;
+};
+
+export type GetNutritionCommonEntriesResponse = GetNutritionCommonEntriesResponses[keyof GetNutritionCommonEntriesResponses];
+
+export type PostNutritionEntriesData = {
+    /**
+     * Entry In
+     */
+    body: ({
+        source_type: 'recipe';
+    } & RecipeNutritionEntryCreate) | ({
+        source_type: 'product';
+    } & ProductNutritionEntryCreate) | ({
+        source_type: 'ingredient';
+    } & IngredientNutritionEntryCreate) | ({
+        source_type: 'manual';
+    } & ManualNutritionEntryCreate);
+    path?: never;
+    query?: never;
+    url: '/nutrition/entries';
+};
+
+export type PostNutritionEntriesErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type PostNutritionEntriesError = PostNutritionEntriesErrors[keyof PostNutritionEntriesErrors];
+
+export type PostNutritionEntriesResponses = {
+    /**
+     * Successful Response
+     */
+    201: NutritionEntryPublic;
+};
+
+export type PostNutritionEntriesResponse = PostNutritionEntriesResponses[keyof PostNutritionEntriesResponses];
+
+export type PostNutritionEntriesBatchData = {
+    body: NutritionEntriesBatchCreate;
+    path?: never;
+    query?: never;
+    url: '/nutrition/entries/batch';
+};
+
+export type PostNutritionEntriesBatchErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type PostNutritionEntriesBatchError = PostNutritionEntriesBatchErrors[keyof PostNutritionEntriesBatchErrors];
+
+export type PostNutritionEntriesBatchResponses = {
+    /**
+     * Successful Response
+     */
+    201: NutritionEntryBatchPublic;
+};
+
+export type PostNutritionEntriesBatchResponse = PostNutritionEntriesBatchResponses[keyof PostNutritionEntriesBatchResponses];
+
+export type DeleteNutritionEntriesByEntryIdData = {
+    body?: never;
+    path: {
+        /**
+         * Entry Id
+         */
+        entry_id: string;
+    };
+    query?: never;
+    url: '/nutrition/entries/{entry_id}';
+};
+
+export type DeleteNutritionEntriesByEntryIdErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type DeleteNutritionEntriesByEntryIdError = DeleteNutritionEntriesByEntryIdErrors[keyof DeleteNutritionEntriesByEntryIdErrors];
+
+export type DeleteNutritionEntriesByEntryIdResponses = {
+    /**
+     * Successful Response
+     */
+    200: NutritionEntryPublic;
+};
+
+export type DeleteNutritionEntriesByEntryIdResponse = DeleteNutritionEntriesByEntryIdResponses[keyof DeleteNutritionEntriesByEntryIdResponses];
+
+export type PatchNutritionEntriesByEntryIdData = {
+    body: NutritionEntryMoveUpdate;
+    path: {
+        /**
+         * Entry Id
+         */
+        entry_id: string;
+    };
+    query?: never;
+    url: '/nutrition/entries/{entry_id}';
+};
+
+export type PatchNutritionEntriesByEntryIdErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type PatchNutritionEntriesByEntryIdError = PatchNutritionEntriesByEntryIdErrors[keyof PatchNutritionEntriesByEntryIdErrors];
+
+export type PatchNutritionEntriesByEntryIdResponses = {
+    /**
+     * Successful Response
+     */
+    200: NutritionEntryPublic;
+};
+
+export type PatchNutritionEntriesByEntryIdResponse = PatchNutritionEntriesByEntryIdResponses[keyof PatchNutritionEntriesByEntryIdResponses];
+
+export type PutNutritionEntriesByEntryIdData = {
+    /**
+     * Entry In
+     */
+    body: ({
+        source_type: 'recipe';
+    } & RecipeNutritionEntryCreate) | ({
+        source_type: 'product';
+    } & ProductNutritionEntryCreate) | ({
+        source_type: 'ingredient';
+    } & IngredientNutritionEntryCreate) | ({
+        source_type: 'manual';
+    } & ManualNutritionEntryCreate);
+    path: {
+        /**
+         * Entry Id
+         */
+        entry_id: string;
+    };
+    query?: never;
+    url: '/nutrition/entries/{entry_id}';
+};
+
+export type PutNutritionEntriesByEntryIdErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type PutNutritionEntriesByEntryIdError = PutNutritionEntriesByEntryIdErrors[keyof PutNutritionEntriesByEntryIdErrors];
+
+export type PutNutritionEntriesByEntryIdResponses = {
+    /**
+     * Successful Response
+     */
+    200: NutritionEntryPublic;
+};
+
+export type PutNutritionEntriesByEntryIdResponse = PutNutritionEntriesByEntryIdResponses[keyof PutNutritionEntriesByEntryIdResponses];
+
+export type PostNutritionQuickAddPreviewData = {
+    body: QuickAddPreviewRequest;
+    path?: never;
+    query?: never;
+    url: '/nutrition/quick-add/preview';
+};
+
+export type PostNutritionQuickAddPreviewErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type PostNutritionQuickAddPreviewError = PostNutritionQuickAddPreviewErrors[keyof PostNutritionQuickAddPreviewErrors];
+
+export type PostNutritionQuickAddPreviewResponses = {
+    /**
+     * Successful Response
+     */
+    200: QuickAddPreviewPublic;
+};
+
+export type PostNutritionQuickAddPreviewResponse = PostNutritionQuickAddPreviewResponses[keyof PostNutritionQuickAddPreviewResponses];

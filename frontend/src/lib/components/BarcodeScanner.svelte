@@ -1,9 +1,9 @@
 <script lang="ts">
   import { onMount } from "svelte";
   import { BrowserMultiFormatReader, type IScannerControls } from "@zxing/browser";
-  import { Input } from "$lib/components/ui/input";
-  import Button from "$lib/components/ui/button/button.svelte";
   import { Camera, Keyboard, LoaderCircle } from "@lucide/svelte";
+  import { Button } from "$lib/components/ui/button";
+  import { Input } from "$lib/components/ui/input";
 
   let { onDetected }: { onDetected: (barcode: string) => void } = $props();
 
@@ -25,6 +25,12 @@
   }
 
   onMount(() => {
+    if (!window.isSecureContext && window.location.hostname !== "localhost") {
+      starting = false;
+      cameraError = "Camera scanning requires HTTPS. Enter the barcode below instead.";
+      return;
+    }
+
     const reader = new BrowserMultiFormatReader(undefined, {
       delayBetweenScanAttempts: 150,
       delayBetweenScanSuccess: 1000
@@ -47,7 +53,7 @@
         cameraError =
           error instanceof Error && error.name === "NotAllowedError"
             ? "Camera access was denied. Allow camera access or enter the barcode below."
-            : "The camera could not be started. You can enter the barcode below instead.";
+            : "The camera could not be started. Enter the barcode below instead.";
       });
 
     return () => controls?.stop();
@@ -77,7 +83,7 @@
   </div>
 
   {#if cameraError}
-    <p class="text-sm text-red-600 dark:text-red-400">{cameraError}</p>
+    <p class="text-destructive text-sm">{cameraError}</p>
   {/if}
 
   <form
@@ -87,7 +93,7 @@
       submitBarcode(manualBarcode);
     }}
   >
-    <div class="relative flex-1">
+    <div class="relative min-w-0 flex-1">
       <Keyboard class="text-muted-foreground absolute top-1/2 left-3 size-4 -translate-y-1/2" />
       <Input
         class="pl-9"

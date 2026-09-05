@@ -1,6 +1,7 @@
 <script lang="ts">
   import { browser } from "$app/environment";
   import { tick } from "svelte";
+  import { NotebookPen } from "@lucide/svelte";
   import type { RecipePublic, UserMePublic } from "$lib/client";
   import RecipeIngredientsChecklist from "$lib/components/RecipeIngredientsChecklist.svelte";
   import RecipeNutritionSheet from "$lib/components/RecipeNutritionSheet.svelte";
@@ -13,6 +14,7 @@
       authenticatedUser?: UserMePublic;
       is_owner: boolean;
       can_edit: boolean;
+      can_log: boolean;
     };
   };
 
@@ -323,6 +325,14 @@
         </a>
         <div class="ml-auto flex items-center gap-2">
           <RecipeNutritionSheet recipe={scaledRecipe} />
+          {#if data.can_log}
+            <Button
+              href={`/nutrition?source_type=recipe&source_id=${encodeURIComponent(data.recipe.id)}&quantity=1`}
+              variant="outline"
+            >
+              <NotebookPen /> Log
+            </Button>
+          {/if}
           {#if data.can_edit}
             <a
               href="/recipes/{data.recipe.id}/update"

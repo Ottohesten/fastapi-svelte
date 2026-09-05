@@ -2,8 +2,8 @@
 
 import { type Client, type ClientMeta, formDataBodySerializer, type Options as Options2, type RequestResult, type TDataShape, urlSearchParamsBodySerializer } from './client';
 import { client } from './client.gen';
-import { deleteRecipesByRecipeIdResponseTransformer, getAnalyticsAdminSummaryResponseTransformer, getGameByGameSessionIdResponseTransformer, getGameResponseTransformer, getRecipesByRecipeIdResponseTransformer, getRecipesResponseTransformer, patchRecipesByRecipeIdResponseTransformer, postGameResponseTransformer, postRecipesResponseTransformer } from './transformers.gen';
-import type { DeleteGameByGameSessionIdData, DeleteGameByGameSessionIdErrors, DeleteGameByGameSessionIdPlayerByGamePlayerIdData, DeleteGameByGameSessionIdPlayerByGamePlayerIdErrors, DeleteGameByGameSessionIdPlayerByGamePlayerIdResponses, DeleteGameByGameSessionIdResponses, DeleteGameByGameSessionIdTeamByGameTeamIdData, DeleteGameByGameSessionIdTeamByGameTeamIdErrors, DeleteGameByGameSessionIdTeamByGameTeamIdResponses, DeleteGameDeleteAllData, DeleteGameDeleteAllResponses, DeleteGameDrinksByDrinkIdData, DeleteGameDrinksByDrinkIdErrors, DeleteGameDrinksByDrinkIdResponses, DeleteIngredientsByIngredientIdData, DeleteIngredientsByIngredientIdErrors, DeleteIngredientsByIngredientIdResponses, DeleteRecipesByRecipeIdData, DeleteRecipesByRecipeIdErrors, DeleteRecipesByRecipeIdResponses, DeleteRolesByRoleIdData, DeleteRolesByRoleIdErrors, DeleteRolesByRoleIdResponses, DeleteUsersByUserIdData, DeleteUsersByUserIdErrors, DeleteUsersByUserIdResponses, DeleteUsersByUserIdRolesByRoleIdData, DeleteUsersByUserIdRolesByRoleIdErrors, DeleteUsersByUserIdRolesByRoleIdResponses, DeleteUsersByUserIdScopesData, DeleteUsersByUserIdScopesErrors, DeleteUsersByUserIdScopesResponses, DeleteUsersMeData, DeleteUsersMeResponses, GetAnalyticsAdminSummaryData, GetAnalyticsAdminSummaryResponses, GetGameByGameSessionIdData, GetGameByGameSessionIdErrors, GetGameByGameSessionIdResponses, GetGameByGameSessionIdUpdatesData, GetGameByGameSessionIdUpdatesErrors, GetGameByGameSessionIdUpdatesResponses, GetGameData, GetGameDrinksData, GetGameDrinksErrors, GetGameDrinksResponses, GetGameErrors, GetGameResponses, GetIngredientsBarcodeByBarcodeData, GetIngredientsBarcodeByBarcodeErrors, GetIngredientsBarcodeByBarcodeResponses, GetIngredientsByIngredientIdData, GetIngredientsByIngredientIdErrors, GetIngredientsByIngredientIdResponses, GetIngredientsData, GetIngredientsErrors, GetIngredientsResponses, GetRecipesByRecipeIdData, GetRecipesByRecipeIdErrors, GetRecipesByRecipeIdResponses, GetRecipesData, GetRecipesErrors, GetRecipesResponses, GetRolesByRoleIdData, GetRolesByRoleIdErrors, GetRolesByRoleIdResponses, GetRolesData, GetRolesResponses, GetRolesScopesAvailableData, GetRolesScopesAvailableResponses, GetRolesTemplatesData, GetRolesTemplatesResponses, GetUsersByUserIdData, GetUsersByUserIdErrors, GetUsersByUserIdResponses, GetUsersData, GetUsersErrors, GetUsersMeData, GetUsersMeErrors, GetUsersMeResponses, GetUsersResponses, GetUsersWithPermissionsData, GetUsersWithPermissionsErrors, GetUsersWithPermissionsResponses, GetUtilsHealthCheckData, GetUtilsHealthCheckResponses, PatchGameByGameSessionIdPlayerByGamePlayerIdData, PatchGameByGameSessionIdPlayerByGamePlayerIdDrinkData, PatchGameByGameSessionIdPlayerByGamePlayerIdDrinkErrors, PatchGameByGameSessionIdPlayerByGamePlayerIdDrinkResponses, PatchGameByGameSessionIdPlayerByGamePlayerIdErrors, PatchGameByGameSessionIdPlayerByGamePlayerIdResponses, PatchGameDrinksByDrinkIdData, PatchGameDrinksByDrinkIdErrors, PatchGameDrinksByDrinkIdResponses, PatchIngredientsByIngredientIdData, PatchIngredientsByIngredientIdErrors, PatchIngredientsByIngredientIdResponses, PatchRecipesByRecipeIdData, PatchRecipesByRecipeIdErrors, PatchRecipesByRecipeIdResponses, PatchUsersByUserIdData, PatchUsersByUserIdErrors, PatchUsersByUserIdResponses, PatchUsersMeData, PatchUsersMeErrors, PatchUsersMePasswordData, PatchUsersMePasswordErrors, PatchUsersMePasswordResponses, PatchUsersMeResponses, PostAnalyticsEventsData, PostAnalyticsEventsErrors, PostAnalyticsEventsResponses, PostGameByGameSessionIdPlayerData, PostGameByGameSessionIdPlayerErrors, PostGameByGameSessionIdPlayerResponses, PostGameByGameSessionIdTeamData, PostGameByGameSessionIdTeamErrors, PostGameByGameSessionIdTeamResponses, PostGameData, PostGameDrinksData, PostGameDrinksErrors, PostGameDrinksResponses, PostGameErrors, PostGameResponses, PostIngredientsData, PostIngredientsErrors, PostIngredientsResponses, PostLoginAccessTokenData, PostLoginAccessTokenErrors, PostLoginAccessTokenResponses, PostLoginRefreshData, PostLoginRefreshErrors, PostLoginRefreshResponses, PostLoginTestTokenData, PostLoginTestTokenResponses, PostLogoutData, PostLogoutErrors, PostLogoutResponses, PostPasswordRecoveryByEmailData, PostPasswordRecoveryByEmailErrors, PostPasswordRecoveryByEmailResponses, PostPasswordRecoveryHtmlContentByEmailData, PostPasswordRecoveryHtmlContentByEmailErrors, PostPasswordRecoveryHtmlContentByEmailResponses, PostRecipesData, PostRecipesErrors, PostRecipesResponses, PostRecipesUploadImageData, PostRecipesUploadImageErrors, PostRecipesUploadImageResponses, PostResetPasswordData, PostResetPasswordErrors, PostResetPasswordResponses, PostRolesData, PostRolesErrors, PostRolesFromTemplateByTemplateKeyData, PostRolesFromTemplateByTemplateKeyErrors, PostRolesFromTemplateByTemplateKeyResponses, PostRolesResponses, PostUsersByUserIdRolesByRoleIdData, PostUsersByUserIdRolesByRoleIdErrors, PostUsersByUserIdRolesByRoleIdResponses, PostUsersByUserIdScopesData, PostUsersByUserIdScopesErrors, PostUsersByUserIdScopesResponses, PostUsersData, PostUsersErrors, PostUsersResponses, PostUsersSignupData, PostUsersSignupErrors, PostUsersSignupResponses, PutRolesByRoleIdData, PutRolesByRoleIdErrors, PutRolesByRoleIdResponses } from './types.gen';
+import { deleteNutritionEntriesByEntryIdResponseTransformer, deleteProductsByProductIdResponseTransformer, deleteRecipesByRecipeIdResponseTransformer, getAnalyticsAdminSummaryResponseTransformer, getGameByGameSessionIdResponseTransformer, getGameResponseTransformer, getNutritionCatalogResponseTransformer, getNutritionCommonEntriesResponseTransformer, getNutritionDayByLogDateResponseTransformer, getProductsByProductIdResponseTransformer, getProductsResponseTransformer, getRecipesByRecipeIdResponseTransformer, getRecipesResponseTransformer, patchNutritionEntriesByEntryIdResponseTransformer, patchProductsByProductIdResponseTransformer, patchRecipesByRecipeIdResponseTransformer, postGameResponseTransformer, postNutritionEntriesBatchResponseTransformer, postNutritionEntriesResponseTransformer, postProductsResponseTransformer, postRecipesResponseTransformer, putNutritionEntriesByEntryIdResponseTransformer } from './transformers.gen';
+import type { DeleteGameByGameSessionIdData, DeleteGameByGameSessionIdErrors, DeleteGameByGameSessionIdPlayerByGamePlayerIdData, DeleteGameByGameSessionIdPlayerByGamePlayerIdErrors, DeleteGameByGameSessionIdPlayerByGamePlayerIdResponses, DeleteGameByGameSessionIdResponses, DeleteGameByGameSessionIdTeamByGameTeamIdData, DeleteGameByGameSessionIdTeamByGameTeamIdErrors, DeleteGameByGameSessionIdTeamByGameTeamIdResponses, DeleteGameDeleteAllData, DeleteGameDeleteAllResponses, DeleteGameDrinksByDrinkIdData, DeleteGameDrinksByDrinkIdErrors, DeleteGameDrinksByDrinkIdResponses, DeleteIngredientsByIngredientIdData, DeleteIngredientsByIngredientIdErrors, DeleteIngredientsByIngredientIdResponses, DeleteNutritionEntriesByEntryIdData, DeleteNutritionEntriesByEntryIdErrors, DeleteNutritionEntriesByEntryIdResponses, DeleteProductsByProductIdData, DeleteProductsByProductIdErrors, DeleteProductsByProductIdResponses, DeleteRecipesByRecipeIdData, DeleteRecipesByRecipeIdErrors, DeleteRecipesByRecipeIdResponses, DeleteRolesByRoleIdData, DeleteRolesByRoleIdErrors, DeleteRolesByRoleIdResponses, DeleteUsersByUserIdData, DeleteUsersByUserIdErrors, DeleteUsersByUserIdResponses, DeleteUsersByUserIdRolesByRoleIdData, DeleteUsersByUserIdRolesByRoleIdErrors, DeleteUsersByUserIdRolesByRoleIdResponses, DeleteUsersByUserIdScopesData, DeleteUsersByUserIdScopesErrors, DeleteUsersByUserIdScopesResponses, DeleteUsersMeData, DeleteUsersMeResponses, GetAnalyticsAdminSummaryData, GetAnalyticsAdminSummaryResponses, GetGameByGameSessionIdData, GetGameByGameSessionIdErrors, GetGameByGameSessionIdResponses, GetGameByGameSessionIdUpdatesData, GetGameByGameSessionIdUpdatesErrors, GetGameByGameSessionIdUpdatesResponses, GetGameData, GetGameDrinksData, GetGameDrinksErrors, GetGameDrinksResponses, GetGameErrors, GetGameResponses, GetIngredientsBarcodeByBarcodeData, GetIngredientsBarcodeByBarcodeErrors, GetIngredientsBarcodeByBarcodeResponses, GetIngredientsByIngredientIdData, GetIngredientsByIngredientIdErrors, GetIngredientsByIngredientIdResponses, GetIngredientsData, GetIngredientsErrors, GetIngredientsResponses, GetNutritionCatalogData, GetNutritionCatalogErrors, GetNutritionCatalogResponses, GetNutritionCommonEntriesData, GetNutritionCommonEntriesErrors, GetNutritionCommonEntriesResponses, GetNutritionDayByLogDateData, GetNutritionDayByLogDateErrors, GetNutritionDayByLogDateResponses, GetProductsBarcodeByBarcodeData, GetProductsBarcodeByBarcodeErrors, GetProductsBarcodeByBarcodeResponses, GetProductsByProductIdData, GetProductsByProductIdErrors, GetProductsByProductIdResponses, GetProductsData, GetProductsErrors, GetProductsResponses, GetRecipesByRecipeIdData, GetRecipesByRecipeIdErrors, GetRecipesByRecipeIdResponses, GetRecipesData, GetRecipesErrors, GetRecipesResponses, GetRolesByRoleIdData, GetRolesByRoleIdErrors, GetRolesByRoleIdResponses, GetRolesData, GetRolesResponses, GetRolesScopesAvailableData, GetRolesScopesAvailableResponses, GetRolesTemplatesData, GetRolesTemplatesResponses, GetUsersByUserIdData, GetUsersByUserIdErrors, GetUsersByUserIdResponses, GetUsersData, GetUsersErrors, GetUsersMeData, GetUsersMeErrors, GetUsersMeResponses, GetUsersResponses, GetUsersWithPermissionsData, GetUsersWithPermissionsErrors, GetUsersWithPermissionsResponses, GetUtilsHealthCheckData, GetUtilsHealthCheckResponses, PatchGameByGameSessionIdPlayerByGamePlayerIdData, PatchGameByGameSessionIdPlayerByGamePlayerIdDrinkData, PatchGameByGameSessionIdPlayerByGamePlayerIdDrinkErrors, PatchGameByGameSessionIdPlayerByGamePlayerIdDrinkResponses, PatchGameByGameSessionIdPlayerByGamePlayerIdErrors, PatchGameByGameSessionIdPlayerByGamePlayerIdResponses, PatchGameDrinksByDrinkIdData, PatchGameDrinksByDrinkIdErrors, PatchGameDrinksByDrinkIdResponses, PatchIngredientsByIngredientIdData, PatchIngredientsByIngredientIdErrors, PatchIngredientsByIngredientIdResponses, PatchNutritionEntriesByEntryIdData, PatchNutritionEntriesByEntryIdErrors, PatchNutritionEntriesByEntryIdResponses, PatchProductsByProductIdData, PatchProductsByProductIdErrors, PatchProductsByProductIdResponses, PatchRecipesByRecipeIdData, PatchRecipesByRecipeIdErrors, PatchRecipesByRecipeIdResponses, PatchUsersByUserIdData, PatchUsersByUserIdErrors, PatchUsersByUserIdResponses, PatchUsersMeData, PatchUsersMeErrors, PatchUsersMePasswordData, PatchUsersMePasswordErrors, PatchUsersMePasswordResponses, PatchUsersMeResponses, PostAnalyticsEventsData, PostAnalyticsEventsErrors, PostAnalyticsEventsResponses, PostGameByGameSessionIdPlayerData, PostGameByGameSessionIdPlayerErrors, PostGameByGameSessionIdPlayerResponses, PostGameByGameSessionIdTeamData, PostGameByGameSessionIdTeamErrors, PostGameByGameSessionIdTeamResponses, PostGameData, PostGameDrinksData, PostGameDrinksErrors, PostGameDrinksResponses, PostGameErrors, PostGameResponses, PostIngredientsData, PostIngredientsErrors, PostIngredientsResponses, PostLoginAccessTokenData, PostLoginAccessTokenErrors, PostLoginAccessTokenResponses, PostLoginRefreshData, PostLoginRefreshErrors, PostLoginRefreshResponses, PostLoginTestTokenData, PostLoginTestTokenResponses, PostLogoutData, PostLogoutErrors, PostLogoutResponses, PostNutritionEntriesBatchData, PostNutritionEntriesBatchErrors, PostNutritionEntriesBatchResponses, PostNutritionEntriesData, PostNutritionEntriesErrors, PostNutritionEntriesResponses, PostNutritionQuickAddPreviewData, PostNutritionQuickAddPreviewErrors, PostNutritionQuickAddPreviewResponses, PostPasswordRecoveryByEmailData, PostPasswordRecoveryByEmailErrors, PostPasswordRecoveryByEmailResponses, PostPasswordRecoveryHtmlContentByEmailData, PostPasswordRecoveryHtmlContentByEmailErrors, PostPasswordRecoveryHtmlContentByEmailResponses, PostProductsData, PostProductsErrors, PostProductsResponses, PostRecipesData, PostRecipesErrors, PostRecipesResponses, PostRecipesUploadImageData, PostRecipesUploadImageErrors, PostRecipesUploadImageResponses, PostResetPasswordData, PostResetPasswordErrors, PostResetPasswordResponses, PostRolesData, PostRolesErrors, PostRolesFromTemplateByTemplateKeyData, PostRolesFromTemplateByTemplateKeyErrors, PostRolesFromTemplateByTemplateKeyResponses, PostRolesResponses, PostUsersByUserIdRolesByRoleIdData, PostUsersByUserIdRolesByRoleIdErrors, PostUsersByUserIdRolesByRoleIdResponses, PostUsersByUserIdScopesData, PostUsersByUserIdScopesErrors, PostUsersByUserIdScopesResponses, PostUsersData, PostUsersErrors, PostUsersResponses, PostUsersSignupData, PostUsersSignupErrors, PostUsersSignupResponses, PutNutritionEntriesByEntryIdData, PutNutritionEntriesByEntryIdErrors, PutNutritionEntriesByEntryIdResponses, PutRolesByRoleIdData, PutRolesByRoleIdErrors, PutRolesByRoleIdResponses } from './types.gen';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean, TResponse = unknown> = Options2<TData, ThrowOnError, TResponse> & {
     /**
@@ -969,6 +969,216 @@ export class AnalyticsService {
             security: [{ scheme: 'bearer', type: 'http' }],
             url: '/analytics/admin/summary',
             ...options
+        });
+    }
+}
+
+export class ProductsService {
+    /**
+     * Get Products
+     */
+    public static GetProducts<ThrowOnError extends boolean = false>(options?: Options<GetProductsData, ThrowOnError>): RequestResult<GetProductsResponses, GetProductsErrors, ThrowOnError> {
+        return (options?.client ?? client).get<GetProductsResponses, GetProductsErrors, ThrowOnError>({
+            responseTransformer: getProductsResponseTransformer,
+            security: [{ scheme: 'bearer', type: 'http' }],
+            url: '/products/',
+            ...options
+        });
+    }
+
+    /**
+     * Create Product
+     */
+    public static CreateProduct<ThrowOnError extends boolean = false>(options: Options<PostProductsData, ThrowOnError>): RequestResult<PostProductsResponses, PostProductsErrors, ThrowOnError> {
+        return (options.client ?? client).post<PostProductsResponses, PostProductsErrors, ThrowOnError>({
+            responseTransformer: postProductsResponseTransformer,
+            security: [{ scheme: 'bearer', type: 'http' }],
+            url: '/products/',
+            ...options,
+            headers: {
+                'Content-Type': 'application/json',
+                ...options.headers
+            }
+        });
+    }
+
+    /**
+     * Get Product By Barcode
+     */
+    public static GetProductByBarcode<ThrowOnError extends boolean = false>(options: Options<GetProductsBarcodeByBarcodeData, ThrowOnError>): RequestResult<GetProductsBarcodeByBarcodeResponses, GetProductsBarcodeByBarcodeErrors, ThrowOnError> {
+        return (options.client ?? client).get<GetProductsBarcodeByBarcodeResponses, GetProductsBarcodeByBarcodeErrors, ThrowOnError>({
+            security: [{ scheme: 'bearer', type: 'http' }],
+            url: '/products/barcode/{barcode}',
+            ...options
+        });
+    }
+
+    /**
+     * Delete Product
+     */
+    public static DeleteProduct<ThrowOnError extends boolean = false>(options: Options<DeleteProductsByProductIdData, ThrowOnError>): RequestResult<DeleteProductsByProductIdResponses, DeleteProductsByProductIdErrors, ThrowOnError> {
+        return (options.client ?? client).delete<DeleteProductsByProductIdResponses, DeleteProductsByProductIdErrors, ThrowOnError>({
+            responseTransformer: deleteProductsByProductIdResponseTransformer,
+            security: [{ scheme: 'bearer', type: 'http' }],
+            url: '/products/{product_id}',
+            ...options
+        });
+    }
+
+    /**
+     * Get Product
+     */
+    public static GetProduct<ThrowOnError extends boolean = false>(options: Options<GetProductsByProductIdData, ThrowOnError>): RequestResult<GetProductsByProductIdResponses, GetProductsByProductIdErrors, ThrowOnError> {
+        return (options.client ?? client).get<GetProductsByProductIdResponses, GetProductsByProductIdErrors, ThrowOnError>({
+            responseTransformer: getProductsByProductIdResponseTransformer,
+            security: [{ scheme: 'bearer', type: 'http' }],
+            url: '/products/{product_id}',
+            ...options
+        });
+    }
+
+    /**
+     * Update Product
+     */
+    public static UpdateProduct<ThrowOnError extends boolean = false>(options: Options<PatchProductsByProductIdData, ThrowOnError>): RequestResult<PatchProductsByProductIdResponses, PatchProductsByProductIdErrors, ThrowOnError> {
+        return (options.client ?? client).patch<PatchProductsByProductIdResponses, PatchProductsByProductIdErrors, ThrowOnError>({
+            responseTransformer: patchProductsByProductIdResponseTransformer,
+            security: [{ scheme: 'bearer', type: 'http' }],
+            url: '/products/{product_id}',
+            ...options,
+            headers: {
+                'Content-Type': 'application/json',
+                ...options.headers
+            }
+        });
+    }
+}
+
+export class NutritionService {
+    /**
+     * Get Nutrition Day
+     */
+    public static GetNutritionDay<ThrowOnError extends boolean = false>(options: Options<GetNutritionDayByLogDateData, ThrowOnError>): RequestResult<GetNutritionDayByLogDateResponses, GetNutritionDayByLogDateErrors, ThrowOnError> {
+        return (options.client ?? client).get<GetNutritionDayByLogDateResponses, GetNutritionDayByLogDateErrors, ThrowOnError>({
+            responseTransformer: getNutritionDayByLogDateResponseTransformer,
+            security: [{ scheme: 'bearer', type: 'http' }],
+            url: '/nutrition/day/{log_date}',
+            ...options
+        });
+    }
+
+    /**
+     * Get Nutrition Catalog
+     */
+    public static GetNutritionCatalog<ThrowOnError extends boolean = false>(options?: Options<GetNutritionCatalogData, ThrowOnError>): RequestResult<GetNutritionCatalogResponses, GetNutritionCatalogErrors, ThrowOnError> {
+        return (options?.client ?? client).get<GetNutritionCatalogResponses, GetNutritionCatalogErrors, ThrowOnError>({
+            responseTransformer: getNutritionCatalogResponseTransformer,
+            security: [{ scheme: 'bearer', type: 'http' }],
+            url: '/nutrition/catalog',
+            ...options
+        });
+    }
+
+    /**
+     * Get Common Nutrition Entries
+     */
+    public static GetCommonNutritionEntries<ThrowOnError extends boolean = false>(options?: Options<GetNutritionCommonEntriesData, ThrowOnError>): RequestResult<GetNutritionCommonEntriesResponses, GetNutritionCommonEntriesErrors, ThrowOnError> {
+        return (options?.client ?? client).get<GetNutritionCommonEntriesResponses, GetNutritionCommonEntriesErrors, ThrowOnError>({
+            responseTransformer: getNutritionCommonEntriesResponseTransformer,
+            security: [{ scheme: 'bearer', type: 'http' }],
+            url: '/nutrition/common-entries',
+            ...options
+        });
+    }
+
+    /**
+     * Create Nutrition Entry
+     */
+    public static CreateNutritionEntry<ThrowOnError extends boolean = false>(options: Options<PostNutritionEntriesData, ThrowOnError>): RequestResult<PostNutritionEntriesResponses, PostNutritionEntriesErrors, ThrowOnError> {
+        return (options.client ?? client).post<PostNutritionEntriesResponses, PostNutritionEntriesErrors, ThrowOnError>({
+            responseTransformer: postNutritionEntriesResponseTransformer,
+            security: [{ scheme: 'bearer', type: 'http' }],
+            url: '/nutrition/entries',
+            ...options,
+            headers: {
+                'Content-Type': 'application/json',
+                ...options.headers
+            }
+        });
+    }
+
+    /**
+     * Create Nutrition Entries
+     */
+    public static CreateNutritionEntries<ThrowOnError extends boolean = false>(options: Options<PostNutritionEntriesBatchData, ThrowOnError>): RequestResult<PostNutritionEntriesBatchResponses, PostNutritionEntriesBatchErrors, ThrowOnError> {
+        return (options.client ?? client).post<PostNutritionEntriesBatchResponses, PostNutritionEntriesBatchErrors, ThrowOnError>({
+            responseTransformer: postNutritionEntriesBatchResponseTransformer,
+            security: [{ scheme: 'bearer', type: 'http' }],
+            url: '/nutrition/entries/batch',
+            ...options,
+            headers: {
+                'Content-Type': 'application/json',
+                ...options.headers
+            }
+        });
+    }
+
+    /**
+     * Delete Nutrition Entry
+     */
+    public static DeleteNutritionEntry<ThrowOnError extends boolean = false>(options: Options<DeleteNutritionEntriesByEntryIdData, ThrowOnError>): RequestResult<DeleteNutritionEntriesByEntryIdResponses, DeleteNutritionEntriesByEntryIdErrors, ThrowOnError> {
+        return (options.client ?? client).delete<DeleteNutritionEntriesByEntryIdResponses, DeleteNutritionEntriesByEntryIdErrors, ThrowOnError>({
+            responseTransformer: deleteNutritionEntriesByEntryIdResponseTransformer,
+            security: [{ scheme: 'bearer', type: 'http' }],
+            url: '/nutrition/entries/{entry_id}',
+            ...options
+        });
+    }
+
+    /**
+     * Move Nutrition Entry
+     */
+    public static MoveNutritionEntry<ThrowOnError extends boolean = false>(options: Options<PatchNutritionEntriesByEntryIdData, ThrowOnError>): RequestResult<PatchNutritionEntriesByEntryIdResponses, PatchNutritionEntriesByEntryIdErrors, ThrowOnError> {
+        return (options.client ?? client).patch<PatchNutritionEntriesByEntryIdResponses, PatchNutritionEntriesByEntryIdErrors, ThrowOnError>({
+            responseTransformer: patchNutritionEntriesByEntryIdResponseTransformer,
+            security: [{ scheme: 'bearer', type: 'http' }],
+            url: '/nutrition/entries/{entry_id}',
+            ...options,
+            headers: {
+                'Content-Type': 'application/json',
+                ...options.headers
+            }
+        });
+    }
+
+    /**
+     * Replace Nutrition Entry
+     */
+    public static ReplaceNutritionEntry<ThrowOnError extends boolean = false>(options: Options<PutNutritionEntriesByEntryIdData, ThrowOnError>): RequestResult<PutNutritionEntriesByEntryIdResponses, PutNutritionEntriesByEntryIdErrors, ThrowOnError> {
+        return (options.client ?? client).put<PutNutritionEntriesByEntryIdResponses, PutNutritionEntriesByEntryIdErrors, ThrowOnError>({
+            responseTransformer: putNutritionEntriesByEntryIdResponseTransformer,
+            security: [{ scheme: 'bearer', type: 'http' }],
+            url: '/nutrition/entries/{entry_id}',
+            ...options,
+            headers: {
+                'Content-Type': 'application/json',
+                ...options.headers
+            }
+        });
+    }
+
+    /**
+     * Preview Quick Add
+     */
+    public static PreviewQuickAdd<ThrowOnError extends boolean = false>(options: Options<PostNutritionQuickAddPreviewData, ThrowOnError>): RequestResult<PostNutritionQuickAddPreviewResponses, PostNutritionQuickAddPreviewErrors, ThrowOnError> {
+        return (options.client ?? client).post<PostNutritionQuickAddPreviewResponses, PostNutritionQuickAddPreviewErrors, ThrowOnError>({
+            security: [{ scheme: 'bearer', type: 'http' }],
+            url: '/nutrition/quick-add/preview',
+            ...options,
+            headers: {
+                'Content-Type': 'application/json',
+                ...options.headers
+            }
         });
     }
 }

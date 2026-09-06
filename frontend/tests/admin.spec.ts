@@ -89,6 +89,9 @@ test.describe("Admin Dashboard", () => {
                 const controls = scanDialog.getByTestId("barcode-scanner-controls");
                 await expect(camera).toBeVisible();
                 await expect(controls).toBeVisible();
+                await expect
+                    .poll(async () => (await scanDialog.boundingBox())?.width ?? 0)
+                    .toBeGreaterThanOrEqual(389);
 
                 const [portraitDialogBox, portraitCameraBox, portraitControlsBox] =
                     await Promise.all([
@@ -101,7 +104,6 @@ test.describe("Admin Dashboard", () => {
                 expect(portraitControlsBox).not.toBeNull();
                 if (!portraitDialogBox || !portraitCameraBox || !portraitControlsBox) return;
 
-                expect(portraitDialogBox.width).toBeGreaterThanOrEqual(389);
                 expect(portraitCameraBox.width).toBeGreaterThan(350);
                 expect(portraitControlsBox.y).toBeGreaterThanOrEqual(
                     portraitCameraBox.y + portraitCameraBox.height

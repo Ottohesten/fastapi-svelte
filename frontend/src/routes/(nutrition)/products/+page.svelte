@@ -22,7 +22,7 @@
     ProductNutritionBasis,
     ProductPublic
   } from "$lib/client";
-  import BarcodeScanner from "$lib/components/BarcodeScanner.svelte";
+  import BarcodeScannerDialog from "$lib/components/BarcodeScannerDialog.svelte";
   import * as Alert from "$lib/components/ui/alert";
   import { Button, buttonVariants } from "$lib/components/ui/button";
   import * as Card from "$lib/components/ui/card";
@@ -45,6 +45,7 @@
   let successMessage = $state("");
   let lookupError = $state("");
   let barcodePreview = $state<ProductBarcodePreviewPublic | null>(null);
+  let returnToProductFormAfterScan = $state(false);
 
   const productForm = superForm(
     untrack(() => data.productForm),
@@ -74,6 +75,13 @@
   const { form: productData, enhance: productEnhance, submitting } = productForm;
 
   const editing = $derived($productData.id.length > 0);
+
+  $effect(() => {
+    if (!scanOpen && returnToProductFormAfterScan && !lookupLoading) {
+      returnToProductFormAfterScan = false;
+      productOpen = true;
+    }
+  });
 
   function productFormData(saved: ProductPublic): ProductFormData {
     return {
@@ -130,6 +138,13 @@
     barcodePreview = null;
     lookupError = "";
     productOpen = true;
+  }
+
+  function openBarcodeScanner(returnToProductForm = false) {
+    lookupError = "";
+    returnToProductFormAfterScan = returnToProductForm;
+    if (returnToProductForm) productOpen = false;
+    scanOpen = true;
   }
 
   function actionMessage(result: { data?: Record<string, unknown> }): string {
@@ -240,28 +255,9 @@
         </p>
       </div>
       <div class="grid grid-cols-2 gap-2 sm:flex">
-        <Dialog.Root bind:open={scanOpen} shallowRouting={false}>
-          <Dialog.Trigger class={buttonVariants({ variant: "outline", class: "h-11" })}>
-            <ScanLine /> Scan
-          </Dialog.Trigger>
-          <Dialog.Content class="barcode-scan-dialog max-h-[90vh] overflow-y-auto sm:max-w-lg">
-            <Dialog.Header>
-              <Dialog.Title>Scan a product</Dialog.Title>
-              <Dialog.Description
-                >Use the camera or enter the barcode. You will review everything before saving.</Dialog.Description
-              >
-            </Dialog.Header>
-            {#if lookupLoading}
-              <div class="text-muted-foreground grid min-h-64 place-items-center">
-                <span class="flex items-center gap-2"
-                  ><LoaderCircle class="animate-spin" /> Looking up product…</span
-                >
-              </div>
-            {:else}
-              <BarcodeScanner onDetected={lookupBarcode} />
-            {/if}
-          </Dialog.Content>
-        </Dialog.Root>
+        <Button type="button" variant="outline" class="h-11" onclick={() => openBarcodeScanner()}>
+          <ScanLine /> Scan
+        </Button>
         <Dialog.Trigger class={buttonVariants({ class: "h-11" })} onclick={addProduct}>
           <Plus /> Add product
         </Dialog.Trigger>
@@ -493,6 +489,16 @@
     >
       <input type="hidden" name="id" value={$productData.id} />
       <input type="hidden" name="image_url" value={$productData.image_url} />
+      {#if !editing}
+        <Button
+          type="button"
+          variant="outline"
+          class="w-full"
+          onclick={() => openBarcodeScanner(true)}
+        >
+          <ScanLine /> Scan product barcode
+        </Button>
+      {/if}
       <div class="grid gap-4 sm:grid-cols-2">
         <Field form={productForm} name="title">
           <div class="space-y-2 sm:col-span-2">
@@ -719,3 +725,11 @@
     </form>
   </Dialog.Content>
 </Dialog.Root>
+
+<BarcodeScannerDialog
+  bind:open={scanOpen}
+  loading={lookupLoading}
+  onDetected={lookupBarcode}
+  title="Scan a product"
+  description="Use the camera or enter the barcode. You will review everything before saving."
+/>

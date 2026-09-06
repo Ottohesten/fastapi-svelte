@@ -47,6 +47,33 @@ export function formatNutrition(value: number | null | undefined): string {
     return roundNutrition(value).toLocaleString("en-DK", { maximumFractionDigits: 1 });
 }
 
+function normalizeCatalogSearch(value: string): string {
+    return value
+        .toLocaleLowerCase("da-DK")
+        .replaceAll("æ", "ae")
+        .replaceAll("ø", "o")
+        .replaceAll("å", "aa")
+        .normalize("NFKD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/\s+/g, " ")
+        .trim();
+}
+
+/** Match every search term as a real substring instead of loose character-order fuzziness. */
+export function catalogSearchScore(value: string, search: string, keywords: string[] = []): number {
+    const phrase = normalizeCatalogSearch(search);
+    if (!phrase) return 1;
+
+    const normalizedValue = normalizeCatalogSearch(value);
+    const searchableFields = [normalizedValue, ...keywords.map(normalizeCatalogSearch)];
+    const terms = phrase.split(" ");
+    if (!terms.every((term) => searchableFields.some((field) => field.includes(term)))) return 0;
+    if (normalizedValue === phrase) return 1;
+    if (normalizedValue.startsWith(phrase)) return 0.95;
+    if (normalizedValue.includes(phrase)) return 0.9;
+    return 0.75;
+}
+
 export function defaultMealType(now = new Date()) {
     const hour = now.getHours();
     if (hour < 11) return "breakfast" as const;

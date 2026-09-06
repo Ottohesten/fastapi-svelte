@@ -5,6 +5,7 @@
   import { Combobox } from "$lib/components/ui/combobox";
   import { Input } from "$lib/components/ui/input";
   import {
+    catalogSearchScore,
     draftIsComplete,
     draftPreview,
     formatNutrition,
@@ -349,18 +350,21 @@
           <Control>
             {#snippet children({ props })}
               <Label>Saved food</Label>
-              <Combobox
-                controlProps={props}
-                items={catalogItems}
-                value={selectedCatalogValue}
-                onSelect={(item) => item && chooseCatalogSource(item.value)}
-                placeholder="Search recipes, products, and ingredients…"
-                searchPlaceholder="Search all saved foods…"
-                emptyMessage="No matching saved food found."
-                ariaLabel="Saved food"
-                buttonClass="w-full justify-between"
-                popoverClass="w-(--bits-popover-anchor-width) sm:min-w-[28rem]"
-              />
+              {#key selectedCatalogValue}
+                <Combobox
+                  controlProps={props}
+                  items={catalogItems}
+                  value={selectedCatalogValue}
+                  onSelect={(item) => item && chooseCatalogSource(item.value)}
+                  filter={catalogSearchScore}
+                  placeholder="Search recipes, products, and ingredients…"
+                  searchPlaceholder="Search all saved foods…"
+                  emptyMessage="No matching saved food found."
+                  ariaLabel="Saved food"
+                  buttonClass="w-full justify-between"
+                  popoverClass="w-(--bits-popover-anchor-width) sm:min-w-[28rem]"
+                />
+              {/key}
             {/snippet}
           </Control>
           <p class="text-muted-foreground text-xs">

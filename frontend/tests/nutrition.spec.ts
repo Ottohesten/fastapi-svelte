@@ -254,12 +254,16 @@ test.describe("personal nutrition", () => {
                 .locator('[data-slot="command-item"]')
                 .filter({ hasText: `${title} · Product` });
             await expect(productOption).toHaveCount(1);
+            await expect(page.locator('[data-slot="command-item"]')).toHaveCount(1);
             await expect(productOption).toContainText("400 kcal per package");
             await productOption.click();
 
             await expect(
                 addDialog.getByRole("combobox", { name: "Saved food" }).first()
             ).toContainText(`${title} · Product`);
+            await expect(
+                addDialog.getByRole("combobox", { name: "Saved food" }).last()
+            ).toContainText("Search recipes, products, and ingredients…");
             await expect(addDialog.locator("[data-added-food-row]")).toHaveCount(1);
             await expect(addDialog.locator("[data-next-food-row]")).toContainText(
                 "Add another food"

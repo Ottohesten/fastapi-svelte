@@ -170,7 +170,7 @@
           const count = form.data.entries.length;
           addOpen = false;
           $addBatchData.entries = [];
-          $entryData = blankDraft("add-next", addMeal);
+          $entryData = newAddDraft(addMeal);
           successMessage =
             count === 1 ? "Food added to the diary." : `${count} foods added to the diary.`;
           await invalidateAll();
@@ -238,6 +238,10 @@
       protein: null,
       row_message: null
     };
+  }
+
+  function newAddDraft(mealType: MealType): NutritionEntryDraft {
+    return blankDraft(`add-next-${crypto.randomUUID()}`, mealType);
   }
 
   const quickComplete = $derived(
@@ -332,7 +336,7 @@
     actionError = "";
     addMeal = defaultMealType();
     $addBatchData.entries = [];
-    $entryData = blankDraft("add-next", addMeal);
+    $entryData = newAddDraft(addMeal);
     addOpen = true;
   }
 
@@ -374,7 +378,7 @@
         meal_type: addMeal
       }
     ];
-    $entryData = blankDraft("add-next", addMeal);
+    $entryData = newAddDraft(addMeal);
   }
 
   function updateAddMeal(mealType: MealType) {
@@ -520,7 +524,7 @@
       draft.quantity = Number.isFinite(quantity) && quantity > 0 ? quantity : 1;
       addMeal = draft.meal_type;
       $addBatchData.entries = [{ ...draft, client_id: `prefill-${crypto.randomUUID()}` }];
-      $entryData = blankDraft("add-next", addMeal);
+      $entryData = newAddDraft(addMeal);
       addOpen = true;
     }
   });
@@ -935,15 +939,17 @@
           Selecting a saved food immediately opens a fresh row for the next item.
         </p>
       </div>
-      <NutritionEntryEditor
-        form={entryForm}
-        bind:entry={$entryData}
-        recipes={data.catalog.recipes}
-        products={data.catalog.products}
-        ingredients={data.catalog.ingredients}
-        showMeal={false}
-        onCatalogSelect={addPendingEntry}
-      />
+      {#key $entryData.client_id}
+        <NutritionEntryEditor
+          form={entryForm}
+          bind:entry={$entryData}
+          recipes={data.catalog.recipes}
+          products={data.catalog.products}
+          ingredients={data.catalog.ingredients}
+          showMeal={false}
+          onCatalogSelect={addPendingEntry}
+        />
+      {/key}
       {#if $entryData.source_type === "manual"}
         <Button
           type="button"

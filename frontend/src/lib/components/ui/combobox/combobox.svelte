@@ -29,6 +29,7 @@
     popoverClass?: string;
     disabled?: boolean;
     controlProps?: Partial<ControlAttrs>;
+    filter?: (value: string, search: string, keywords?: string[]) => number;
   }
 
   let {
@@ -43,7 +44,8 @@
     buttonClass = "w-[200px] justify-between",
     popoverClass = "w-(--bits-popover-anchor-width)",
     disabled = false,
-    controlProps = {}
+    controlProps = {},
+    filter
   }: Props = $props();
 
   let open = $state(false);
@@ -89,7 +91,7 @@
       {/snippet}
     </Popover.Trigger>
     <Popover.Content class={cn(popoverClass, "p-0")} align="start">
-      <Command.Root>
+      <Command.Root {filter}>
         <Command.Input placeholder={searchPlaceholder} />
         <Command.List>
           <Command.Empty>{emptyMessage}</Command.Empty>

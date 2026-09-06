@@ -168,6 +168,7 @@ export const load: PageServerLoad = async ({ cookies, fetch, url }) => {
         entryForm,
         quickAddForm,
         batchForm,
+        addBatchForm,
         moveForm
     ] = await Promise.all([
         NutritionService.GetNutritionDay({
@@ -196,6 +197,10 @@ export const load: PageServerLoad = async ({ cookies, fetch, url }) => {
         ),
         superValidate({ entries: [] }, zod(NutritionBatchFormSchema), {
             id: "nutritionBatchForm",
+            errors: false
+        }),
+        superValidate({ entries: [] }, zod(NutritionBatchFormSchema), {
+            id: "nutritionAddBatchForm",
             errors: false
         }),
         superValidate(
@@ -231,6 +236,7 @@ export const load: PageServerLoad = async ({ cookies, fetch, url }) => {
         entryForm,
         quickAddForm,
         batchForm,
+        addBatchForm,
         moveForm,
         prefill: {
             sourceType: url.searchParams.get("source_type"),
@@ -332,6 +338,32 @@ export const actions = {
         } catch (caught) {
             const detail =
                 caught instanceof Error ? caught.message : "The reviewed entries are invalid.";
+            return message(form, detail, { status: 400 });
+        }
+    },
+    addBatch: async ({ cookies, fetch, request, url }) => {
+        const token = requireAuthToken(cookies, url.pathname);
+        const form = await superValidate(request, zod(NutritionBatchFormSchema), {
+            id: "nutritionAddBatchForm"
+        });
+        if (!form.valid) return fail(400, { form });
+
+        try {
+            const result = await NutritionService.CreateNutritionEntries({
+                auth: token,
+                fetch,
+                body: { entries: form.data.entries.map(entryBody) }
+            });
+            if (result.error) {
+                return message(
+                    form,
+                    apiErrorMessage(result.error, "The foods could not be added to the diary."),
+                    { status: backendActionStatus(result.response) }
+                );
+            }
+            return message(form, "Foods added to the diary.");
+        } catch (caught) {
+            const detail = caught instanceof Error ? caught.message : "The entries are invalid.";
             return message(form, detail, { status: 400 });
         }
     },

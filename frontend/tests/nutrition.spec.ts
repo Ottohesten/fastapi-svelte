@@ -110,23 +110,28 @@ test.describe("personal nutrition", () => {
             });
 
             const addDialog = page.getByRole("dialog", { name: "Add food" });
-            await expect(addDialog.getByRole("combobox", { name: "Saved food" })).toContainText(
-                title
-            );
-            await expect(addDialog.getByLabel("Unit")).toHaveValue("package");
+            await expect(
+                addDialog.getByRole("combobox", { name: "Saved food" }).first()
+            ).toContainText(title);
+            await expect(addDialog.getByLabel("Unit").first()).toHaveValue("package");
             await addDialog.getByLabel("Meal").selectOption("dinner");
+            await expect(addDialog.locator("[data-added-food-row]")).toHaveCount(1);
+            await expect(addDialog.locator("[data-next-food-row]")).toContainText(
+                "Add another food"
+            );
+            await expect(addDialog.locator("[data-food-details]")).toContainText(
+                "740 kcal per package"
+            );
+
+            await addDialog.getByRole("button", { name: "Enter a one-off food" }).click();
+            await addDialog.getByLabel("Description").fill(manualTitle);
+            await addDialog.getByLabel("Calories").fill("110");
             await addDialog.getByRole("button", { name: "Add to diary" }).click();
 
-            await expect(page.getByText("Food added to the diary.", { exact: true })).toBeVisible();
+            await expect(
+                page.getByText("2 foods added to the diary.", { exact: true })
+            ).toBeVisible();
             await expect(diaryEntry(page, title)).toContainText("1 package · 740 kcal");
-
-            await page.getByRole("button", { name: "Add food" }).click();
-            const manualDialog = page.getByRole("dialog", { name: "Add food" });
-            await manualDialog.getByRole("button", { name: "Enter a one-off food" }).click();
-            await manualDialog.getByLabel("Description").fill(manualTitle);
-            await manualDialog.getByLabel("Calories").fill("110");
-            await manualDialog.getByLabel("Meal").selectOption("dinner");
-            await manualDialog.getByRole("button", { name: "Add to diary" }).click();
             await expect(diaryEntry(page, manualTitle)).toContainText("110 kcal");
             await expect(diaryEntry(page, manualTitle)).toContainText("Manual");
 
@@ -249,10 +254,18 @@ test.describe("personal nutrition", () => {
                 .locator('[data-slot="command-item"]')
                 .filter({ hasText: `${title} · Product` });
             await expect(productOption).toHaveCount(1);
+            await expect(productOption).toContainText("400 kcal per package");
             await productOption.click();
 
-            await expect(addDialog.getByRole("combobox", { name: "Saved food" })).toContainText(
-                `${title} · Product`
+            await expect(
+                addDialog.getByRole("combobox", { name: "Saved food" }).first()
+            ).toContainText(`${title} · Product`);
+            await expect(addDialog.locator("[data-added-food-row]")).toHaveCount(1);
+            await expect(addDialog.locator("[data-next-food-row]")).toContainText(
+                "Add another food"
+            );
+            await expect(addDialog.locator("[data-food-details]")).toContainText(
+                "400 kcal per package"
             );
             await expect(addDialog.getByLabel("Amount")).toHaveValue("1");
             await expect(addDialog.getByLabel("Unit")).toHaveValue("package");

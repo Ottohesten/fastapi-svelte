@@ -11,6 +11,7 @@
     validProductUnits
   } from "$lib/nutrition/helpers";
   import {
+    nutritionBasisLabels,
     sourceTypeLabels,
     type EntrySourceType,
     type EntryUnit,
@@ -36,6 +37,9 @@
     ingredients: NutritionIngredientOption[];
     removable?: boolean;
     onRemove?: () => void;
+    showMeal?: boolean;
+    showSourceSwitch?: boolean;
+    onCatalogSelect?: (entry: NutritionEntryDraft) => void;
   };
 
   let {
@@ -46,7 +50,10 @@
     products,
     ingredients,
     removable = false,
-    onRemove
+    onRemove,
+    showMeal = true,
+    showSourceSwitch = true,
+    onCatalogSelect
   }: Props = $props();
 
   // Formsnap's generic path cannot express a prefix chosen at runtime. Both possible form
@@ -80,20 +87,63 @@
       ...recipes.map((recipe) => ({
         value: `recipe:${recipe.id}`,
         label: `${recipe.title} · Recipe`,
+        description:
+          recipe.serving_weight_grams > 0
+            ? `${formatNutrition(recipe.calories)} kcal/serving · ${formatNutrition(recipe.serving_weight_grams)} g/serving`
+            : `${formatNutrition(recipe.calories)} kcal/serving`,
         keywords: [recipe.title, "recipe"]
       })),
       ...products.map((product) => ({
         value: `product:${product.id}`,
         label: `${product.title}${product.brand ? ` — ${product.brand}` : ""} · Product`,
+        description: `${formatNutrition(product.calories)} kcal ${nutritionBasisLabels[product.nutrition_basis ?? "per_100g"]}`,
         keywords: [product.title, product.brand ?? "", product.barcode ?? "", "product"]
       })),
       ...ingredients.map((ingredient) => ({
         value: `ingredient:${ingredient.id}`,
         label: `${ingredient.title} · Ingredient`,
+        description: `${formatNutrition(ingredient.calories)} kcal/100 g`,
         keywords: [ingredient.title, "ingredient"]
       }))
     ].sort((left, right) => left.label.localeCompare(right.label, "en", { sensitivity: "base" }))
   );
+  const selectedFoodDetails = $derived.by(() => {
+    if (selectedRecipe) {
+      const details = [`${formatNutrition(selectedRecipe.calories)} kcal per serving`];
+      if (selectedRecipe.serving_weight_grams > 0) {
+        details.push(`${formatNutrition(selectedRecipe.serving_weight_grams)} g per serving`);
+      }
+      details.push(
+        `Full recipe makes ${selectedRecipe.servings} ${selectedRecipe.servings === 1 ? "serving" : "servings"}`
+      );
+      return details;
+    }
+    if (selectedProduct) {
+      const basis = selectedProduct.nutrition_basis ?? "per_100g";
+      const details = [
+        `${formatNutrition(selectedProduct.calories)} kcal ${nutritionBasisLabels[basis]}`
+      ];
+      if (selectedProduct.serving_size && selectedProduct.serving_size_unit) {
+        details.push(
+          `Serving: ${formatNutrition(selectedProduct.serving_size)} ${selectedProduct.serving_size_unit}`
+        );
+      }
+      if (selectedProduct.package_size && selectedProduct.package_size_unit) {
+        details.push(
+          `Package: ${formatNutrition(selectedProduct.package_size)} ${selectedProduct.package_size_unit}`
+        );
+      }
+      return details;
+    }
+    if (selectedIngredient) {
+      const details = [`${formatNutrition(selectedIngredient.calories)} kcal per 100 g`];
+      if (selectedIngredient.weight_per_piece) {
+        details.push(`1 piece is about ${formatNutrition(selectedIngredient.weight_per_piece)} g`);
+      }
+      return details;
+    }
+    return [];
+  });
 
   const productUnits = $derived.by<EntryUnit[]>(() => {
     if (!selectedProduct) return ["g"];
@@ -196,6 +246,7 @@
       candidates: [],
       row_message: null
     };
+    onCatalogSelect?.(entry);
   }
 
   function updateQuantity(value: number) {
@@ -257,31 +308,33 @@
     </div>
   {/if}
 
-  <div class="max-w-xs min-w-0 space-y-2">
-    <Field form={fieldForm} name={fieldName("meal_type")}>
-      <Control>
-        {#snippet children({ props })}
-          <Label>Meal</Label>
-          <select
-            {...props}
-            value={entry.meal_type}
-            onchange={(event) =>
-              (entry = {
-                ...entry,
-                meal_type: event.currentTarget.value as typeof entry.meal_type
-              })}
-            class="border-input bg-background focus-visible:ring-ring h-10 w-full rounded-md border px-3 text-sm focus-visible:ring-2 focus-visible:outline-none"
-          >
-            <option value="breakfast">Breakfast</option>
-            <option value="lunch">Lunch</option>
-            <option value="dinner">Dinner</option>
-            <option value="snack">Snack</option>
-          </select>
-        {/snippet}
-      </Control>
-      <FieldErrors />
-    </Field>
-  </div>
+  {#if showMeal}
+    <div class="max-w-xs min-w-0 space-y-2">
+      <Field form={fieldForm} name={fieldName("meal_type")}>
+        <Control>
+          {#snippet children({ props })}
+            <Label>Meal</Label>
+            <select
+              {...props}
+              value={entry.meal_type}
+              onchange={(event) =>
+                (entry = {
+                  ...entry,
+                  meal_type: event.currentTarget.value as typeof entry.meal_type
+                })}
+              class="border-input bg-background focus-visible:ring-ring h-10 w-full rounded-md border px-3 text-sm focus-visible:ring-2 focus-visible:outline-none"
+            >
+              <option value="breakfast">Breakfast</option>
+              <option value="lunch">Lunch</option>
+              <option value="dinner">Dinner</option>
+              <option value="snack">Snack</option>
+            </select>
+          {/snippet}
+        </Control>
+        <FieldErrors />
+      </Field>
+    </div>
+  {/if}
 
   {#if entry.source_type !== "manual"}
     <div
@@ -369,12 +422,25 @@
       {/if}
     </div>
 
-    <div class="flex flex-col gap-2 border-t pt-4 sm:flex-row sm:items-center sm:justify-between">
-      <p class="text-muted-foreground text-sm">Can’t find it in your saved foods?</p>
-      <Button type="button" variant="outline" onclick={enterManualFood}>
-        Enter a one-off food
-      </Button>
-    </div>
+    {#if selectedFoodDetails.length > 0}
+      <div
+        class="bg-muted/45 text-muted-foreground flex flex-wrap gap-x-4 gap-y-1 rounded-lg px-3 py-2 text-xs"
+        data-food-details
+      >
+        {#each selectedFoodDetails as detail}
+          <span>{detail}</span>
+        {/each}
+      </div>
+    {/if}
+
+    {#if showSourceSwitch}
+      <div class="flex flex-col gap-2 border-t pt-4 sm:flex-row sm:items-center sm:justify-between">
+        <p class="text-muted-foreground text-sm">Can’t find it in your saved foods?</p>
+        <Button type="button" variant="outline" onclick={enterManualFood}>
+          Enter a one-off food
+        </Button>
+      </div>
+    {/if}
   {:else}
     <div class="space-y-4 rounded-lg border p-4">
       <div class="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
@@ -384,9 +450,11 @@
             Enter the nutrition totals for this complete entry.
           </p>
         </div>
-        <Button type="button" variant="outline" size="sm" onclick={enterCatalogFood}>
-          Search saved foods instead
-        </Button>
+        {#if showSourceSwitch}
+          <Button type="button" variant="outline" size="sm" onclick={enterCatalogFood}>
+            Search saved foods instead
+          </Button>
+        {/if}
       </div>
       <div class="min-w-0 space-y-2">
         <Field form={fieldForm} name={fieldName("title")}>

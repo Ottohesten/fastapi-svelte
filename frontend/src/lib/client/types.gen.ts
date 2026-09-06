@@ -673,6 +673,10 @@ export type NutritionCatalogRecipePublic = {
      */
     servings: number;
     /**
+     * Serving Weight Grams
+     */
+    serving_weight_grams: number;
+    /**
      * Calories
      */
     calories: number;

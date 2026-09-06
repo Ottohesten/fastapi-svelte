@@ -11,6 +11,7 @@
   export interface ComboboxItem {
     value: string;
     label: string;
+    description?: string;
     disabled?: boolean;
     keywords?: string[];
     meta?: unknown;
@@ -103,7 +104,14 @@
                 class="w-full"
               >
                 <CheckIcon class={cn("mr-2 h-4 w-4", value !== item.value && "text-transparent")} />
-                <span class="truncate" title={item.label}>{item.label}</span>
+                <span class="min-w-0">
+                  <span class="block truncate" title={item.label}>{item.label}</span>
+                  {#if item.description}
+                    <span class="text-muted-foreground block truncate text-xs">
+                      {item.description}
+                    </span>
+                  {/if}
+                </span>
               </Command.Item>
             {/each}
           </Command.Group>

@@ -1189,6 +1189,7 @@ class NutritionCatalogRecipePublic(SQLModel):
     id: uuid.UUID
     title: str
     servings: int
+    serving_weight_grams: float
     calories: float
     carbohydrates: float
     fat: float

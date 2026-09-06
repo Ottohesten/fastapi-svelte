@@ -79,6 +79,51 @@ def calculate_recipe_nutrients(session: Session, recipe: Recipe) -> RecipeNutrie
     return _calculate_recipe_nutrients(session, recipe, 1.0, {recipe.id})
 
 
+def calculate_recipe_weight_grams(session: Session, recipe: Recipe) -> float:
+    """Return the consumed recipe weight using the app's existing gram convention."""
+    return _calculate_recipe_weight_grams(session, recipe, 1.0, {recipe.id})
+
+
+def _calculate_recipe_weight_grams(
+    session: Session,
+    recipe: Recipe,
+    scale: float,
+    stack: set[uuid.UUID],
+) -> float:
+    total = 0.0
+    for link in recipe.ingredient_links:
+        ingredient: Ingredient | None = link.ingredient
+        if ingredient is None:
+            continue
+        amount = link.amount if link.consumed_amount is None else link.consumed_amount
+        if link.unit in {"kg", "L"}:
+            grams = amount * 1000
+        elif link.unit == "pcs":
+            grams = amount * ingredient.weight_per_piece
+        else:
+            # Preserve the recipe system's existing 1 ml == 1 g convention.
+            grams = amount
+        total += grams * scale
+
+    for link in recipe.sub_recipe_links:
+        sub_recipe_id = link.sub_recipe_id
+        if sub_recipe_id is None or sub_recipe_id in stack:
+            continue
+        sub_recipe = session.get(Recipe, sub_recipe_id)
+        if sub_recipe is None:
+            continue
+        stack.add(sub_recipe_id)
+        total += _calculate_recipe_weight_grams(
+            session,
+            sub_recipe,
+            scale * link.scale_factor,
+            stack,
+        )
+        stack.remove(sub_recipe_id)
+
+    return total
+
+
 def _calculate_recipe_nutrients(
     session: Session,
     recipe: Recipe,

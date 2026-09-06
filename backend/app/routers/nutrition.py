@@ -57,7 +57,11 @@ from app.quick_add import (
     QuickAddDraft,
     parse_quick_add,
 )
-from app.recipe_service import calculate_recipe_nutrients, visible_recipe_statement
+from app.recipe_service import (
+    calculate_recipe_nutrients,
+    calculate_recipe_weight_grams,
+    visible_recipe_statement,
+)
 
 router = APIRouter(prefix="/nutrition", tags=["nutrition"])
 
@@ -195,6 +199,9 @@ def _catalog(
                 id=recipe.id,
                 title=recipe.title,
                 servings=recipe.servings,
+                serving_weight_grams=(
+                    calculate_recipe_weight_grams(session, recipe) / recipe.servings
+                ),
                 calories=nutrients.calories * factor,
                 carbohydrates=nutrients.carbohydrates * factor,
                 fat=nutrients.fat * factor,

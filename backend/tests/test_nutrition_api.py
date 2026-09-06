@@ -76,6 +76,46 @@ def test_nutrition_scope_is_required(
     )
 
 
+def test_catalog_includes_recipe_serving_nutrition_and_weight(
+    client: TestClient, db: Session
+) -> None:
+    user, headers = _user_headers(db, ["nutrition:use"])
+    ingredient = Ingredient(
+        title="Catalog potatoes",
+        calories=80,
+        carbohydrates=17,
+        fat=0,
+        protein=2,
+    )
+    db.add(ingredient)
+    db.flush()
+    recipe = Recipe(
+        title="Catalog mash",
+        instructions="Mash",
+        servings=2,
+        owner_id=user.id,
+    )
+    db.add(recipe)
+    db.flush()
+    db.add(
+        RecipeIngredientLink(
+            recipe_id=recipe.id,
+            ingredient_id=ingredient.id,
+            amount=300,
+            unit="g",
+        )
+    )
+    db.commit()
+
+    response = client.get("/nutrition/catalog?query=Catalog%20mash", headers=headers)
+
+    assert response.status_code == 200
+    [catalog_recipe] = response.json()["recipes"]
+    assert catalog_recipe["servings"] == 2
+    assert catalog_recipe["serving_weight_grams"] == 150
+    assert catalog_recipe["calories"] == 120
+
+
 def test_common_entries_are_history_derived_ranked_and_owner_scoped(
     client: TestClient, db: Session
 ) -> None:

@@ -1117,6 +1117,10 @@ export const NutritionCatalogRecipePublicSchema = {
             type: 'integer',
             title: 'Servings'
         },
+        serving_weight_grams: {
+            type: 'number',
+            title: 'Serving Weight Grams'
+        },
         calories: {
             type: 'number',
             title: 'Calories'
@@ -1139,6 +1143,7 @@ export const NutritionCatalogRecipePublicSchema = {
         'id',
         'title',
         'servings',
+        'serving_weight_grams',
         'calories',
         'carbohydrates',
         'fat',

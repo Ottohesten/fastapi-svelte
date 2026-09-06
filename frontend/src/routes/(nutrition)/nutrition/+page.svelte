@@ -62,6 +62,7 @@
   let actionError = $state("");
   let successMessage = $state("");
   let quickServerCanConfirm = $state(false);
+  let addMeal = $state<MealType>("snack");
 
   const entryForm = superForm(
     untrack(() => data.entryForm),
@@ -151,6 +152,35 @@
     }
   );
 
+  const addBatchForm = superForm(
+    untrack(() => data.addBatchForm),
+    {
+      id: "nutritionAddBatchForm",
+      validators: zodClient(NutritionBatchFormSchema),
+      dataType: "json",
+      invalidateAll: false,
+      resetForm: false,
+      onSubmit: () => {
+        actionError = "";
+        successMessage = "";
+      },
+      onUpdated: async ({ form }) => {
+        if (typeof form.message !== "string") return;
+        if (form.valid) {
+          const count = form.data.entries.length;
+          addOpen = false;
+          $addBatchData.entries = [];
+          $entryData = blankDraft("add-next", addMeal);
+          successMessage =
+            count === 1 ? "Food added to the diary." : `${count} foods added to the diary.`;
+          await invalidateAll();
+        } else {
+          actionError = form.message;
+        }
+      }
+    }
+  );
+
   const moveForm = superForm(
     untrack(() => data.moveForm),
     {
@@ -178,6 +208,11 @@
   const { form: entryData, enhance: entryEnhance, submitting: entrySubmitting } = entryForm;
   const { form: quickData, enhance: quickEnhance, submitting: quickSubmitting } = quickAddForm;
   const { form: batchData, enhance: batchEnhance, submitting: batchSubmitting } = batchForm;
+  const {
+    form: addBatchData,
+    enhance: addBatchEnhance,
+    submitting: addBatchSubmitting
+  } = addBatchForm;
   const { form: moveData, enhance: moveEnhance, submitting: moveSubmitting } = moveForm;
 
   function blankDraft(clientId: string, mealType: MealType = "snack"): NutritionEntryDraft {
@@ -205,7 +240,13 @@
     };
   }
 
-  const entryComplete = $derived(
+  const quickComplete = $derived(
+    $batchData.entries.length > 0 &&
+      $batchData.entries.every((row) =>
+        draftIsComplete(row, data.catalog.recipes, data.catalog.products, data.catalog.ingredients)
+      )
+  );
+  const pendingComplete = $derived(
     draftIsComplete(
       $entryData,
       data.catalog.recipes,
@@ -213,11 +254,15 @@
       data.catalog.ingredients
     )
   );
-  const quickComplete = $derived(
-    $batchData.entries.length > 0 &&
-      $batchData.entries.every((row) =>
-        draftIsComplete(row, data.catalog.recipes, data.catalog.products, data.catalog.ingredients)
-      )
+  const addCanSubmit = $derived(
+    $addBatchData.entries.every((row) =>
+      draftIsComplete(row, data.catalog.recipes, data.catalog.products, data.catalog.ingredients)
+    ) &&
+      ($entryData.source_type !== "manual" || pendingComplete) &&
+      ($addBatchData.entries.length > 0 || pendingComplete)
+  );
+  const addSubmitCount = $derived(
+    $addBatchData.entries.length + ($entryData.source_type === "manual" && pendingComplete ? 1 : 0)
   );
   const editComplete = $derived(
     draftIsComplete(
@@ -285,13 +330,15 @@
 
   function startFoodAdd() {
     actionError = "";
-    $entryData = blankDraft("manual-add", defaultMealType());
+    addMeal = defaultMealType();
+    $addBatchData.entries = [];
+    $entryData = blankDraft("add-next", addMeal);
     addOpen = true;
   }
 
-  function startCommonAdd(commonEntry: NutritionCommonEntryPublic) {
+  function addCommonEntry(commonEntry: NutritionCommonEntryPublic) {
     actionError = "";
-    const draft = blankDraft("common-add", defaultMealType());
+    const draft = blankDraft(`common-${crypto.randomUUID()}`, addMeal);
     draft.source_type = commonEntry.source_type;
     draft.source_id = commonEntry.source_id ?? "";
     draft.title = commonEntry.title;
@@ -309,8 +356,38 @@
       fat: commonEntry.fat,
       protein: commonEntry.protein
     };
-    $entryData = draft;
-    addOpen = true;
+    $addBatchData.entries = [...$addBatchData.entries, draft];
+  }
+
+  function addPendingEntry(draft: NutritionEntryDraft = $entryData) {
+    if (
+      !draftIsComplete(draft, data.catalog.recipes, data.catalog.products, data.catalog.ingredients)
+    ) {
+      return;
+    }
+    $addBatchData.entries = [
+      ...$addBatchData.entries,
+      {
+        ...draft,
+        client_id: `add-${crypto.randomUUID()}`,
+        log_date: data.selectedDate,
+        meal_type: addMeal
+      }
+    ];
+    $entryData = blankDraft("add-next", addMeal);
+  }
+
+  function updateAddMeal(mealType: MealType) {
+    addMeal = mealType;
+    $entryData.meal_type = mealType;
+    $addBatchData.entries = $addBatchData.entries.map((entry) => ({
+      ...entry,
+      meal_type: mealType
+    }));
+  }
+
+  function removeAddRow(clientId: string) {
+    $addBatchData.entries = $addBatchData.entries.filter((row) => row.client_id !== clientId);
   }
 
   function commonEntryKey(commonEntry: NutritionCommonEntryPublic): string {
@@ -441,7 +518,9 @@
           : (validUnits[0] ?? fallbackUnit);
       const quantity = Number(data.prefill.quantity ?? "1");
       draft.quantity = Number.isFinite(quantity) && quantity > 0 ? quantity : 1;
-      $entryData = draft;
+      addMeal = draft.meal_type;
+      $addBatchData.entries = [{ ...draft, client_id: `prefill-${crypto.randomUUID()}` }];
+      $entryData = blankDraft("add-next", addMeal);
       addOpen = true;
     }
   });
@@ -749,14 +828,28 @@
 </div>
 
 <Dialog.Root bind:open={addOpen} shallowRouting={false}>
-  <Dialog.Content class="max-h-[90vh] overflow-y-auto sm:max-w-2xl">
+  <Dialog.Content class="max-h-[90vh] overflow-y-auto sm:max-w-3xl">
     <Dialog.Header>
       <Dialog.Title>Add food</Dialog.Title>
       <Dialog.Description
-        >Choose a saved food or enter nutrition for a one-off item.</Dialog.Description
+        >Build one meal from saved foods and one-off items, then save everything together.</Dialog.Description
       >
     </Dialog.Header>
-    {#if data.commonEntries.length > 0 && !$entryData.source_id && $entryData.source_type !== "manual"}
+    <div class="max-w-xs min-w-0 space-y-2">
+      <label for="add-food-meal" class="text-sm leading-none font-medium">Meal</label>
+      <select
+        id="add-food-meal"
+        value={addMeal}
+        onchange={(event) => updateAddMeal(event.currentTarget.value as MealType)}
+        class="border-input bg-background focus-visible:ring-ring h-10 w-full rounded-md border px-3 text-sm focus-visible:ring-2 focus-visible:outline-none"
+      >
+        {#each mealTypes as mealType}
+          <option value={mealType}>{mealTypeLabels[mealType]}</option>
+        {/each}
+      </select>
+      <p class="text-muted-foreground text-xs">Every food below will be logged to this meal.</p>
+    </div>
+    {#if data.commonEntries.length > 0 && $addBatchData.entries.length === 0 && !$entryData.source_id && $entryData.source_type !== "manual"}
       <section
         aria-labelledby="frequently-logged-heading"
         class="bg-muted/35 space-y-3 rounded-lg border p-3"
@@ -777,7 +870,7 @@
               type="button"
               class="bg-background hover:bg-accent focus-visible:ring-ring flex min-w-0 items-center justify-between gap-2 rounded-md border px-3 py-2 text-left transition-colors focus-visible:ring-2 focus-visible:outline-none"
               aria-label={`Use frequently logged ${commonEntryName(commonEntry)}, ${formatNutrition(commonEntry.quantity)} ${commonEntry.unit}`}
-              onclick={() => startCommonAdd(commonEntry)}
+              onclick={() => addCommonEntry(commonEntry)}
             >
               <span class="min-w-0">
                 <span class="block truncate text-sm font-medium"
@@ -804,21 +897,81 @@
         <Alert.Description>{actionError}</Alert.Description>
       </Alert.Root>
     {/if}
-    <form method="POST" action="?/saveEntry" use:entryEnhance class="space-y-5">
+    <form
+      id="add-food-batch-form"
+      method="POST"
+      action="?/addBatch"
+      use:addBatchEnhance
+      class="space-y-3"
+    >
+      {#each $addBatchData.entries as row, index (row.client_id)}
+        <section class="space-y-3 rounded-xl border p-4" data-added-food-row>
+          <div class="flex items-center justify-between gap-3">
+            <h3 class="text-sm font-semibold">Food {index + 1}</h3>
+            <Badge variant="secondary">{sourceTypeLabels[row.source_type]}</Badge>
+          </div>
+          <NutritionEntryEditor
+            form={addBatchForm}
+            fieldPrefix={`entries[${index}]`}
+            bind:entry={$addBatchData.entries[index]}
+            recipes={data.catalog.recipes}
+            products={data.catalog.products}
+            ingredients={data.catalog.ingredients}
+            removable
+            showMeal={false}
+            showSourceSwitch={false}
+            onRemove={() => removeAddRow(row.client_id)}
+          />
+        </section>
+      {/each}
+    </form>
+
+    <section class="space-y-3 rounded-xl border border-dashed p-4" data-next-food-row>
+      <div>
+        <h3 class="font-semibold">
+          {$addBatchData.entries.length === 0 ? "Choose a food" : "Add another food"}
+        </h3>
+        <p class="text-muted-foreground text-sm">
+          Selecting a saved food immediately opens a fresh row for the next item.
+        </p>
+      </div>
       <NutritionEntryEditor
         form={entryForm}
         bind:entry={$entryData}
         recipes={data.catalog.recipes}
         products={data.catalog.products}
         ingredients={data.catalog.ingredients}
+        showMeal={false}
+        onCatalogSelect={addPendingEntry}
       />
-      <Dialog.Footer class="gap-2 [&>button]:h-11 [&>button]:w-full sm:[&>button]:w-auto">
-        <Button type="button" variant="outline" onclick={() => (addOpen = false)}>Cancel</Button>
-        <Button type="submit" disabled={!entryComplete || $entrySubmitting}>
-          {#if $entrySubmitting}<LoaderCircle class="animate-spin" />{/if} Add to diary
+      {#if $entryData.source_type === "manual"}
+        <Button
+          type="button"
+          variant="secondary"
+          disabled={!pendingComplete}
+          onclick={() => addPendingEntry()}
+        >
+          <Plus /> Add one-off food to meal
         </Button>
-      </Dialog.Footer>
-    </form>
+      {/if}
+    </section>
+
+    <Dialog.Footer class="gap-2 [&>button]:h-11 [&>button]:w-full sm:[&>button]:w-auto">
+      <Button type="button" variant="outline" onclick={() => (addOpen = false)}>Cancel</Button>
+      <Button
+        type="submit"
+        form="add-food-batch-form"
+        aria-label="Add to diary"
+        disabled={!addCanSubmit || $addBatchSubmitting}
+        onclick={() => {
+          if ($entryData.source_type === "manual" && pendingComplete) addPendingEntry();
+        }}
+      >
+        {#if $addBatchSubmitting}<LoaderCircle class="animate-spin" />{/if}
+        Add {addSubmitCount}
+        {addSubmitCount === 1 ? "food" : "foods"} to diary
+      </Button>
+    </Dialog.Footer>
   </Dialog.Content>
 </Dialog.Root>
 

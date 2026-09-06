@@ -9,15 +9,14 @@ export type CameraZoomConfiguration = Omit<CameraZoomCapabilities, "step"> & {
     value: number;
 };
 
-const PREFERRED_BARCODE_ZOOM = 1.5;
+const WIDE_BARCODE_ZOOM = 1;
 
 function clamp(value: number, min: number, max: number) {
     return Math.min(Math.max(value, min), max);
 }
 
 export function getCameraZoomConfiguration(
-    capabilities: CameraZoomCapabilities | undefined,
-    currentZoom: number | undefined
+    capabilities: CameraZoomCapabilities | undefined
 ): CameraZoomConfiguration | null {
     if (
         !capabilities ||
@@ -32,14 +31,11 @@ export function getCameraZoomConfiguration(
         capabilities.step && Number.isFinite(capabilities.step) && capabilities.step > 0
             ? capabilities.step
             : Math.max((capabilities.max - capabilities.min) / 100, 0.1);
-    const startingZoom = Number.isFinite(currentZoom) ? currentZoom! : capabilities.min;
-    const preferredZoom = Math.max(startingZoom, PREFERRED_BARCODE_ZOOM);
-
     return {
         min: capabilities.min,
         max: capabilities.max,
         step,
-        value: clamp(preferredZoom, capabilities.min, capabilities.max)
+        value: clamp(WIDE_BARCODE_ZOOM, capabilities.min, capabilities.max)
     };
 }
 

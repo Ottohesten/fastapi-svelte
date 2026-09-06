@@ -124,6 +124,34 @@ a {
     @apply no-underline;
 }
 
+/* Camera dialogs use the whole narrow screen and become wider when phone height is limited. */
+@media (max-width: 639px) {
+    .barcode-scan-dialog[data-slot="dialog-content"] {
+        width: 100dvw;
+        height: 100dvh;
+        max-width: none;
+        max-height: 100dvh;
+        border-width: 0;
+        border-radius: 0;
+        padding: 0.75rem;
+    }
+}
+
+@media (orientation: landscape) and (max-height: 600px) {
+    .barcode-scan-dialog[data-slot="dialog-content"],
+    .barcode-review-dialog[data-slot="dialog-content"] {
+        width: calc(100dvw - 1rem);
+        height: auto;
+        max-width: 64rem;
+        max-height: calc(100dvh - 1rem);
+        padding: 0.75rem;
+    }
+
+    .barcode-scan-dialog[data-slot="dialog-content"] {
+        gap: 0.75rem;
+    }
+}
+
 /* Container utility that matches tailwind config */
 .container {
     @apply mx-auto max-w-6xl px-4 md:px-6 lg:px-8;

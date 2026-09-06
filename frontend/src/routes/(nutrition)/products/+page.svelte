@@ -244,7 +244,7 @@
           <Dialog.Trigger class={buttonVariants({ variant: "outline", class: "h-11" })}>
             <ScanLine /> Scan
           </Dialog.Trigger>
-          <Dialog.Content class="max-h-[90vh] overflow-y-auto sm:max-w-lg">
+          <Dialog.Content class="barcode-scan-dialog max-h-[90vh] overflow-y-auto sm:max-w-lg">
             <Dialog.Header>
               <Dialog.Title>Scan a product</Dialog.Title>
               <Dialog.Description
@@ -455,7 +455,7 @@
     {/if}
   </div>
 
-  <Dialog.Content class="max-h-[92vh] overflow-y-auto sm:max-w-2xl">
+  <Dialog.Content class="barcode-review-dialog max-h-[92vh] overflow-y-auto sm:max-w-2xl">
     <Dialog.Header>
       <Dialog.Title>{editing ? "Edit product" : "Review product"}</Dialog.Title>
       <Dialog.Description>Copy the values exactly as shown on the package label.</Dialog.Description

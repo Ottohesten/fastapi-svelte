@@ -50,6 +50,94 @@ test.describe("Admin Dashboard", () => {
             await expect(page.getByRole("heading", { name: "Ingredients" })).toBeVisible();
             await expect(page.getByRole("button", { name: "Add Ingredient" })).toBeVisible();
         });
+
+        test.describe("phone barcode scanner", () => {
+            test.use({ viewport: { width: 390, height: 844 } });
+
+            test("uses portrait width and survives rotation into the ingredient form", async ({
+                page
+            }) => {
+                const barcode = "5701234567890";
+                await page.route(`**/admin/ingredients/barcode/${barcode}`, async (route) => {
+                    await route.fulfill({
+                        status: 200,
+                        contentType: "application/json",
+                        body: JSON.stringify({
+                            barcode,
+                            title: "Landscape test product",
+                            brand: "Test foods",
+                            image_url: null,
+                            calories: 240,
+                            carbohydrates: 30,
+                            fat: 8,
+                            protein: 12,
+                            weight_per_piece: 100,
+                            nutrition_basis: "100g",
+                            missing_nutrients: [],
+                            existing_ingredient_id: null
+                        })
+                    });
+                });
+
+                await page.goto("/admin/ingredients");
+                await page.waitForSelector('body[data-svelte-hydrated="true"]');
+                await page.getByRole("button", { name: "Add Ingredient" }).click();
+                await page.getByRole("button", { name: "Scan product barcode" }).click();
+
+                const scanDialog = page.getByRole("dialog", { name: "Scan a barcode" });
+                const camera = scanDialog.getByTestId("barcode-camera-preview");
+                const controls = scanDialog.getByTestId("barcode-scanner-controls");
+                await expect(camera).toBeVisible();
+                await expect(controls).toBeVisible();
+
+                const [portraitDialogBox, portraitCameraBox, portraitControlsBox] =
+                    await Promise.all([
+                        scanDialog.boundingBox(),
+                        camera.boundingBox(),
+                        controls.boundingBox()
+                    ]);
+                expect(portraitDialogBox).not.toBeNull();
+                expect(portraitCameraBox).not.toBeNull();
+                expect(portraitControlsBox).not.toBeNull();
+                if (!portraitDialogBox || !portraitCameraBox || !portraitControlsBox) return;
+
+                expect(portraitDialogBox.width).toBeGreaterThanOrEqual(389);
+                expect(portraitCameraBox.width).toBeGreaterThan(350);
+                expect(portraitControlsBox.y).toBeGreaterThanOrEqual(
+                    portraitCameraBox.y + portraitCameraBox.height
+                );
+
+                await page.setViewportSize({ width: 844, height: 390 });
+                await expect
+                    .poll(async () => (await scanDialog.boundingBox())?.width ?? 0)
+                    .toBeGreaterThan(700);
+
+                const [dialogBox, cameraBox, controlsBox] = await Promise.all([
+                    scanDialog.boundingBox(),
+                    camera.boundingBox(),
+                    controls.boundingBox()
+                ]);
+                expect(dialogBox).not.toBeNull();
+                expect(cameraBox).not.toBeNull();
+                expect(controlsBox).not.toBeNull();
+                if (!dialogBox || !cameraBox || !controlsBox) return;
+
+                expect(dialogBox.y).toBeGreaterThanOrEqual(-4);
+                expect(dialogBox.y + dialogBox.height).toBeLessThanOrEqual(394);
+                expect(controlsBox.x).toBeGreaterThanOrEqual(cameraBox.x + cameraBox.width);
+
+                await scanDialog.getByPlaceholder("Enter barcode manually").fill(barcode);
+                await scanDialog.getByRole("button", { name: "Look up" }).click();
+
+                const ingredientDialog = page.getByRole("dialog", { name: "Add New Ingredient" });
+                await expect(ingredientDialog.getByLabel("Protein (per 100g)")).toHaveValue("12");
+                await expect
+                    .poll(() =>
+                        page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)
+                    )
+                    .toBe(true);
+            });
+        });
     });
 
     test.describe("Game Management", () => {

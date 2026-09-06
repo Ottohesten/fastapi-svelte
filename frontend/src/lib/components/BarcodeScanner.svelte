@@ -139,28 +139,23 @@
     if (!videoTrack) return;
 
     const capabilities = videoTrack.getCapabilities() as ExtendedCameraCapabilities;
-    const settings = videoTrack.getSettings();
-    const advanced: ExtendedCameraConstraints = {};
 
     if (capabilities.focusMode?.includes("continuous")) {
-      advanced.focusMode = "continuous";
+      try {
+        await videoTrack.applyConstraints({
+          advanced: [{ focusMode: "continuous" } as ExtendedCameraConstraints]
+        });
+      } catch {
+        // Experimental focus controls can be advertised but rejected on some mobile browsers.
+      }
     }
 
-    zoomConfiguration = getCameraZoomConfiguration(capabilities.zoom, settings.zoom);
+    zoomConfiguration = getCameraZoomConfiguration(capabilities.zoom);
     if (zoomConfiguration) {
-      zoom = zoomConfiguration.value;
-      advanced.zoom = zoom;
+      await setZoom(zoomConfiguration.value);
     }
 
     torchSupported = capabilities.torch === true;
-
-    if (Object.keys(advanced).length > 0) {
-      try {
-        await videoTrack.applyConstraints({ advanced: [advanced] });
-      } catch {
-        // Experimental camera controls can be advertised but rejected on some mobile browsers.
-      }
-    }
 
     updateCameraResolution();
   }
@@ -316,11 +311,14 @@
   });
 </script>
 
-<div class="space-y-4">
-  <div class="relative aspect-[4/3] overflow-hidden rounded-xl bg-black">
+<div class="barcode-scanner grid gap-4" data-testid="barcode-scanner">
+  <div
+    class="barcode-camera relative aspect-[4/3] overflow-hidden rounded-xl bg-black"
+    data-testid="barcode-camera-preview"
+  >
     <div
       bind:this={scannerTarget}
-      class="absolute inset-0 overflow-hidden [&_canvas]:absolute [&_canvas]:inset-0 [&_canvas]:size-full [&_video]:size-full [&_video]:object-contain"
+      class="absolute inset-0 overflow-hidden [&_canvas]:absolute [&_canvas]:inset-0 [&_canvas]:size-full [&_video]:size-full [&_video]:object-cover"
     ></div>
     <div class="pointer-events-none absolute inset-0 grid place-items-center">
       <div
@@ -346,121 +344,138 @@
     {/if}
   </div>
 
-  {#if !cameraError && (zoomConfiguration || torchSupported)}
-    <div class="bg-muted/60 space-y-3 rounded-lg border p-3">
-      {#if zoomConfiguration}
-        <div class="grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3">
-          <Button
-            type="button"
-            variant="outline"
-            size="icon"
-            aria-label="Zoom out"
-            onclick={() => changeZoomBy(-1)}
-          >
-            <ZoomOut class="size-4" />
-          </Button>
-          <div class="space-y-1">
-            <div class="flex justify-between text-xs">
-              <label for="barcode-camera-zoom" class="font-medium">Camera zoom</label>
-              <span class="text-muted-foreground">{zoom.toFixed(1)}×</span>
+  <div class="barcode-scanner-controls min-w-0 space-y-4" data-testid="barcode-scanner-controls">
+    {#if !cameraError && (zoomConfiguration || torchSupported)}
+      <div class="bg-muted/60 space-y-3 rounded-lg border p-3">
+        {#if zoomConfiguration}
+          <div class="grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3">
+            <Button
+              type="button"
+              variant="outline"
+              size="icon"
+              aria-label="Zoom out"
+              onclick={() => changeZoomBy(-1)}
+            >
+              <ZoomOut class="size-4" />
+            </Button>
+            <div class="space-y-1">
+              <div class="flex justify-between text-xs">
+                <label for="barcode-camera-zoom" class="font-medium">Camera zoom</label>
+                <span class="text-muted-foreground">{zoom.toFixed(1)}×</span>
+              </div>
+              <input
+                id="barcode-camera-zoom"
+                class="accent-primary h-5 w-full cursor-pointer"
+                type="range"
+                min={zoomConfiguration.min}
+                max={zoomConfiguration.max}
+                step={zoomConfiguration.step}
+                value={zoom}
+                oninput={(event) => setZoom(Number(event.currentTarget.value))}
+              />
             </div>
-            <input
-              id="barcode-camera-zoom"
-              class="accent-primary h-5 w-full cursor-pointer"
-              type="range"
-              min={zoomConfiguration.min}
-              max={zoomConfiguration.max}
-              step={zoomConfiguration.step}
-              value={zoom}
-              oninput={(event) => setZoom(Number(event.currentTarget.value))}
-            />
+            <Button
+              type="button"
+              variant="outline"
+              size="icon"
+              aria-label="Zoom in"
+              onclick={() => changeZoomBy(1)}
+            >
+              <ZoomIn class="size-4" />
+            </Button>
           </div>
-          <Button
-            type="button"
-            variant="outline"
-            size="icon"
-            aria-label="Zoom in"
-            onclick={() => changeZoomBy(1)}
-          >
-            <ZoomIn class="size-4" />
+        {/if}
+
+        {#if torchSupported}
+          <Button type="button" variant="outline" class="w-full" onclick={toggleTorch}>
+            {#if torchOn}
+              <FlashlightOff class="size-4" /> Turn light off
+            {:else}
+              <Flashlight class="size-4" /> Turn light on
+            {/if}
           </Button>
-        </div>
-      {/if}
-
-      {#if torchSupported}
-        <Button type="button" variant="outline" class="w-full" onclick={toggleTorch}>
-          {#if torchOn}
-            <FlashlightOff class="size-4" /> Turn light off
-          {:else}
-            <Flashlight class="size-4" /> Turn light on
-          {/if}
-        </Button>
-      {/if}
-    </div>
-  {/if}
-
-  <div class="bg-muted flex items-start gap-3 rounded-lg p-3 text-sm">
-    <Camera class="mt-0.5 size-5 shrink-0" />
-    <p>
-      Fill most of the frame with the barcode, but keep every line and the white space at both ends
-      visible. Move closer or farther away until the lines are sharp.
-    </p>
-  </div>
-
-  {#if cameraError}
-    <p class="text-destructive text-sm">{cameraError}</p>
-  {/if}
-  {#if cameraNotice}
-    <p class="text-muted-foreground text-sm">{cameraNotice}</p>
-  {/if}
-
-  <input
-    bind:this={imageInput}
-    class="sr-only"
-    type="file"
-    accept="image/*"
-    capture="environment"
-    aria-label="Choose a barcode photo"
-    onchange={(event) => {
-      const file = event.currentTarget.files?.[0];
-      if (file) decodeImage(file);
-    }}
-  />
-  <Button
-    type="button"
-    variant="outline"
-    class="w-full"
-    disabled={detected || scanningImage}
-    onclick={() => imageInput.click()}
-  >
-    {#if scanningImage}
-      <LoaderCircle class="size-4 animate-spin" /> Reading photo…
-    {:else}
-      <ImageUp class="size-4" /> Take or choose photo
+        {/if}
+      </div>
     {/if}
-  </Button>
 
-  <form
-    class="flex gap-2"
-    onsubmit={(event) => {
-      event.preventDefault();
-      submitBarcode(manualBarcode);
-    }}
-  >
-    <div class="relative min-w-0 flex-1">
-      <Keyboard class="text-muted-foreground absolute top-1/2 left-3 size-4 -translate-y-1/2" />
-      <Input
-        class="pl-9"
-        inputmode="numeric"
-        autocomplete="off"
-        placeholder="Enter barcode manually"
-        bind:value={manualBarcode}
-        pattern="[0-9]+"
-        minlength={4}
-        maxlength={24}
-        required
-      />
+    <div class="bg-muted flex items-start gap-3 rounded-lg p-3 text-sm">
+      <Camera class="mt-0.5 size-5 shrink-0" />
+      <p>
+        Fill most of the frame with the barcode, but keep every line and the white space at both
+        ends visible. Move closer or farther away until the lines are sharp.
+      </p>
     </div>
-    <Button type="submit" disabled={detected}>Look up</Button>
-  </form>
+
+    {#if cameraError}
+      <p class="text-destructive text-sm">{cameraError}</p>
+    {/if}
+    {#if cameraNotice}
+      <p class="text-muted-foreground text-sm">{cameraNotice}</p>
+    {/if}
+
+    <input
+      bind:this={imageInput}
+      class="sr-only"
+      type="file"
+      accept="image/*"
+      capture="environment"
+      aria-label="Choose a barcode photo"
+      onchange={(event) => {
+        const file = event.currentTarget.files?.[0];
+        if (file) decodeImage(file);
+      }}
+    />
+    <Button
+      type="button"
+      variant="outline"
+      class="w-full"
+      disabled={detected || scanningImage}
+      onclick={() => imageInput.click()}
+    >
+      {#if scanningImage}
+        <LoaderCircle class="size-4 animate-spin" /> Reading photo…
+      {:else}
+        <ImageUp class="size-4" /> Take or choose photo
+      {/if}
+    </Button>
+
+    <form
+      class="flex gap-2"
+      onsubmit={(event) => {
+        event.preventDefault();
+        submitBarcode(manualBarcode);
+      }}
+    >
+      <div class="relative min-w-0 flex-1">
+        <Keyboard class="text-muted-foreground absolute top-1/2 left-3 size-4 -translate-y-1/2" />
+        <Input
+          class="pl-9"
+          inputmode="numeric"
+          autocomplete="off"
+          placeholder="Enter barcode manually"
+          bind:value={manualBarcode}
+          pattern="[0-9]+"
+          minlength={4}
+          maxlength={24}
+          required
+        />
+      </div>
+      <Button type="submit" disabled={detected}>Look up</Button>
+    </form>
+  </div>
 </div>
+
+<style>
+  @media (orientation: landscape) and (max-height: 600px) {
+    .barcode-scanner {
+      grid-template-columns: minmax(0, 1.4fr) minmax(15rem, 1fr);
+      align-items: start;
+    }
+
+    .barcode-camera {
+      position: sticky;
+      top: 0;
+      aspect-ratio: 16 / 9;
+    }
+  }
+</style>

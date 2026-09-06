@@ -135,7 +135,7 @@
         <Dialog.Trigger class={`${buttonVariants()} w-full sm:w-auto`}>
           Add Ingredient
         </Dialog.Trigger>
-        <Dialog.Content class="max-h-[90vh] overflow-y-auto sm:max-w-[540px]">
+        <Dialog.Content class="barcode-scan-dialog max-h-[90vh] overflow-y-auto sm:max-w-[540px]">
           <Dialog.Header>
             <Dialog.Title>{scanMode ? "Scan a barcode" : "Add New Ingredient"}</Dialog.Title>
             <Dialog.Description>

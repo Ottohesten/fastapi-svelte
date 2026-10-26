@@ -58,17 +58,15 @@ describe("instruction ingredient amounts", () => {
         expect(ingredientReferenceFromToken("{Butter [g]:25%}", alternatives)?.unit).toBe("g");
     });
 
-    test("uses current required quantities, names and serving scale", () => {
-        expect(resolveIngredientAmount(reference, root, [])).toBe("50 g Butter");
-        expect(resolveIngredientAmount(reference, root, [], 2)).toBe("100 g Butter");
+    test("uses current required quantities and serving scale after ingredient renames", () => {
+        expect(resolveIngredientAmount(reference, root, [])).toBe("50 g");
+        expect(resolveIngredientAmount(reference, root, [], 2)).toBe("100 g");
         const renamed = {
             ...root,
             total_ingredients: [{ ...butter, title: "Salted butter", amount: 300 }]
         };
-        expect(resolveIngredientAmount(reference, renamed, [])).toBe("75 g Salted butter");
-        expect(resolveIngredientAmount({ ...reference, portion: "1/3" }, root, [])).toBe(
-            "66.67 g Butter"
-        );
+        expect(resolveIngredientAmount(reference, renamed, [])).toBe("75 g");
+        expect(resolveIngredientAmount({ ...reference, portion: "1/3" }, root, [])).toBe("66.67 g");
     });
 
     test("normalizes and aggregates ingredients from form inputs and linked recipes", () => {
@@ -79,7 +77,7 @@ describe("instruction ingredient amounts", () => {
             [sauce]
         );
         expect(combined.total_ingredients).toEqual([butter]);
-        expect(resolveIngredientAmount(reference, combined, [sauce])).toBe("50 g Butter");
+        expect(resolveIngredientAmount(reference, combined, [sauce])).toBe("50 g");
     });
 
     test("retains nested sub-recipe allocations and applies each link scale once", () => {
@@ -92,7 +90,7 @@ describe("instruction ingredient amounts", () => {
             "sauce"
         );
         expect(renderIngredientAmounts(imported, parent, [sauce, roux], 2)).toBe(
-            "<ol><li>Use <span>120 g Butter</span>.</li></ol>"
+            "<ol><li>Use <span>120 g</span>.</li></ol>"
         );
         // A removed link must never fall back to the parent's full butter amount.
         expect(renderIngredientAmounts(imported, root, [sauce, roux])).toContain(
@@ -101,9 +99,9 @@ describe("instruction ingredient amounts", () => {
     });
 
     test("renders on the server without changing surrounding rich text", () => {
-        expect(renderIngredientAmounts(html(), root, [])).toBe(
-            "<ol><li>Use <span>50 g Butter</span>.</li></ol>"
-        );
+        expect(
+            renderIngredientAmounts(html().replace("</span>.", "</span> cold butter."), root, [])
+        ).toBe("<ol><li>Use <span>50 g</span> cold butter.</li></ol>");
         const plain = '<p><strong>Use butter</strong> <a href="/recipes">here</a>.</p>';
         expect(renderIngredientAmounts(plain, root, [])).toBe(plain);
         expect(renderIngredientAmounts(html(), { ...root, total_ingredients: [] }, [])).toContain(
@@ -111,7 +109,7 @@ describe("instruction ingredient amounts", () => {
         );
     });
 
-    test("validates saved references and escapes ingredient names in rendered HTML", () => {
+    test("validates saved references and escapes unavailable ingredient names in rendered HTML", () => {
         expect(decodeAmountReference(encodeAmountReference(reference))).toEqual(reference);
         for (const invalid of [
             null,
@@ -125,11 +123,15 @@ describe("instruction ingredient amounts", () => {
         ]) {
             expect(decodeAmountReference(invalid)).toBeNull();
         }
-        const unsafe = {
-            ...root,
-            total_ingredients: [{ ...butter, title: '<img src=x onerror="alert(1)">' }]
+        const unsafeReference = {
+            ...reference,
+            title: '<img src=x onerror="alert(1)">'
         };
-        const result = renderIngredientAmounts(html(), unsafe, []);
+        const result = renderIngredientAmounts(
+            html(unsafeReference),
+            { ...root, total_ingredients: [] },
+            []
+        );
         expect(result).toContain("&lt;img");
         expect(result).not.toContain("<img");
     });

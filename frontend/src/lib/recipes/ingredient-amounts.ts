@@ -119,7 +119,7 @@ export function resolveIngredientAmount(
     const amount = ingredient.amount * scope.scale * servingsScale * ratio;
     if (!Number.isFinite(amount)) return null;
     const formatted = amount.toFixed(2).replace(/\.?0+$/, "");
-    return `${formatted} ${ingredient.unit} ${ingredient.title}`.replace(/\s+/g, " ").trim();
+    return `${formatted} ${ingredient.unit}`.replace(/\s+/g, " ").trim();
 }
 
 function escapeHtml(value: string): string {

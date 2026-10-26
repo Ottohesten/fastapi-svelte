@@ -49,9 +49,13 @@ test.describe("recipe instructions editor", () => {
         await expect(reference).toHaveText("{Butter:25%}");
         await reference.click();
         const dialog = page.getByRole("dialog", { name: "Ingredient amount", exact: true });
-        await expect(dialog.getByRole("status")).toContainText("50 g Butter");
+        await expect(dialog.getByRole("status")).toHaveText(
+            "At the recipe's original servings: 50 g"
+        );
         await dialog.getByLabel("Portion", { exact: true }).fill("1/2");
-        await expect(dialog.getByRole("status")).toContainText("100 g Butter");
+        await expect(dialog.getByRole("status")).toHaveText(
+            "At the recipe's original servings: 100 g"
+        );
         await dialog.getByRole("button", { name: "Insert amount", exact: true }).click();
         await expect(reference).toHaveText("{Butter:1/2}");
         await expect(page.locator('input[name="instructions"]')).toHaveValue(
@@ -68,7 +72,9 @@ test.describe("recipe instructions editor", () => {
         await editor.locator("[data-ingredient-amount]").click();
         const dialog = page.getByRole("dialog", { name: "Ingredient amount", exact: true });
         await dialog.getByLabel("Portion", { exact: true }).fill("1/4");
-        await expect(dialog.getByRole("status")).toContainText("50 g Smoked paprika");
+        await expect(dialog.getByRole("status")).toHaveText(
+            "At the recipe's original servings: 50 g"
+        );
         await dialog.getByRole("button", { name: "Insert amount", exact: true }).click();
         await expect(editor.locator("[data-ingredient-amount]")).toHaveText("{Smoked paprika:1/4}");
         await editor.press("End");

@@ -16,8 +16,8 @@ wait_seconds = 1
 @retry(
     stop=stop_after_attempt(max_tries),
     wait=wait_fixed(wait_seconds),
-    before=before_log(logger, logging.INFO),  # ty:ignore[invalid-argument-type]
-    after=after_log(logger, logging.WARN),  # ty:ignore[invalid-argument-type]
+    before=before_log(logger, logging.INFO),
+    after=after_log(logger, logging.WARNING),
 )
 def init(db_engine: Engine) -> None:
     try:

@@ -1,35 +1,35 @@
-from fastapi import APIRouter, BackgroundTasks
-from fastapi import HTTPException, Security
-from fastapi.responses import StreamingResponse
-from sqlmodel import select, desc
-from app.deps import SessionDep, get_current_user
-from typing import Annotated
 import asyncio
 import json
-from datetime import datetime, timezone
-
-from app.models import (
-    GameSession,
-    GameSessionCreate,
-    GameSessionPublic,
-    GamePlayer,
-    GamePlayerCreate,
-    GamePlayerUpdate,
-    GamePlayerPublic,
-    GameTeam,
-    GameTeamCreate,
-    GameTeamPublic,
-    Drink,
-    DrinkPublic,
-    DrinkCreate,
-    GamePlayerDrinkLink,
-    GamePlayerDrinkLinkCreate,
-    User,
-)
-from app.permissions import get_user_effective_scopes
 
 # Store active SSE connections for each game session
 from collections import defaultdict
+from datetime import UTC, datetime
+from typing import Annotated
+
+from fastapi import APIRouter, BackgroundTasks, HTTPException, Security
+from fastapi.responses import StreamingResponse
+from sqlmodel import desc, select
+
+from app.deps import SessionDep, get_current_user
+from app.models import (
+    Drink,
+    DrinkCreate,
+    DrinkPublic,
+    GamePlayer,
+    GamePlayerCreate,
+    GamePlayerDrinkLink,
+    GamePlayerDrinkLinkCreate,
+    GamePlayerPublic,
+    GamePlayerUpdate,
+    GameSession,
+    GameSessionCreate,
+    GameSessionPublic,
+    GameTeam,
+    GameTeamCreate,
+    GameTeamPublic,
+    User,
+)
+from app.permissions import get_user_effective_scopes
 
 game_session_subscribers = defaultdict(list)
 
@@ -41,7 +41,7 @@ async def broadcast_game_update(game_session_id: str, event_type: str):
         # Create the message to send
         message = {
             "type": event_type,
-            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "timestamp": datetime.now(UTC).isoformat(),
             "game_session_id": game_session_id,
         }
 
@@ -264,9 +264,7 @@ def create_game_player(
     session: SessionDep,
     game_session_id: str,
     game_player_in: GamePlayerCreate,
-    current_user: User = Security(
-        get_current_user, scopes=["games:update", "players:create"]
-    ),
+    current_user: User = Security(get_current_user, scopes=["games:update"]),
 ):
     """
     Create a new game player.
@@ -280,6 +278,13 @@ def create_game_player(
 
     if not game_session:
         raise HTTPException(status_code=404, detail="Game session not found")
+
+    if game_player_in.team_id is not None:
+        team = session.get(GameTeam, game_player_in.team_id)
+        if not team or team.game_session_id != game_session.id:
+            raise HTTPException(
+                status_code=404, detail="Game team not found in this game session"
+            )
 
     # game_player = GamePlayer(
     #     name=game_player_in.name,
@@ -451,44 +456,56 @@ def update_game_player(
         raise HTTPException(
             status_code=404, detail="Game player not found in this game session"
         )
+
+    if game_player_in.team_id is not None:
+        team = session.get(GameTeam, game_player_in.team_id)
+        if not team or team.game_session_id != game_session.id:
+            raise HTTPException(
+                status_code=404, detail="Game team not found in this game session"
+            )
+
     drink_links = game_player_in.drinks
-    # print(drink_links)
-    if drink_links:
-        # Process each drink link
-        for drink_link in drink_links:
-            # Check if the drink itself exists
-            drink = session.get(Drink, drink_link.drink_id)
+    if drink_links is not None:
+        requested_amounts = {
+            drink_link.drink_id: drink_link.amount for drink_link in drink_links
+        }
+        existing_links = session.exec(
+            select(GamePlayerDrinkLink).where(
+                GamePlayerDrinkLink.game_player_id == game_player.id
+            )
+        ).all()
+        existing_by_drink_id = {link.drink_id: link for link in existing_links}
+
+        for drink_id, amount in requested_amounts.items():
+            drink = session.get(Drink, drink_id)
             if not drink:
                 raise HTTPException(
                     status_code=404,
-                    detail=f"Drink with id {drink_link.drink_id} not found",
+                    detail=f"Drink with id {drink_id} not found",
                 )
 
-            # Find if a link already exists between this player and this drink
-            statement = select(GamePlayerDrinkLink).where(
-                GamePlayerDrinkLink.game_player_id == game_player.id,
-                GamePlayerDrinkLink.drink_id == drink_link.drink_id,
-            )
-            existing_link = session.exec(statement).one_or_none()
+            existing_link = existing_by_drink_id.pop(drink_id, None)
+            if amount < 1:
+                if existing_link:
+                    session.delete(existing_link)
+                continue
 
             if existing_link:
-                if drink_link.amount < 1:
-                    # if amount is less than 1 (most likely 0), delete the link
-                    session.delete(existing_link)
-                    print("Deleting link")
-                    continue
-                # If the link exists, update its amount
-                existing_link.amount = drink_link.amount
+                existing_link.amount = amount
                 session.add(existing_link)
             else:
-                print("Creating new link")
-                # If the link does not exist, create a new one
-                new_link = GamePlayerDrinkLink(
-                    game_player_id=game_player.id,
-                    drink_id=drink_link.drink_id,
-                    amount=drink_link.amount,
+                session.add(
+                    GamePlayerDrinkLink(
+                        game_player_id=game_player.id,
+                        drink_id=drink_id,
+                        amount=amount,
+                    )
                 )
-                session.add(new_link)
+
+        # The editor sends the complete selected list. Links omitted from an explicit list
+        # should therefore be removed, while an omitted `drinks` field leaves them untouched.
+        for obsolete_link in existing_by_drink_id.values():
+            session.delete(obsolete_link)
 
     # update the game player
     game_player_data = game_player_in.model_dump(exclude_unset=True, exclude={"drinks"})
@@ -612,9 +629,9 @@ async def game_session_updates(game_session_id: str):
                     # Wait for a message with a timeout for heartbeat
                     message = await asyncio.wait_for(queue.get(), timeout=30.0)
                     yield f"data: {json.dumps(message)}\n\n"
-                except asyncio.TimeoutError:
+                except TimeoutError:
                     # Send heartbeat to keep connection alive
-                    yield f"data: {json.dumps({'type': 'heartbeat', 'timestamp': datetime.now(timezone.utc).isoformat()})}\n\n"
+                    yield f"data: {json.dumps({'type': 'heartbeat', 'timestamp': datetime.now(UTC).isoformat()})}\n\n"
 
         except asyncio.CancelledError:
             # Client disconnected

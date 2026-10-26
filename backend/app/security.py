@@ -1,6 +1,6 @@
-from datetime import datetime, timedelta, timezone
-from typing import Any
 import uuid
+from datetime import UTC, datetime, timedelta
+from typing import Any
 
 import jwt
 from passlib.context import CryptContext
@@ -15,7 +15,7 @@ ALGORITHM = "HS256"
 
 def create_access_token(data: dict | Any, expires_delta: timedelta) -> str:
     to_encode = data.copy()
-    expire = datetime.now(timezone.utc) + expires_delta
+    expire = datetime.now(UTC) + expires_delta
     to_encode.update({"exp": expire, "type": "access"})
     encoded_jwt = jwt.encode(to_encode, settings.SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
@@ -24,7 +24,7 @@ def create_access_token(data: dict | Any, expires_delta: timedelta) -> str:
 def create_refresh_token(data: dict | Any, expires_delta: timedelta) -> str:
     """Create a refresh token JWT. Uses same secret and algorithm, but marks type=refresh."""
     to_encode = data.copy()
-    expire = datetime.now(timezone.utc) + expires_delta
+    expire = datetime.now(UTC) + expires_delta
     to_encode.update({"exp": expire, "type": "refresh", "jti": str(uuid.uuid4())})
     encoded_jwt = jwt.encode(to_encode, settings.SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt

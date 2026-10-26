@@ -1,23 +1,41 @@
 import { GameService } from "$lib/client/sdk.gen.js";
-import { error } from "@sveltejs/kit";
-import { redirect } from "@sveltejs/kit";
-import type { Actions } from "./$types.js";
-import { zod4 } from "sveltekit-superforms/adapters";
+import { GameSessionPlayerSchema, GameSessionTeamSchema } from "$lib/schemas/schemas.js";
+import { error, redirect } from "@sveltejs/kit";
+import { fail, message, superValidate } from "sveltekit-superforms";
+import { zod4 as zod } from "sveltekit-superforms/adapters";
 import { z } from "zod";
-import { message, superValidate, fail } from "sveltekit-superforms";
-import { GameSessionTeamSchema, GameSessionPlayerSchema } from "$lib/schemas/schemas.js";
+import type { Actions, PageServerLoad } from "./$types.js";
 
-export const load = async ({ locals, url }) => {
+const entityIdSchema = z.string().uuid();
+
+function requireGameManager(locals: App.Locals, url: URL) {
     const { authenticatedUser } = locals;
+
     if (!authenticatedUser) {
         redirect(303, `/auth/login?redirectTo=${url.pathname}`);
     }
-    const teamForm = await superValidate(zod4(GameSessionTeamSchema), {
-        id: "teamForm"
-    });
-    const playerForm = await superValidate(zod4(GameSessionPlayerSchema), {
-        id: "playerForm"
-    });
+
+    if (!authenticatedUser.scopes?.includes("games:update")) {
+        error(403, "You do not have permission to manage game sessions.");
+    }
+}
+
+function getApiErrorMessage(apiError: unknown, fallback: string) {
+    if (!apiError || typeof apiError !== "object" || !("detail" in apiError)) {
+        return fallback;
+    }
+
+    const detail = apiError.detail;
+    return typeof detail === "string" ? detail : fallback;
+}
+
+export const load: PageServerLoad = async ({ locals, url }) => {
+    requireGameManager(locals, url);
+
+    const [teamForm, playerForm] = await Promise.all([
+        superValidate(zod(GameSessionTeamSchema), { id: "teamForm" }),
+        superValidate(zod(GameSessionPlayerSchema), { id: "playerForm" })
+    ]);
 
     return {
         teamForm,
@@ -26,44 +44,53 @@ export const load = async ({ locals, url }) => {
 };
 
 export const actions = {
-    addTeam: async ({ fetch, params, cookies, request, url }) => {
-        const auth_token = cookies.get("auth_token");
-        if (!auth_token) {
-            redirect(302, `/auth/login?redirectTo=${url.pathname}`);
+    addTeam: async ({ params, cookies, request, url, locals }) => {
+        requireGameManager(locals, url);
+
+        const authToken = cookies.get("auth_token");
+        if (!authToken) {
+            redirect(303, `/auth/login?redirectTo=${url.pathname}`);
         }
 
-        const teamForm = await superValidate(request, zod4(GameSessionTeamSchema));
+        const teamForm = await superValidate(request, zod(GameSessionTeamSchema), {
+            id: "teamForm"
+        });
         if (!teamForm.valid) {
             return fail(400, { teamForm });
         }
 
-        const { error: apierror } = await GameService.CreateGameTeam({
-            auth: auth_token,
-            body: {
-                name: teamForm.data.name
-            },
+        const { error: apiError } = await GameService.CreateGameTeam({
+            auth: authToken,
+            body: { name: teamForm.data.name },
             path: { game_session_id: params.game_session_id }
         });
 
-        if (apierror) {
-            return message(teamForm, `Error: ${apierror.detail}`);
-        }
-        // return message(teamForm, `Team ${teamForm.data.name} added successfully!`);
-        // return message(teamForm, "Team added successfully!");
-    },
-    addPlayer: async ({ fetch, params, cookies, request, url }) => {
-        const auth_token = cookies.get("auth_token");
-        if (!auth_token) {
-            redirect(302, `/auth/login?redirectTo=${url.pathname}`);
+        if (apiError) {
+            return message(teamForm, getApiErrorMessage(apiError, "The team could not be added."), {
+                status: 400
+            });
         }
 
-        const playerForm = await superValidate(request, zod4(GameSessionPlayerSchema));
+        return message(teamForm, `${teamForm.data.name} was added.`);
+    },
+
+    addPlayer: async ({ params, cookies, request, url, locals }) => {
+        requireGameManager(locals, url);
+
+        const authToken = cookies.get("auth_token");
+        if (!authToken) {
+            redirect(303, `/auth/login?redirectTo=${url.pathname}`);
+        }
+
+        const playerForm = await superValidate(request, zod(GameSessionPlayerSchema), {
+            id: "playerForm"
+        });
         if (!playerForm.valid) {
             return fail(400, { playerForm });
         }
 
-        const { error: apierror, response } = await GameService.CreateGamePlayer({
-            auth: auth_token,
+        const { error: apiError } = await GameService.CreateGamePlayer({
+            auth: authToken,
             body: {
                 name: playerForm.data.name,
                 team_id: playerForm.data.team_id || null
@@ -71,50 +98,84 @@ export const actions = {
             path: { game_session_id: params.game_session_id }
         });
 
-        if (apierror) {
-            return message(playerForm, `Error: ${apierror.detail}`);
-            // error(404, JSON.stringify(apierror.detail));
+        if (apiError) {
+            return message(
+                playerForm,
+                getApiErrorMessage(apiError, "The player could not be added."),
+                { status: 400 }
+            );
         }
-        // return message(playerForm, `Player ${playerForm.data.name} added successfully!`);
-        // return message(playerForm, "Player added successfully!");
+
+        return message(playerForm, `${playerForm.data.name} was added.`);
     },
-    deleteTeam: async ({ fetch, cookies, request, url }) => {
-        const auth_token = cookies.get("auth_token");
-        if (!auth_token) {
-            redirect(302, `/auth/login?redirectTo=${url.pathname}`);
+
+    deleteTeam: async ({ params, cookies, request, url, locals }) => {
+        requireGameManager(locals, url);
+
+        const authToken = cookies.get("auth_token");
+        if (!authToken) {
+            redirect(303, `/auth/login?redirectTo=${url.pathname}`);
         }
 
         const formData = await request.formData();
-        const game_session_id = formData.get("game_session_id") as string;
-        const team_id = formData.get("team_id") as string;
+        const parsedTeamId = entityIdSchema.safeParse(formData.get("team_id"));
+        if (!parsedTeamId.success) {
+            return fail(400, {
+                operation: "deleteTeam" as const,
+                error: "A valid team is required."
+            });
+        }
 
-        const { error: apierror, response } = await GameService.DeleteGameTeam({
-            auth: auth_token,
-            path: { game_session_id: game_session_id, game_team_id: team_id }
+        const { error: apiError } = await GameService.DeleteGameTeam({
+            auth: authToken,
+            path: {
+                game_session_id: params.game_session_id,
+                game_team_id: parsedTeamId.data
+            }
         });
 
-        if (apierror) {
-            error(404, JSON.stringify(apierror.detail));
+        if (apiError) {
+            return fail(400, {
+                operation: "deleteTeam" as const,
+                error: getApiErrorMessage(apiError, "The team could not be deleted.")
+            });
         }
-    },
-    deletePlayer: async ({ fetch, cookies, request, url }) => {
-        const auth_token = cookies.get("auth_token");
 
-        if (!auth_token) {
-            redirect(302, `/auth/login?redirectTo=${url.pathname}`);
+        return { success: true, operation: "deleteTeam" as const };
+    },
+
+    deletePlayer: async ({ params, cookies, request, url, locals }) => {
+        requireGameManager(locals, url);
+
+        const authToken = cookies.get("auth_token");
+        if (!authToken) {
+            redirect(303, `/auth/login?redirectTo=${url.pathname}`);
         }
 
         const formData = await request.formData();
-        const game_session_id = formData.get("game_session_id") as string;
-        const player_id = formData.get("player_id") as string;
+        const parsedPlayerId = entityIdSchema.safeParse(formData.get("player_id"));
+        if (!parsedPlayerId.success) {
+            return fail(400, {
+                operation: "deletePlayer" as const,
+                error: "A valid player is required."
+            });
+        }
 
-        const { error: apierror, response } = await GameService.DeleteGamePlayer({
-            auth: auth_token,
-            path: { game_session_id: game_session_id, game_player_id: player_id }
+        const { error: apiError } = await GameService.DeleteGamePlayer({
+            auth: authToken,
+            path: {
+                game_session_id: params.game_session_id,
+                game_player_id: parsedPlayerId.data
+            }
         });
 
-        if (apierror) {
-            error(404, JSON.stringify(apierror.detail));
+        if (apiError) {
+            return fail(400, {
+                operation: "deletePlayer" as const,
+                error: getApiErrorMessage(apiError, "The player could not be deleted.")
+            });
         }
+
+        return { success: true, operation: "deletePlayer" as const };
     }
 } satisfies Actions;

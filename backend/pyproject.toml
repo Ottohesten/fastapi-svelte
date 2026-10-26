@@ -48,8 +48,18 @@ app-cli = "app.cli:app"
 [tool.ruff]
 line-length = 88
 
+[tool.ruff.lint]
+# Keep the project's established Ruff baseline explicit. Ruff's implicit default
+# rule set can change between releases, while these are the rules historically
+# enabled by default.
+select = ["E4", "E7", "E9", "F"]
+
 [tool.ruff.format]
 indent-style = "space"
+
+[tool.ty.src]
+# Migration files are immutable history and are validated by applying the full chain in tests.
+exclude = ["app/migrations/versions/**"]
 
 [tool.pytest.ini_options]
 markers = ["no_db: unit test that does not require the database fixture"]

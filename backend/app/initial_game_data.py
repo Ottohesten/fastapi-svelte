@@ -1,19 +1,20 @@
 import logging
+
 from sqlmodel import Session, select
 
+from app.config import settings
 from app.db import (
     engine,
     init_db,
 )
 from app.models import (
-    GameSession,
-    User,
-    GameTeam,
-    GamePlayer,
     Drink,
+    GamePlayer,
     GamePlayerDrinkLink,
+    GameSession,
+    GameTeam,
+    User,
 )
-from app.config import settings
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)

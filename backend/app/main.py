@@ -1,18 +1,19 @@
 import sentry_sdk
-from fastapi.middleware.cors import CORSMiddleware
-
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.routing import APIRoute
 
 from app.config import settings
 from app.routers import (
     analytics,
-    users,
-    login,
-    recipes,
-    ingredients,
     game,
+    ingredients,
+    login,
+    nutrition,
+    products,
+    recipes,
     roles,
+    users,
     utils,
 )
 
@@ -56,3 +57,5 @@ app.include_router(ingredients.router)
 app.include_router(game.router)
 app.include_router(roles.router)
 app.include_router(analytics.router)
+app.include_router(products.router)
+app.include_router(nutrition.router)

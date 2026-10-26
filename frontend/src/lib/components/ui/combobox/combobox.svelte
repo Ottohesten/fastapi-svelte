@@ -6,12 +6,15 @@
   import * as Popover from "$lib/components/ui/popover/index.js";
   import { Button } from "$lib/components/ui/button/index.js";
   import { cn } from "$lib/utils.js";
+  import type { ControlAttrs } from "formsnap";
 
   export interface ComboboxItem {
     value: string;
     label: string;
+    description?: string;
     disabled?: boolean;
-    meta?: any;
+    keywords?: string[];
+    meta?: unknown;
   }
   interface Props {
     items: ComboboxItem[];
@@ -25,6 +28,8 @@
     buttonClass?: string;
     popoverClass?: string;
     disabled?: boolean;
+    controlProps?: Partial<ControlAttrs>;
+    filter?: (value: string, search: string, keywords?: string[]) => number;
   }
 
   let {
@@ -38,7 +43,9 @@
     onSelect,
     buttonClass = "w-[200px] justify-between",
     popoverClass = "w-(--bits-popover-anchor-width)",
-    disabled = false
+    disabled = false,
+    controlProps = {},
+    filter
   }: Props = $props();
 
   let open = $state(false);
@@ -70,6 +77,7 @@
       {#snippet child({ props })}
         <Button
           {...props}
+          {...controlProps}
           variant="outline"
           class={cn(buttonClass, "relative", !selectedLabel && "text-muted-foreground")}
           role="combobox"
@@ -83,7 +91,7 @@
       {/snippet}
     </Popover.Trigger>
     <Popover.Content class={cn(popoverClass, "p-0")} align="start">
-      <Command.Root>
+      <Command.Root {filter}>
         <Command.Input placeholder={searchPlaceholder} />
         <Command.List>
           <Command.Empty>{emptyMessage}</Command.Empty>
@@ -93,11 +101,19 @@
                 value={item.label}
                 data-value={item.value}
                 disabled={item.disabled}
+                keywords={item.keywords}
                 onSelect={() => select(item.value)}
                 class="w-full"
               >
                 <CheckIcon class={cn("mr-2 h-4 w-4", value !== item.value && "text-transparent")} />
-                <span class="truncate" title={item.label}>{item.label}</span>
+                <span class="min-w-0">
+                  <span class="block truncate" title={item.label}>{item.label}</span>
+                  {#if item.description}
+                    <span class="text-muted-foreground block truncate text-xs">
+                      {item.description}
+                    </span>
+                  {/if}
+                </span>
               </Command.Item>
             {/each}
           </Command.Group>

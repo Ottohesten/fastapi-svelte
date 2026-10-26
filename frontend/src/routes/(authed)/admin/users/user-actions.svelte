@@ -132,7 +132,7 @@
       >
         <Shield />
       </Button>
-      <Sheet.Content side="right" class="max-w-[100dvw] min-w-0 w-full overflow-y-auto sm:max-w-xl">
+      <Sheet.Content side="right" class="w-full max-w-[100dvw] min-w-0 overflow-y-auto sm:max-w-xl">
         <div class="space-y-6">
           <div>
             <h2 class="text-xl font-bold tracking-tight">User permissions</h2>

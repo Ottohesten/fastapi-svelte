@@ -1,12 +1,12 @@
 import uuid
+from datetime import UTC, datetime
+from hashlib import sha256
 from typing import Any
 
 from sqlmodel import Session, select
 
+from app.models import Item, ItemCreate, RefreshToken, User, UserCreate, UserUpdate
 from app.security import get_password_hash, verify_password
-from app.models import Item, ItemCreate, User, UserCreate, UserUpdate, RefreshToken
-from hashlib import sha256
-from datetime import datetime, timezone
 
 
 def create_user(*, session: Session, user_create: UserCreate) -> User:
@@ -82,7 +82,7 @@ def get_refresh_token(*, session: Session, token: str) -> RefreshToken | None:
 def revoke_refresh_token(*, session: Session, token: str) -> None:
     rec = get_refresh_token(session=session, token=token)
     if rec and rec.revoked_at is None:
-        rec.revoked_at = datetime.now(timezone.utc)
+        rec.revoked_at = datetime.now(UTC)
         session.add(rec)
         session.commit()
 

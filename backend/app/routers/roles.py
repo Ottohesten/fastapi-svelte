@@ -3,20 +3,19 @@ Role Management API Endpoints
 """
 
 import uuid
-from typing import List
+
 from fastapi import APIRouter, HTTPException, Security
 from sqlmodel import select
 
 from app.deps import SessionDep, get_current_user
-from app.models import Role, User, Message, RoleCreate, RoleUpdate, RolePublic
+from app.models import Message, Role, RoleCreate, RolePublic, RoleUpdate, User
 from app.permissions import AVAILABLE_SCOPES, ROLE_TEMPLATES, create_role_from_template
-
 
 router = APIRouter(prefix="/roles", tags=["roles"])
 
 
 # Role CRUD endpoints
-@router.get("/", response_model=List[RolePublic])
+@router.get("/", response_model=list[RolePublic])
 def get_roles(
     session: SessionDep,
     current_user: User = Security(get_current_user, scopes=["roles:read"]),

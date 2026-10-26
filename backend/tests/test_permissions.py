@@ -5,7 +5,7 @@ from collections.abc import Callable
 import pytest
 from sqlmodel import Session
 
-import app.db_crud as db_crud
+from app import db_crud
 from app.models import Role, User, UserCreate
 from app.permissions import (
     AVAILABLE_SCOPES,

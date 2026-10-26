@@ -1,8 +1,8 @@
 <script lang="ts">
-  import AdminBreadcrumbs from "$lib/components/AdminBreadcrumbs.svelte";
-  import AppSidebar from "$lib/components/AppSidebar.svelte";
-  import { Separator } from "$lib/components/ui/separator/index.js";
-  import * as Sidebar from "$lib/components/ui/sidebar/index.js";
+  import AdminBreadcrumbs from "#lib/components/AdminBreadcrumbs.svelte";
+  import AppSidebar from "#lib/components/AppSidebar.svelte";
+  import { Separator } from "#lib/components/ui/separator/index.js";
+  import * as Sidebar from "#lib/components/ui/sidebar/index.js";
 
   let { children, data } = $props();
 </script>

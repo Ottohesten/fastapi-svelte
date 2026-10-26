@@ -1,80 +1,32 @@
-<script lang="ts" generics="TData, TValue">
-  import {
-    type ColumnDef,
-    type PaginationState,
-    type SortingState,
-    type ColumnFiltersState,
-    getCoreRowModel,
-    getPaginationRowModel,
-    getSortedRowModel,
-    getFilteredRowModel
-  } from "@tanstack/table-core";
-  import { createSvelteTable, FlexRender } from "$lib/components/ui/data-table/index.js";
-  import * as Table from "$lib/components/ui/table/index.js";
-  import { Input } from "$lib/components/ui/input/index.js";
-  import { Button } from "$lib/components/ui/button/index.js";
-  import * as Select from "$lib/components/ui/select/index.js";
+<script lang="ts" generics="TData extends RowData">
+  import { createTable, type RowData } from "@tanstack/svelte-table";
+  import { features, FlexRender, type ColumnDef } from "#lib/components/ui/data-table/index.js";
+  import * as Table from "#lib/components/ui/table/index.js";
+  import { Input } from "#lib/components/ui/input/index.js";
+  import { Button } from "#lib/components/ui/button/index.js";
+  import * as Select from "#lib/components/ui/select/index.js";
   import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, Search } from "@lucide/svelte";
 
-  type DataTableProps<TData, TValue> = {
-    columns: ColumnDef<TData, TValue>[];
+  type DataTableProps<TData extends RowData> = {
+    columns: ColumnDef<TData>[];
     data: TData[];
     searchColumn?: string;
     searchPlaceholder?: string;
   };
 
-  let { data, columns, searchColumn, searchPlaceholder }: DataTableProps<TData, TValue> = $props();
+  let { data, columns, searchColumn, searchPlaceholder }: DataTableProps<TData> = $props();
 
-  let pagination = $state<PaginationState>({ pageIndex: 0, pageSize: 10 });
-  let sorting = $state<SortingState>([]);
-  let columnFilters = $state<ColumnFiltersState>([]);
-
-  const table = createSvelteTable({
+  const table = createTable({
+    features,
     get data() {
       return data;
     },
-    // columns,
     get columns() {
       return columns;
-    },
-    getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
-    onPaginationChange: (updater) => {
-      if (typeof updater === "function") {
-        pagination = updater(pagination);
-      } else {
-        pagination = updater;
-      }
-    },
-    onSortingChange: (updater) => {
-      if (typeof updater === "function") {
-        sorting = updater(sorting);
-      } else {
-        sorting = updater;
-      }
-    },
-    onColumnFiltersChange: (updater) => {
-      if (typeof updater === "function") {
-        columnFilters = updater(columnFilters);
-      } else {
-        columnFilters = updater;
-      }
-    },
-    state: {
-      get pagination() {
-        return pagination;
-      },
-      get sorting() {
-        return sorting;
-      },
-      get columnFilters() {
-        return columnFilters;
-      }
     }
   });
 
+  let pagination = $derived(table.atoms.pagination.get());
   let filteredRowCount = $derived(table.getFilteredRowModel().rows.length);
   let pageCount = $derived(table.getPageCount());
   let firstVisibleRow = $derived(
@@ -123,10 +75,7 @@
             {#each headerGroup.headers as header (header.id)}
               <Table.Head>
                 {#if !header.isPlaceholder}
-                  <FlexRender
-                    content={header.column.columnDef.header}
-                    context={header.getContext()}
-                  />
+                  <FlexRender {header} />
                 {/if}
               </Table.Head>
             {/each}
@@ -138,7 +87,7 @@
           <Table.Row data-state={row.getIsSelected() && "selected"}>
             {#each row.getVisibleCells() as cell (cell.id)}
               <Table.Cell>
-                <FlexRender content={cell.column.columnDef.cell} context={cell.getContext()} />
+                <FlexRender {cell} />
               </Table.Cell>
             {/each}
           </Table.Row>

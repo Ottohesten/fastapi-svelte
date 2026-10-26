@@ -1,7 +1,10 @@
 <script lang="ts">
-  import { browser } from "$app/environment";
-  import { Badge } from "$lib/components/ui/badge";
-  import type { RecipeIngredientSourcePublic, RecipeIngredientTotalPublic } from "$lib/client";
+  import { browser } from "$app/env";
+  import { Badge } from "#lib/components/ui/badge/index.js";
+  import type {
+    RecipeIngredientSourcePublic,
+    RecipeIngredientTotalPublic
+  } from "#lib/client/index.js";
 
   type Props = {
     ingredients: RecipeIngredientTotalPublic[];

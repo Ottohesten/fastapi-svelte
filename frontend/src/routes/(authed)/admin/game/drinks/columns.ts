@@ -1,10 +1,10 @@
-import type { ColumnDef } from "@tanstack/table-core";
-import type { DrinkPublic } from "$lib/client";
-import { renderComponent, renderSnippet } from "$lib/components/ui/data-table/index.js";
+import type { ColumnDef } from "#lib/components/ui/data-table/index.js";
+import type { DrinkPublic } from "#lib/client/index.js";
+import { renderComponent, renderSnippet } from "#lib/components/ui/data-table/index.js";
 import DrinkActions from "./drink-actions.svelte";
 import { createRawSnippet } from "svelte";
 import type { SuperForm, Infer } from "sveltekit-superforms";
-import type { DrinkUpdateSchema } from "$lib/schemas/schemas";
+import type { DrinkUpdateSchema } from "#lib/schemas/schemas.js";
 
 export const createColumns = (
     updateForm: SuperForm<Infer<typeof DrinkUpdateSchema>>

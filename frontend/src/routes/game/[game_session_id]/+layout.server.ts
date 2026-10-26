@@ -1,7 +1,7 @@
-import { GameService } from "$lib/client/sdk.gen.js";
+import { GameService } from "#lib/client/sdk.gen.js";
 import { error } from "@sveltejs/kit";
 import { redirect } from "@sveltejs/kit";
-import { env } from "$env/dynamic/private";
+import * as env from "$app/env/private";
 
 export const load = async ({ fetch, params, locals }) => {
     const {

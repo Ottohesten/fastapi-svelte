@@ -1,18 +1,18 @@
 <script lang="ts">
   let { data } = $props();
-  import DataTable from "$lib/components/ui/data-table.svelte";
-  import AdminPageHeader from "$lib/components/AdminPageHeader.svelte";
-  import Button, { buttonVariants } from "$lib/components/ui/button/button.svelte";
+  import DataTable from "#lib/components/ui/data-table.svelte";
+  import AdminPageHeader from "#lib/components/AdminPageHeader.svelte";
+  import Button, { buttonVariants } from "#lib/components/ui/button/button.svelte";
   import { enhance } from "$app/forms";
   import { createColumns } from "./columns.js";
-  import * as Dialog from "$lib/components/ui/dialog/index.js";
-  import * as Alert from "$lib/components/ui/alert/index.js";
-  import { Input } from "$lib/components/ui/input";
+  import * as Dialog from "#lib/components/ui/dialog/index.js";
+  import * as Alert from "#lib/components/ui/alert/index.js";
+  import { Input } from "#lib/components/ui/input/index.js";
   import { superForm } from "sveltekit-superforms";
   import { zod4 as zodClient } from "sveltekit-superforms/adapters";
   import { fade } from "svelte/transition";
   import { untrack } from "svelte";
-  import { DrinkSchema, DrinkUpdateSchema } from "$lib/schemas/schemas";
+  import { DrinkSchema, DrinkUpdateSchema } from "#lib/schemas/schemas.js";
   import { Field, Control, Label, FieldErrors } from "formsnap";
   import { CircleCheck, TriangleAlert } from "@lucide/svelte";
 

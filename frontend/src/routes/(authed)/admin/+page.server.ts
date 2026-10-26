@@ -3,14 +3,14 @@ import {
     IngredientsService,
     RecipesService,
     UsersService
-} from "$lib/client/sdk.gen.js";
+} from "#lib/client/sdk.gen.js";
 import type {
     GameSessionPublic,
     IngredientPublic,
     RecipePublic,
     UserWithPermissionsPublic
-} from "$lib/client/types.gen.js";
-import { loadAdminTraffic } from "$lib/server/admin-analytics";
+} from "#lib/client/types.gen.js";
+import { loadAdminTraffic } from "#lib/server/admin-analytics.js";
 import type { PageServerLoad } from "./$types.js";
 
 const PAGE_SIZE = 100;

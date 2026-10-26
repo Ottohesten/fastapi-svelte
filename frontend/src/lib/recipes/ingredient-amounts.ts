@@ -1,4 +1,4 @@
-import type { RecipeIngredientTotalPublic, RecipePublic } from "$lib/client";
+import type { RecipeIngredientTotalPublic, RecipePublic } from "#lib/client/index.js";
 import { defaultTreeAdapter, parseFragment, serialize } from "parse5";
 import { attribute, isElement, type HtmlNode, type HtmlText } from "./html";
 

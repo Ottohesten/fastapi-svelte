@@ -1,4 +1,4 @@
-import { RecipesService } from "$lib/client/sdk.gen.js";
+import { RecipesService } from "#lib/client/sdk.gen.js";
 import { error } from "@sveltejs/kit";
 import type { Actions } from "./$types.js";
 import { redirect } from "@sveltejs/kit";

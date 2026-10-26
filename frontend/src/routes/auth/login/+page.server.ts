@@ -1,9 +1,9 @@
-import { LoginService, UsersService } from "$lib/client/sdk.gen.js";
+import { LoginService, UsersService } from "#lib/client/sdk.gen.js";
 import type { Actions, PageServerLoad } from "./$types";
 import { redirect, fail } from "@sveltejs/kit";
 import { superValidate, message } from "sveltekit-superforms";
 import { zod4 as zod } from "sveltekit-superforms/adapters";
-import { LoginSchema } from "$lib/schemas/schemas";
+import { LoginSchema } from "#lib/schemas/schemas.js";
 
 export const load: PageServerLoad = async () => {
     return {

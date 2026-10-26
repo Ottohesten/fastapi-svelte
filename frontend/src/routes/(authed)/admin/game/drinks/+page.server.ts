@@ -1,9 +1,9 @@
-import { GameService } from "$lib/client/sdk.gen.js";
+import { GameService } from "#lib/client/sdk.gen.js";
 import { error, fail, redirect } from "@sveltejs/kit";
 import { message, superValidate } from "sveltekit-superforms";
 import { zod4 as zod } from "sveltekit-superforms/adapters";
 import type { Actions } from "./$types.js";
-import { DrinkSchema, DrinkUpdateSchema } from "$lib/schemas/schemas";
+import { DrinkSchema, DrinkUpdateSchema } from "#lib/schemas/schemas.js";
 
 export const load = async ({ fetch }) => {
     const {

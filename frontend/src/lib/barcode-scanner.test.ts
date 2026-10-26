@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { clampCameraZoom, getCameraZoomConfiguration } from "$lib/barcode-scanner";
+import { clampCameraZoom, getCameraZoomConfiguration } from "#lib/barcode-scanner.js";
 
 describe("barcode scanner camera zoom", () => {
     test("starts with a wide 1x field of view", () => {

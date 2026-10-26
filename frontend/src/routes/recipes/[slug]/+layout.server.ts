@@ -1,6 +1,6 @@
-import { RecipesService } from "$lib/client/sdk.gen.js";
+import { RecipesService } from "#lib/client/sdk.gen.js";
 import { error } from "@sveltejs/kit";
-import type { RecipePublic } from "$lib/client";
+import type { RecipePublic } from "#lib/client/index.js";
 
 export const load = async ({ fetch, params, locals, cookies }) => {
     const auth_token = cookies.get("auth_token");

@@ -1,11 +1,11 @@
-import type { ColumnDef } from "@tanstack/table-core";
-import type { RolePublic, UserWithPermissionsPublic } from "$lib/client";
-import { renderComponent, renderSnippet } from "$lib/components/ui/data-table/index.js";
+import type { ColumnDef } from "#lib/components/ui/data-table/index.js";
+import type { RolePublic, UserWithPermissionsPublic } from "#lib/client/index.js";
+import { renderComponent, renderSnippet } from "#lib/components/ui/data-table/index.js";
 import UserBadge from "./user-badge.svelte";
 import UserActions from "./user-actions.svelte";
 import { createRawSnippet } from "svelte";
 import type { SuperForm } from "sveltekit-superforms";
-import type { UserUpdateSchema, UserAddRoleSchema } from "$lib/schemas/schemas.js";
+import type { UserUpdateSchema, UserAddRoleSchema } from "#lib/schemas/schemas.js";
 import type { Infer } from "sveltekit-superforms";
 
 export function createColumns(

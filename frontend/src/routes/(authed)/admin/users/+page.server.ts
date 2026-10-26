@@ -1,10 +1,10 @@
-import { UsersService, RolesService } from "$lib/client/sdk.gen.js";
+import { UsersService, RolesService } from "#lib/client/sdk.gen.js";
 import { error, redirect } from "@sveltejs/kit";
 import { message, superValidate, fail } from "sveltekit-superforms";
 import { zod4 as zod } from "sveltekit-superforms/adapters";
 import type { Actions } from "./$types.js";
 
-import { UserSchema, UserUpdateSchema, UserAddRoleSchema } from "$lib/schemas/schemas.js";
+import { UserSchema, UserUpdateSchema, UserAddRoleSchema } from "#lib/schemas/schemas.js";
 
 export const load = async ({ fetch, cookies, url }) => {
     const auth_token = cookies.get("auth_token");

@@ -1,5 +1,5 @@
-import { GameService } from "$lib/client/sdk.gen.js";
-import { GameSessionPlayerUpdateSchema } from "$lib/schemas/schemas.js";
+import { GameService } from "#lib/client/sdk.gen.js";
+import { GameSessionPlayerUpdateSchema } from "#lib/schemas/schemas.js";
 import { error, redirect } from "@sveltejs/kit";
 import { fail, message, superValidate } from "sveltekit-superforms";
 import { zod4 as zod } from "sveltekit-superforms/adapters";

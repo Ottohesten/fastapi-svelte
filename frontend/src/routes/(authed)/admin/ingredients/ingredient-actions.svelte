@@ -1,18 +1,18 @@
 <script lang="ts">
-  import Button, { buttonVariants } from "$lib/components/ui/button/button.svelte";
+  import Button, { buttonVariants } from "#lib/components/ui/button/button.svelte";
   import { Pencil, Trash2, TriangleAlert } from "@lucide/svelte";
   import { enhance } from "$app/forms";
-  import * as Alert from "$lib/components/ui/alert/index.js";
-  import * as AlertDialog from "$lib/components/ui/alert-dialog/index.js";
-  import * as Dialog from "$lib/components/ui/dialog/index.js";
-  import { Input } from "$lib/components/ui/input";
+  import * as Alert from "#lib/components/ui/alert/index.js";
+  import * as AlertDialog from "#lib/components/ui/alert-dialog/index.js";
+  import * as Dialog from "#lib/components/ui/dialog/index.js";
+  import { Input } from "#lib/components/ui/input/index.js";
   import { Field, Control, Label, FieldErrors } from "formsnap";
   import { untrack } from "svelte";
 
-  import type { IngredientPublic } from "$lib/client";
+  import type { IngredientPublic } from "#lib/client/index.js";
   import type { SuperForm } from "sveltekit-superforms";
   import type { Infer } from "sveltekit-superforms";
-  import type { IngredientUpdateSchema } from "$lib/schemas/schemas";
+  import type { IngredientUpdateSchema } from "#lib/schemas/schemas.js";
 
   let {
     ingredient,

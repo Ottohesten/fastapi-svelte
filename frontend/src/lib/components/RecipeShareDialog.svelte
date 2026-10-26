@@ -1,10 +1,10 @@
 <script lang="ts">
   import { Copy, Download, Link, Share2 } from "@lucide/svelte";
-  import type { RecipePublic } from "$lib/client";
-  import { Button, buttonVariants } from "$lib/components/ui/button";
-  import * as Dialog from "$lib/components/ui/dialog";
-  import { Input } from "$lib/components/ui/input";
-  import { ingredientListText } from "$lib/recipes/sharing";
+  import type { RecipePublic } from "#lib/client/index.js";
+  import { Button, buttonVariants } from "#lib/components/ui/button/index.js";
+  import * as Dialog from "#lib/components/ui/dialog/index.js";
+  import { Input } from "#lib/components/ui/input/index.js";
+  import { ingredientListText } from "#lib/recipes/sharing.js";
 
   let { recipe, recipeUrl }: { recipe: RecipePublic; recipeUrl: string } = $props();
   let open = $state(false);

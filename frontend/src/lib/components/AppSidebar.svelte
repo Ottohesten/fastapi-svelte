@@ -1,10 +1,10 @@
 <script lang="ts">
   import { goto } from "$app/navigation";
   import { page } from "$app/state";
-  import * as Avatar from "$lib/components/ui/avatar/index.js";
-  import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.js";
-  import * as Sidebar from "$lib/components/ui/sidebar/index.js";
-  import ThemeToggle from "$lib/components/ThemeToggle.svelte";
+  import * as Avatar from "#lib/components/ui/avatar/index.js";
+  import * as DropdownMenu from "#lib/components/ui/dropdown-menu/index.js";
+  import * as Sidebar from "#lib/components/ui/sidebar/index.js";
+  import ThemeToggle from "#lib/components/ThemeToggle.svelte";
   import BookOpen from "@lucide/svelte/icons/book-open";
   import ChevronUp from "@lucide/svelte/icons/chevron-up";
   import CookingPot from "@lucide/svelte/icons/cooking-pot";
@@ -54,7 +54,7 @@
   }
 
   async function navigate(url: string) {
-    await goto(url, { replaceState: sidebar.isMobile && sidebar.openMobile });
+    await goto(url, { replace: sidebar.isMobile && sidebar.openMobile });
   }
 </script>
 

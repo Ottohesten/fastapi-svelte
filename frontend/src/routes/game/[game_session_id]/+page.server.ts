@@ -1,11 +1,11 @@
-import { GameService } from "$lib/client/sdk.gen.js";
+import { GameService } from "#lib/client/sdk.gen.js";
 import { error } from "@sveltejs/kit";
 import { redirect } from "@sveltejs/kit";
 import type { Actions } from "./$types.js";
 import { zod4 as zod } from "sveltekit-superforms/adapters";
 import { z } from "zod";
 import { message, superValidate, fail } from "sveltekit-superforms";
-import { GameSessionAddDrinkSchema } from "$lib/schemas/schemas.js";
+import { GameSessionAddDrinkSchema } from "#lib/schemas/schemas.js";
 
 export const load = async ({}) => {
     const addDrinkForm = await superValidate(zod(GameSessionAddDrinkSchema), {

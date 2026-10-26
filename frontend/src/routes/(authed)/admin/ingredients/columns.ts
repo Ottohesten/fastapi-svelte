@@ -1,11 +1,11 @@
-import type { ColumnDef } from "@tanstack/table-core";
-import type { IngredientPublic } from "$lib/client";
-import { renderComponent, renderSnippet } from "$lib/components/ui/data-table/index.js";
+import type { ColumnDef } from "#lib/components/ui/data-table/index.js";
+import type { IngredientPublic } from "#lib/client/index.js";
+import { renderComponent, renderSnippet } from "#lib/components/ui/data-table/index.js";
 import IngredientActions from "./ingredient-actions.svelte";
 import { createRawSnippet } from "svelte";
 import type { SuperForm } from "sveltekit-superforms";
 import type { Infer } from "sveltekit-superforms";
-import type { IngredientUpdateSchema } from "$lib/schemas/schemas";
+import type { IngredientUpdateSchema } from "#lib/schemas/schemas.js";
 
 export const createColumns = (
     updateForm: SuperForm<Infer<typeof IngredientUpdateSchema>>

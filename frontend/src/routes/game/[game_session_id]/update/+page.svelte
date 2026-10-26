@@ -13,15 +13,15 @@
   import { untrack } from "svelte";
   import { Control, Field, FieldErrors, Label } from "formsnap";
   import { superForm } from "sveltekit-superforms";
-  import * as Alert from "$lib/components/ui/alert";
-  import * as AlertDialog from "$lib/components/ui/alert-dialog";
-  import * as Avatar from "$lib/components/ui/avatar";
-  import { Badge } from "$lib/components/ui/badge";
-  import { Button } from "$lib/components/ui/button";
-  import * as Card from "$lib/components/ui/card";
-  import { Input } from "$lib/components/ui/input";
-  import * as Select from "$lib/components/ui/select";
-  import { getPlayerDrinkTotal } from "$lib/game/stats";
+  import * as Alert from "#lib/components/ui/alert/index.js";
+  import * as AlertDialog from "#lib/components/ui/alert-dialog/index.js";
+  import * as Avatar from "#lib/components/ui/avatar/index.js";
+  import { Badge } from "#lib/components/ui/badge/index.js";
+  import { Button } from "#lib/components/ui/button/index.js";
+  import * as Card from "#lib/components/ui/card/index.js";
+  import { Input } from "#lib/components/ui/input/index.js";
+  import * as Select from "#lib/components/ui/select/index.js";
+  import { getPlayerDrinkTotal } from "#lib/game/stats.js";
   import type { ActionData, PageData } from "./$types";
 
   const NO_TEAM = "__no_team__";

@@ -1,4 +1,4 @@
-import type { RecipePublic } from "$lib/client";
+import type { RecipePublic } from "#lib/client/index.js";
 import { parseFragment, serialize, serializeOuter } from "parse5";
 import { scopeImportedIngredientAmounts } from "./ingredient-amounts";
 import {

@@ -10,14 +10,14 @@
   import Save from "@lucide/svelte/icons/save";
   import Trophy from "@lucide/svelte/icons/trophy";
   import UserRound from "@lucide/svelte/icons/user-round";
-  import * as Alert from "$lib/components/ui/alert";
-  import * as Avatar from "$lib/components/ui/avatar";
-  import { Badge } from "$lib/components/ui/badge";
-  import { Button } from "$lib/components/ui/button";
-  import * as Card from "$lib/components/ui/card";
-  import { Input } from "$lib/components/ui/input";
-  import * as Select from "$lib/components/ui/select";
-  import { getPlayerDrinkTotal, summarizeDrinks } from "$lib/game/stats";
+  import * as Alert from "#lib/components/ui/alert/index.js";
+  import * as Avatar from "#lib/components/ui/avatar/index.js";
+  import { Badge } from "#lib/components/ui/badge/index.js";
+  import { Button } from "#lib/components/ui/button/index.js";
+  import * as Card from "#lib/components/ui/card/index.js";
+  import { Input } from "#lib/components/ui/input/index.js";
+  import * as Select from "#lib/components/ui/select/index.js";
+  import { getPlayerDrinkTotal, summarizeDrinks } from "#lib/game/stats.js";
   import type { PageData } from "./$types";
 
   const NO_TEAM = "__no_team__";

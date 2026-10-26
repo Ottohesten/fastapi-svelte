@@ -1,16 +1,16 @@
 <script lang="ts">
   import AlertCircle from "@lucide/svelte/icons/circle-alert";
   import Trash2 from "@lucide/svelte/icons/trash-2";
-  import { Button } from "$lib/components/ui/button";
-  import { Combobox } from "$lib/components/ui/combobox";
-  import { Input } from "$lib/components/ui/input";
+  import { Button } from "#lib/components/ui/button/index.js";
+  import { Combobox } from "#lib/components/ui/combobox/index.js";
+  import { Input } from "#lib/components/ui/input/index.js";
   import {
     catalogSearchScore,
     draftIsComplete,
     draftPreview,
     formatNutrition,
     validProductUnits
-  } from "$lib/nutrition/helpers";
+  } from "#lib/nutrition/helpers.js";
   import {
     nutritionBasisLabels,
     sourceTypeLabels,
@@ -20,8 +20,11 @@
     type NutritionIngredientOption,
     type NutritionProduct,
     type NutritionRecipeOption
-  } from "$lib/nutrition/types";
-  import type { NutritionBatchFormSchema, NutritionEntryFormSchema } from "$lib/schemas/nutrition";
+  } from "#lib/nutrition/types.js";
+  import type {
+    NutritionBatchFormSchema,
+    NutritionEntryFormSchema
+  } from "#lib/schemas/nutrition.js";
   import { Control, Field, FieldErrors, Label } from "formsnap";
   import type { FormPath, Infer, SuperForm } from "sveltekit-superforms";
 

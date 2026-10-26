@@ -1,15 +1,15 @@
-import { ProductsService, type ProductCreate } from "$lib/client";
+import { ProductsService, type ProductCreate } from "#lib/client/index.js";
 import {
     ProductDeleteFormSchema,
     ProductFormSchema,
     type ProductFormData
-} from "$lib/schemas/nutrition.js";
+} from "#lib/schemas/nutrition.js";
 import {
     apiErrorMessage,
     backendActionStatus,
     backendLoadStatus,
     requireAuthToken
-} from "$lib/server/backend";
+} from "#lib/server/backend.js";
 import { error, fail } from "@sveltejs/kit";
 import { message, superValidate } from "sveltekit-superforms";
 import { zod4 as zod } from "sveltekit-superforms/adapters";

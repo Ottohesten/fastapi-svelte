@@ -13,8 +13,8 @@ import type {
     ProductNutritionBasis,
     ProductPublic,
     QuickAddCandidatePublic
-} from "$lib/client";
-import type { NutritionEntryForm } from "$lib/schemas/nutrition";
+} from "#lib/client/index.js";
+import type { NutritionEntryForm } from "#lib/schemas/nutrition.js";
 
 export const mealTypes = [
     "breakfast",

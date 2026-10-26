@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import type { GamePlayerPublic } from "$lib/client/types.gen";
+import type { GamePlayerPublic } from "#lib/client/types.gen.js";
 import { getPlayerDrinkTotal, rankPlayersByDrinks, summarizeDrinks } from "./stats";
 
 type TestPlayer = Pick<GamePlayerPublic, "name" | "drink_links">;

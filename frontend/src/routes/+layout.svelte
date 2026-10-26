@@ -2,21 +2,21 @@
   import "../app.css";
   import { afterNavigate } from "$app/navigation";
   import { onMount } from "svelte";
-  import { page } from "$app/stores";
+  import { page } from "$app/state";
   import ChefHat from "@lucide/svelte/icons/chef-hat";
   import LogIn from "@lucide/svelte/icons/log-in";
   import LogOut from "@lucide/svelte/icons/log-out";
   import Menu from "@lucide/svelte/icons/menu";
   import ShieldCheck from "@lucide/svelte/icons/shield-check";
-  import ThemeToggle from "$lib/components/ThemeToggle.svelte";
-  import { Button, buttonVariants } from "$lib/components/ui/button";
-  import * as Sheet from "$lib/components/ui/sheet";
+  import ThemeToggle from "#lib/components/ThemeToggle.svelte";
+  import { Button, buttonVariants } from "#lib/components/ui/button/index.js";
+  import * as Sheet from "#lib/components/ui/sheet/index.js";
   import {
     BROWSER_SESSION_STORAGE_KEY,
     buildPageMetrics,
     postPageMetrics
-  } from "$lib/observability/page-metrics";
-  import { hasBrowserTelemetryOptOut } from "$lib/observability/sentry-config";
+  } from "#lib/observability/page-metrics.js";
+  import { hasBrowserTelemetryOptOut } from "#lib/observability/sentry-config.js";
 
   let { children, data } = $props();
 
@@ -37,7 +37,7 @@
   let mobileOpen = $state(false);
 
   const isAdmin = $derived(
-    $page.url.pathname === "/admin" || $page.url.pathname.startsWith("/admin/")
+    page.url.pathname === "/admin" || page.url.pathname.startsWith("/admin/")
   );
   const navigationLinks = $derived(
     data.authenticatedUser
@@ -55,7 +55,7 @@
   }
 
   function isActive(href: string) {
-    return $page.url.pathname === href || $page.url.pathname.startsWith(`${href}/`);
+    return page.url.pathname === href || page.url.pathname.startsWith(`${href}/`);
   }
 
   function recordPageView(routeId: string | null | undefined) {
@@ -84,7 +84,9 @@
     }
   }
 
-  afterNavigate(({ to, type }) => {
+  afterNavigate(({ to, type, shallow }) => {
+    if (shallow) return;
+
     if (type === "enter") {
       if (initialPageViewRecorded) return;
       initialPageViewRecorded = true;
@@ -99,7 +101,7 @@
     // SvelteKit may finish its initial navigation before the afterNavigate callback is mounted.
     if (!initialPageViewRecorded) {
       initialPageViewRecorded = true;
-      recordPageView($page.route.id);
+      recordPageView(page.route.id);
     }
   });
 </script>

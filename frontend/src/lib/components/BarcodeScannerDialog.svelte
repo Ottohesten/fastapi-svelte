@@ -1,7 +1,7 @@
 <script lang="ts">
   import { LoaderCircle } from "@lucide/svelte";
-  import BarcodeScanner from "$lib/components/BarcodeScanner.svelte";
-  import * as Dialog from "$lib/components/ui/dialog";
+  import BarcodeScanner from "#lib/components/BarcodeScanner.svelte";
+  import * as Dialog from "#lib/components/ui/dialog/index.js";
 
   let {
     open = $bindable(false),

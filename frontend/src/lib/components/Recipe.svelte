@@ -3,9 +3,9 @@
   // let { user, recipe } = $props();
   import { enhance } from "$app/forms";
 
-  import type { RecipePublic, UserMePublic } from "$lib/client";
-  import { renderIngredientAmounts } from "$lib/recipes/ingredient-amounts";
-  import { resolveRecipeInstructions } from "$lib/recipes/sub-recipe-instructions";
+  import type { RecipePublic, UserMePublic } from "#lib/client/index.js";
+  import { renderIngredientAmounts } from "#lib/recipes/ingredient-amounts.js";
+  import { resolveRecipeInstructions } from "#lib/recipes/sub-recipe-instructions.js";
 
   type Props = {
     recipe: RecipePublic;

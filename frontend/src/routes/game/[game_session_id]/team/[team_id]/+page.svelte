@@ -5,11 +5,11 @@
   import Settings2 from "@lucide/svelte/icons/settings-2";
   import Trophy from "@lucide/svelte/icons/trophy";
   import Users from "@lucide/svelte/icons/users";
-  import * as Avatar from "$lib/components/ui/avatar";
-  import { Badge } from "$lib/components/ui/badge";
-  import { Button } from "$lib/components/ui/button";
-  import * as Card from "$lib/components/ui/card";
-  import { getPlayerDrinkTotal, rankPlayersByDrinks, summarizeDrinks } from "$lib/game/stats";
+  import * as Avatar from "#lib/components/ui/avatar/index.js";
+  import { Badge } from "#lib/components/ui/badge/index.js";
+  import { Button } from "#lib/components/ui/button/index.js";
+  import * as Card from "#lib/components/ui/card/index.js";
+  import { getPlayerDrinkTotal, rankPlayersByDrinks, summarizeDrinks } from "#lib/game/stats.js";
   import type { PageData } from "./$types";
 
   let { data }: { data: PageData } = $props();

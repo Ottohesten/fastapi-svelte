@@ -108,8 +108,9 @@ Use `uv`; do not introduce pip-managed environment files.
   requires it and the value is narrowed immediately.
 - Follow Svelte 5/SvelteKit routing and server-load/action patterns already present in neighboring
   routes.
-- Use `$lib` aliases for shared frontend code instead of long relative imports.
-- Reuse shadcn-svelte primitives from `$lib/components/ui` and existing application components
+- Use `#lib` subpath imports for shared frontend code instead of long relative imports.
+  Include explicit file extensions (`.js` for TypeScript modules and `.svelte` for components).
+- Reuse shadcn-svelte primitives from `#lib/components/ui` and existing application components
   before creating new UI abstractions.
 - Use `@lucide/svelte` for icons. Do not add the deprecated `lucide-svelte` package.
 - Forms use `sveltekit-superforms` with Zod 4 adapters. Import public exports from the package root

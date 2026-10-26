@@ -2,10 +2,10 @@
   import { superForm } from "sveltekit-superforms";
   import { untrack } from "svelte";
   import { zod4 as zodClient } from "sveltekit-superforms/adapters";
-  import { LoginSchema } from "$lib/schemas/schemas";
+  import { LoginSchema } from "#lib/schemas/schemas.js";
   import { Field, Control, Label, FieldErrors } from "formsnap";
-  import { Input } from "$lib/components/ui/input";
-  import { Button } from "$lib/components/ui/button";
+  import { Input } from "#lib/components/ui/input/index.js";
+  import { Button } from "#lib/components/ui/button/index.js";
 
   let { data } = $props();
 

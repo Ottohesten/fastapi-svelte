@@ -1,5 +1,7 @@
 import { sveltekit } from "@sveltejs/kit/vite";
-import { sentrySvelteKit } from "@sentry/sveltekit";
+import adapter from "@sveltejs/adapter-node";
+import { vitePreprocess } from "@sveltejs/vite-plugin-svelte";
+import { sentrySvelteKit } from "@sentry/sveltekit/vite";
 import tailwindcss from "@tailwindcss/vite";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -23,7 +25,20 @@ export default defineConfig(async ({ mode }) => {
                 org: buildEnvironment.SENTRY_ORG,
                 project: buildEnvironment.SENTRY_PROJECT
             })),
-            sveltekit(),
+            sveltekit({
+                adapter: adapter(),
+                preprocess: vitePreprocess(),
+                // SvelteKit 3 replaces adapter-node's runtime ORIGIN with build configuration.
+                paths: { origin: buildEnvironment.ORIGIN || undefined },
+                csrf: {
+                    trustedOrigins: [
+                        "https://internationaleregler.dk",
+                        "https://fastapi-svelte-backend.onrender.com",
+                        "http://localhost:5173",
+                        "http://127.0.0.1:5173"
+                    ]
+                }
+            }),
             tailwindcss()
         ],
         resolve: {

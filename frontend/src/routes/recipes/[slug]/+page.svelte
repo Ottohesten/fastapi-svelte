@@ -1,18 +1,18 @@
 <script lang="ts">
-  import { browser } from "$app/environment";
+  import { browser } from "$app/env";
   import { goto } from "$app/navigation";
   import { page } from "$app/state";
   import { tick } from "svelte";
   import { NotebookPen } from "@lucide/svelte";
-  import type { RecipePublic, UserMePublic } from "$lib/client";
-  import RecipeIngredientsChecklist from "$lib/components/RecipeIngredientsChecklist.svelte";
-  import RecipeNutritionSheet from "$lib/components/RecipeNutritionSheet.svelte";
-  import RecipeShareDialog from "$lib/components/RecipeShareDialog.svelte";
-  import { Button } from "$lib/components/ui/button";
-  import { Input } from "$lib/components/ui/input";
-  import { parseServings, scaledRecipeUrl } from "$lib/recipes/sharing";
-  import { renderIngredientAmounts } from "$lib/recipes/ingredient-amounts";
-  import { resolveRecipeInstructions } from "$lib/recipes/sub-recipe-instructions";
+  import type { RecipePublic, UserMePublic } from "#lib/client/index.js";
+  import RecipeIngredientsChecklist from "#lib/components/RecipeIngredientsChecklist.svelte";
+  import RecipeNutritionSheet from "#lib/components/RecipeNutritionSheet.svelte";
+  import RecipeShareDialog from "#lib/components/RecipeShareDialog.svelte";
+  import { Button } from "#lib/components/ui/button/index.js";
+  import { Input } from "#lib/components/ui/input/index.js";
+  import { parseServings, scaledRecipeUrl } from "#lib/recipes/sharing.js";
+  import { renderIngredientAmounts } from "#lib/recipes/ingredient-amounts.js";
+  import { resolveRecipeInstructions } from "#lib/recipes/sub-recipe-instructions.js";
 
   type Props = {
     data: {
@@ -47,9 +47,8 @@
     servingsInput = String(desiredServings);
     if (recipeShareUrl !== page.url.href) {
       void goto(recipeShareUrl, {
-        replaceState: true,
-        keepFocus: true,
-        noScroll: true,
+        replace: true,
+        reset: false,
         state: page.state
       });
     }

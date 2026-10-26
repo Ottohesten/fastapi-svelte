@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { catalogSearchScore } from "$lib/nutrition/helpers";
+import { catalogSearchScore } from "#lib/nutrition/helpers.js";
 
 describe("catalogSearchScore", () => {
     test("rejects loose character-order matches", () => {

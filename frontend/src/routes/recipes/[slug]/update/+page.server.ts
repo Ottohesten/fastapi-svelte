@@ -1,10 +1,10 @@
-import { IngredientsService, RecipesService, UsersService } from "$lib/client/sdk.gen.js";
+import { IngredientsService, RecipesService, UsersService } from "#lib/client/sdk.gen.js";
 import { redirect } from "@sveltejs/kit";
 import { error } from "@sveltejs/kit";
 import { zod4 as zod } from "sveltekit-superforms/adapters";
 import { superValidate, fail } from "sveltekit-superforms";
 import type { Actions } from "./$types.js";
-import { RecipeSchema } from "$lib/schemas/schemas.js";
+import { RecipeSchema } from "#lib/schemas/schemas.js";
 
 export async function load({ fetch, params, locals, parent, url, cookies }) {
     const { authenticatedUser } = locals;

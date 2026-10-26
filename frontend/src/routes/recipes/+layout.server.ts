@@ -1,4 +1,4 @@
-import { RecipesService, IngredientsService } from "$lib/client/sdk.gen.js";
+import { RecipesService, IngredientsService } from "#lib/client/sdk.gen.js";
 import { error } from "@sveltejs/kit";
 
 export const load = async ({ fetch, locals, cookies }) => {

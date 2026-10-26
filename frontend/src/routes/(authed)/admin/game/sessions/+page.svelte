@@ -1,7 +1,7 @@
 <script lang="ts">
-  import * as Card from "$lib/components/ui/card";
-  import { Button } from "$lib/components/ui/button";
-  import AdminPageHeader from "$lib/components/AdminPageHeader.svelte";
+  import * as Card from "#lib/components/ui/card/index.js";
+  import { Button } from "#lib/components/ui/button/index.js";
+  import AdminPageHeader from "#lib/components/AdminPageHeader.svelte";
   import { ArrowLeft, Gamepad2, GlassWater } from "@lucide/svelte";
 </script>
 

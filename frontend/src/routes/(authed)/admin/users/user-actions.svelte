@@ -1,19 +1,19 @@
 <script lang="ts">
-  import Button from "$lib/components/ui/button/button.svelte";
+  import Button from "#lib/components/ui/button/button.svelte";
   import { Pencil, Trash2, Shield, Plus, X, Award, Fingerprint, ListChecks } from "@lucide/svelte";
   import { enhance } from "$app/forms";
-  import * as AlertDialog from "$lib/components/ui/alert-dialog/index.js";
-  import * as Dialog from "$lib/components/ui/dialog";
-  import * as Sheet from "$lib/components/ui/sheet";
-  import * as Select from "$lib/components/ui/select/index.js";
-  import { Checkbox } from "$lib/components/ui/checkbox/index.js";
-  import { Input } from "$lib/components/ui/input/index.js";
+  import * as AlertDialog from "#lib/components/ui/alert-dialog/index.js";
+  import * as Dialog from "#lib/components/ui/dialog/index.js";
+  import * as Sheet from "#lib/components/ui/sheet/index.js";
+  import * as Select from "#lib/components/ui/select/index.js";
+  import { Checkbox } from "#lib/components/ui/checkbox/index.js";
+  import { Input } from "#lib/components/ui/input/index.js";
   import { Field, Control, Label, FieldErrors } from "formsnap";
   import { zod4 as zodClient } from "sveltekit-superforms/adapters";
-  import { UserUpdateSchema, UserAddRoleSchema } from "$lib/schemas/schemas.js";
+  import { UserUpdateSchema, UserAddRoleSchema } from "#lib/schemas/schemas.js";
   import { untrack } from "svelte";
 
-  import type { UserPublic, UserWithPermissionsPublic, RolePublic } from "$lib/client";
+  import type { UserPublic, UserWithPermissionsPublic, RolePublic } from "#lib/client/index.js";
   import type { SuperForm } from "sveltekit-superforms";
   import type { Infer } from "sveltekit-superforms";
 

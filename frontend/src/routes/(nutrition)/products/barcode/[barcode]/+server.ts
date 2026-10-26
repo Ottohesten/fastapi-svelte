@@ -1,5 +1,5 @@
-import { ProductsService } from "$lib/client";
-import { apiErrorMessage, backendLoadStatus } from "$lib/server/backend";
+import { ProductsService } from "#lib/client/index.js";
+import { apiErrorMessage, backendLoadStatus } from "#lib/server/backend.js";
 import { error, json } from "@sveltejs/kit";
 import type { RequestHandler } from "./$types";
 

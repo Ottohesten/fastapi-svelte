@@ -1,10 +1,10 @@
 <script lang="ts">
   import { goto } from "$app/navigation";
   import { onMount, untrack } from "svelte";
-  import { isTrafficData, type TrafficData } from "$lib/analytics";
-  import * as Card from "$lib/components/ui/card";
-  import { Button } from "$lib/components/ui/button";
-  import AdminPageHeader from "$lib/components/AdminPageHeader.svelte";
+  import { isTrafficData, type TrafficData } from "#lib/analytics.js";
+  import * as Card from "#lib/components/ui/card/index.js";
+  import { Button } from "#lib/components/ui/button/index.js";
+  import AdminPageHeader from "#lib/components/AdminPageHeader.svelte";
   import TrafficOverview from "./TrafficOverview.svelte";
   import {
     ArrowRight,

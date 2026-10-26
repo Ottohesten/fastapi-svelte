@@ -1,6 +1,6 @@
 <script lang="ts">
-  import { page } from "$app/stores";
-  import * as Breadcrumb from "$lib/components/ui/breadcrumb/index.js";
+  import { page } from "$app/state";
+  import * as Breadcrumb from "#lib/components/ui/breadcrumb/index.js";
 
   const labels: Record<string, string> = {
     "/admin": "Overview",
@@ -11,8 +11,8 @@
     "/admin/game/players": "Players"
   };
 
-  const currentLabel = $derived(labels[$page.url.pathname] ?? "Administration");
-  const isGamePage = $derived($page.url.pathname.startsWith("/admin/game/"));
+  const currentLabel = $derived(labels[page.url.pathname] ?? "Administration");
+  const isGamePage = $derived(page.url.pathname.startsWith("/admin/game/"));
 </script>
 
 <Breadcrumb.Root>

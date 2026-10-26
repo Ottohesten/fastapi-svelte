@@ -1,5 +1,5 @@
-import { browser } from "$app/environment";
-import { pushState } from "$app/navigation";
+import { browser } from "$app/env";
+import { goto } from "$app/navigation";
 import { page } from "$app/state";
 
 type ShallowOverlayOptions = {
@@ -31,9 +31,13 @@ export function useShallowOverlay(options: ShallowOverlayOptions) {
         if (stack.includes(id)) return;
 
         popPending = false;
-        pushState("", {
-            ...page.state,
-            shallowOverlays: [...stack, id]
+        void goto(new URL(window.location.href), {
+            shallow: true,
+            reset: false,
+            state: {
+                ...page.state,
+                shallowOverlays: [...stack, id]
+            }
         });
     }
 
@@ -93,7 +97,7 @@ export function useShallowOverlay(options: ShallowOverlayOptions) {
             return;
         }
 
-        // Back and forward update page.state without running navigation hooks.
+        // Back and forward update page.state to restore the overlay stack.
         if (active !== lastActive) {
             lastActive = active;
             popPending = false;

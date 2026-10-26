@@ -6,16 +6,16 @@
   import { Editor } from "@tiptap/core";
   import { NodeSelection } from "@tiptap/pm/state";
   import { onMount, onDestroy } from "svelte";
-  import { Button } from "$lib/components/ui/button";
-  import { Input } from "$lib/components/ui/input";
-  import { Label } from "$lib/components/ui/label";
-  import * as Dialog from "$lib/components/ui/dialog";
-  import { IngredientAmountNode } from "$lib/recipes/ingredient-amount-node";
-  import { SubRecipeInstructionNode } from "$lib/recipes/sub-recipe-instruction-node";
+  import { Button } from "#lib/components/ui/button/index.js";
+  import { Input } from "#lib/components/ui/input/index.js";
+  import { Label } from "#lib/components/ui/label/index.js";
+  import * as Dialog from "#lib/components/ui/dialog/index.js";
+  import { IngredientAmountNode } from "#lib/recipes/ingredient-amount-node.js";
+  import { SubRecipeInstructionNode } from "#lib/recipes/sub-recipe-instruction-node.js";
   import {
     linkSubRecipeInstructions,
     type InstructionRecipe
-  } from "$lib/recipes/sub-recipe-instructions";
+  } from "#lib/recipes/sub-recipe-instructions.js";
   import {
     decodeAmountReference,
     encodeAmountReference,
@@ -25,7 +25,7 @@
     type AmountIngredient,
     type AmountRecipe,
     type IngredientAmountReference
-  } from "$lib/recipes/ingredient-amounts";
+  } from "#lib/recipes/ingredient-amounts.js";
 
   let {
     value = $bindable(""),

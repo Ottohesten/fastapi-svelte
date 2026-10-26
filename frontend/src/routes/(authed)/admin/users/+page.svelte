@@ -1,20 +1,20 @@
 <script lang="ts">
-  import DataTable from "$lib/components/ui/data-table.svelte";
-  import AdminPageHeader from "$lib/components/AdminPageHeader.svelte";
+  import DataTable from "#lib/components/ui/data-table.svelte";
+  import AdminPageHeader from "#lib/components/AdminPageHeader.svelte";
   import { createColumns } from "./columns.js";
-  import * as Dialog from "$lib/components/ui/dialog";
-  import { Button, buttonVariants } from "$lib/components/ui/button";
-  import { Checkbox } from "$lib/components/ui/checkbox/index.js";
-  import * as Alert from "$lib/components/ui/alert/index.js";
+  import * as Dialog from "#lib/components/ui/dialog/index.js";
+  import { Button, buttonVariants } from "#lib/components/ui/button/index.js";
+  import { Checkbox } from "#lib/components/ui/checkbox/index.js";
+  import * as Alert from "#lib/components/ui/alert/index.js";
   import { superForm } from "sveltekit-superforms";
   import { fade } from "svelte/transition";
   import { zod4 as zodClient } from "sveltekit-superforms/adapters";
   import { untrack } from "svelte";
   import { Field, Control, Label, FieldErrors } from "formsnap";
-  import { Input } from "$lib/components/ui/input/index.js";
+  import { Input } from "#lib/components/ui/input/index.js";
   import { CircleCheck, TriangleAlert } from "@lucide/svelte";
 
-  import { UserSchema, UserUpdateSchema, UserAddRoleSchema } from "$lib/schemas/schemas.js";
+  import { UserSchema, UserUpdateSchema, UserAddRoleSchema } from "#lib/schemas/schemas.js";
   let { data } = $props();
   let dialogOpen = $state(false);
 

@@ -1,9 +1,9 @@
 <script lang="ts">
   import { applyAction, enhance } from "$app/forms";
-  import { goto, invalidateAll } from "$app/navigation";
-  import { page } from "$app/stores";
+  import { goto, refreshAll } from "$app/navigation";
+  import { page } from "$app/state";
   import { onMount, untrack } from "svelte";
-  import type { SubmitFunction } from "@sveltejs/kit";
+  import type { SubmitFunction } from "$app/forms";
   import {
     CalendarDays,
     ChevronLeft,
@@ -17,20 +17,20 @@
     Sparkles,
     Trash2
   } from "@lucide/svelte";
-  import type { NutritionCommonEntryPublic } from "$lib/client";
-  import NutritionEntryEditor from "$lib/components/NutritionEntryEditor.svelte";
-  import * as Alert from "$lib/components/ui/alert";
-  import { Badge } from "$lib/components/ui/badge";
-  import { Button } from "$lib/components/ui/button";
-  import * as Card from "$lib/components/ui/card";
-  import * as Dialog from "$lib/components/ui/dialog";
-  import { Input } from "$lib/components/ui/input";
+  import type { NutritionCommonEntryPublic } from "#lib/client/index.js";
+  import NutritionEntryEditor from "#lib/components/NutritionEntryEditor.svelte";
+  import * as Alert from "#lib/components/ui/alert/index.js";
+  import { Badge } from "#lib/components/ui/badge/index.js";
+  import { Button } from "#lib/components/ui/button/index.js";
+  import * as Card from "#lib/components/ui/card/index.js";
+  import * as Dialog from "#lib/components/ui/dialog/index.js";
+  import { Input } from "#lib/components/ui/input/index.js";
   import {
     defaultMealType,
     draftIsComplete,
     formatNutrition,
     validProductUnits
-  } from "$lib/nutrition/helpers";
+  } from "#lib/nutrition/helpers.js";
   import {
     emptyNutritionTotals,
     mealTypeLabels,
@@ -42,13 +42,13 @@
     type NutritionEntry,
     type NutritionEntryDraft,
     type NutritionTotals
-  } from "$lib/nutrition/types";
+  } from "#lib/nutrition/types.js";
   import {
     NutritionBatchFormSchema,
     NutritionEntryFormSchema,
     NutritionMoveFormSchema,
     QuickAddFormSchema
-  } from "$lib/schemas/nutrition";
+  } from "#lib/schemas/nutrition.js";
   import { Control, Field, FieldErrors, Label } from "formsnap";
   import { superForm } from "sveltekit-superforms";
   import { zod4 as zodClient } from "sveltekit-superforms/adapters";
@@ -82,7 +82,7 @@
           addOpen = false;
           editOpen = false;
           successMessage = updated ? "Diary entry updated." : "Food added to the diary.";
-          await invalidateAll();
+          await refreshAll();
         } else if (result.type === "failure") {
           actionError = resultMessage(result.data);
         }
@@ -144,7 +144,7 @@
           });
           quickServerCanConfirm = false;
           successMessage = "Reviewed foods added to the diary.";
-          await invalidateAll();
+          await refreshAll();
         } else {
           actionError = form.message;
         }
@@ -173,7 +173,7 @@
           $entryData = newAddDraft(addMeal);
           successMessage =
             count === 1 ? "Food added to the diary." : `${count} foods added to the diary.`;
-          await invalidateAll();
+          await refreshAll();
         } else {
           actionError = form.message;
         }
@@ -197,7 +197,7 @@
         if (result.type === "success") {
           editOpen = false;
           successMessage = "Diary entry updated.";
-          await invalidateAll();
+          await refreshAll();
         } else if (result.type === "failure") {
           actionError = resultMessage(result.data);
         }
@@ -321,7 +321,7 @@
     return async ({ result }) => {
       if (result.type === "success") {
         successMessage = "Diary entry deleted.";
-        await invalidateAll();
+        await refreshAll();
         return;
       }
       if (result.type === "failure") {
@@ -481,8 +481,8 @@
   onMount(() => {
     $quickData.default_meal = defaultMealType();
     const browserToday = localDateString();
-    if (!$page.url.searchParams.has("date") && browserToday !== data.selectedDate) {
-      void goto(dateHref(browserToday), { replaceState: true });
+    if (!page.url.searchParams.has("date") && browserToday !== data.selectedDate) {
+      void goto(dateHref(browserToday), { replace: true });
       return;
     }
 

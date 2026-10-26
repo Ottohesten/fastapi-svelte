@@ -1,5 +1,5 @@
-import type { TrafficData } from "$lib/analytics";
-import { AnalyticsService } from "$lib/client/sdk.gen.js";
+import type { TrafficData } from "#lib/analytics.js";
+import { AnalyticsService } from "#lib/client/sdk.gen.js";
 
 const ANALYTICS_REQUEST_TIMEOUT_MS = 5_000;
 

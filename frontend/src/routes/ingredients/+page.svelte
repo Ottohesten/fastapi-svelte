@@ -1,15 +1,15 @@
 <script lang="ts">
-  import Ingredient from "$lib/components/Ingredient.svelte";
+  import Ingredient from "#lib/components/Ingredient.svelte";
 
-  import * as Dialog from "$lib/components/ui/dialog";
-  import { Button } from "$lib/components/ui/button";
+  import * as Dialog from "#lib/components/ui/dialog/index.js";
+  import { Button } from "#lib/components/ui/button/index.js";
   import { superForm, type SuperValidated, type Infer } from "sveltekit-superforms";
   import { zod4 as zodClient } from "sveltekit-superforms/adapters";
   import SuperDebug from "sveltekit-superforms";
   import { untrack } from "svelte";
   import { Field, Control, Label, Description, FieldErrors } from "formsnap";
-  import { Input } from "$lib/components/ui/input/index.js";
-  import { IngredientSchema } from "$lib/schemas/schemas.js";
+  import { Input } from "#lib/components/ui/input/index.js";
+  import { IngredientSchema } from "#lib/schemas/schemas.js";
 
   let { data } = $props();
 

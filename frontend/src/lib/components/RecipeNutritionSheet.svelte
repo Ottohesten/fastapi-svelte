@@ -1,7 +1,7 @@
 <script lang="ts">
-  import * as Sheet from "$lib/components/ui/sheet";
-  import * as Select from "$lib/components/ui/select/index.js";
-  import type { RecipePublic } from "$lib/client";
+  import * as Sheet from "#lib/components/ui/sheet/index.js";
+  import * as Select from "#lib/components/ui/select/index.js";
+  import type { RecipePublic } from "#lib/client/index.js";
   import { pie as d3Pie, arc as d3Arc } from "d3-shape";
 
   type IngredientNutritionRow = {

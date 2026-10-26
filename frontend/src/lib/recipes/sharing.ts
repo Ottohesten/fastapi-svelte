@@ -1,4 +1,4 @@
-import type { RecipeIngredientTotalPublic } from "$lib/client";
+import type { RecipeIngredientTotalPublic } from "#lib/client/index.js";
 
 export function parseServings(value: string | null, fallback: number): number {
     const servings = Number(value);
@@ -27,8 +27,8 @@ export function ingredientListText(
     ].join("\n");
 }
 
-export function scaledRecipeUrl(url: URL, servings: number): URL {
-    const result = new URL(url);
+export function scaledRecipeUrl(url: { href: string }, servings: number): URL {
+    const result = new URL(url.href);
     result.searchParams.set("servings", String(servings));
     return result;
 }

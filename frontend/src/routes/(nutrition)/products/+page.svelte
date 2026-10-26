@@ -1,6 +1,6 @@
 <script lang="ts">
   import { applyAction, enhance } from "$app/forms";
-  import type { SubmitFunction } from "@sveltejs/kit";
+  import type { SubmitFunction } from "$app/forms";
   import { Field, Control, Label, FieldErrors } from "formsnap";
   import { untrack } from "svelte";
   import { superForm } from "sveltekit-superforms";
@@ -21,20 +21,20 @@
     ProductBarcodePreviewPublic,
     ProductNutritionBasis,
     ProductPublic
-  } from "$lib/client";
-  import BarcodeScannerDialog from "$lib/components/BarcodeScannerDialog.svelte";
-  import * as Alert from "$lib/components/ui/alert";
-  import { Button, buttonVariants } from "$lib/components/ui/button";
-  import * as Card from "$lib/components/ui/card";
-  import * as Dialog from "$lib/components/ui/dialog";
-  import { Input } from "$lib/components/ui/input";
-  import { formatNutrition } from "$lib/nutrition/helpers";
-  import { nutritionBasisLabels, nutritionBases } from "$lib/nutrition/types";
+  } from "#lib/client/index.js";
+  import BarcodeScannerDialog from "#lib/components/BarcodeScannerDialog.svelte";
+  import * as Alert from "#lib/components/ui/alert/index.js";
+  import { Button, buttonVariants } from "#lib/components/ui/button/index.js";
+  import * as Card from "#lib/components/ui/card/index.js";
+  import * as Dialog from "#lib/components/ui/dialog/index.js";
+  import { Input } from "#lib/components/ui/input/index.js";
+  import { formatNutrition } from "#lib/nutrition/helpers.js";
+  import { nutritionBasisLabels, nutritionBases } from "#lib/nutrition/types.js";
   import {
     emptyProductForm,
     ProductFormSchema,
     type ProductFormData
-  } from "$lib/schemas/nutrition";
+  } from "#lib/schemas/nutrition.js";
   import type { PageData } from "./$types";
 
   let { data }: { data: PageData } = $props();

@@ -4,7 +4,7 @@ import {
     type NutritionMealType,
     type PostNutritionEntriesData,
     type QuickAddPreviewRowPublic
-} from "$lib/client";
+} from "#lib/client/index.js";
 import {
     NutritionBatchFormSchema,
     NutritionDeleteFormSchema,
@@ -12,14 +12,14 @@ import {
     NutritionMoveFormSchema,
     QuickAddFormSchema,
     type NutritionEntryForm
-} from "$lib/schemas/nutrition";
+} from "#lib/schemas/nutrition.js";
 import {
     apiErrorMessage,
     backendActionStatus,
     backendLoadStatus,
     requireAuthToken,
     wireDate
-} from "$lib/server/backend";
+} from "#lib/server/backend.js";
 import { error } from "@sveltejs/kit";
 import { fail, message, superValidate } from "sveltekit-superforms";
 import { zod4 as zod } from "sveltekit-superforms/adapters";

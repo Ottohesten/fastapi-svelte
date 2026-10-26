@@ -1,4 +1,4 @@
-import type { GamePlayerPublic } from "$lib/client/types.gen";
+import type { GamePlayerPublic } from "#lib/client/types.gen.js";
 
 type PlayerWithDrinks = Pick<GamePlayerPublic, "drink_links">;
 

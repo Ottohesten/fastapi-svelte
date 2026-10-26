@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { DailyTraffic } from "$lib/analytics";
+  import type { DailyTraffic } from "#lib/analytics.js";
   import { max, sum } from "d3-array";
   import { scaleLinear, scaleUtc } from "d3-scale";
   import { area, curveMonotoneX, line } from "d3-shape";

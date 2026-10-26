@@ -1,5 +1,5 @@
-import { env } from "$env/dynamic/private";
-import { parsePageMetricBatch } from "$lib/observability/page-metrics";
+import * as env from "$app/env/private";
+import { parsePageMetricBatch } from "#lib/observability/page-metrics.js";
 import type { RequestHandler } from "./$types";
 
 const MAX_REQUEST_BYTES = 4_096;

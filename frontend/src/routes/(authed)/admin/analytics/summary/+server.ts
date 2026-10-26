@@ -1,5 +1,5 @@
 import { json } from "@sveltejs/kit";
-import { loadAdminTraffic } from "$lib/server/admin-analytics";
+import { loadAdminTraffic } from "#lib/server/admin-analytics.js";
 import type { RequestHandler } from "./$types.js";
 
 export const GET: RequestHandler = async ({ cookies, locals, request }) => {

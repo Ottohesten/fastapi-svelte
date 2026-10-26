@@ -5,7 +5,7 @@ import type {
     NutritionProduct,
     NutritionRecipeOption,
     NutritionValues
-} from "$lib/nutrition/types";
+} from "#lib/nutrition/types.js";
 
 export function validProductUnits(product: NutritionProduct): EntryUnit[] {
     const units: EntryUnit[] = [];

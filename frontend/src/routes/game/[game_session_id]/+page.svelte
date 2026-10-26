@@ -2,8 +2,8 @@
   import { superForm } from "sveltekit-superforms";
   import { zod4 as zodClient } from "sveltekit-superforms/adapters";
   import { Field, Control, Label, FieldErrors } from "formsnap";
-  import { GameSessionAddDrinkSchema } from "$lib/schemas/schemas";
-  import { Combobox } from "$lib/components/ui/combobox";
+  import { GameSessionAddDrinkSchema } from "#lib/schemas/schemas.js";
+  import { Combobox } from "#lib/components/ui/combobox/index.js";
   import type { PageData } from "./$types";
   let { data }: { data: PageData } = $props();
   import { schemeCategory10, schemeSet3 } from "d3-scale-chromatic";
@@ -14,13 +14,13 @@
     GameTeamPublic,
     GamePlayerPublic,
     GamePlayerDrinkLinkPublic
-  } from "$lib/client";
+  } from "#lib/client/index.js";
   import { onMount, onDestroy, untrack } from "svelte";
-  import { page } from "$app/stores";
+  import { page } from "$app/state";
   import { goto } from "$app/navigation";
-  import { browser } from "$app/environment";
-  import Button from "$lib/components/ui/button/button.svelte";
-  import * as Select from "$lib/components/ui/select/index.js";
+  import { browser } from "$app/env";
+  import Button from "#lib/components/ui/button/button.svelte";
+  import * as Select from "#lib/components/ui/select/index.js";
   import { Pencil, Trash2 } from "@lucide/svelte";
   import { enhance } from "$app/forms";
   import {
@@ -32,9 +32,9 @@
     DialogHeader,
     DialogTitle,
     DialogTrigger
-  } from "$lib/components/ui/dialog";
-  // import * as Dialog from '$lib/components/ui/dialog/index.js';
-  import { Input } from "$lib/components/ui/input";
+  } from "#lib/components/ui/dialog/index.js";
+  // import * as Dialog from '#lib/components/ui/dialog/index.js';
+  import { Input } from "#lib/components/ui/input/index.js";
   import { fade } from "svelte/transition";
 
   // Local view models to power charts/UI
@@ -146,7 +146,7 @@
 
     const newUrl = `${window.location.pathname}${searchParams.toString() ? "?" + searchParams.toString() : ""}`;
     if (newUrl !== window.location.pathname + window.location.search) {
-      goto(newUrl, { replaceState: true, noScroll: true });
+      goto(newUrl, { replace: true, reset: false });
     }
   }
   // Function to restore state from URL

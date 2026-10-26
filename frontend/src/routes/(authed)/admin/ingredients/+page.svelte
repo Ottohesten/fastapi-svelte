@@ -1,23 +1,23 @@
 <script lang="ts">
   let { data } = $props();
-  import DataTable from "$lib/components/ui/data-table.svelte";
-  import AdminPageHeader from "$lib/components/AdminPageHeader.svelte";
-  import Button, { buttonVariants } from "$lib/components/ui/button/button.svelte";
+  import DataTable from "#lib/components/ui/data-table.svelte";
+  import AdminPageHeader from "#lib/components/AdminPageHeader.svelte";
+  import Button, { buttonVariants } from "#lib/components/ui/button/button.svelte";
   import { enhance } from "$app/forms";
   import { createColumns } from "./columns.js";
-  import { invalidateAll } from "$app/navigation";
-  import * as Dialog from "$lib/components/ui/dialog/index.js";
-  import * as Alert from "$lib/components/ui/alert/index.js";
-  import { Input } from "$lib/components/ui/input";
+  import { refreshAll } from "$app/navigation";
+  import * as Dialog from "#lib/components/ui/dialog/index.js";
+  import * as Alert from "#lib/components/ui/alert/index.js";
+  import { Input } from "#lib/components/ui/input/index.js";
   import { superForm } from "sveltekit-superforms";
   import { zod4 as zodClient } from "sveltekit-superforms/adapters";
   import { fade } from "svelte/transition";
   import { untrack } from "svelte";
-  import { IngredientSchema, IngredientUpdateSchema } from "$lib/schemas/schemas.js";
+  import { IngredientSchema, IngredientUpdateSchema } from "#lib/schemas/schemas.js";
   import { Field, Control, Label, FieldErrors } from "formsnap";
   import { CircleCheck, ScanLine, TriangleAlert } from "@lucide/svelte";
-  import type { OpenFoodFactsProductPublic } from "$lib/client";
-  import BarcodeScannerDialog from "$lib/components/BarcodeScannerDialog.svelte";
+  import type { OpenFoodFactsProductPublic } from "#lib/client/index.js";
+  import BarcodeScannerDialog from "#lib/components/BarcodeScannerDialog.svelte";
 
   let open = $state(false);
   let scanOpen = $state(false);

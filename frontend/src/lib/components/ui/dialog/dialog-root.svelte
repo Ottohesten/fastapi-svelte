@@ -1,6 +1,6 @@
 <script lang="ts">
   import { Dialog as DialogPrimitive } from "bits-ui";
-  import { useShallowOverlay } from "$lib/navigation/shallow-overlay.svelte.js";
+  import { useShallowOverlay } from "#lib/navigation/shallow-overlay.svelte.js";
 
   let {
     open = $bindable(false),

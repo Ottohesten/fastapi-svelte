@@ -1,7 +1,8 @@
-import { redirect, type Handle } from "@sveltejs/kit";
+import { redirect } from "@sveltejs/kit";
+import type { Handle } from "@sveltejs/kit/hooks";
 import { sequence } from "@sveltejs/kit/hooks";
 import * as Sentry from "@sentry/sveltekit";
-import { LoginService, UsersService } from "$lib/client";
+import { LoginService, UsersService } from "#lib/client/index.js";
 
 // Server handle: hydrate authenticatedUser from /users/me and manage token refresh
 

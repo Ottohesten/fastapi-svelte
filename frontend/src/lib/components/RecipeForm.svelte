@@ -1,26 +1,26 @@
 <script lang="ts">
-  import { page } from "$app/stores";
-  import { browser } from "$app/environment";
+  import { page } from "$app/state";
+  import { browser } from "$app/env";
   import { onMount, untrack } from "svelte";
   import SuperDebug, { superForm } from "sveltekit-superforms";
   import { zod4 as zodClient } from "sveltekit-superforms/adapters";
-  import { RecipeSchema } from "$lib/schemas/schemas";
-  import * as Dialog from "$lib/components/ui/dialog/index.js";
-  import InstructionsEditor from "$lib/components/InstructionsEditor.svelte";
-  import * as Select from "$lib/components/ui/select/index.js";
-  import { Input } from "$lib/components/ui/input";
-  import { Label } from "$lib/components/ui/label";
-  import { Combobox } from "$lib/components/ui/combobox";
+  import { RecipeSchema } from "#lib/schemas/schemas.js";
+  import * as Dialog from "#lib/components/ui/dialog/index.js";
+  import InstructionsEditor from "#lib/components/InstructionsEditor.svelte";
+  import * as Select from "#lib/components/ui/select/index.js";
+  import { Input } from "#lib/components/ui/input/index.js";
+  import { Label } from "#lib/components/ui/label/index.js";
+  import { Combobox } from "#lib/components/ui/combobox/index.js";
   import { Field, Control, Label as SnapLabel, FieldErrors } from "formsnap";
 
   import { ChevronDown, Plus } from "@lucide/svelte";
-  import { formAmountRecipe } from "$lib/recipes/ingredient-amounts";
+  import { formAmountRecipe } from "#lib/recipes/ingredient-amounts.js";
   import {
     linkedInstructionBlock,
     linkSubRecipeInstructions,
     removeLinkedInstructions,
     type InstructionRecipe
-  } from "$lib/recipes/sub-recipe-instructions";
+  } from "#lib/recipes/sub-recipe-instructions.js";
 
   interface Props {
     data: any;
@@ -47,13 +47,13 @@
       dataType: "json",
       onUpdated({ form: f }) {
         if (f.valid && browser) {
-          localStorage.removeItem(`recipe-snapshot-${$page.url.pathname}`);
+          localStorage.removeItem(`recipe-snapshot-${page.url.pathname}`);
         }
       },
       onResult({ result }) {
         if (result.type === "redirect") {
           if (browser) {
-            localStorage.removeItem(`recipe-snapshot-${$page.url.pathname}`);
+            localStorage.removeItem(`recipe-snapshot-${page.url.pathname}`);
           }
         }
       }
@@ -88,7 +88,7 @@
     if (confirm("Are you sure you want to clear the form? This action cannot be undone.")) {
       // Clear localStorage
       if (browser) {
-        localStorage.removeItem(`recipe-snapshot-${$page.url.pathname}`);
+        localStorage.removeItem(`recipe-snapshot-${page.url.pathname}`);
       }
 
       // Reset the form
@@ -98,7 +98,7 @@
 
   onMount(() => {
     if (browser) {
-      const stored = localStorage.getItem(`recipe-snapshot-${$page.url.pathname}`);
+      const stored = localStorage.getItem(`recipe-snapshot-${page.url.pathname}`);
       if (stored) {
         try {
           const snapshot = JSON.parse(stored);
@@ -112,7 +112,7 @@
 
   $effect(() => {
     if (browser && $formData) {
-      localStorage.setItem(`recipe-snapshot-${$page.url.pathname}`, JSON.stringify($formData));
+      localStorage.setItem(`recipe-snapshot-${page.url.pathname}`, JSON.stringify($formData));
     }
   });
 

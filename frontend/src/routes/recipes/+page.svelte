@@ -1,6 +1,6 @@
 <script lang="ts">
-  import Recipe from "$lib/components/Recipe.svelte";
-  import { Input } from "$lib/components/ui/input";
+  import Recipe from "#lib/components/Recipe.svelte";
+  import { Input } from "#lib/components/ui/input/index.js";
   import type { PageData } from "./$types";
 
   let { data }: { data: PageData } = $props();

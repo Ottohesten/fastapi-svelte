@@ -1,9 +1,9 @@
-import { IngredientsService } from "$lib/client/sdk.gen.js";
+import { IngredientsService } from "#lib/client/sdk.gen.js";
 import { error, redirect } from "@sveltejs/kit";
 import { message, superValidate, fail } from "sveltekit-superforms";
 import { zod4 as zod } from "sveltekit-superforms/adapters";
 import type { Actions } from "./$types.js";
-import { IngredientSchema } from "$lib/schemas/schemas.js";
+import { IngredientSchema } from "#lib/schemas/schemas.js";
 
 export const load = async ({ fetch, locals }) => {
     const { data, error: apierror, response } = await IngredientsService.GetIngredients({});

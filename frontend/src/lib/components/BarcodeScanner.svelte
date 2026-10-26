@@ -16,14 +16,14 @@
     ZoomIn,
     ZoomOut
   } from "@lucide/svelte";
-  import { Button } from "$lib/components/ui/button";
-  import { Input } from "$lib/components/ui/input";
+  import { Button } from "#lib/components/ui/button/index.js";
+  import { Input } from "#lib/components/ui/input/index.js";
   import {
     clampCameraZoom,
     getCameraZoomConfiguration,
     type CameraZoomCapabilities,
     type CameraZoomConfiguration
-  } from "$lib/barcode-scanner";
+  } from "#lib/barcode-scanner.js";
 
   type ExtendedCameraCapabilities = MediaTrackCapabilities & {
     focusMode?: string[];

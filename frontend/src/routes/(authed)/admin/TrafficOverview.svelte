@@ -1,6 +1,6 @@
 <script lang="ts">
-  import type { TrafficData } from "$lib/analytics";
-  import * as Card from "$lib/components/ui/card";
+  import type { TrafficData } from "#lib/analytics.js";
+  import * as Card from "#lib/components/ui/card/index.js";
   import { CircleAlert, Clock3, Eye, UserCheck, UsersRound } from "@lucide/svelte";
   import TrafficChart from "./TrafficChart.svelte";
 

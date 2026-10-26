@@ -1,4 +1,4 @@
-import { IngredientsService } from "$lib/client/sdk.gen.js";
+import { IngredientsService } from "#lib/client/sdk.gen.js";
 import { error, json } from "@sveltejs/kit";
 import type { RequestHandler } from "./$types.js";
 

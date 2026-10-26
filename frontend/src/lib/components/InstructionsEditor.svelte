@@ -1,15 +1,34 @@
 <script lang="ts">
-  // @ts-nocheck
   import "./styles.scss";
 
   import { Color, TextStyle } from "@tiptap/extension-text-style";
   import StarterKit from "@tiptap/starter-kit";
   import { Editor } from "@tiptap/core";
+  import { NodeSelection } from "@tiptap/pm/state";
   import { onMount, onDestroy } from "svelte";
+  import { Button } from "$lib/components/ui/button";
+  import { Input } from "$lib/components/ui/input";
+  import { Label } from "$lib/components/ui/label";
+  import * as Dialog from "$lib/components/ui/dialog";
+  import { IngredientAmountNode } from "$lib/recipes/ingredient-amount-node";
+  import {
+    decodeAmountReference,
+    encodeAmountReference,
+    ingredientAmountScope,
+    parseIngredientPortion,
+    resolveIngredientAmount,
+    type AmountIngredient,
+    type AmountRecipe,
+    type IngredientAmountReference
+  } from "$lib/recipes/ingredient-amounts";
 
-  let { value = $bindable("") } = $props();
+  let {
+    value = $bindable(""),
+    amountRecipe = { id: "", total_ingredients: [] },
+    recipes = []
+  }: { value?: string; amountRecipe?: AmountRecipe; recipes?: AmountRecipe[] } = $props();
 
-  let element;
+  let element: HTMLDivElement;
   let editor = $state.raw<Editor | null>(null);
   let editorReady = $state(false);
   let editorState = $state(0); // Counter to force reactivity
@@ -18,6 +37,53 @@
   let lastInternalValue = "";
   let isApplyingExternalContent = false;
   let lastAppliedExternalValue = "";
+  let amountPickerOpen = $state(false);
+  let amountIngredientKey = $state("");
+  let amountPortion = $state("100%");
+  let amountPath = $state<string[]>([]);
+  let amountRange = { from: 0, to: 0 };
+
+  const pickerIngredients = $derived(
+    ingredientAmountScope(amountPath, amountRecipe, recipes)?.recipe.total_ingredients ?? []
+  );
+  const selectedAmountIngredient = $derived(
+    pickerIngredients.find((ingredient) => ingredientKey(ingredient) === amountIngredientKey)
+  );
+  const amountReference = $derived.by<IngredientAmountReference | null>(() => {
+    if (!selectedAmountIngredient || parseIngredientPortion(amountPortion) === null) return null;
+    return {
+      ingredientId: selectedAmountIngredient.ingredient_id,
+      title: selectedAmountIngredient.title,
+      unit: selectedAmountIngredient.unit,
+      portion: amountPortion.trim(),
+      path: amountPath
+    };
+  });
+  const amountPreview = $derived(
+    amountReference ? resolveIngredientAmount(amountReference, amountRecipe, recipes) : null
+  );
+
+  function ingredientKey(ingredient: AmountIngredient): string {
+    return JSON.stringify([ingredient.ingredient_id, ingredient.unit]);
+  }
+
+  function openAmountPicker(reference: IngredientAmountReference, position: number) {
+    if (!editor) return;
+    amountRange = { from: position, to: position + 1 };
+    amountPath = reference.path;
+    amountIngredientKey = JSON.stringify([reference.ingredientId, reference.unit]);
+    amountPortion = reference.portion;
+    amountPickerOpen = true;
+  }
+
+  function insertIngredientAmount() {
+    if (!editor || !amountReference) return;
+    editor.commands.insertContentAt(amountRange, {
+      type: "ingredientAmount",
+      attrs: { reference: encodeAmountReference(amountReference) }
+    });
+    amountPickerOpen = false;
+  }
 
   function normalizeHtml(html: string | null | undefined) {
     if (html === undefined || html === null || html === EMPTY_PARAGRAPH) {
@@ -84,11 +150,33 @@
       element: element,
       extensions: [
         Color.configure({ types: [TextStyle.name, "listItem"] }),
-        TextStyle.configure({ types: ["listItem"] }),
-        StarterKit
+        TextStyle,
+        StarterKit,
+        IngredientAmountNode.configure({ getIngredients: () => amountRecipe.total_ingredients })
       ],
       content: normalizeHtml(value),
       editorProps: {
+        handleClickOn: (_view, _pos, node, nodePos, _event, direct) => {
+          if (!direct || node.type.name !== "ingredientAmount") return false;
+          const reference = decodeAmountReference(node.attrs.reference);
+          if (!reference) return false;
+          openAmountPicker(reference, nodePos);
+          return true;
+        },
+        handleKeyDown: (view, event) => {
+          const selection = view.state.selection;
+          if (
+            event.key !== "Enter" ||
+            !(selection instanceof NodeSelection) ||
+            selection.node.type.name !== "ingredientAmount"
+          ) {
+            return false;
+          }
+          const reference = decodeAmountReference(selection.node.attrs.reference);
+          if (!reference) return false;
+          openAmountPicker(reference, selection.from);
+          return true;
+        },
         attributes: {
           class:
             "prose dark:prose-invert focus:outline-none min-h-[200px] p-4 border border-gray-300 rounded-lg bg-white text-gray-900 w-full max-w-none dark:border-gray-800 dark:bg-gray-900/40 dark:text-gray-100"
@@ -113,12 +201,12 @@
   });
 
   // Reactive function to check if editor is active (depends on editorState)
-  function isActive(name, attributes) {
+  function isActive(name: string, attributes?: Record<string, unknown>) {
     editorState; // Access the state to create reactivity
     return editor?.isActive(name, attributes) || false;
   }
 
-  function canPerformAction(action) {
+  function canPerformAction(action: string) {
     editorState; // Access the state to create reactivity
     if (!editor) return false;
 
@@ -142,7 +230,7 @@
     <div class="button-group flex flex-wrap gap-1">
       <button
         type="button"
-        onclick={() => editor.chain().focus().toggleBold().run()}
+        onclick={() => editor?.chain().focus().toggleBold().run()}
         disabled={!canPerformAction("toggleBold")}
         class="rounded border border-gray-300 px-2 py-1 text-xs {isActive('bold')
           ? 'bg-gray-800 text-white'
@@ -152,7 +240,7 @@
       </button>
       <button
         type="button"
-        onclick={() => editor.chain().focus().toggleItalic().run()}
+        onclick={() => editor?.chain().focus().toggleItalic().run()}
         disabled={!canPerformAction("toggleItalic")}
         class="rounded border border-gray-300 px-2 py-1 text-xs {isActive('italic')
           ? 'bg-gray-800 text-white'
@@ -162,7 +250,7 @@
       </button>
       <button
         type="button"
-        onclick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
+        onclick={() => editor?.chain().focus().toggleHeading({ level: 2 }).run()}
         class="rounded border border-gray-300 px-2 py-1 text-xs {isActive('heading', { level: 2 })
           ? 'bg-gray-800 text-white'
           : 'bg-white text-gray-700 dark:bg-gray-900/40 dark:text-gray-200'} hover:bg-gray-100 dark:border-gray-800 dark:hover:bg-gray-800"
@@ -171,7 +259,7 @@
       </button>
       <button
         type="button"
-        onclick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}
+        onclick={() => editor?.chain().focus().toggleHeading({ level: 3 }).run()}
         class="rounded border border-gray-300 px-2 py-1 text-xs {isActive('heading', { level: 3 })
           ? 'bg-gray-800 text-white'
           : 'bg-white text-gray-700 dark:bg-gray-900/40 dark:text-gray-200'} hover:bg-gray-100 dark:border-gray-800 dark:hover:bg-gray-800"
@@ -180,7 +268,7 @@
       </button>
       <button
         type="button"
-        onclick={() => editor.chain().focus().toggleBulletList().run()}
+        onclick={() => editor?.chain().focus().toggleBulletList().run()}
         class="rounded border border-gray-300 px-2 py-1 text-xs {isActive('bulletList')
           ? 'bg-gray-800 text-white'
           : 'bg-white text-gray-700 dark:bg-gray-900/40 dark:text-gray-200'} hover:bg-gray-100 dark:border-gray-800 dark:hover:bg-gray-800"
@@ -189,7 +277,7 @@
       </button>
       <button
         type="button"
-        onclick={() => editor.chain().focus().toggleOrderedList().run()}
+        onclick={() => editor?.chain().focus().toggleOrderedList().run()}
         class="rounded border border-gray-300 px-2 py-1 text-xs {isActive('orderedList')
           ? 'bg-gray-800 text-white'
           : 'bg-white text-gray-700 dark:bg-gray-900/40 dark:text-gray-200'} hover:bg-gray-100 dark:border-gray-800 dark:hover:bg-gray-800"
@@ -198,7 +286,7 @@
       </button>
       <button
         type="button"
-        onclick={() => editor.chain().focus().undo().run()}
+        onclick={() => editor?.chain().focus().undo().run()}
         disabled={!canPerformAction("undo")}
         class="rounded border border-gray-300 bg-white px-2 py-1 text-xs text-gray-700 hover:bg-gray-100 disabled:opacity-50 dark:border-gray-800 dark:bg-gray-900/40 dark:text-gray-200 dark:hover:bg-gray-800"
       >
@@ -206,7 +294,7 @@
       </button>
       <button
         type="button"
-        onclick={() => editor.chain().focus().redo().run()}
+        onclick={() => editor?.chain().focus().redo().run()}
         disabled={!canPerformAction("redo")}
         class="rounded border border-gray-300 bg-white px-2 py-1 text-xs text-gray-700 hover:bg-gray-100 disabled:opacity-50 dark:border-gray-800 dark:bg-gray-900/40 dark:text-gray-200 dark:hover:bg-gray-800"
       >
@@ -216,3 +304,64 @@
   </div>
 {/if}
 <div bind:this={element} class="w-full"></div>
+
+<Dialog.Root bind:open={amountPickerOpen} shallowRouting={false}>
+  <Dialog.Content
+    class="sm:max-w-md"
+    onCloseAutoFocus={(event) => {
+      event.preventDefault();
+      editor?.commands.focus();
+    }}
+  >
+    <Dialog.Header>
+      <Dialog.Title>Ingredient amount</Dialog.Title>
+      <Dialog.Description>
+        Choose a portion of an ingredient. Its amount will update with the recipe's servings.
+      </Dialog.Description>
+    </Dialog.Header>
+    <Label for="instruction-amount-ingredient">Ingredient</Label>
+    <select
+      id="instruction-amount-ingredient"
+      bind:value={amountIngredientKey}
+      class="border-input bg-background h-10 w-full rounded-md border px-3 text-sm"
+    >
+      {#each pickerIngredients as ingredient (ingredientKey(ingredient))}
+        <option value={ingredientKey(ingredient)}>{ingredient.title} ({ingredient.unit})</option>
+      {/each}
+    </select>
+    {#if amountPath.length > 0}
+      <p class="text-muted-foreground text-sm">
+        This reference uses the linked sub-recipe's quantities.
+      </p>
+    {/if}
+    <Label for="instruction-amount-portion">Portion</Label>
+    <Input id="instruction-amount-portion" bind:value={amountPortion} placeholder="25% or 1/2" />
+    {#if parseIngredientPortion(amountPortion) === null}
+      <p class="text-destructive text-sm" role="alert">
+        Enter a percentage up to 100% or a fraction up to 1, such as 25% or 1/2.
+      </p>
+    {/if}
+    <p class="text-muted-foreground text-sm" role="status">
+      {amountPreview
+        ? `At the recipe's original servings: ${amountPreview}`
+        : "Ingredient unavailable. Add or select an ingredient first."}
+    </p>
+    <Dialog.Footer>
+      <Button onclick={insertIngredientAmount} disabled={!amountReference}>Insert amount</Button>
+    </Dialog.Footer>
+  </Dialog.Content>
+</Dialog.Root>
+
+<style>
+  :global(.tiptap .ingredient-amount-reference) {
+    border-radius: 0.25rem;
+    background: var(--color-accent);
+    color: var(--color-accent-foreground);
+    padding: 0.125rem 0.25rem;
+    cursor: pointer;
+    box-decoration-break: clone;
+  }
+  :global(.tiptap .ingredient-amount-reference.ProseMirror-selectednode) {
+    outline: 2px solid var(--color-ring);
+  }
+</style>

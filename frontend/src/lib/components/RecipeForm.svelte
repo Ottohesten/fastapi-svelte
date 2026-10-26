@@ -13,7 +13,12 @@
   import { Combobox } from "$lib/components/ui/combobox";
   import { Field, Control, Label as SnapLabel, FieldErrors } from "formsnap";
 
-  import { Plus } from "@lucide/svelte";
+  import { ChevronDown, Plus } from "@lucide/svelte";
+  import type { RecipePublic } from "$lib/client";
+  import {
+    formAmountRecipe,
+    scopeImportedIngredientAmounts
+  } from "$lib/recipes/ingredient-amounts";
 
   interface Props {
     data: any;
@@ -54,6 +59,10 @@
   );
 
   const { form: formData, errors, message, constraints, enhance, reset } = form;
+
+  const instructionAmountRecipe = $derived(
+    formAmountRecipe($formData.ingredients, $formData.sub_recipes, data.recipes ?? [])
+  );
 
   // Derived state for available ingredients
   let availableIngredients = $derived(
@@ -213,10 +222,10 @@
       .replaceAll("'", "&#39;");
   }
 
-  function buildSubRecipeInstructionBlock(recipe: any): string {
+  function buildSubRecipeInstructionBlock(recipe: RecipePublic): string {
     const heading = `<h2>${escapeHtml(recipe.title ?? "Sub-Recipe")}</h2>`;
     const body = recipe.instructions?.trim()
-      ? recipe.instructions
+      ? scopeImportedIngredientAmounts(recipe.instructions, recipe.id)
       : "<p>No instructions provided in sub-recipe.</p>";
     return `${heading}\n${body}`;
   }
@@ -376,91 +385,6 @@
               <FieldErrors />
             </Field>
 
-            <!-- Visibility -->
-            <Field {form} name="is_hidden">
-              <Control>
-                {#snippet children({ props })}
-                  <label
-                    class="flex items-center gap-3 rounded-lg border border-gray-200 bg-white px-4 py-3 text-sm text-gray-700 shadow-sm transition-colors dark:border-gray-800 dark:bg-gray-900/40 dark:text-gray-200"
-                  >
-                    <input
-                      {...props}
-                      type="checkbox"
-                      class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-900"
-                      bind:checked={$formData.is_hidden}
-                    />
-                    <span>Hidden (only you and allowed viewers can see this recipe)</span>
-                  </label>
-                {/snippet}
-              </Control>
-              <FieldErrors />
-            </Field>
-
-            <!-- Allowed Viewers -->
-            <div class="space-y-3 rounded-lg border border-gray-200 p-4 dark:border-gray-800">
-              <div class="flex items-center justify-between">
-                <Label>Allowed Viewers</Label>
-                <span class="text-xs text-gray-500 dark:text-gray-400">
-                  {($formData.viewer_ids ?? []).length} selected
-                </span>
-              </div>
-
-              {#if (data.users ?? []).length === 0}
-                <p class="text-sm text-gray-500 dark:text-gray-400">
-                  You need the users:read scope to manage viewers.
-                </p>
-              {:else}
-                <div class="grid grid-cols-1 gap-3 md:grid-cols-[1fr_auto]">
-                  <Combobox
-                    items={availableViewers.map((user: any) => ({
-                      label: getUserLabel(user),
-                      value: user.id
-                    }))}
-                    bind:value={selectedViewerId}
-                    placeholder="Select a viewer..."
-                    searchPlaceholder="Type to filter users..."
-                    ariaLabel="Viewer"
-                    buttonClass="w-full justify-between"
-                    popoverClass="w-(--bits-popover-anchor-width)"
-                  />
-
-                  <button
-                    type="button"
-                    class="rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-medium text-white shadow-sm transition-colors hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none disabled:cursor-not-allowed disabled:bg-gray-300"
-                    disabled={!selectedViewerId}
-                    onclick={addViewer}
-                  >
-                    Add
-                  </button>
-                </div>
-
-                {#if ($formData.viewer_ids ?? []).length > 0}
-                  <div class="space-y-2">
-                    {#each $formData.viewer_ids as viewerId}
-                      <div
-                        class="flex items-center justify-between rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-700 shadow-sm dark:border-gray-800 dark:bg-gray-900/40 dark:text-gray-200"
-                      >
-                        <span class="truncate">{findUserLabel(viewerId)}</span>
-                        <button
-                          type="button"
-                          class="rounded-md px-2 py-1 text-xs font-medium text-red-600 hover:bg-red-50 dark:text-red-300 dark:hover:bg-red-900/30"
-                          onclick={() => removeViewer(viewerId)}
-                        >
-                          Remove
-                        </button>
-                      </div>
-                    {/each}
-                  </div>
-                {:else}
-                  <p class="text-sm text-gray-500 dark:text-gray-400">No viewers added.</p>
-                {/if}
-              {/if}
-
-              <p class="text-xs text-gray-500 dark:text-gray-400">
-                Viewer access only applies when the recipe is hidden.
-              </p>
-            </div>
-
             <!-- Instructions Field -->
             <Field {form} name="instructions">
               <Control>
@@ -470,7 +394,11 @@
                     <div
                       class="rounded-lg border border-gray-300 bg-white shadow-sm transition-colors focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-500/20 dark:border-gray-800 dark:bg-gray-900/40 dark:focus-within:border-blue-400 dark:focus-within:ring-blue-400/20"
                     >
-                      <InstructionsEditor bind:value={$formData.instructions} />
+                      <InstructionsEditor
+                        bind:value={$formData.instructions}
+                        amountRecipe={instructionAmountRecipe}
+                        recipes={data.recipes ?? []}
+                      />
                     </div>
                     <input {...props} type="hidden" bind:value={$formData.instructions} />
                   </div>
@@ -635,113 +563,207 @@
               </Dialog.Root>
             </div>
 
-            <div class="space-y-3 rounded-lg border border-gray-200 p-4 dark:border-gray-800">
-              <div class="flex items-center justify-between">
-                <Label for="sub-recipe-select">Sub-Recipes</Label>
-                <span class="text-xs text-gray-500 dark:text-gray-400">
-                  {$formData.sub_recipes.length} selected
+            <details class="group rounded-lg border border-gray-200 dark:border-gray-800">
+              <summary
+                class="flex cursor-pointer list-none items-center gap-3 rounded-lg p-4 text-sm focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:outline-none [&::-webkit-details-marker]:hidden"
+              >
+                <span class="font-medium">Visibility &amp; viewers</span>
+                <span class="ml-auto text-xs text-gray-500 dark:text-gray-400">
+                  {$formData.is_hidden ? "Hidden" : "Public"}
+                  {#if ($formData.viewer_ids ?? []).length > 0}
+                    · {($formData.viewer_ids ?? []).length} viewers
+                  {/if}
                 </span>
-              </div>
-
-              <div class="grid grid-cols-1 gap-3 md:grid-cols-[1fr_170px_auto]">
-                <Combobox
-                  items={availableSubRecipes.map((r: any) => ({
-                    label: `${r.title} (${r.servings} servings)`,
-                    value: r.id
-                  }))}
-                  bind:value={selectedSubRecipeId}
-                  placeholder="Select a sub-recipe..."
-                  searchPlaceholder="Type to filter sub-recipes..."
-                  ariaLabel="Sub-Recipe"
-                  buttonClass="w-full justify-between"
-                  popoverClass="w-(--bits-popover-anchor-width)"
-                />
-
-                <!-- <select
-                  id="sub-recipe-select"
-                  class="w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm text-gray-900 shadow-sm transition-colors focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none dark:border-gray-800 dark:bg-gray-900/40 dark:text-gray-100 dark:focus:border-blue-400 dark:focus:ring-blue-400/20"
-                  bind:value={selectedSubRecipeId}
-                >
-                  <option value="">Select a recipe...</option>
-                  {#each availableSubRecipes as recipe}
-                    <option value={recipe.id}>{recipe.title} ({recipe.servings} servings)</option>
-                  {/each}
-                </select> -->
-
-                <input
-                  type="number"
-                  min="0.01"
-                  step="0.01"
-                  class="w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm text-gray-900 shadow-sm transition-colors focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none dark:border-gray-800 dark:bg-gray-900/40 dark:text-gray-100 dark:focus:border-blue-400 dark:focus:ring-blue-400/20"
-                  bind:value={subRecipeScaleFactor}
-                  placeholder="Scale factor"
-                />
-
-                <button
-                  type="button"
-                  class="rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-medium text-white shadow-sm transition-colors hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none disabled:cursor-not-allowed disabled:bg-gray-300"
-                  disabled={!selectedSubRecipeId ||
-                    !subRecipeScaleFactor ||
-                    subRecipeScaleFactor <= 0}
-                  onclick={addSubRecipe}
-                >
-                  Add
-                </button>
-              </div>
-
-              {#if $formData.sub_recipes.length > 0}
-                <div class="space-y-2">
-                  {#each $formData.sub_recipes as subRecipe, index}
-                    <div
-                      class="flex flex-col gap-3 rounded-lg border border-gray-200 bg-gray-50 p-3 md:flex-row md:items-center md:justify-between dark:border-gray-800 dark:bg-gray-900/40"
-                    >
-                      <div class="min-w-0">
-                        <p class="truncate text-sm font-medium text-gray-900 dark:text-gray-100">
-                          {subRecipe.title || "Unknown Recipe"}
-                        </p>
-                      </div>
-
-                      <div class="flex items-center gap-2">
-                        <label
-                          class="text-xs text-gray-600 dark:text-gray-300"
-                          for={`sub-recipe-scale-${index}`}>Scale</label
-                        >
+                <ChevronDown class="size-4 shrink-0 transition-transform group-open:rotate-180" />
+              </summary>
+              <div class="space-y-4 border-t border-gray-200 p-4 dark:border-gray-800">
+                <!-- Visibility -->
+                <Field {form} name="is_hidden">
+                  <Control>
+                    {#snippet children({ props })}
+                      <label
+                        class="flex items-center gap-3 rounded-lg border border-gray-200 bg-white px-4 py-3 text-sm text-gray-700 shadow-sm transition-colors dark:border-gray-800 dark:bg-gray-900/40 dark:text-gray-200"
+                      >
                         <input
-                          id={`sub-recipe-scale-${index}`}
-                          type="number"
-                          min="0.01"
-                          step="0.01"
-                          class="w-28 rounded-md border border-gray-300 bg-white px-2 py-1.5 text-sm text-gray-900 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none dark:border-gray-800 dark:bg-gray-900/40 dark:text-gray-100 dark:focus:border-blue-400 dark:focus:ring-blue-400/20"
-                          bind:value={$formData.sub_recipes[index].scale_factor}
+                          {...props}
+                          type="checkbox"
+                          class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-900"
+                          bind:checked={$formData.is_hidden}
                         />
-                        <button
-                          type="button"
-                          class="rounded-lg p-1.5 text-red-500 transition-colors hover:bg-red-50 hover:text-red-700 dark:hover:bg-red-900/20"
-                          aria-label="Remove sub-recipe"
-                          onclick={() => removeSubRecipe(subRecipe.id)}
-                        >
-                          <svg
-                            class="h-4 w-4"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              stroke-linecap="round"
-                              stroke-linejoin="round"
-                              stroke-width="2"
-                              d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                            />
-                          </svg>
-                        </button>
-                      </div>
+                        <span>Hidden (only you and allowed viewers can see this recipe)</span>
+                      </label>
+                    {/snippet}
+                  </Control>
+                  <FieldErrors />
+                </Field>
+
+                <!-- Allowed Viewers -->
+                <div class="space-y-3 rounded-lg border border-gray-200 p-4 dark:border-gray-800">
+                  <div class="flex items-center justify-between">
+                    <Label>Allowed Viewers</Label>
+                    <span class="text-xs text-gray-500 dark:text-gray-400">
+                      {($formData.viewer_ids ?? []).length} selected
+                    </span>
+                  </div>
+
+                  {#if (data.users ?? []).length === 0}
+                    <p class="text-sm text-gray-500 dark:text-gray-400">
+                      You need the users:read scope to manage viewers.
+                    </p>
+                  {:else}
+                    <div class="grid grid-cols-1 gap-3 md:grid-cols-[1fr_auto]">
+                      <Combobox
+                        items={availableViewers.map((user: any) => ({
+                          label: getUserLabel(user),
+                          value: user.id
+                        }))}
+                        bind:value={selectedViewerId}
+                        placeholder="Select a viewer..."
+                        searchPlaceholder="Type to filter users..."
+                        ariaLabel="Viewer"
+                        buttonClass="w-full justify-between"
+                        popoverClass="w-(--bits-popover-anchor-width)"
+                      />
+
+                      <button
+                        type="button"
+                        class="rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-medium text-white shadow-sm transition-colors hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none disabled:cursor-not-allowed disabled:bg-gray-300"
+                        disabled={!selectedViewerId}
+                        onclick={addViewer}
+                      >
+                        Add
+                      </button>
                     </div>
-                  {/each}
+
+                    {#if ($formData.viewer_ids ?? []).length > 0}
+                      <div class="space-y-2">
+                        {#each $formData.viewer_ids as viewerId}
+                          <div
+                            class="flex items-center justify-between rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-700 shadow-sm dark:border-gray-800 dark:bg-gray-900/40 dark:text-gray-200"
+                          >
+                            <span class="truncate">{findUserLabel(viewerId)}</span>
+                            <button
+                              type="button"
+                              class="rounded-md px-2 py-1 text-xs font-medium text-red-600 hover:bg-red-50 dark:text-red-300 dark:hover:bg-red-900/30"
+                              onclick={() => removeViewer(viewerId)}
+                            >
+                              Remove
+                            </button>
+                          </div>
+                        {/each}
+                      </div>
+                    {:else}
+                      <p class="text-sm text-gray-500 dark:text-gray-400">No viewers added.</p>
+                    {/if}
+                  {/if}
+
+                  <p class="text-xs text-gray-500 dark:text-gray-400">
+                    Viewer access only applies when the recipe is hidden.
+                  </p>
                 </div>
-              {:else}
-                <p class="text-sm text-gray-500 dark:text-gray-400">No sub-recipes added.</p>
-              {/if}
-            </div>
+              </div>
+            </details>
+
+            <details class="group rounded-lg border border-gray-200 dark:border-gray-800">
+              <summary
+                class="flex cursor-pointer list-none items-center gap-3 rounded-lg p-4 text-sm focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:outline-none [&::-webkit-details-marker]:hidden"
+              >
+                <span class="font-medium">Sub-recipes</span>
+                <span class="ml-auto text-xs text-gray-500 dark:text-gray-400">
+                  {$formData.sub_recipes.length ? `${$formData.sub_recipes.length} linked` : "None"}
+                </span>
+                <ChevronDown class="size-4 shrink-0 transition-transform group-open:rotate-180" />
+              </summary>
+              <div class="space-y-3 border-t border-gray-200 p-4 dark:border-gray-800">
+                <div class="grid grid-cols-1 gap-3 md:grid-cols-[1fr_170px_auto]">
+                  <Combobox
+                    items={availableSubRecipes.map((r: any) => ({
+                      label: `${r.title} (${r.servings} servings)`,
+                      value: r.id
+                    }))}
+                    bind:value={selectedSubRecipeId}
+                    placeholder="Select a sub-recipe..."
+                    searchPlaceholder="Type to filter sub-recipes..."
+                    ariaLabel="Sub-Recipe"
+                    buttonClass="w-full justify-between"
+                    popoverClass="w-(--bits-popover-anchor-width)"
+                  />
+
+                  <input
+                    type="number"
+                    min="0.01"
+                    step="0.01"
+                    class="w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm text-gray-900 shadow-sm transition-colors focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none dark:border-gray-800 dark:bg-gray-900/40 dark:text-gray-100 dark:focus:border-blue-400 dark:focus:ring-blue-400/20"
+                    bind:value={subRecipeScaleFactor}
+                    placeholder="Scale factor"
+                  />
+
+                  <button
+                    type="button"
+                    class="rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-medium text-white shadow-sm transition-colors hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none disabled:cursor-not-allowed disabled:bg-gray-300"
+                    disabled={!selectedSubRecipeId ||
+                      !subRecipeScaleFactor ||
+                      subRecipeScaleFactor <= 0}
+                    onclick={addSubRecipe}
+                  >
+                    Add
+                  </button>
+                </div>
+
+                {#if $formData.sub_recipes.length > 0}
+                  <div class="space-y-2">
+                    {#each $formData.sub_recipes as subRecipe, index}
+                      <div
+                        class="flex flex-col gap-3 rounded-lg border border-gray-200 bg-gray-50 p-3 md:flex-row md:items-center md:justify-between dark:border-gray-800 dark:bg-gray-900/40"
+                      >
+                        <div class="min-w-0">
+                          <p class="truncate text-sm font-medium text-gray-900 dark:text-gray-100">
+                            {subRecipe.title || "Unknown Recipe"}
+                          </p>
+                        </div>
+
+                        <div class="flex items-center gap-2">
+                          <label
+                            class="text-xs text-gray-600 dark:text-gray-300"
+                            for={`sub-recipe-scale-${index}`}>Scale</label
+                          >
+                          <input
+                            id={`sub-recipe-scale-${index}`}
+                            type="number"
+                            min="0.01"
+                            step="0.01"
+                            class="w-28 rounded-md border border-gray-300 bg-white px-2 py-1.5 text-sm text-gray-900 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none dark:border-gray-800 dark:bg-gray-900/40 dark:text-gray-100 dark:focus:border-blue-400 dark:focus:ring-blue-400/20"
+                            bind:value={$formData.sub_recipes[index].scale_factor}
+                          />
+                          <button
+                            type="button"
+                            class="rounded-lg p-1.5 text-red-500 transition-colors hover:bg-red-50 hover:text-red-700 dark:hover:bg-red-900/20"
+                            aria-label="Remove sub-recipe"
+                            onclick={() => removeSubRecipe(subRecipe.id)}
+                          >
+                            <svg
+                              class="h-4 w-4"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                              />
+                            </svg>
+                          </button>
+                        </div>
+                      </div>
+                    {/each}
+                  </div>
+                {:else}
+                  <p class="text-sm text-gray-500 dark:text-gray-400">No sub-recipes added.</p>
+                {/if}
+              </div>
+            </details>
 
             <!-- Submit Button -->
             <div class="border-t border-gray-200 pt-4 dark:border-gray-800">

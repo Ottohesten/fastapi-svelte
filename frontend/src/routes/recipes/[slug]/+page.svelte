@@ -11,10 +11,12 @@
   import { Button } from "$lib/components/ui/button";
   import { Input } from "$lib/components/ui/input";
   import { parseServings, scaledRecipeUrl } from "$lib/recipes/sharing";
+  import { renderIngredientAmounts } from "$lib/recipes/ingredient-amounts";
 
   type Props = {
     data: {
       recipe: RecipePublic;
+      recipes?: RecipePublic[];
       authenticatedUser?: UserMePublic;
       is_owner: boolean;
       can_edit: boolean;
@@ -96,10 +98,23 @@
   const FOLLOW_ALONG_STORAGE_PREFIX = "recipe-follow-along:v1:";
   const INSTRUCTION_TTL_MS = 12 * 60 * 60 * 1000;
 
-  let instructionsHtml = $state("");
-  let checkedSteps = $state<Set<string>>(new Set());
-  let instructionStepKeys = $state<string[]>([]);
   let followAlongEnabled = $state(false);
+  const renderedInstructions = $derived(
+    renderIngredientAmounts(
+      data.recipe.instructions ?? "",
+      data.recipe,
+      data.recipes ?? [],
+      scaleFactor
+    )
+  );
+  const instructionPresentation = $derived(
+    followAlongEnabled
+      ? buildCheckableInstructions(renderedInstructions)
+      : { html: renderedInstructions, keys: [] as string[] }
+  );
+  const instructionsHtml = $derived(instructionPresentation.html);
+  let checkedSteps = $state<Set<string>>(new Set());
+  const instructionStepKeys = $derived(instructionPresentation.keys);
   let instructionsContainer: HTMLDivElement | null = $state(null);
 
   function instructionStorageKey(id: string): string {
@@ -234,22 +249,6 @@
   $effect(() => {
     if (!browser) return;
     followAlongEnabled = loadFollowAlongPreference();
-  });
-
-  $effect(() => {
-    if (!browser) {
-      instructionsHtml = data.recipe.instructions ?? "";
-      instructionStepKeys = [];
-      return;
-    }
-    if (!followAlongEnabled) {
-      instructionsHtml = data.recipe.instructions ?? "";
-      instructionStepKeys = [];
-      return;
-    }
-    const { html, keys } = buildCheckableInstructions(data.recipe.instructions ?? "");
-    instructionsHtml = html;
-    instructionStepKeys = keys;
   });
 
   $effect(() => {

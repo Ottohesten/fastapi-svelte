@@ -1,12 +1,16 @@
 <script lang="ts">
   import { browser } from "$app/environment";
+  import { goto } from "$app/navigation";
+  import { page } from "$app/state";
   import { tick } from "svelte";
   import { NotebookPen } from "@lucide/svelte";
   import type { RecipePublic, UserMePublic } from "$lib/client";
   import RecipeIngredientsChecklist from "$lib/components/RecipeIngredientsChecklist.svelte";
   import RecipeNutritionSheet from "$lib/components/RecipeNutritionSheet.svelte";
+  import RecipeShareDialog from "$lib/components/RecipeShareDialog.svelte";
   import { Button } from "$lib/components/ui/button";
   import { Input } from "$lib/components/ui/input";
+  import { parseServings, scaledRecipeUrl } from "$lib/recipes/sharing";
 
   type Props = {
     data: {
@@ -22,14 +26,11 @@
 
   const baseServings = $derived.by(() => Math.max(data.recipe.servings ?? 1, 1));
   const recipeId = $derived.by(() => data.recipe.id);
-  let servingsInput = $state("");
-  $effect(() => {
-    servingsInput = String(baseServings);
-  });
-  const desiredServings = $derived.by(() => {
-    const parsed = Number(servingsInput);
-    return Number.isFinite(parsed) && parsed > 0 ? parsed : baseServings;
-  });
+  let servingsInput = $derived(
+    String(parseServings(page.url.searchParams.get("servings"), baseServings))
+  );
+  const desiredServings = $derived(parseServings(servingsInput, baseServings));
+  const recipeShareUrl = $derived(scaledRecipeUrl(page.url, desiredServings).href);
   const scaleFactor = $derived.by(() => (baseServings > 0 ? desiredServings / baseServings : 1));
 
   function formatAmount(value: number): string {
@@ -39,9 +40,14 @@
   }
 
   function normalizeServingsInput() {
-    const parsed = Number(servingsInput);
-    if (!Number.isFinite(parsed) || parsed <= 0) {
-      servingsInput = String(baseServings);
+    servingsInput = String(desiredServings);
+    if (recipeShareUrl !== page.url.href) {
+      void goto(recipeShareUrl, {
+        replaceState: true,
+        keepFocus: true,
+        noScroll: true,
+        state: page.state
+      });
     }
   }
 
@@ -371,12 +377,13 @@
             <span class="text-sm font-medium text-gray-700 dark:text-gray-200">Servings</span>
             <Input
               type="number"
-              min="1"
-              step="1"
-              inputmode="numeric"
+              min="0.01"
+              step="any"
+              inputmode="decimal"
               aria-label="Servings"
               class="h-8 w-20 text-center text-sm"
-              bind:value={servingsInput}
+              value={servingsInput}
+              oninput={(event) => (servingsInput = event.currentTarget.value)}
               onblur={normalizeServingsInput}
             />
             <span class="text-xs text-gray-500 dark:text-gray-400">Base {baseServings}</span>
@@ -573,6 +580,9 @@
 
       <!-- Sidebar -->
       <div class="lg:sticky lg:top-8 lg:col-span-1 lg:self-start">
+        <div class="mb-3 flex justify-end">
+          <RecipeShareDialog recipe={scaledRecipe} recipeUrl={recipeShareUrl} />
+        </div>
         <RecipeIngredientsChecklist ingredients={scaledIngredients} recipeId={data.recipe.id} />
 
         <div

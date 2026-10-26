@@ -104,7 +104,7 @@ requires-dist = [
     { name = "fastapi", extras = ["standard"], specifier = ">=0.128.0" },
     { name = "httpx", specifier = ">=0.28.1" },
     { name = "passlib", specifier = ">=1.7.4" },
-    { name = "psycopg", extras = ["binary"], specifier = ">=3.3.2" },
+    { name = "psycopg", extras = ["binary"], specifier = ">=3.3.4" },
     { name = "pwdlib", extras = ["argon2"], specifier = ">=0.3.0" },
     { name = "pyjwt", specifier = ">=2.10.1" },
     { name = "pytest-cov", specifier = ">=7.0.0" },

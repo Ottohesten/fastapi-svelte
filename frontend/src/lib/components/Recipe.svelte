@@ -5,6 +5,7 @@
 
   import type { RecipePublic, UserMePublic } from "$lib/client";
   import { renderIngredientAmounts } from "$lib/recipes/ingredient-amounts";
+  import { resolveRecipeInstructions } from "$lib/recipes/sub-recipe-instructions";
 
   type Props = {
     recipe: RecipePublic;
@@ -14,7 +15,7 @@
 
   let { recipe, recipes = [], authenticatedUser }: Props = $props();
   const instructionsPreview = $derived(
-    renderIngredientAmounts(recipe.instructions, recipe, recipes)
+    renderIngredientAmounts(resolveRecipeInstructions(recipe, recipes), recipe, recipes)
   );
 
   function formatGrams(value: number | undefined): string {

@@ -11,6 +11,11 @@
   import { Label } from "$lib/components/ui/label";
   import * as Dialog from "$lib/components/ui/dialog";
   import { IngredientAmountNode } from "$lib/recipes/ingredient-amount-node";
+  import { SubRecipeInstructionNode } from "$lib/recipes/sub-recipe-instruction-node";
+  import {
+    linkSubRecipeInstructions,
+    type InstructionRecipe
+  } from "$lib/recipes/sub-recipe-instructions";
   import {
     decodeAmountReference,
     encodeAmountReference,
@@ -26,7 +31,11 @@
     value = $bindable(""),
     amountRecipe = { id: "", total_ingredients: [] },
     recipes = []
-  }: { value?: string; amountRecipe?: AmountRecipe; recipes?: AmountRecipe[] } = $props();
+  }: {
+    value?: string;
+    amountRecipe?: AmountRecipe;
+    recipes?: (AmountRecipe & InstructionRecipe)[];
+  } = $props();
 
   let element: HTMLDivElement;
   let editor = $state.raw<Editor | null>(null);
@@ -90,7 +99,7 @@
       return "";
     }
 
-    return html;
+    return linkSubRecipeInstructions(html, amountRecipe.sub_recipe_links, recipes);
   }
 
   function normalizeForCompare(html: string | null | undefined) {
@@ -131,6 +140,11 @@
       lastAppliedExternalValue = normalizeHtml(value);
       lastInternalValue = normalizeHtml(value);
       editor.commands.setContent(normalizeHtml(value), { emitUpdate: false });
+      const canonical = editor.getHTML();
+      if (value !== canonical) {
+        lastInternalValue = canonical;
+        value = canonical;
+      }
       queueMicrotask(() => {
         isApplyingExternalContent = false;
       });
@@ -152,7 +166,8 @@
         Color.configure({ types: [TextStyle.name, "listItem"] }),
         TextStyle,
         StarterKit,
-        IngredientAmountNode.configure({ getIngredients: () => amountRecipe.total_ingredients })
+        IngredientAmountNode.configure({ getIngredients: () => amountRecipe.total_ingredients }),
+        SubRecipeInstructionNode
       ],
       content: normalizeHtml(value),
       editorProps: {
@@ -198,6 +213,11 @@
       }
     });
     editorReady = true;
+    // Persist stable recipe links when an existing copied section is first opened.
+    if (normalizeHtml(value) !== value) {
+      lastInternalValue = editor.getHTML();
+      value = lastInternalValue;
+    }
   });
 
   // Reactive function to check if editor is active (depends on editorState)

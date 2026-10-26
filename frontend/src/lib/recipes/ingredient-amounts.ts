@@ -1,4 +1,6 @@
 import type { RecipeIngredientTotalPublic, RecipePublic } from "$lib/client";
+import { defaultTreeAdapter, parseFragment, serialize } from "parse5";
+import { attribute, isElement, type HtmlNode, type HtmlText } from "./html";
 
 export type AmountIngredient = Pick<
     RecipeIngredientTotalPublic,
@@ -122,29 +124,54 @@ export function resolveIngredientAmount(
     return `${formatted} ${ingredient.unit}`.replace(/\s+/g, " ").trim();
 }
 
-function escapeHtml(value: string): string {
-    return value
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#39;");
-}
-
 export function renderIngredientAmounts(
     html: string,
     root: AmountRecipe,
     recipes: AmountRecipe[],
     servingsScale = 1
 ): string {
-    return html.replace(AMOUNT_NODE, (original, encoded: string) => {
-        const reference = decodeAmountReference(encoded);
-        if (!reference) return original;
-        const amount = resolveIngredientAmount(reference, root, recipes, servingsScale);
-        return amount === null
-            ? `<span class="text-amber-700 dark:text-amber-300">${escapeHtml(referenceLabel(reference))} (ingredient unavailable)</span>`
-            : `<span>${escapeHtml(amount)}</span>`;
-    });
+    if (!html.includes(AMOUNT_ATTRIBUTE)) return html;
+    const fragment = parseFragment(html);
+    const tokens: { text: string; node?: HtmlText; amount?: boolean }[] = [];
+    const blocks = new Set(["p", "div", "li", "ol", "ul", "h1", "h2", "h3", "h4", "br", "pre"]);
+    function walk(node: HtmlNode) {
+        if (isElement(node)) {
+            const reference = decodeAmountReference(attribute(node, AMOUNT_ATTRIBUTE));
+            if (reference) {
+                const amount = resolveIngredientAmount(reference, root, recipes, servingsScale);
+                node.attrs =
+                    amount === null
+                        ? [{ name: "class", value: "text-amber-700 dark:text-amber-300" }]
+                        : [];
+                const text = amount ?? `${referenceLabel(reference)} (ingredient unavailable)`;
+                const child = defaultTreeAdapter.createTextNode(text);
+                node.childNodes = [];
+                defaultTreeAdapter.appendChild(node, child);
+                tokens.push({ text, node: child, amount: true });
+                return;
+            }
+        }
+        if (node.nodeName === "#text") {
+            tokens.push({ text: (node as HtmlText).value });
+        } else if ("childNodes" in node) {
+            const block = isElement(node) && blocks.has(node.tagName);
+            if (block) tokens.push({ text: "\n" });
+            node.childNodes.forEach(walk);
+            if (block) tokens.push({ text: "\n" });
+        }
+    }
+    walk(fragment);
+    for (const [index, token] of tokens.entries()) {
+        if (!token.amount || !token.node) continue;
+        const before = tokens[index - 1]?.text ?? "";
+        const after = tokens[index + 1]?.text ?? "";
+        // Chips have visual padding in the editor; keep words separated even when
+        // the saved HTML omitted a literal space, including across inline marks.
+        if (/[\p{L}\p{N}]$/u.test(before)) token.text = " " + token.text;
+        if (/^[\p{L}\p{N}]/u.test(after)) token.text += " ";
+        token.node.value = token.text;
+    }
+    return serialize(fragment);
 }
 
 export function scopeImportedIngredientAmounts(html: string, recipeId: string): string {

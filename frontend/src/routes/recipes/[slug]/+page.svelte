@@ -12,11 +12,13 @@
   import { Input } from "$lib/components/ui/input";
   import { parseServings, scaledRecipeUrl } from "$lib/recipes/sharing";
   import { renderIngredientAmounts } from "$lib/recipes/ingredient-amounts";
+  import { resolveRecipeInstructions } from "$lib/recipes/sub-recipe-instructions";
 
   type Props = {
     data: {
       recipe: RecipePublic;
       recipes?: RecipePublic[];
+      instructionRecipes?: RecipePublic[];
       authenticatedUser?: UserMePublic;
       is_owner: boolean;
       can_edit: boolean;
@@ -101,9 +103,9 @@
   let followAlongEnabled = $state(false);
   const renderedInstructions = $derived(
     renderIngredientAmounts(
-      data.recipe.instructions ?? "",
+      resolveRecipeInstructions(data.recipe, data.instructionRecipes ?? data.recipes ?? []),
       data.recipe,
-      data.recipes ?? [],
+      data.instructionRecipes ?? data.recipes ?? [],
       scaleFactor
     )
   );
@@ -298,10 +300,8 @@
 
   // Simple step count - just count <li> elements in instructions
   const stepCount = $derived.by(() => {
-    if (!data.recipe.instructions) return 0;
-
     // Count <li> elements as individual steps
-    const liMatches = data.recipe.instructions.match(/<li[^>]*>/gi);
+    const liMatches = renderedInstructions.match(/<li[^>]*>/gi);
 
     return liMatches ? liMatches.length : 0;
   });
@@ -538,7 +538,7 @@
         </div>
 
         <!-- Instructions Section -->
-        {#if data.recipe.instructions}
+        {#if renderedInstructions}
           <div
             class="rounded-xl border border-gray-300 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-900/40"
           >

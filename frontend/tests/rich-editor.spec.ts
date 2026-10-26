@@ -40,6 +40,34 @@ function expectNoPageErrors(pageErrors: string[]) {
 }
 
 test.describe("recipe instructions editor", () => {
+    test("preserves linked sub-recipe blocks and the parent's own instructions across reloads", async ({
+        page
+    }) => {
+        const { editor, pageErrors } = await openRecipeInstructionsEditor(page);
+        await editor.evaluate((element) => {
+            const clipboardData = new DataTransfer();
+            clipboardData.setData(
+                "text/html",
+                '<div data-sub-recipe-instructions="linked-child" data-sub-recipe-title="Ragu">Ragu</div><h2>Assembly</h2><p>Layer everything.</p>'
+            );
+            element.dispatchEvent(new ClipboardEvent("paste", { clipboardData, bubbles: true }));
+        });
+        await expect(editor.locator('[data-sub-recipe-instructions="linked-child"]')).toHaveCount(
+            1
+        );
+        await expect(editor).toContainText("Linked instructions");
+        await expect(editor).toContainText("Layer everything.");
+        await expect(page.locator('input[name="instructions"]')).toHaveValue(
+            /data-sub-recipe-instructions="linked-child"/
+        );
+        await page.reload();
+        await expect(editor.locator('[data-sub-recipe-instructions="linked-child"]')).toHaveCount(
+            1
+        );
+        await expect(editor).toContainText("Layer everything.");
+        expectNoPageErrors(pageErrors);
+    });
+
     test("binds typed ingredient amounts and lets the author edit their portion", async ({
         page
     }) => {

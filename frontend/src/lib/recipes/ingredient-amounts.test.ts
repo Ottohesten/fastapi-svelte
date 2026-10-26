@@ -109,6 +109,23 @@ describe("instruction ingredient amounts", () => {
         );
     });
 
+    test("separates amounts from adjacent words across inline formatting without spacing punctuation", () => {
+        const token = `<span data-ingredient-amount="${encodeAmountReference(reference)}">{Butter:25%}</span>`;
+        expect(renderIngredientAmounts(`<p>Melt ${token}butter.</p>`, root, [])).toBe(
+            "<p>Melt <span>50 g </span>butter.</p>"
+        );
+        expect(
+            renderIngredientAmounts(
+                `<p>Add<strong>${token}</strong><em>cold butter</em>.</p>`,
+                root,
+                []
+            )
+        ).toBe("<p>Add<strong><span> 50 g </span></strong><em>cold butter</em>.</p>");
+        expect(renderIngredientAmounts(`<p>Use (${token}), then stir.</p>`, root, [])).toBe(
+            "<p>Use (<span>50 g</span>), then stir.</p>"
+        );
+    });
+
     test("validates saved references and escapes unavailable ingredient names in rendered HTML", () => {
         expect(decodeAmountReference(encodeAmountReference(reference))).toEqual(reference);
         for (const invalid of [

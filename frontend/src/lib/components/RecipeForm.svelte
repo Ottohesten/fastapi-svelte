@@ -14,11 +14,13 @@
   import { Field, Control, Label as SnapLabel, FieldErrors } from "formsnap";
 
   import { ChevronDown, Plus } from "@lucide/svelte";
-  import type { RecipePublic } from "$lib/client";
+  import { formAmountRecipe } from "$lib/recipes/ingredient-amounts";
   import {
-    formAmountRecipe,
-    scopeImportedIngredientAmounts
-  } from "$lib/recipes/ingredient-amounts";
+    linkedInstructionBlock,
+    linkSubRecipeInstructions,
+    removeLinkedInstructions,
+    type InstructionRecipe
+  } from "$lib/recipes/sub-recipe-instructions";
 
   interface Props {
     data: any;
@@ -210,29 +212,20 @@
   }
 
   function removeSubRecipe(recipeId: string) {
+    $formData.instructions = removeLinkedInstructions(
+      linkSubRecipeInstructions(
+        $formData.instructions ?? "",
+        instructionAmountRecipe.sub_recipe_links,
+        data.recipes ?? []
+      ),
+      recipeId
+    );
     $formData.sub_recipes = $formData.sub_recipes.filter((recipe: any) => recipe.id !== recipeId);
   }
 
-  function escapeHtml(value: string): string {
-    return value
-      .replaceAll("&", "&amp;")
-      .replaceAll("<", "&lt;")
-      .replaceAll(">", "&gt;")
-      .replaceAll('"', "&quot;")
-      .replaceAll("'", "&#39;");
-  }
-
-  function buildSubRecipeInstructionBlock(recipe: RecipePublic): string {
-    const heading = `<h2>${escapeHtml(recipe.title ?? "Sub-Recipe")}</h2>`;
-    const body = recipe.instructions?.trim()
-      ? scopeImportedIngredientAmounts(recipe.instructions, recipe.id)
-      : "<p>No instructions provided in sub-recipe.</p>";
-    return `${heading}\n${body}`;
-  }
-
-  function appendSubRecipeInstructions(recipe: any) {
+  function appendSubRecipeInstructions(recipe: InstructionRecipe) {
     const currentInstructions = $formData.instructions ?? "";
-    const nextBlock = buildSubRecipeInstructionBlock(recipe);
+    const nextBlock = linkedInstructionBlock(recipe);
     $formData.instructions = currentInstructions.trim()
       ? `${currentInstructions}\n\n${nextBlock}`
       : nextBlock;

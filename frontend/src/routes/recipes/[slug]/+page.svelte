@@ -1,18 +1,28 @@
 <script lang="ts">
   import { browser } from "$app/environment";
+  import { goto } from "$app/navigation";
+  import { page } from "$app/state";
   import { tick } from "svelte";
+  import { NotebookPen } from "@lucide/svelte";
   import type { RecipePublic, UserMePublic } from "$lib/client";
   import RecipeIngredientsChecklist from "$lib/components/RecipeIngredientsChecklist.svelte";
   import RecipeNutritionSheet from "$lib/components/RecipeNutritionSheet.svelte";
+  import RecipeShareDialog from "$lib/components/RecipeShareDialog.svelte";
   import { Button } from "$lib/components/ui/button";
   import { Input } from "$lib/components/ui/input";
+  import { parseServings, scaledRecipeUrl } from "$lib/recipes/sharing";
+  import { renderIngredientAmounts } from "$lib/recipes/ingredient-amounts";
+  import { resolveRecipeInstructions } from "$lib/recipes/sub-recipe-instructions";
 
   type Props = {
     data: {
       recipe: RecipePublic;
+      recipes?: RecipePublic[];
+      instructionRecipes?: RecipePublic[];
       authenticatedUser?: UserMePublic;
       is_owner: boolean;
       can_edit: boolean;
+      can_log: boolean;
     };
   };
 
@@ -20,14 +30,11 @@
 
   const baseServings = $derived.by(() => Math.max(data.recipe.servings ?? 1, 1));
   const recipeId = $derived.by(() => data.recipe.id);
-  let servingsInput = $state("");
-  $effect(() => {
-    servingsInput = String(baseServings);
-  });
-  const desiredServings = $derived.by(() => {
-    const parsed = Number(servingsInput);
-    return Number.isFinite(parsed) && parsed > 0 ? parsed : baseServings;
-  });
+  let servingsInput = $derived(
+    String(parseServings(page.url.searchParams.get("servings"), baseServings))
+  );
+  const desiredServings = $derived(parseServings(servingsInput, baseServings));
+  const recipeShareUrl = $derived(scaledRecipeUrl(page.url, desiredServings).href);
   const scaleFactor = $derived.by(() => (baseServings > 0 ? desiredServings / baseServings : 1));
 
   function formatAmount(value: number): string {
@@ -37,9 +44,14 @@
   }
 
   function normalizeServingsInput() {
-    const parsed = Number(servingsInput);
-    if (!Number.isFinite(parsed) || parsed <= 0) {
-      servingsInput = String(baseServings);
+    servingsInput = String(desiredServings);
+    if (recipeShareUrl !== page.url.href) {
+      void goto(recipeShareUrl, {
+        replaceState: true,
+        keepFocus: true,
+        noScroll: true,
+        state: page.state
+      });
     }
   }
 
@@ -88,10 +100,23 @@
   const FOLLOW_ALONG_STORAGE_PREFIX = "recipe-follow-along:v1:";
   const INSTRUCTION_TTL_MS = 12 * 60 * 60 * 1000;
 
-  let instructionsHtml = $state("");
-  let checkedSteps = $state<Set<string>>(new Set());
-  let instructionStepKeys = $state<string[]>([]);
   let followAlongEnabled = $state(false);
+  const renderedInstructions = $derived(
+    renderIngredientAmounts(
+      resolveRecipeInstructions(data.recipe, data.instructionRecipes ?? data.recipes ?? []),
+      data.recipe,
+      data.instructionRecipes ?? data.recipes ?? [],
+      scaleFactor
+    )
+  );
+  const instructionPresentation = $derived(
+    followAlongEnabled
+      ? buildCheckableInstructions(renderedInstructions)
+      : { html: renderedInstructions, keys: [] as string[] }
+  );
+  const instructionsHtml = $derived(instructionPresentation.html);
+  let checkedSteps = $state<Set<string>>(new Set());
+  const instructionStepKeys = $derived(instructionPresentation.keys);
   let instructionsContainer: HTMLDivElement | null = $state(null);
 
   function instructionStorageKey(id: string): string {
@@ -229,22 +254,6 @@
   });
 
   $effect(() => {
-    if (!browser) {
-      instructionsHtml = data.recipe.instructions ?? "";
-      instructionStepKeys = [];
-      return;
-    }
-    if (!followAlongEnabled) {
-      instructionsHtml = data.recipe.instructions ?? "";
-      instructionStepKeys = [];
-      return;
-    }
-    const { html, keys } = buildCheckableInstructions(data.recipe.instructions ?? "");
-    instructionsHtml = html;
-    instructionStepKeys = keys;
-  });
-
-  $effect(() => {
     if (!browser || instructionStepKeys.length === 0) return;
     const validKeys = new Set(instructionStepKeys);
     const filtered = new Set([...checkedSteps].filter((key) => validKeys.has(key)));
@@ -291,10 +300,8 @@
 
   // Simple step count - just count <li> elements in instructions
   const stepCount = $derived.by(() => {
-    if (!data.recipe.instructions) return 0;
-
     // Count <li> elements as individual steps
-    const liMatches = data.recipe.instructions.match(/<li[^>]*>/gi);
+    const liMatches = renderedInstructions.match(/<li[^>]*>/gi);
 
     return liMatches ? liMatches.length : 0;
   });
@@ -323,6 +330,14 @@
         </a>
         <div class="ml-auto flex items-center gap-2">
           <RecipeNutritionSheet recipe={scaledRecipe} />
+          {#if data.can_log}
+            <Button
+              href={`/nutrition?source_type=recipe&source_id=${encodeURIComponent(data.recipe.id)}&quantity=1`}
+              variant="outline"
+            >
+              <NotebookPen /> Log
+            </Button>
+          {/if}
           {#if data.can_edit}
             <a
               href="/recipes/{data.recipe.id}/update"
@@ -361,12 +376,13 @@
             <span class="text-sm font-medium text-gray-700 dark:text-gray-200">Servings</span>
             <Input
               type="number"
-              min="1"
-              step="1"
-              inputmode="numeric"
+              min="0.01"
+              step="any"
+              inputmode="decimal"
               aria-label="Servings"
               class="h-8 w-20 text-center text-sm"
-              bind:value={servingsInput}
+              value={servingsInput}
+              oninput={(event) => (servingsInput = event.currentTarget.value)}
               onblur={normalizeServingsInput}
             />
             <span class="text-xs text-gray-500 dark:text-gray-400">Base {baseServings}</span>
@@ -522,7 +538,7 @@
         </div>
 
         <!-- Instructions Section -->
-        {#if data.recipe.instructions}
+        {#if renderedInstructions}
           <div
             class="rounded-xl border border-gray-300 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-900/40"
           >
@@ -563,6 +579,9 @@
 
       <!-- Sidebar -->
       <div class="lg:sticky lg:top-8 lg:col-span-1 lg:self-start">
+        <div class="mb-3 flex justify-end">
+          <RecipeShareDialog recipe={scaledRecipe} recipeUrl={recipeShareUrl} />
+        </div>
         <RecipeIngredientsChecklist ingredients={scaledIngredients} recipeId={data.recipe.id} />
 
         <div

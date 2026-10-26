@@ -7,6 +7,7 @@ from app.db import (
     init_db,
     # create_ingredients_and_recipes
 )
+
 # from app.db import create_heroes
 
 logging.basicConfig(level=logging.INFO)

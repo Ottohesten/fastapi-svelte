@@ -86,6 +86,7 @@
     {#each filteredRecipes as recipe}
       <Recipe
         {recipe}
+        recipes={data.recipes}
         authenticatedUser={data.authenticatedUser
           ? { ...data.authenticatedUser, scopes: data.authenticatedUser.scopes ?? [] }
           : undefined}

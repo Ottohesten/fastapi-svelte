@@ -3,6 +3,9 @@ import { GameEditPage } from "./pages/game-edit-page";
 import { PlayerDetailPage } from "./pages/player-detail-page";
 import { randomPlayerName, randomTeamName } from "./utils/random";
 
+// Each test provisions and tears down a complete session through the UI.
+test.setTimeout(60_000);
+
 test.describe("Game detail page", () => {
     test("loads dashboard", async ({ gamePage, sessionTitle }) => {
         await gamePage.expectLoaded(sessionTitle);
@@ -104,6 +107,21 @@ test.describe("Game edit page", () => {
 });
 
 test.describe("Player detail page", () => {
+    test("can assign a player to a team", async ({ gamePage, sessionTitle, page }) => {
+        await gamePage.expectLoaded(sessionTitle);
+        await gamePage.gotoEditPage();
+        const gameEditPage = new GameEditPage(page);
+        const playerName = randomPlayerName();
+
+        await gameEditPage.addPlayerWithoutTeam(playerName);
+        await gameEditPage.openPlayerDetails(playerName);
+
+        const playerDetailPage = new PlayerDetailPage(page);
+        await playerDetailPage.selectTeam("Red Team");
+        await playerDetailPage.submitAndReopen();
+        await playerDetailPage.expectTeam("Red Team");
+    });
+
     test("can add drinks to a specific player", async ({ gamePage, sessionTitle, page }) => {
         await gamePage.expectLoaded(sessionTitle);
         await gamePage.gotoEditPage();
@@ -151,5 +169,19 @@ test.describe("Player detail page", () => {
         await playerDetailPage.submitAndReopen();
         await playerDetailPage.expectLoaded(playerName);
         await playerDetailPage.expectDrinkNotSelected(drinkId);
+    });
+});
+
+test.describe("Team detail page", () => {
+    test("shows the team roster and statistics", async ({ gamePage, sessionTitle, page }) => {
+        await gamePage.expectLoaded(sessionTitle);
+        await gamePage.gotoEditPage();
+        const gameEditPage = new GameEditPage(page);
+
+        await gameEditPage.openTeamDetails("Red Team");
+
+        await expect(page.getByRole("heading", { level: 1, name: "Red Team" })).toBeVisible();
+        await expect(page.getByRole("heading", { name: "Team roster" })).toBeVisible();
+        await expect(page.getByRole("heading", { name: "Drink breakdown" })).toBeVisible();
     });
 });

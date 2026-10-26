@@ -1,5 +1,5 @@
 from collections import Counter
-from datetime import date, datetime, time, timedelta, timezone
+from datetime import UTC, date, datetime, time, timedelta
 
 from sqlalchemy import delete
 from sqlalchemy.dialects.postgresql import insert
@@ -26,13 +26,13 @@ ANALYTICS_RETENTION_DAYS = 90
 
 
 def _utc_now() -> datetime:
-    return datetime.now(timezone.utc)
+    return datetime.now(UTC)
 
 
 def _as_utc(value: datetime) -> datetime:
     if value.tzinfo is None:
-        return value.replace(tzinfo=timezone.utc)
-    return value.astimezone(timezone.utc)
+        return value.replace(tzinfo=UTC)
+    return value.astimezone(UTC)
 
 
 def _hour_start(value: datetime) -> datetime:
@@ -102,9 +102,7 @@ def get_analytics_summary(
     generated_at = _as_utc(now or _utc_now())
     last_24_hours_start = generated_at - timedelta(hours=24)
     first_series_date = generated_at.date() - timedelta(days=6)
-    first_series_start = datetime.combine(
-        first_series_date, time.min, tzinfo=timezone.utc
-    )
+    first_series_start = datetime.combine(first_series_date, time.min, tzinfo=UTC)
     last_7_days_start = first_series_start
     query_start = min(last_24_hours_start, first_series_start)
     next_hour = _hour_start(generated_at) + timedelta(hours=1)

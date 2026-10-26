@@ -2,10 +2,11 @@
 Permission and Role Management Utilities
 """
 
-from sqlmodel import Session, select
-from app.models import User, Role
-from typing import Set, List
+from typing import TypedDict
 
+from sqlmodel import Session, select
+
+from app.models import Role, User
 
 # Define all available scopes in your application
 AVAILABLE_SCOPES = {
@@ -19,6 +20,8 @@ AVAILABLE_SCOPES = {
     "ingredients:create",
     "ingredients:update",
     "ingredients:delete",
+    # Personal nutrition diary and product catalog
+    "nutrition:use",
     # Game permissions
     "games:read",
     "games:create",
@@ -57,8 +60,15 @@ AVAILABLE_SCOPES = {
     # "recipes:feature", "ingredients:import", "games:broadcast"
 }
 
+
+class RoleTemplate(TypedDict):
+    name: str
+    description: str
+    scopes: list[str]
+
+
 # Predefined role templates
-ROLE_TEMPLATES = {
+ROLE_TEMPLATES: dict[str, RoleTemplate] = {
     "viewer": {
         "name": "Viewer",
         "description": "Basic read-only access to recipes and ingredients",
@@ -172,7 +182,7 @@ ROLE_TEMPLATES = {
 }
 
 
-def get_user_effective_scopes(user: User) -> Set[str]:
+def get_user_effective_scopes(user: User) -> set[str]:
     """
     Calculate user's effective permissions from roles + individual grants
     """
@@ -204,7 +214,7 @@ def user_has_scope(user: User, required_scope: str) -> bool:
     return required_scope in effective_scopes
 
 
-def user_has_any_scope(user: User, required_scopes: List[str]) -> bool:
+def user_has_any_scope(user: User, required_scopes: list[str]) -> bool:
     """
     Check if user has any of the required scopes
     """
@@ -215,7 +225,7 @@ def user_has_any_scope(user: User, required_scopes: List[str]) -> bool:
     return bool(effective_scopes.intersection(set(required_scopes)))
 
 
-def user_has_all_scopes(user: User, required_scopes: List[str]) -> bool:
+def user_has_all_scopes(user: User, required_scopes: list[str]) -> bool:
     """
     Check if user has all of the required scopes
     """
@@ -265,12 +275,12 @@ def create_role_from_template(session: Session, template_key: str) -> Role:
     return role
 
 
-def initialize_default_roles(session: Session) -> List[Role]:
+def initialize_default_roles(session: Session) -> list[Role]:
     """
     Initialize all default roles from templates
     """
     created_roles = []
-    for template_key in ROLE_TEMPLATES.keys():
+    for template_key in ROLE_TEMPLATES:
         role = create_role_from_template(session, template_key)
         created_roles.append(role)
 

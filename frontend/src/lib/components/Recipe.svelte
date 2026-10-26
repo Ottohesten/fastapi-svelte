@@ -4,13 +4,19 @@
   import { enhance } from "$app/forms";
 
   import type { RecipePublic, UserMePublic } from "$lib/client";
+  import { renderIngredientAmounts } from "$lib/recipes/ingredient-amounts";
+  import { resolveRecipeInstructions } from "$lib/recipes/sub-recipe-instructions";
 
   type Props = {
     recipe: RecipePublic;
+    recipes?: RecipePublic[];
     authenticatedUser?: UserMePublic;
   };
 
-  let { recipe, authenticatedUser }: Props = $props();
+  let { recipe, recipes = [], authenticatedUser }: Props = $props();
+  const instructionsPreview = $derived(
+    renderIngredientAmounts(resolveRecipeInstructions(recipe, recipes), recipe, recipes)
+  );
 
   function formatGrams(value: number | undefined): string {
     return `${(value ?? 0).toFixed(1)}g`;
@@ -218,7 +224,7 @@
           <div
             class="line-clamp-3 text-sm text-gray-600 *:text-sm dark:text-gray-300 [&>h1]:text-base [&>h2]:text-sm [&>h3]:text-sm"
           >
-            {@html recipe.instructions}
+            {@html instructionsPreview}
           </div>
         </div>
       </div>

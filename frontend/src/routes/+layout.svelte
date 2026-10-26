@@ -25,6 +25,8 @@
   const authenticatedLinks: NavItem[] = [
     { href: "/recipes", label: "Recipes", requiredScopes: "recipes:read" },
     { href: "/ingredients", label: "Ingredients", requiredScopes: "ingredients:read" },
+    { href: "/nutrition", label: "Nutrition", requiredScopes: "nutrition:use" },
+    { href: "/products", label: "Products", requiredScopes: "nutrition:use" },
     { href: "/game", label: "Games" }
   ];
   const anonymousLinks: NavItem[] = [
@@ -121,7 +123,7 @@
         <span class="truncate text-base sm:text-lg">Internationaleregler</span>
       </a>
 
-      <nav aria-label="Primary navigation" class="ml-auto hidden items-center gap-1 md:flex">
+      <nav aria-label="Primary navigation" class="ml-auto hidden items-center gap-1 lg:flex">
         {#each navigationLinks as link (link.href)}
           <Button
             href={link.href}
@@ -134,7 +136,7 @@
         {/each}
       </nav>
 
-      <div class="ml-auto hidden items-center gap-1 md:flex">
+      <div class="ml-auto hidden items-center gap-1 lg:flex">
         {#if data.authenticatedUser?.is_superuser}
           <Button href="/admin" variant="ghost" size="sm">
             <ShieldCheck />
@@ -157,7 +159,7 @@
 
       <Sheet.Root bind:open={mobileOpen}>
         <Sheet.Trigger
-          class={buttonVariants({ variant: "ghost", size: "icon", class: "ml-auto md:hidden" })}
+          class={buttonVariants({ variant: "ghost", size: "icon", class: "ml-auto lg:hidden" })}
           aria-label="Open navigation"
           title="Open navigation"
         >

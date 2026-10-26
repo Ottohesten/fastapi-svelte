@@ -166,6 +166,7 @@ export const GameSessionPlayerSchema = z.object({
 // schema for player where you can edit the name and add drinks to the player
 export const GameSessionPlayerUpdateSchema = z.object({
     name: z.string().min(1),
+    team_id: z.string().nullable().optional(),
     drinks: z.array(
         z.object({
             drink_id: z.string(),

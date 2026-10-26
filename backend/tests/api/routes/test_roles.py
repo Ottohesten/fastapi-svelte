@@ -8,7 +8,6 @@ from app import db_crud
 from app.models import Role, UserCreate
 from app.permissions import AVAILABLE_SCOPES, ROLE_TEMPLATES
 
-
 TEST_PASSWORD = "role-test-password"
 
 

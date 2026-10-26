@@ -1,16 +1,16 @@
 import typer
-from sqlmodel import Session
+from sqlmodel import Session, select
+
 from app.db import engine
-from app.permissions import (
-    initialize_default_roles,
-    AVAILABLE_SCOPES,
-    assign_role_to_user,
-    get_user_effective_scopes,
-    ROLE_TEMPLATES,
-)
 from app.db_crud import get_user_by_email
 from app.models import Role
-from sqlmodel import select
+from app.permissions import (
+    AVAILABLE_SCOPES,
+    ROLE_TEMPLATES,
+    assign_role_to_user,
+    get_user_effective_scopes,
+    initialize_default_roles,
+)
 from app.seed_food_data import seed_ingredients, seed_recipes
 
 app = typer.Typer()

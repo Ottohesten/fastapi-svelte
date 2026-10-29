@@ -101,7 +101,7 @@ requires-dist = [
     { name = "bcrypt", specifier = "==4.0.1" },
     { name = "cloudinary", specifier = ">=1.44.1" },
     { name = "emails", specifier = ">=0.6" },
-    { name = "fastapi", extras = ["standard"], specifier = ">=0.128.0" },
+    { name = "fastapi", extras = ["standard"], specifier = ">=0.162.0" },
     { name = "httpx", specifier = ">=0.28.1" },
     { name = "passlib", specifier = ">=1.7.4" },
     { name = "psycopg", extras = ["binary"], specifier = ">=3.3.4" },
